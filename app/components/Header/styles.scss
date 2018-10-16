@@ -1,0 +1,54 @@
+@import '~styles/settings/settings';
+
+.header {
+  background-color: $white;
+  box-shadow: 0 3px 16px 0 rgba(53, 86, 118, 0.1);
+  &__topLine {
+    min-height: 100px;
+    padding-top: $rem-sm;
+    padding-bottom: $rem-sm;
+    @include breakpoint(small only) {
+      min-height: 45px;
+      margin-bottom: 0;
+    }
+  }
+  &__togglable {
+    margin-bottom: $rem-mn;
+    @include breakpoint(small only) {
+      margin-bottom: $rem-sm;
+      visibility: hidden;
+      height: 0;
+      @at-root .navbarOpen & {
+        visibility: visible;
+        height: auto;
+        transition: all 2s ease-in-out;
+      }
+    }
+  }
+  &__mainMenuContainer {
+    @include breakpoint(small only) {
+      padding: 0;
+    }
+  }
+  &__secondaryMenuContainer {
+    @include breakpoint(small only) {
+      padding-top: $rem-md;
+      padding-bottom: $rem-md;
+      margin-bottom: $rem-md;
+      border-bottom: 1px solid $light-gray;
+    }
+  }
+  &__logo {
+    color: $secondary-color;
+    @include breakpoint(small only) {
+      width: 65px;
+      height: 30px;
+    }
+  }
+  &__authBtn {
+    @include breakpoint(small only) {
+      padding-left: $rem-mx !important;
+      padding-right: $rem-mx !important;
+    }
+  }
+}

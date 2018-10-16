@@ -1,0 +1,80 @@
+html,
+body {
+  height: 100%;
+}
+
+#app {
+  min-height: 100%;
+  overflow: hidden;
+}
+
+.container {
+  max-width: 75rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+svg {
+  display: block;
+}
+
+.primaryFontLoaded {
+  h1,
+  h2,
+  h3,
+  .button,
+  .f-primary {
+    font-family: 'Avenir';
+  }
+}
+
+.secondaryFontLoaded {
+  h4,
+  h5,
+  h6,
+  p,
+  div,
+  .f-secondary {
+    font-family: 'Avenir', 'Azo Sans', serif;
+  }
+}
+
+label {
+  font-size: $fs-sm;
+  line-height: 2.75;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.contactLink {
+  color: $white;
+  text-decoration: none;
+  font-size: $fs-sm;
+  font-weight: bold;
+}
+
+.rw-popup-container.rw-calendar-popup {
+  width: 22em !important;
+}
+
+.formModal__content {
+  max-height: 90%;
+}
+
+.ReactModal__Body--open {
+  overflow: hidden;
+}
+
+.ReactModal__Overlay {
+  z-index: 1001;
+}
+
+.plain-link {
+  text-transform: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+}

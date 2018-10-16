@@ -1,0 +1,28 @@
+# Don't check auto-generated stuff into git
+coverage
+stats.json
+flow-typed/npm
+
+
+## Env Configs
+app/conf/env/*
+
+
+## Project
+build
+internals/webpack/webpack-cache
+
+
+## Cruft
+.DS_Store
+npm-debug.log
+npm-debug.log.*
+
+
+## IDE
+.idea
+.vscode
+
+
+## Node
+node_modules
