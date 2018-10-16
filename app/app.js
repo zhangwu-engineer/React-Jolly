@@ -14,6 +14,7 @@ import ReactDOM from 'react-dom';
 import FontFaceObserver from 'fontfaceobserver';
 import ReduxToastr from 'react-redux-toastr';
 import ScrollMemory from 'react-router-scroll-memory';
+import { MuiThemeProvider } from '@material-ui/core/styles';
 
 import ConnectedRouter from 'components/ConnectedRouter';
 
@@ -29,6 +30,9 @@ import 'file-loader?name=[name].[ext]!./.htaccess';
 import 'file-loader?name=[name].[ext]!./robots.txt';
 import 'file-loader?name=[name].[ext]!pace-js/pace.min.js';
 /* eslint-enable import/no-unresolved, import/extensions */
+
+// Load custom material theme
+import theme from './theme';
 
 // Observe loading of web font (to remove it, remove the <link> tag in
 // the index.html file and this observer)
@@ -55,19 +59,21 @@ secondaryFontObserver.load().then(
 
 ReactDOM.render(
   <ConnectedRouter>
-    <div>
-      <ReduxToastr
-        timeOut={3000}
-        newestOnTop={false}
-        preventDuplicates
-        position="top-right"
-        transitionIn="fadeIn"
-        transitionOut="fadeOut"
-        progressBar
-      />
-      <ScrollMemory />
-      <App />
-    </div>
+    <MuiThemeProvider theme={theme}>
+      <div>
+        <ReduxToastr
+          timeOut={3000}
+          newestOnTop={false}
+          preventDuplicates
+          position="top-right"
+          transitionIn="fadeIn"
+          transitionOut="fadeOut"
+          progressBar
+        />
+        <ScrollMemory />
+        <App />
+      </div>
+    </MuiThemeProvider>
   </ConnectedRouter>,
   document.getElementById('app')
 );
