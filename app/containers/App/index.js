@@ -102,6 +102,7 @@ class App extends Component<Props> {
 
         <Switch>
           <Route path="/freelancer-signup" />
+          <Route path="/freelancer-signup-2" />
           <Route path="/" render={() => <Footer />} />
         </Switch>
         <ModalContainer
