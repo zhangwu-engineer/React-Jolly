@@ -57,7 +57,9 @@ class App extends Component<Props> {
     if (user) {
       this.props.requestUser();
     }
-    history.push('/freelancer-signup');
+    if (this.props.location.pathname === '/') {
+      history.push('/freelancer-signup');
+    }
   }
   render() {
     const {
