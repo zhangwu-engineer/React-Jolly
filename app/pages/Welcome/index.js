@@ -24,7 +24,11 @@ class Welcome extends Component<{}> {
               Continue with linkedin
             </Button>
             <h1 className="welcome__divider">or</h1>
-            <Button className="welcome__btn light-green mb-lg" type="button">
+            <Button
+              className="welcome__btn light-green mb-lg"
+              element={Link}
+              to="/freelancer-signup-2"
+            >
               Continue with email
             </Button>
             <div className="welcome__signInLink">
