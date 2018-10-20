@@ -37,11 +37,12 @@ const styles = theme => ({
 
 type Props = {
   classes: Object,
+  pathname: string,
 };
 
 class Header extends React.Component<Props> {
   render() {
-    const { classes } = this.props;
+    const { classes, pathname } = this.props;
     return (
       <Grid
         className={classes.root}
@@ -50,11 +51,23 @@ class Header extends React.Component<Props> {
         alignItems="center"
       >
         <Grid item>
-          <img className={classes.logo} src={LogoWhite} alt="logo" />
+          <Link to="/">
+            <img className={classes.logo} src={LogoWhite} alt="logo" />
+          </Link>
         </Grid>
         <Grid item>
           <Typography className={classes.desc}>
-            Already a user? <Link className={classes.btnSignIn}>Sign In</Link>
+            Already a user?{' '}
+            <Link
+              to={
+                pathname === '/email-sign-in'
+                  ? '/freelancer-signup'
+                  : '/email-sign-in'
+              }
+              className={classes.btnSignIn}
+            >
+              {pathname === '/email-sign-in' ? 'Sign Up' : 'Sign In'}
+            </Link>
           </Typography>
         </Grid>
       </Grid>

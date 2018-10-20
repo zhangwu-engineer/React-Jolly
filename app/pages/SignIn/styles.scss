@@ -1,0 +1,94 @@
+@import '~styles/settings/settings';
+
+.signin {
+  height: 100vh;
+  display: flex;
+  background-color: $white;
+  &__leftPanel {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+  &__logo {
+    position: absolute;
+    left: $rem-xl;
+    top: $rem-xl;
+  }
+  &__leftPanelContent {
+    max-width: 350px;
+  }
+  &__title {
+    font-family: Avenir !important;
+    font-size: 26px;
+    font-weight: 500;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 2;
+    letter-spacing: 0.1px;
+    color: $darkest-primary;
+  }
+  &__btn {
+    width: 100%;
+    font-size: 13px;
+    font-weight: 600;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: 1.3px;
+    text-align: center;
+    color: $lightest-gray;
+    text-transform: uppercase;
+    margin-bottom: rem-calc(50);
+  }
+  &__divider {
+    font-size: $fs-base;
+    color: #4a4a4a;
+    text-transform: uppercase;
+    margin-top: $rem-xl;
+    margin-bottom: $rem-xl;
+    text-align: center;
+  }
+  &__signUpLink {
+    text-align: center;
+    font-weight: 500;
+    color: $darkest-primary;
+    a {
+      color: $light-green;
+      font-size: $fs-base;
+      text-decoration: none;
+    }
+  }
+  &__rightPanel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background-image: url('~images/signin-bg.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+  &__overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #192026;
+    opacity: 0.7;
+  }
+  &__bigTitle {
+    font-size: 54px;
+    font-weight: 900;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: 0.3px;
+    color: $white;
+    margin-left: 80px;
+    margin-bottom: 0px;
+    position: relative;
+  }
+}

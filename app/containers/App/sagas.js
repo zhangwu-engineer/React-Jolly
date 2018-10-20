@@ -6,21 +6,11 @@ import storage from 'store';
 import { fromJS, List } from 'immutable';
 import { call, put, select, takeLatest, all } from 'redux-saga/effects';
 import request from 'utils/request';
-import deepReplace from 'utils/deepReplaceToString';
-import encodeURI from 'utils/encodeURI';
-import {
-  API_URL,
-  REQUESTED,
-  SUCCEDED,
-  FAILED,
-  ERROR,
-  GLOBAL_SEARCH_CATEGORY_ORDER,
-} from 'enum/constants';
+import { API_URL, REQUESTED, SUCCEDED, FAILED, ERROR } from 'enum/constants';
 import { LOCATION_CHANGE } from 'react-router-redux';
 import type { Action, State } from 'types/common';
 import type { Saga } from 'redux-saga';
 import { getToken, getUserId } from 'containers/App/selectors';
-import CONFIG from 'conf';
 
 // ------------------------------------
 // Constants
@@ -43,11 +33,6 @@ const OPEN_NAVBAR = 'Jolly/App/OPEN_NAVBAR';
 const CLOSE_NAVBAR = 'Jolly/App/CLOSE_NAVBAR';
 
 const SET_META_JSON = 'Jolly/App/SET_META_JSON';
-
-const GLOBAL_SEARCH = 'Jolly/App/GLOBAL_SEARCH';
-
-const OPEN_MODAL = 'Jolly/App/OPEN_MODAL';
-const CLOSE_MODAL = 'Jolly/App/CLOSE_MODAL';
 
 // ------------------------------------
 // Actions
@@ -181,9 +166,8 @@ const loginRequestError = (error: string) => ({
   payload: error,
 });
 
-export const logout = (type?: string) => ({
+export const logout = () => ({
   type: LOGOUT,
-  meta: { type },
 });
 
 export const requestUser = () => ({
@@ -240,29 +224,6 @@ export const setMetaJson = (path: string, value: ?Object) => ({
   },
 });
 
-export const requestGlobalSearch = (path: string, value: Object) => ({
-  type: GLOBAL_SEARCH + REQUESTED,
-  payload: value,
-  meta: {
-    path,
-  },
-});
-const globalSearchSuccess = (keyword: Object, data: Object) => ({
-  type: GLOBAL_SEARCH + SUCCEDED,
-  payload: data,
-});
-const globalSearchFailed = (error: string) => ({
-  type: GLOBAL_SEARCH + FAILED,
-  payload: error,
-});
-
-export const openModal = (modal: string) => ({
-  type: OPEN_MODAL,
-  payload: modal,
-});
-export const closeModal = () => ({
-  type: CLOSE_MODAL,
-});
 // ------------------------------------
 // Reducer
 // ------------------------------------
@@ -280,18 +241,7 @@ const initialState = fromJS({
   profileBreadcrumbPath: null,
   navbarOpen: false,
   metaJson: {},
-  globalSearch: {
-    data: null,
-    isLoading: false,
-    filter: {
-      query: {},
-    },
-    error: '',
-  },
-  modal: null,
 });
-
-let newState = {};
 
 export const reducer = (
   state: State = initialState,
@@ -485,45 +435,6 @@ export const reducer = (
     case LOCATION_CHANGE:
       return state.set('metaJson', fromJS({})).set('error', '');
 
-    case GLOBAL_SEARCH + REQUESTED:
-      newState = state.setIn(['globalSearch', 'isLoading'], true);
-
-      if (meta.path) {
-        if (payload && payload.length === 0) {
-          return newState.deleteIn(['globalSearch', 'filter', ...meta.path]);
-        }
-        return newState.setIn(
-          ['globalSearch', 'filter', ...meta.path],
-          fromJS(payload)
-        );
-      }
-      return newState;
-
-    case GLOBAL_SEARCH + SUCCEDED:
-      return state.setIn(['globalSearch', 'isLoading'], false).setIn(
-        ['globalSearch', 'data'],
-        fromJS(payload.data)
-          .groupBy(x => x.get('category'))
-          .sort((groupA, groupB) => {
-            const a =
-              GLOBAL_SEARCH_CATEGORY_ORDER[groupA.get(0).get('category')];
-            const b =
-              GLOBAL_SEARCH_CATEGORY_ORDER[groupB.get(0).get('category')];
-            if (a > b) return 1;
-            if (a < b) return -1;
-            return 0;
-          })
-      );
-
-    case GLOBAL_SEARCH + FAILED:
-      return state.setIn(['globalSearch', 'isLoading'], false);
-
-    case OPEN_MODAL:
-      return state.set('modal', payload);
-
-    case CLOSE_MODAL:
-      return state.set('modal', null);
-
     default:
       return state;
   }
@@ -532,8 +443,7 @@ export const reducer = (
 // ------------------------------------
 // Selectors
 // ------------------------------------
-const getQuery = state =>
-  deepReplace(state.getIn(['app', 'globalSearch', 'filter', 'query']).toJS());
+
 // ------------------------------------
 // Sagas
 // ------------------------------------
@@ -700,22 +610,6 @@ function* UserRequest() {
   }
 }
 
-function* GlobalSearchRequest() {
-  const query = yield select(getQuery.bind(null));
-  if (query.q) {
-    query.$text = { $search: query.q };
-  }
-  delete query.q;
-  try {
-    const response = yield call(request, {
-      url: `${API_URL}/search?query=${encodeURI({ ...query })}`,
-    });
-    yield put(globalSearchSuccess(query.$text, response));
-  } catch (error) {
-    yield put(globalSearchFailed(error));
-  }
-}
-
 function* SendInviteRequest({ payload }) {
   const token = yield select(getToken);
   const userId = yield select(getUserId);
@@ -746,7 +640,6 @@ export default function*(): Saga<void> {
     takeLatest(REGISTER + REQUESTED, RegisterRequest),
     takeLatest(RESEND_TOKEN + REQUESTED, ResendTokenRequest),
     takeLatest(USER + REQUESTED, UserRequest),
-    takeLatest(GLOBAL_SEARCH + REQUESTED, GlobalSearchRequest),
     takeLatest(CONFIRM_EMAIL + REQUESTED, ConfirmEmailRequest),
     takeLatest(LOGIN + REQUESTED, LoginRequest),
     takeLatest(SEND_INVITE + REQUESTED, SendInviteRequest),

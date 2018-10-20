@@ -32,7 +32,7 @@ class Welcome extends Component<{}> {
               Continue with email
             </Button>
             <div className="welcome__signInLink">
-              Already a user? <Link>Sign In</Link>
+              Already a user? <Link to="/sign-in">Sign In</Link>
             </div>
           </div>
         </div>

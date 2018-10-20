@@ -1,7 +1,6 @@
 // @flow
 
 import React, { Component, Fragment } from 'react';
-import cx from 'classnames';
 
 import { withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -14,12 +13,13 @@ import InputLabel from '@material-ui/core/InputLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
 import Link from 'components/Link';
-import BaseModal from 'components/BaseModal';
 
 const styles = theme => ({
   root: {},
@@ -30,24 +30,22 @@ const styles = theme => ({
     paddingTop: 46,
     paddingLeft: 30,
     paddingRight: 57,
-    paddingBottom: 64,
+    paddingBottom: 55,
   },
   title: {
-    marginBottom: 30,
+    marginBottom: 40,
     fontWeight: 500,
+    fontSize: 26,
   },
   fieldMargin: {
     marginBottom: 20,
   },
   button: {
-    backgroundColor: theme.palette.common.green,
     fontSize: 13,
     fontWeight: 600,
     paddingTop: 15,
     paddingBottom: 15,
-    '&:hover': {
-      backgroundColor: theme.palette.common.green,
-    },
+    letterSpacing: 1.3,
   },
   link: {
     color: theme.palette.primary,
@@ -74,28 +72,18 @@ type Props = {
 type State = {
   model: {
     email: string,
-    fullname: string,
     password: string,
   },
   showPassword: boolean,
-  isOpen: boolean,
 };
 
-class SignUp extends Component<Props, State> {
+class EmailSignIn extends Component<Props, State> {
   state = {
     model: {
       email: '',
-      fullname: '',
       password: '',
     },
     showPassword: false,
-    isOpen: false,
-  };
-  onCloseModal = () => {
-    this.setState({ isOpen: false });
-  };
-  confirmEmail = () => {
-    this.setState({ isOpen: true });
   };
   handleChange = (e: Object) => {
     e.persist();
@@ -109,30 +97,22 @@ class SignUp extends Component<Props, State> {
   handleClickShowPassword = () => {
     this.setState(state => ({ showPassword: !state.showPassword }));
   };
-  handleRegister = () => {};
+  handleSignIn = () => {};
   render() {
     const { classes } = this.props;
-    const { model, showPassword, isOpen } = this.state;
+    const { model, showPassword } = this.state;
     return (
       <Fragment>
         <CssBaseline />
         <div className={classes.root}>
           <Paper className={classes.panel} elevation={1}>
             <Typography className={classes.title} variant="h5" component="h1">
-              Create your FREE account
+              Sign in to your account
             </Typography>
             <TextField
               id="email"
               label="Email"
               value={model.email}
-              onChange={this.handleChange}
-              className={classes.fieldMargin}
-              fullWidth
-            />
-            <TextField
-              id="fullname"
-              label="Full name"
-              value={model.fullname}
               onChange={this.handleChange}
               className={classes.fieldMargin}
               fullWidth
@@ -156,55 +136,32 @@ class SignUp extends Component<Props, State> {
                 }
               />
             </FormControl>
-            <Typography className="mb-xl">
-              Password must be 8+ characters containing uppercase, lower case,
-              and number or special characters
-            </Typography>
+            <Grid container>
+              <Grid item>
+                <FormControlLabel
+                  control={<Checkbox value="remember" color="primary" />}
+                  label="Remember me"
+                />
+              </Grid>
+              <Grid>
+                <Link>Forgot password?</Link>
+              </Grid>
+            </Grid>
+
             <Button
-              className={cx(classes.button, classes.fieldMargin)}
+              className={classes.button}
               variant="contained"
               color="primary"
               fullWidth
-              onClick={this.confirmEmail}
+              onClick={this.handleSignIn}
             >
-              Join Now for Free
+              Sign In
             </Button>
-            <Typography align="center" color="textSecondary">
-              By continuing, I agree to Jolly&apos;s
-              <br />
-              <Link className={classes.link}>Terms of Use</Link>
-              &nbsp;&amp;&nbsp;
-              <Link className={classes.link}>Privacy Policy</Link>
-            </Typography>
           </Paper>
         </div>
-        <BaseModal
-          className={classes.modal}
-          isOpen={isOpen}
-          onCloseModal={this.onCloseModal}
-        >
-          <Typography variant="h6" component="h1">
-            Is this email correct?
-          </Typography>
-          <Typography
-            className={classes.emailText}
-            variant="body2"
-            component="p"
-          >
-            {model.email}
-          </Typography>
-          <Grid container justify="flex-end">
-            <Grid item>
-              <Button onClick={this.onCloseModal}>EDIT</Button>
-            </Grid>
-            <Grid item>
-              <Button onClick={this.handleRegister}>YES</Button>
-            </Grid>
-          </Grid>
-        </BaseModal>
       </Fragment>
     );
   }
 }
 
-export default withStyles(styles)(SignUp);
+export default withStyles(styles)(EmailSignIn);
