@@ -15,7 +15,6 @@ import { getToken, getUserId } from 'containers/App/selectors';
 // ------------------------------------
 // Constants
 // ------------------------------------
-const REGISTER_EMAIL = 'Jolly/App/REGISTER_EMAIL';
 const REGISTER = 'Jolly/App/REGISTER';
 const LOGIN = 'Jolly/App/LOGIN';
 const LOGOUT = 'Jolly/App/LOGOUT';
@@ -37,26 +36,9 @@ const SET_META_JSON = 'Jolly/App/SET_META_JSON';
 // ------------------------------------
 // Actions
 // ------------------------------------
-export const requestRegisterEmail = (payload: Object) => ({
-  type: REGISTER_EMAIL + REQUESTED,
-  payload,
-});
-const registerEmailRequestSuccess = (payload: Object) => ({
-  type: REGISTER_EMAIL + SUCCEDED,
-  payload,
-});
-const registerEmailRequestFailed = (error: string) => ({
-  type: REGISTER_EMAIL + FAILED,
-  payload: error,
-});
-const registerEmailRequestError = (error: string) => ({
-  type: REGISTER_EMAIL + ERROR,
-  payload: error,
-});
-export const requestRegister = (payload: Object, token: string) => ({
+export const requestRegister = (payload: Object) => ({
   type: REGISTER + REQUESTED,
   payload,
-  token,
 });
 const registerRequestSuccess = (payload: Object) => ({
   type: REGISTER + SUCCEDED,
@@ -248,32 +230,16 @@ export const reducer = (
   { type, payload, meta }: Action
 ) => {
   switch (type) {
-    case REGISTER_EMAIL + REQUESTED:
-      return state.set('isLoading', true).set('error', '');
-
-    case REGISTER_EMAIL + SUCCEDED:
-      return state.set('isLoading', false).set('error', '');
-
-    case REGISTER_EMAIL + FAILED:
-      return state.set('isLoading', false).set('error', payload);
-
-    case REGISTER_EMAIL + ERROR:
-      return state.set('isLoading', false).set(
-        'error',
-        `Something went wrong.
-        Please try again later or contact support and provide the following error information: ${payload}`
-      );
-
     case REGISTER + REQUESTED:
       return state.set('isLoading', true).set('error', null);
 
     case REGISTER + SUCCEDED:
-      storage.set('user', payload);
-      storage.set('token', payload.token);
+      storage.set('user', payload.user);
+      storage.set('token', payload.auth_token);
       return state
         .set('isLoading', false)
-        .set('user', fromJS(payload))
-        .set('token', payload.token)
+        .set('user', fromJS(payload.user))
+        .set('token', payload.auth_token)
         .set('error', '');
 
     case REGISTER + FAILED:
@@ -493,33 +459,16 @@ function* UploadUserPhotoRequest({ payload }) {
   }
 }
 
-function* RegisterEmailRequest({ payload }) {
+function* RegisterRequest({ payload }) {
   try {
     const response = yield call(request, {
       method: 'POST',
-      url: `${API_URL}/auth/register-token`,
+      url: `${API_URL}/user/register`,
       data: payload,
     });
     if (response.status === 200) {
-      yield put(registerEmailRequestSuccess(response.data));
-    } else {
-      yield put(registerEmailRequestFailed(response.data.message));
-    }
-  } catch (error) {
-    yield put(registerEmailRequestError(error));
-  }
-}
-
-function* RegisterRequest({ payload, token }) {
-  try {
-    const response = yield call(request, {
-      method: 'POST',
-      url: `${API_URL}/auth/signup/${token}`,
-      data: payload,
-    });
-    if (response.status === 200) {
-      yield put(registerRequestSuccess(response.data));
-      yield put(requestUser());
+      yield put(registerRequestSuccess(response.data.response));
+      // yield put(requestUser());
     } else {
       yield put(registerRequestFailed(response.data.error));
     }
@@ -636,7 +585,6 @@ export default function*(): Saga<void> {
   yield all([
     takeLatest(USER_DATA_UPDATE + REQUESTED, UpdateUserDataRequest),
     takeLatest(USER_PHOTO_UPLOAD + REQUESTED, UploadUserPhotoRequest),
-    takeLatest(REGISTER_EMAIL + REQUESTED, RegisterEmailRequest),
     takeLatest(REGISTER + REQUESTED, RegisterRequest),
     takeLatest(RESEND_TOKEN + REQUESTED, ResendTokenRequest),
     takeLatest(USER + REQUESTED, UserRequest),

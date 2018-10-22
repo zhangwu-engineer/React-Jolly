@@ -27,7 +27,7 @@ type Props = {
   user: Object,
   logout: Function,
   replace: Function,
-  requestUser: Function,
+  // requestUser: Function,
   openNavbar: Function,
   closeNavbar: Function,
   navbarOpen: boolean,
@@ -38,10 +38,14 @@ class App extends Component<Props> {
   componentDidMount() {
     const { user } = this.props;
     if (user) {
-      this.props.requestUser();
+      // this.props.requestUser();
     }
     if (this.props.location.pathname === '/') {
-      history.push('/freelancer-signup');
+      if (user) {
+        history.push('/me');
+      } else {
+        history.push('/freelancer-signup');
+      }
     }
   }
   componentDidUpdate() {

@@ -121,7 +121,8 @@
     "sitemap": "^1.13.0",
     "store": "^2.0.4",
     "tls": "0.0.1",
-    "tunnel-agent": "^0.6.0"
+    "tunnel-agent": "^0.6.0",
+    "yup": "^0.26.6"
   },
   "devDependencies": {
     "ajv": "^6.5.2",

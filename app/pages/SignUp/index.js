@@ -1,7 +1,10 @@
 // @flow
 
 import React, { Component, Fragment } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
 import cx from 'classnames';
+import * as yup from 'yup';
 
 import { withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -13,13 +16,18 @@ import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
+import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
 import BaseModal from 'components/BaseModal';
+
+import { requestRegister } from 'containers/App/sagas';
 
 const styles = theme => ({
   root: {},
@@ -65,10 +73,25 @@ const styles = theme => ({
     color: theme.palette.common.grey,
     marginBottom: 30,
   },
+  progress: {
+    marginLeft: theme.spacing.unit,
+  },
+});
+
+const schema = yup.object().shape({
+  email: yup
+    .string()
+    .email()
+    .required(),
+  fullname: yup.string().required(),
+  password: yup.string().required(),
 });
 
 type Props = {
+  isLoading: boolean,
+  error: string,
   classes: Object,
+  requestRegister: Function,
 };
 
 type State = {
@@ -79,6 +102,7 @@ type State = {
   },
   showPassword: boolean,
   isOpen: boolean,
+  validationError: Object,
 };
 
 class SignUp extends Component<Props, State> {
@@ -90,12 +114,27 @@ class SignUp extends Component<Props, State> {
     },
     showPassword: false,
     isOpen: false,
+    validationError: {},
   };
+  componentDidUpdate(prevProps: Props) {
+    const { isLoading, error } = this.props;
+    if (prevProps.isLoading && !isLoading && !error) {
+      history.push('/me');
+    }
+  }
   onCloseModal = () => {
     this.setState({ isOpen: false });
   };
   confirmEmail = () => {
-    this.setState({ isOpen: true });
+    schema
+      .validate(this.state.model)
+      .then(() => {
+        this.setState({ validationError: {} });
+        this.setState({ isOpen: true });
+      })
+      .catch(err => {
+        this.setState({ validationError: err });
+      });
   };
   handleChange = (e: Object) => {
     e.persist();
@@ -109,10 +148,15 @@ class SignUp extends Component<Props, State> {
   handleClickShowPassword = () => {
     this.setState(state => ({ showPassword: !state.showPassword }));
   };
-  handleRegister = () => {};
+  handleRegister = () => {
+    const { model } = this.state;
+    this.setState({ isOpen: false }, () => {
+      this.props.requestRegister(model);
+    });
+  };
   render() {
-    const { classes } = this.props;
-    const { model, showPassword, isOpen } = this.state;
+    const { isLoading, error, classes } = this.props;
+    const { model, showPassword, isOpen, validationError } = this.state;
     return (
       <Fragment>
         <CssBaseline />
@@ -128,6 +172,8 @@ class SignUp extends Component<Props, State> {
               onChange={this.handleChange}
               className={classes.fieldMargin}
               fullWidth
+              error={validationError && validationError.path === 'email'}
+              helperText={validationError.message}
             />
             <TextField
               id="fullname"
@@ -136,8 +182,15 @@ class SignUp extends Component<Props, State> {
               onChange={this.handleChange}
               className={classes.fieldMargin}
               fullWidth
+              error={validationError && validationError.path === 'fullname'}
+              helperText={validationError.message}
             />
-            <FormControl className={classes.fieldMargin} fullWidth>
+            <FormControl
+              className={classes.fieldMargin}
+              fullWidth
+              error={validationError && validationError.path === 'password'}
+              aria-describedby="password-helper-text"
+            >
               <InputLabel htmlFor="password">Password</InputLabel>
               <Input
                 id="password"
@@ -155,19 +208,35 @@ class SignUp extends Component<Props, State> {
                   </InputAdornment>
                 }
               />
+              <FormHelperText id="password-helper-text">
+                {validationError.message}
+              </FormHelperText>
             </FormControl>
             <Typography className="mb-xl">
               Password must be 8+ characters containing uppercase, lower case,
               and number or special characters
             </Typography>
+            {error && (
+              <FormHelperText className={classes.fieldMargin} error>
+                {error}
+              </FormHelperText>
+            )}
             <Button
               className={cx(classes.button, classes.fieldMargin)}
               variant="contained"
               color="primary"
               fullWidth
               onClick={this.confirmEmail}
+              disabled={isLoading}
             >
               Join Now for Free
+              {isLoading && (
+                <CircularProgress
+                  className={classes.progress}
+                  size={15}
+                  color="inherit"
+                />
+              )}
             </Button>
             <Typography align="center" color="textSecondary">
               By continuing, I agree to Jolly&apos;s
@@ -207,4 +276,19 @@ class SignUp extends Component<Props, State> {
   }
 }
 
-export default withStyles(styles)(SignUp);
+const mapStateToProps = state => ({
+  isLoading: state.getIn(['app', 'isLoading']),
+  error: state.getIn(['app', 'error']),
+});
+
+const mapDispatchToProps = dispatch => ({
+  requestRegister: payload => dispatch(requestRegister(payload)),
+});
+
+export default compose(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  ),
+  withStyles(styles)
+)(SignUp);
