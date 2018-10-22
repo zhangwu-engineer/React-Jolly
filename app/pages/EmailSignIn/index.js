@@ -71,6 +71,9 @@ const styles = theme => ({
     color: theme.palette.common.grey,
     marginBottom: 30,
   },
+  progress: {
+    marginLeft: theme.spacing.unit,
+  },
 });
 
 const schema = yup.object().shape({
