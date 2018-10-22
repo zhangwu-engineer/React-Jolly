@@ -5,13 +5,14 @@ import { Switch } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import load from 'utils/load';
 
-import { Route } from 'components/Routes';
+import { Route, PrivateRoute } from 'components/Routes';
 
 const Home = load(() => import('pages/Home'));
 const Welcome = load(() => import('pages/Welcome'));
 const SignUp = load(() => import('pages/SignUp'));
 const SignIn = load(() => import('pages/SignIn'));
 const EmailSignIn = load(() => import('pages/EmailSignIn'));
+const Profile = load(() => import('pages/Profile'));
 const FourOfour = load(() => import('pages/404'));
 
 class Routes extends Component<{}> {
@@ -32,6 +33,7 @@ class Routes extends Component<{}> {
           path="/email-sign-in"
           render={props => <EmailSignIn {...props} />}
         />
+        <PrivateRoute path="/me" render={props => <Profile {...props} />} />
         <Route render={props => <FourOfour {...props} />} />
       </Switch>
     );
