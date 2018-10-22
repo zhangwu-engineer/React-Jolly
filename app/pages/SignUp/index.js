@@ -173,7 +173,11 @@ class SignUp extends Component<Props, State> {
               className={classes.fieldMargin}
               fullWidth
               error={validationError && validationError.path === 'email'}
-              helperText={validationError.message}
+              helperText={
+                validationError &&
+                validationError.path === 'email' &&
+                validationError.message
+              }
             />
             <TextField
               id="fullname"
@@ -183,7 +187,11 @@ class SignUp extends Component<Props, State> {
               className={classes.fieldMargin}
               fullWidth
               error={validationError && validationError.path === 'fullname'}
-              helperText={validationError.message}
+              helperText={
+                validationError &&
+                validationError.path === 'fullname' &&
+                validationError.message
+              }
             />
             <FormControl
               className={classes.fieldMargin}
@@ -209,7 +217,9 @@ class SignUp extends Component<Props, State> {
                 }
               />
               <FormHelperText id="password-helper-text">
-                {validationError.message}
+                {validationError &&
+                  validationError.path === 'password' &&
+                  validationError.message}
               </FormHelperText>
             </FormControl>
             <Typography className="mb-xl">
