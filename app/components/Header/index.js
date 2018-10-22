@@ -151,7 +151,7 @@ class Header extends Component<Props, State> {
                 to={
                   pathname === '/email-sign-in'
                     ? '/freelancer-signup'
-                    : '/email-sign-in'
+                    : '/sign-in'
                 }
                 className={classes.btnSignIn}
               >
