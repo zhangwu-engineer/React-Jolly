@@ -1,6 +1,9 @@
 // @flow
 
 import React, { Component, Fragment } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import * as yup from 'yup';
 
 import { withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -16,10 +19,15 @@ import Button from '@material-ui/core/Button';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
+import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
+
+import { requestLogin } from 'containers/App/sagas';
 
 const styles = theme => ({
   root: {},
@@ -65,8 +73,19 @@ const styles = theme => ({
   },
 });
 
+const schema = yup.object().shape({
+  email: yup
+    .string()
+    .email()
+    .required(),
+  password: yup.string().required(),
+});
+
 type Props = {
+  isLoading: boolean,
+  error: string,
   classes: Object,
+  requestLogin: Function,
 };
 
 type State = {
@@ -75,6 +94,7 @@ type State = {
     password: string,
   },
   showPassword: boolean,
+  validationError: Object,
 };
 
 class EmailSignIn extends Component<Props, State> {
@@ -84,7 +104,14 @@ class EmailSignIn extends Component<Props, State> {
       password: '',
     },
     showPassword: false,
+    validationError: {},
   };
+  componentDidUpdate(prevProps: Props) {
+    const { isLoading, error } = this.props;
+    if (prevProps.isLoading && !isLoading && !error) {
+      history.push('/me');
+    }
+  }
   handleChange = (e: Object) => {
     e.persist();
     this.setState(state => ({
@@ -97,10 +124,21 @@ class EmailSignIn extends Component<Props, State> {
   handleClickShowPassword = () => {
     this.setState(state => ({ showPassword: !state.showPassword }));
   };
-  handleSignIn = () => {};
+  handleSignIn = () => {
+    const { model } = this.state;
+    schema
+      .validate(model)
+      .then(() => {
+        this.setState({ validationError: {} });
+        this.props.requestLogin(model);
+      })
+      .catch(err => {
+        this.setState({ validationError: err });
+      });
+  };
   render() {
-    const { classes } = this.props;
-    const { model, showPassword } = this.state;
+    const { isLoading, error, classes } = this.props;
+    const { model, showPassword, validationError } = this.state;
     return (
       <Fragment>
         <CssBaseline />
@@ -116,8 +154,19 @@ class EmailSignIn extends Component<Props, State> {
               onChange={this.handleChange}
               className={classes.fieldMargin}
               fullWidth
+              error={validationError && validationError.path === 'email'}
+              helperText={
+                validationError &&
+                validationError.path === 'email' &&
+                validationError.message
+              }
             />
-            <FormControl className={classes.fieldMargin} fullWidth>
+            <FormControl
+              className={classes.fieldMargin}
+              fullWidth
+              error={validationError && validationError.path === 'password'}
+              aria-describedby="password-helper-text"
+            >
               <InputLabel htmlFor="password">Password</InputLabel>
               <Input
                 id="password"
@@ -135,8 +184,13 @@ class EmailSignIn extends Component<Props, State> {
                   </InputAdornment>
                 }
               />
+              <FormHelperText id="password-helper-text">
+                {validationError &&
+                  validationError.path === 'password' &&
+                  validationError.message}
+              </FormHelperText>
             </FormControl>
-            <Grid container>
+            <Grid container justify="space-between" alignItems="center">
               <Grid item>
                 <FormControlLabel
                   control={<Checkbox value="remember" color="primary" />}
@@ -147,15 +201,27 @@ class EmailSignIn extends Component<Props, State> {
                 <Link>Forgot password?</Link>
               </Grid>
             </Grid>
-
+            {error && (
+              <FormHelperText className={classes.fieldMargin} error>
+                {error}
+              </FormHelperText>
+            )}
             <Button
               className={classes.button}
               variant="contained"
               color="primary"
               fullWidth
               onClick={this.handleSignIn}
+              disabled={isLoading}
             >
               Sign In
+              {isLoading && (
+                <CircularProgress
+                  className={classes.progress}
+                  size={15}
+                  color="inherit"
+                />
+              )}
             </Button>
           </Paper>
         </div>
@@ -164,4 +230,19 @@ class EmailSignIn extends Component<Props, State> {
   }
 }
 
-export default withStyles(styles)(EmailSignIn);
+const mapStateToProps = state => ({
+  isLoading: state.getIn(['app', 'isLoading']),
+  error: state.getIn(['app', 'error']),
+});
+
+const mapDispatchToProps = dispatch => ({
+  requestLogin: payload => dispatch(requestLogin(payload)),
+});
+
+export default compose(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  ),
+  withStyles(styles)
+)(EmailSignIn);

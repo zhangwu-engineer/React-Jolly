@@ -3,7 +3,7 @@
 // Rules on how to organize this file: https://github.com/erikras/ducks-modular-redux
 
 import storage from 'store';
-import { fromJS, List } from 'immutable';
+import { fromJS } from 'immutable';
 import { call, put, select, takeLatest, all } from 'redux-saga/effects';
 import request from 'utils/request';
 import { API_URL, REQUESTED, SUCCEDED, FAILED, ERROR } from 'enum/constants';
@@ -18,15 +18,10 @@ import { getToken, getUserId } from 'containers/App/selectors';
 const REGISTER = 'Jolly/App/REGISTER';
 const LOGIN = 'Jolly/App/LOGIN';
 const LOGOUT = 'Jolly/App/LOGOUT';
-const RESEND_TOKEN = 'Jolly/App/RESEND_TOKEN';
-const CONFIRM_EMAIL = 'Jolly/App/CONFIRM_EMAIL';
-const SET_USER_TO_CONFIRM_EMAIL = 'Jolly/App/SET_USER_TO_CONFIRM_EMAIL';
 const USER = 'Jolly/App/USER';
 const USER_DATA_UPDATE = 'Jolly/App/UPDATE_USER_DATA';
-const SEND_INVITE = 'Jolly/App/SEND_INVITE';
 
 const USER_PHOTO_UPLOAD = 'Jolly/App/UPLOAD_USER_PHOTO';
-const SET_PROFILE_BREADCRUMB_PATH = 'Jolly/App/SET_PROFILE_BREADCRUMB_PATH';
 
 const OPEN_NAVBAR = 'Jolly/App/OPEN_NAVBAR';
 const CLOSE_NAVBAR = 'Jolly/App/CLOSE_NAVBAR';
@@ -50,48 +45,6 @@ const registerRequestFailed = (error: string) => ({
 });
 const registerRequestError = (error: string) => ({
   type: REGISTER + ERROR,
-  payload: error,
-});
-
-export const resendToken = (payload: Object) => ({
-  type: RESEND_TOKEN + REQUESTED,
-  payload,
-});
-const resendTokenSuccess = (payload: Object) => ({
-  type: RESEND_TOKEN + SUCCEDED,
-  payload,
-});
-const resendTokenFailed = error => ({
-  type: RESEND_TOKEN + FAILED,
-  payload: error,
-});
-const resendTokenError = error => ({
-  type: RESEND_TOKEN + ERROR,
-  payload: error,
-});
-
-export const setUserToConfirmEmail = (payload: Object) => ({
-  type: SET_USER_TO_CONFIRM_EMAIL,
-  payload,
-});
-
-export const confirmEmail = (payload: Object, token: string) => ({
-  type: CONFIRM_EMAIL + REQUESTED,
-  payload,
-  meta: {
-    token,
-  },
-});
-const confirmEmailSuccess = (payload: Object) => ({
-  type: CONFIRM_EMAIL + SUCCEDED,
-  payload,
-});
-const confirmEmailFailed = error => ({
-  type: CONFIRM_EMAIL + FAILED,
-  payload: error,
-});
-const confirmEmailError = error => ({
-  type: CONFIRM_EMAIL + ERROR,
   payload: error,
 });
 
@@ -168,28 +121,6 @@ const userRequestError = (error: string) => ({
   payload: error,
 });
 
-export const setProfileBreadcrumbPath = (path: List<Map<string, Object>>) => ({
-  type: SET_PROFILE_BREADCRUMB_PATH,
-  payload: path,
-});
-
-export const requestSendInvite = (payload: Object) => ({
-  type: SEND_INVITE + REQUESTED,
-  payload,
-});
-const sendInviteRequestSuccess = (payload: Object) => ({
-  type: SEND_INVITE + SUCCEDED,
-  payload,
-});
-const sendInviteRequestFailed = (error: string) => ({
-  type: SEND_INVITE + FAILED,
-  payload: error,
-});
-const sendInviteRequestError = (error: string) => ({
-  type: SEND_INVITE + ERROR,
-  payload: error,
-});
-
 export const openNavbar = () => ({
   type: OPEN_NAVBAR,
 });
@@ -214,13 +145,7 @@ const initialState = fromJS({
   token: storage.get('token'),
   isLoading: false,
   error: '',
-  pendingUser: fromJS(storage.get('pendingUser')),
-  isResending: false,
-  resendError: '',
-  isConfirming: false,
-  confirmError: '',
   isUploading: false,
-  profileBreadcrumbPath: null,
   navbarOpen: false,
   metaJson: {},
 });
@@ -248,49 +173,6 @@ export const reducer = (
     case REGISTER + ERROR:
       return state.set('isLoading', false).set(
         'error',
-        `Something went wrong.
-        Please try again later or contact support and provide the following error information: ${payload}`
-      );
-
-    case RESEND_TOKEN + REQUESTED:
-      return state.set('isResending', true).set('resendError', null);
-
-    case RESEND_TOKEN + SUCCEDED:
-      return state.set('isResending', false).set('resendError', '');
-
-    case RESEND_TOKEN + FAILED:
-      return state.set('isResending', false).set('resendError', payload);
-
-    case RESEND_TOKEN + ERROR:
-      return state.set('isResending', false).set(
-        'resendError',
-        `Something went wrong.
-        Please try again later or contact support and provide the following error information: ${payload}`
-      );
-
-    case SET_USER_TO_CONFIRM_EMAIL:
-      if (!storage.get('pendingUser')) {
-        storage.set('pendingUser', payload);
-        return state.set('pendingUser', payload);
-      }
-      return state;
-
-    case CONFIRM_EMAIL + REQUESTED:
-      return state.set('isConfirming', true).set('confirmError', null);
-
-    case CONFIRM_EMAIL + SUCCEDED:
-      storage.remove('pendingUser');
-      return state
-        .set('pendingUser', null)
-        .set('isConfirming', false)
-        .set('confirmError', '');
-
-    case CONFIRM_EMAIL + FAILED:
-      return state.set('isConfirming', false).set('confirmError', payload);
-
-    case CONFIRM_EMAIL + ERROR:
-      return state.set('isConfirming', false).set(
-        'confirmError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -331,14 +213,16 @@ export const reducer = (
       return state.set('isLoading', true);
 
     case LOGIN + SUCCEDED:
-      storage.set('token', payload.token);
+      storage.set('user', payload.user);
+      storage.set('token', payload.auth_token);
       return state
         .set('isLoading', false)
-        .set('token', payload.token)
+        .set('user', fromJS(payload.user))
+        .set('token', payload.auth_token)
         .set('error', '');
 
     case LOGIN + FAILED:
-      return state.set('isLoading', false).set('error', payload);
+      return state.set('isLoading', false).set('error', payload.message);
 
     case LOGIN + ERROR:
       return state.set('isLoading', false).set(
@@ -368,25 +252,6 @@ export const reducer = (
     case USER + ERROR:
       return state.set('isLoading', false);
 
-    case SEND_INVITE + REQUESTED:
-      return state.set('isLoading', true);
-
-    case SEND_INVITE + SUCCEDED:
-      return state.set('isLoading', false).set('error', '');
-
-    case SEND_INVITE + FAILED:
-      return state.set('isLoading', false).set('error', payload);
-
-    case SEND_INVITE + ERROR:
-      return state.set('isLoading', false).set(
-        'error',
-        `Something went wrong.
-        Please try again later or contact support and provide the following error information: ${payload}`
-      );
-
-    case SET_PROFILE_BREADCRUMB_PATH:
-      return state.set('profileBreadcrumbPath', payload);
-
     case OPEN_NAVBAR:
       return state.set('navbarOpen', true);
 
@@ -413,6 +278,59 @@ export const reducer = (
 // ------------------------------------
 // Sagas
 // ------------------------------------
+function* RegisterRequest({ payload }) {
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/user/register`,
+      data: payload,
+    });
+    if (response.status === 200) {
+      yield put(registerRequestSuccess(response.data.response));
+      // yield put(requestUser());
+    } else {
+      yield put(registerRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(registerRequestError(error));
+  }
+}
+
+function* LoginRequest({ payload }) {
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/auth/login`,
+      data: payload,
+    });
+    if (response.status === 200) {
+      yield put(loginRequestSuccess(response.data.response));
+      // yield put(requestUser());
+    } else {
+      yield put(loginRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(loginRequestError(error));
+  }
+}
+
+function* UserRequest() {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      url: `${API_URL}/account/me`,
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (response.status === 200) {
+      yield put(userRequestSuccess(response.data));
+    } else {
+      yield put(userRequestFailed(response.data.message));
+    }
+  } catch (error) {
+    yield put(userRequestError(error));
+  }
+}
+
 function* UpdateUserDataRequest({ payload }) {
   const token = yield select(getToken);
   const userId = yield select(getUserId);
@@ -459,137 +377,12 @@ function* UploadUserPhotoRequest({ payload }) {
   }
 }
 
-function* RegisterRequest({ payload }) {
-  try {
-    const response = yield call(request, {
-      method: 'POST',
-      url: `${API_URL}/user/register`,
-      data: payload,
-    });
-    if (response.status === 200) {
-      yield put(registerRequestSuccess(response.data.response));
-      // yield put(requestUser());
-    } else {
-      yield put(registerRequestFailed(response.data.error));
-    }
-  } catch (error) {
-    yield put(registerRequestError(error));
-  }
-}
-
-function* ResendTokenRequest({ payload }) {
-  try {
-    const data = {
-      email: payload,
-    };
-    const response = yield call(request, {
-      method: 'POST',
-      url: `${API_URL}/auth/resend-token`,
-      data,
-    });
-    if (response.status === 200) {
-      yield put(resendTokenSuccess(response.data));
-    } else {
-      yield put(resendTokenFailed(response.data.message));
-    }
-  } catch (error) {
-    yield put(resendTokenError(error));
-  }
-}
-
-function* ConfirmEmailRequest({ payload, meta: { token } }) {
-  try {
-    const data = {
-      email: payload,
-      token,
-    };
-    const response = yield call(request, {
-      method: 'POST',
-      url: `${API_URL}/auth/email-confirmation`,
-      data,
-    });
-    if (response.status === 200) {
-      yield put(confirmEmailSuccess(response.data));
-    } else {
-      yield put(confirmEmailFailed(response.data.message));
-    }
-  } catch (error) {
-    yield put(confirmEmailError(error));
-  }
-}
-
-function* LoginRequest({ payload }) {
-  try {
-    const response = yield call(request, {
-      method: 'POST',
-      url: `${API_URL}/auth/signin`,
-      data: payload,
-    });
-    if (response.status === 200) {
-      yield put(loginRequestSuccess(response.data));
-      yield put(requestUser());
-    } else if (response.status === 429) {
-      yield put(
-        loginRequestFailed(
-          "You've tried to login too many times. Please try again in 30 minutes."
-        )
-      );
-    } else {
-      yield put(loginRequestFailed(response.data.message));
-    }
-  } catch (error) {
-    yield put(loginRequestError(error));
-  }
-}
-
-function* UserRequest() {
-  const token = yield select(getToken);
-  try {
-    const response = yield call(request, {
-      url: `${API_URL}/account/me`,
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (response.status === 200) {
-      yield put(userRequestSuccess(response.data));
-    } else {
-      yield put(userRequestFailed(response.data.message));
-    }
-  } catch (error) {
-    yield put(userRequestError(error));
-  }
-}
-
-function* SendInviteRequest({ payload }) {
-  const token = yield select(getToken);
-  const userId = yield select(getUserId);
-  try {
-    const response = yield call(request, {
-      method: 'POST',
-      url: `${API_URL}/invite/user/${userId}/invites`,
-      data: {
-        invitees: payload,
-      },
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (response.status === 200) {
-      yield put(sendInviteRequestSuccess(response.data));
-    } else {
-      yield put(sendInviteRequestFailed(response.data.message));
-    }
-  } catch (error) {
-    yield put(sendInviteRequestError(error));
-  }
-}
-
 export default function*(): Saga<void> {
   yield all([
+    takeLatest(REGISTER + REQUESTED, RegisterRequest),
+    takeLatest(LOGIN + REQUESTED, LoginRequest),
+    takeLatest(USER + REQUESTED, UserRequest),
     takeLatest(USER_DATA_UPDATE + REQUESTED, UpdateUserDataRequest),
     takeLatest(USER_PHOTO_UPLOAD + REQUESTED, UploadUserPhotoRequest),
-    takeLatest(REGISTER + REQUESTED, RegisterRequest),
-    takeLatest(RESEND_TOKEN + REQUESTED, ResendTokenRequest),
-    takeLatest(USER + REQUESTED, UserRequest),
-    takeLatest(CONFIRM_EMAIL + REQUESTED, ConfirmEmailRequest),
-    takeLatest(LOGIN + REQUESTED, LoginRequest),
-    takeLatest(SEND_INVITE + REQUESTED, SendInviteRequest),
   ]);
 }
