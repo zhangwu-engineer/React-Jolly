@@ -84,6 +84,12 @@ module.exports = {
     PORT: 3000,
   },
 
+  FACEBOOK: {
+    APP_ID: isDev ? '306996470119992' : '306996470119992',
+  },
+  LINKEDIN: {
+    APP_ID: isDev ? '862j54unk910vg' : '862j54unk910vg',
+  },
   /** Application API */
   API: {
     /** Application API Base Url */

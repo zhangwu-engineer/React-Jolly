@@ -17,6 +17,7 @@ import { getToken, getUserId } from 'containers/App/selectors';
 // ------------------------------------
 const REGISTER = 'Jolly/App/REGISTER';
 const LOGIN = 'Jolly/App/LOGIN';
+const SOCIAL_LOGIN = 'Acheev/App/SOCIAL_LOGIN';
 const LOGOUT = 'Jolly/App/LOGOUT';
 const USER = 'Jolly/App/USER';
 const USER_DATA_UPDATE = 'Jolly/App/UPDATE_USER_DATA';
@@ -101,6 +102,26 @@ const loginRequestError = (error: string) => ({
   payload: error,
 });
 
+export const requestSocialLogin = (payload: Object, type: string) => ({
+  type: SOCIAL_LOGIN + REQUESTED,
+  payload,
+  meta: {
+    type,
+  },
+});
+const socialLoginRequestSuccess = (payload: Object) => ({
+  type: SOCIAL_LOGIN + SUCCEDED,
+  payload,
+});
+const socialLoginRequestFailed = (error: string) => ({
+  type: SOCIAL_LOGIN + FAILED,
+  payload: error,
+});
+const socialLoginRequestError = (error: string) => ({
+  type: SOCIAL_LOGIN + ERROR,
+  payload: error,
+});
+
 export const logout = () => ({
   type: LOGOUT,
 });
@@ -148,6 +169,8 @@ const initialState = fromJS({
   isUploading: false,
   navbarOpen: false,
   metaJson: {},
+  isSocialLoading: false,
+  socialError: '',
 });
 
 export const reducer = (
@@ -231,6 +254,26 @@ export const reducer = (
         Please try again later or contact support and provide the following error information: ${payload}`
       );
 
+    case SOCIAL_LOGIN + REQUESTED:
+      return state.set('isSocialLoading', true);
+
+    case SOCIAL_LOGIN + SUCCEDED:
+      storage.set('token', payload.auth_token);
+      return state
+        .set('isSocialLoading', false)
+        .set('token', payload.auth_token)
+        .set('socialError', '');
+
+    case SOCIAL_LOGIN + FAILED:
+      return state.set('isSocialLoading', false).set('socialError', payload);
+
+    case SOCIAL_LOGIN + ERROR:
+      return state.set('isSocialLoading', false).set(
+        'socialError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
     case LOGOUT:
       storage.remove('token');
       storage.remove('user');
@@ -305,7 +348,7 @@ function* LoginRequest({ payload }) {
     });
     if (response.status === 200) {
       yield put(loginRequestSuccess(response.data.response));
-      // yield put(requestUser());
+      yield put(requestUser());
     } else {
       yield put(loginRequestFailed(response.data.error));
     }
@@ -314,15 +357,36 @@ function* LoginRequest({ payload }) {
   }
 }
 
+function* SocialLoginRequest({ payload, meta: { type } }) {
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url:
+        type === 'facebook'
+          ? `${API_URL}/auth/facebook`
+          : `${API_URL}/auth/linkedin`,
+      data: payload,
+    });
+    if (response.status === 200) {
+      yield put(socialLoginRequestSuccess(response.data.response));
+      yield put(requestUser());
+    } else {
+      yield put(socialLoginRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(socialLoginRequestError(error));
+  }
+}
+
 function* UserRequest() {
   const token = yield select(getToken);
   try {
     const response = yield call(request, {
-      url: `${API_URL}/account/me`,
-      headers: { Authorization: `Bearer ${token}` },
+      url: `${API_URL}/user/me`,
+      headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
-      yield put(userRequestSuccess(response.data));
+      yield put(userRequestSuccess(response.data.response));
     } else {
       yield put(userRequestFailed(response.data.message));
     }
@@ -339,7 +403,7 @@ function* UpdateUserDataRequest({ payload }) {
       method: 'PUT',
       url: `${API_URL}/user/${userId}`,
       data: payload,
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
       yield put(userDataUpdateSuccess(response.data));
@@ -364,7 +428,7 @@ function* UploadUserPhotoRequest({ payload }) {
       data: {
         image: payload,
       },
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
       yield put(userPhotoUploadSuccess(response.data));
@@ -381,6 +445,7 @@ export default function*(): Saga<void> {
   yield all([
     takeLatest(REGISTER + REQUESTED, RegisterRequest),
     takeLatest(LOGIN + REQUESTED, LoginRequest),
+    takeLatest(SOCIAL_LOGIN + REQUESTED, SocialLoginRequest),
     takeLatest(USER + REQUESTED, UserRequest),
     takeLatest(USER_DATA_UPDATE + REQUESTED, UpdateUserDataRequest),
     takeLatest(USER_PHOTO_UPLOAD + REQUESTED, UploadUserPhotoRequest),

@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import cx from 'classnames';
 import * as yup from 'yup';
+import { cloneDeep } from 'lodash-es';
 
 import { withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -83,7 +84,13 @@ const schema = yup.object().shape({
     .string()
     .email()
     .required(),
-  fullname: yup.string().required(),
+  fullname: yup
+    .string()
+    .test(
+      'is-valid-fullname',
+      'Fullname is not valid',
+      value => value.trim().split(' ').length === 2
+    ),
   password: yup.string().required(),
 });
 
@@ -149,9 +156,15 @@ class SignUp extends Component<Props, State> {
     this.setState(state => ({ showPassword: !state.showPassword }));
   };
   handleRegister = () => {
-    const { model } = this.state;
+    const { email, fullname, password } = cloneDeep(this.state.model);
+    const [firstName, lastName] = fullname.split(' ');
     this.setState({ isOpen: false }, () => {
-      this.props.requestRegister(model);
+      this.props.requestRegister({
+        email,
+        firstName,
+        lastName,
+        password,
+      });
     });
   };
   render() {
