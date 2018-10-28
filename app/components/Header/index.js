@@ -13,6 +13,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import MenuIcon from '@material-ui/icons/Menu';
 
 import Link from 'components/Link';
 
@@ -25,6 +26,7 @@ const styles = theme => ({
     backgroundColor: theme.palette.primary.main,
     paddingLeft: theme.spacing.unit * 5,
     paddingRight: theme.spacing.unit * 5,
+    color: theme.palette.common.white,
   },
   logo: {
     width: 70,
@@ -44,6 +46,16 @@ const styles = theme => ({
   },
   avatar: {
     backgroundColor: theme.palette.primary.main,
+  },
+  menuButton: {
+    backgroundColor: theme.palette.primary.main,
+    boxShadow: 'none',
+    '&:hover': {
+      backgroundColor: theme.palette.primary.main,
+    },
+    '&:active': {
+      boxShadow: 'none',
+    },
   },
 });
 
@@ -98,6 +110,11 @@ class Header extends Component<Props, State> {
         <Grid item>
           {user ? (
             <Fragment>
+              <Button>
+                <Avatar className={classes.avatar}>
+                  <AccountCircleIcon />
+                </Avatar>
+              </Button>
               <Button
                 buttonRef={node => {
                   this.anchorEl = node;
@@ -105,10 +122,11 @@ class Header extends Component<Props, State> {
                 aria-owns={open ? 'menu-list-grow' : null}
                 aria-haspopup="true"
                 onClick={this.handleToggle}
+                color="inherit"
+                variant="fab"
+                className={classes.menuButton}
               >
-                <Avatar className={classes.avatar}>
-                  <AccountCircleIcon />
-                </Avatar>
+                <MenuIcon />
               </Button>
               <Popper
                 open={open}
