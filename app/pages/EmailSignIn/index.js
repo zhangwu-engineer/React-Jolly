@@ -85,6 +85,7 @@ const schema = yup.object().shape({
 });
 
 type Props = {
+  user: Object,
   isLoading: boolean,
   error: string,
   classes: Object,
@@ -110,9 +111,9 @@ class EmailSignIn extends Component<Props, State> {
     validationError: {},
   };
   componentDidUpdate(prevProps: Props) {
-    const { isLoading, error } = this.props;
+    const { isLoading, error, user } = this.props;
     if (prevProps.isLoading && !isLoading && !error) {
-      history.push('/me');
+      history.push(`/f/${user.get('slug')}/edit`);
     }
   }
   handleChange = (e: Object) => {
@@ -234,6 +235,7 @@ class EmailSignIn extends Component<Props, State> {
 }
 
 const mapStateToProps = state => ({
+  user: state.getIn(['app', 'user']),
   isLoading: state.getIn(['app', 'isLoading']),
   error: state.getIn(['app', 'error']),
 });

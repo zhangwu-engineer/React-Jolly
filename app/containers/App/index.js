@@ -42,7 +42,7 @@ class App extends Component<Props> {
     }
     if (this.props.location.pathname === '/') {
       if (user) {
-        history.push('/me');
+        history.push(`/f/${user.get('slug')}/edit`);
       } else {
         history.push('/freelancer-signup');
       }

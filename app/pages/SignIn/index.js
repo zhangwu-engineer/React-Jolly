@@ -24,7 +24,7 @@ class SignIn extends Component<Props> {
   componentDidUpdate(prevProps: Props) {
     const { user } = this.props;
     if (!prevProps.user && user) {
-      history.push('/me');
+      history.push(`/f/${user.get('slug')}/edit`);
     }
   }
   handleFBLogin = (user: Object) => {

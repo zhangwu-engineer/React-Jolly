@@ -33,7 +33,10 @@ class Routes extends Component<{}> {
           path="/email-sign-in"
           render={props => <EmailSignIn {...props} />}
         />
-        <PrivateRoute path="/me" render={props => <Profile {...props} />} />
+        <PrivateRoute
+          path="/f/:slug/edit"
+          render={props => <Profile {...props} />}
+        />
         <Route render={props => <FourOfour {...props} />} />
       </Switch>
     );
