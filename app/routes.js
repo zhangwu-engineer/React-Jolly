@@ -13,6 +13,7 @@ const SignUp = load(() => import('pages/SignUp'));
 const SignIn = load(() => import('pages/SignIn'));
 const EmailSignIn = load(() => import('pages/EmailSignIn'));
 const Profile = load(() => import('pages/Profile'));
+const Talent = load(() => import('pages/Talent'));
 const FourOfour = load(() => import('pages/404'));
 
 class Routes extends Component<{}> {
@@ -36,6 +37,10 @@ class Routes extends Component<{}> {
         <PrivateRoute
           path="/f/:slug/edit"
           render={props => <Profile {...props} />}
+        />
+        <PrivateRoute
+          path="/f/:slug/work"
+          render={props => <Talent {...props} />}
         />
         <Route render={props => <FourOfour {...props} />} />
       </Switch>

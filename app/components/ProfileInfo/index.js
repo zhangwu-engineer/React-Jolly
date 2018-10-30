@@ -17,7 +17,9 @@ import Avatar from '@material-ui/core/Avatar';
 import EmptyAvatarImg from 'images/empty_avatar.png';
 
 const styles = theme => ({
-  root: {},
+  root: {
+    boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
+  },
   topSection: {
     position: 'relative',
   },
@@ -108,7 +110,7 @@ class ProfileInfo extends Component<Props> {
   render() {
     const { user, classes } = this.props;
     return (
-      <div>
+      <div className={classes.root}>
         <div className={classes.topSection}>
           <div>
             <div className={classes.overlay} />
