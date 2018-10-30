@@ -13,6 +13,7 @@ import AddIcon from '@material-ui/icons/Add';
 
 import TalentInput from 'components/TalentInput';
 import UnitInput from 'components/UnitInput';
+import BaseModal from 'components/BaseModal';
 
 import saga, {
   reducer,
@@ -120,7 +121,16 @@ const styles = theme => ({
       width: '100%',
     },
   },
+  modal: {
+    padding: 30,
+    width: 320,
+  },
 });
+
+const talentsHelp =
+  'Enter the different types of work you do at events and, optionally, the rate you charge for those services.';
+const unitsHelp =
+  'If for a particular type of work you charge differently than hourly, daily or per event, you can enter the unit you charge by here.';
 
 type Props = {
   talents: Object,
@@ -152,6 +162,8 @@ type State = {
   selectedSection: string,
   newTalent: ?Object,
   newUnit: ?Object,
+  isOpen: boolean,
+  helpText: string,
 };
 
 class TalentPage extends Component<Props, State> {
@@ -159,6 +171,8 @@ class TalentPage extends Component<Props, State> {
     selectedSection: 'talents',
     newTalent: null,
     newUnit: null,
+    isOpen: false,
+    helpText: '',
   };
   componentDidMount() {
     this.props.requestTalents();
@@ -204,6 +218,9 @@ class TalentPage extends Component<Props, State> {
   onCancelUnitEdit = () => {
     this.setState({ newUnit: null });
   };
+  onCloseModal = () => {
+    this.setState({ isOpen: false });
+  };
   addNewTalent = () => {
     this.setState({
       newTalent: {
@@ -222,7 +239,13 @@ class TalentPage extends Component<Props, State> {
   };
   render() {
     const { talents, units, classes } = this.props;
-    const { selectedSection, newTalent, newUnit } = this.state;
+    const {
+      selectedSection,
+      newTalent,
+      newUnit,
+      isOpen,
+      helpText,
+    } = this.state;
     const unitValues = units.map(unit => unit.get('name')).toJS();
     return (
       <div className={classes.root}>
@@ -267,6 +290,12 @@ class TalentPage extends Component<Props, State> {
                     className={classes.helpButton}
                     variant="text"
                     color="primary"
+                    onClick={() =>
+                      this.setState({
+                        isOpen: true,
+                        helpText: talentsHelp,
+                      })
+                    }
                   >
                     Help?
                   </Button>
@@ -319,6 +348,12 @@ class TalentPage extends Component<Props, State> {
                     className={classes.helpButton}
                     variant="text"
                     color="primary"
+                    onClick={() =>
+                      this.setState({
+                        isOpen: true,
+                        helpText: unitsHelp,
+                      })
+                    }
                   >
                     Help?
                   </Button>
@@ -359,6 +394,15 @@ class TalentPage extends Component<Props, State> {
             </div>
           </div>
         </div>
+        <BaseModal
+          className={classes.modal}
+          isOpen={isOpen}
+          onCloseModal={this.onCloseModal}
+        >
+          <Typography variant="body2" component="p">
+            {helpText}
+          </Typography>
+        </BaseModal>
       </div>
     );
   }
