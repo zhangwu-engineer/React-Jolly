@@ -15,6 +15,7 @@ import Avatar from '@material-ui/core/Avatar';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import MenuIcon from '@material-ui/icons/Menu';
 
+import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
 
 import LogoWhite from 'images/logo-white.png';
@@ -110,7 +111,11 @@ class Header extends Component<Props, State> {
         <Grid item>
           {user ? (
             <Fragment>
-              <Button>
+              <Button
+                onClick={() => {
+                  history.push(`/f/${user.get('slug')}/edit`);
+                }}
+              >
                 <Avatar className={classes.avatar}>
                   <AccountCircleIcon />
                 </Avatar>
@@ -146,7 +151,16 @@ class Header extends Component<Props, State> {
                     <Paper>
                       <ClickAwayListener onClickAway={this.handleClose}>
                         <MenuList>
-                          <MenuItem onClick={this.handleClose}>
+                          <MenuItem
+                            onClick={e => {
+                              this.handleClose(e);
+                              history.push(
+                                `/f/${user.get(
+                                  'slug'
+                                )}/edit/personal-information`
+                              );
+                            }}
+                          >
                             Profile
                           </MenuItem>
                           <MenuItem onClick={this.handleClose}>
