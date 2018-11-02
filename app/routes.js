@@ -14,6 +14,7 @@ const SignIn = load(() => import('pages/SignIn'));
 const EmailSignIn = load(() => import('pages/EmailSignIn'));
 const Profile = load(() => import('pages/Profile'));
 const Talent = load(() => import('pages/Talent'));
+const PersonalInformation = load(() => import('pages/PersonalInformation'));
 const FourOfour = load(() => import('pages/404'));
 
 class Routes extends Component<{}> {
@@ -33,6 +34,10 @@ class Routes extends Component<{}> {
         <Route
           path="/email-sign-in"
           render={props => <EmailSignIn {...props} />}
+        />
+        <PrivateRoute
+          path="/f/:slug/edit/personal-information"
+          render={props => <PersonalInformation {...props} />}
         />
         <PrivateRoute
           path="/f/:slug/edit"
