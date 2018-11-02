@@ -39,7 +39,14 @@ const theme = createMuiTheme({
     },
     MuiInputBase: {
       input: {
+        fontSize: 18,
         paddingBottom: 15,
+      },
+    },
+    MuiDivider: {
+      root: {
+        height: '2px',
+        backgroundColor: '#ebebeb',
       },
     },
   },
