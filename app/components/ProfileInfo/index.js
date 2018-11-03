@@ -14,6 +14,8 @@ import CameraIcon from '@material-ui/icons/CameraAltOutlined';
 import Divider from '@material-ui/core/Divider';
 import Avatar from '@material-ui/core/Avatar';
 
+import Link from 'components/Link';
+
 import EmptyAvatarImg from 'images/empty_avatar.png';
 
 const styles = theme => ({
@@ -136,7 +138,12 @@ class ProfileInfo extends Component<Props> {
             className={classes.editButtonContainer}
           >
             <Grid item>
-              <Button className={classes.editButton}>
+              <Button
+                className={classes.editButton}
+                component={props => (
+                  <Link to={`/f/${user.get('slug')}/work`} {...props} />
+                )}
+              >
                 <EditIcon />
                 &nbsp;Edit Personal Information
               </Button>
