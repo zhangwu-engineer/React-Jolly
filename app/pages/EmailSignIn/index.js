@@ -112,7 +112,7 @@ class EmailSignIn extends Component<Props, State> {
   };
   componentDidUpdate(prevProps: Props) {
     const { isLoading, error, user } = this.props;
-    if (prevProps.isLoading && !isLoading && !error) {
+    if (prevProps.isLoading && !isLoading && !error && user) {
       history.push(`/f/${user.get('slug')}/edit`);
     }
   }
