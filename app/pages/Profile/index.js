@@ -48,11 +48,21 @@ const styles = theme => ({
 type Props = {
   user: Object,
   classes: Object,
+  match: Object,
 };
 
 class Profile extends Component<Props> {
   render() {
-    const { user, classes } = this.props;
+    const {
+      user,
+      classes,
+      match: {
+        params: { slug },
+      },
+    } = this.props;
+    if (user.get('slug') !== slug) {
+      return null;
+    }
     return (
       <div className={classes.root}>
         <div className={classes.profileInfo}>
