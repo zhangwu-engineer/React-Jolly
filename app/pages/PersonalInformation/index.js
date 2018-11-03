@@ -3,12 +3,15 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import update from 'immutability-helper';
 
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
 import EditableInput from 'components/EditableInput';
 import Option from 'components/Option';
+
+import { requestUserDataUpdate } from 'containers/App/sagas';
 
 const styles = theme => ({
   root: {
@@ -86,19 +89,65 @@ const styles = theme => ({
 type Props = {
   user: Object,
   classes: Object,
+  updateUser: Function,
 };
 
 type State = {
   selectedSection: string,
+  model: ?Object,
 };
 
 class PersonalInformationPage extends Component<Props, State> {
+  static getDerivedStateFromProps(nextProps: Props, prevState: State) {
+    if (nextProps.user && !prevState.model) {
+      const profile = nextProps.user.get('profile');
+      return {
+        ...prevState,
+        model: {
+          profile: {
+            phone: profile.get('phone') || '',
+            bio: profile.get('bio') || '',
+            receiveEmail: profile.get('receiveEmail'),
+            receiveSMS: profile.get('receiveSMS'),
+            receiveCall: profile.get('receiveCall'),
+            location: profile.get('location') || '',
+            distance: profile.get('distance') || '',
+            facebook: profile.get('facebook') || '',
+            twitter: profile.get('twitter') || '',
+            linkedin: profile.get('linkedin') || '',
+            youtube: profile.get('youtube') || '',
+            showImageLibrary: profile.get('showImageLibrary'),
+          },
+        },
+      };
+    }
+    return null;
+  }
   state = {
     selectedSection: 'basic',
+    model: null,
+  };
+  onChange = (id, value) => {
+    this.setState(
+      update(this.state, {
+        model: {
+          profile: {
+            [id]: { $set: value },
+          },
+        },
+      }),
+      () => {
+        this.props.updateUser({
+          profile: {
+            [id]: value,
+          },
+        });
+      }
+    );
   };
   render() {
     const { user, classes } = this.props;
-    const { selectedSection } = this.state;
+    const { selectedSection, model } = this.state;
     return (
       <div className={classes.root}>
         <div className={classes.leftPanel}>
@@ -187,13 +236,14 @@ class PersonalInformationPage extends Component<Props, State> {
               <EditableInput
                 label="Phone"
                 id="phone"
-                value={user.get('phone') || ''}
+                value={model && model.profile.phone}
               />
               <EditableInput
                 label="Bio"
                 id="bio"
-                value={user.get('bio') || ''}
+                value={model && model.profile.bio}
                 multiline
+                onChange={this.onChange}
               />
             </div>
           </div>
@@ -204,24 +254,27 @@ class PersonalInformationPage extends Component<Props, State> {
             <div className={classes.sectionBody}>
               <Option
                 label="Email (your address will be hidden)"
-                id="enableEmail"
-                value={user.get('enableEmail') || false}
+                id="receiveEmail"
+                value={model && model.profile.receiveEmail}
                 modalTitle="Email Button on Profile"
                 modalContent="When enabled, visitors to your public profile will see a button to send an email message"
+                onChange={this.onChange}
               />
               <Option
                 label="SMS (your phone # will be hidden)"
-                id="enableSMS"
-                value={user.get('enableSMS') || false}
+                id="receiveSMS"
+                value={model && model.profile.receiveSMS}
                 modalTitle="SMS Button on Profile"
                 modalContent="When enabled, visitors to your public profile will see a button to send you a text (SMS) message"
+                onChange={this.onChange}
               />
               <Option
                 label="Call (your phone # will be hidden)"
-                id="enableCall"
-                value={user.get('enableCall') || false}
+                id="receiveCall"
+                value={model && model.profile.receiveCall}
                 modalTitle="Call Button on Profile"
                 modalContent="When enabled, visitors to your public profile will see a button to call you"
+                onChange={this.onChange}
               />
             </div>
           </div>
@@ -233,12 +286,14 @@ class PersonalInformationPage extends Component<Props, State> {
               <EditableInput
                 label="Location"
                 id="location"
-                value={user.get('location') || ''}
+                value={model && model.profile.location}
+                onChange={this.onChange}
               />
               <EditableInput
                 label="Distance you'll travel for work"
                 id="distance"
-                value={user.get('distance') || ''}
+                value={model && model.profile.distance}
+                onChange={this.onChange}
               />
             </div>
           </div>
@@ -250,26 +305,30 @@ class PersonalInformationPage extends Component<Props, State> {
               <EditableInput
                 label="Facebook"
                 id="facebook"
-                value={user.get('facebook') || ''}
+                value={model && model.profile.facebook}
                 startWith="/"
+                onChange={this.onChange}
               />
               <EditableInput
                 label="Twitter"
                 id="twitter"
-                value={user.get('twitter') || ''}
+                value={model && model.profile.twitter}
                 startWith="@"
+                onChange={this.onChange}
               />
               <EditableInput
                 label="Linkedin"
                 id="linkedin"
-                value={user.get('linkedin') || ''}
+                value={model && model.profile.linkedin}
                 startWith="/"
+                onChange={this.onChange}
               />
               <EditableInput
                 label="Youtube"
                 id="youtube"
-                value={user.get('youtube') || ''}
+                value={model && model.profile.youtube}
                 startWith="/"
+                onChange={this.onChange}
               />
             </div>
           </div>
@@ -281,23 +340,9 @@ class PersonalInformationPage extends Component<Props, State> {
               <Option
                 label="Image library on public profile"
                 id="showImageLibrary"
-                value={user.get('showImageLibrary') || false}
+                value={model && model.profile.showImageLibrary}
                 modalTitle="Email Button on Profile"
                 modalContent="When enabled, visitors to your public profile will see a button to send an email message"
-              />
-              <Option
-                label="Display social links on public profile"
-                id="showSocialLinks"
-                value={user.get('showSocialLinks') || false}
-                modalTitle="SMS Button on Profile"
-                modalContent="When enabled, visitors to your public profile will see a button to send you a text (SMS) message"
-              />
-              <Option
-                label="Public profile can be found on web"
-                id="public"
-                value={user.get('public') || false}
-                modalTitle="Call Button on Profile"
-                modalContent="When enabled, visitors to your public profile will see a button to call you"
               />
             </div>
           </div>
@@ -311,7 +356,9 @@ const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
 });
 
-const mapDispatchToProps = () => ({});
+const mapDispatchToProps = dispatch => ({
+  updateUser: payload => dispatch(requestUserDataUpdate(payload)),
+});
 
 export default compose(
   connect(
