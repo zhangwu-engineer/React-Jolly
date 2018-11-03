@@ -64,6 +64,7 @@ type Props = {
   classes: Object,
   multiline: boolean,
   startWith?: string,
+  onChange: Function,
 };
 
 type State = {
@@ -93,7 +94,11 @@ class EditableInput extends Component<Props, State> {
       isEditing: false,
     });
   };
-  onConfirm = () => {};
+  onConfirm = () => {
+    this.setState({ isEditing: false }, () => {
+      this.props.onChange(this.props.id, this.state.value);
+    });
+  };
   handleChange = (e: Object) => {
     e.persist();
     this.setState({
