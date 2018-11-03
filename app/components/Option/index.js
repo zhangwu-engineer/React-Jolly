@@ -51,16 +51,17 @@ type Props = {
   modalTitle: string,
   modalContent: string,
   classes: Object,
+  onChange: Function,
 };
 
 type State = {
-  checked: boolean,
+  checked: ?boolean,
   isOpen: boolean,
 };
 
 class Option extends Component<Props, State> {
-  static getDerivedStateFromProps(nextProps: Props) {
-    if (nextProps.value) {
+  static getDerivedStateFromProps(nextProps: Props, prevState: State) {
+    if (nextProps.value && prevState.checked === undefined) {
       return {
         checked: true,
       };
@@ -68,22 +69,31 @@ class Option extends Component<Props, State> {
     return null;
   }
   state = {
-    checked: false,
+    checked: undefined,
     isOpen: false,
   };
   onCloseModal = () => {
     this.setState({ isOpen: false });
   };
   handleChange = () => {
-    this.setState(state => ({
-      checked: !state.checked,
-    }));
+    this.setState(
+      state => ({
+        checked: !state.checked,
+      }),
+      () => {
+        this.props.onChange(this.props.id, this.state.checked);
+      }
+    );
   };
   enable = () => {
-    this.setState({ checked: true, isOpen: false });
+    this.setState({ checked: true, isOpen: false }, () => {
+      this.props.onChange(this.props.id, this.state.checked);
+    });
   };
   disable = () => {
-    this.setState({ checked: false, isOpen: false });
+    this.setState({ checked: false, isOpen: false }, () => {
+      this.props.onChange(this.props.id, this.state.checked);
+    });
   };
   render() {
     const { label, modalTitle, modalContent, classes } = this.props;
