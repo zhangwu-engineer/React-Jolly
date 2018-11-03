@@ -182,11 +182,9 @@ export const reducer = (
       return state.set('isLoading', true).set('error', null);
 
     case REGISTER + SUCCEDED:
-      storage.set('user', payload.user);
       storage.set('token', payload.auth_token);
       return state
         .set('isLoading', false)
-        .set('user', fromJS(payload.user))
         .set('token', payload.auth_token)
         .set('error', '');
 
@@ -236,11 +234,9 @@ export const reducer = (
       return state.set('isLoading', true);
 
     case LOGIN + SUCCEDED:
-      storage.set('user', payload.user);
       storage.set('token', payload.auth_token);
       return state
         .set('isLoading', false)
-        .set('user', fromJS(payload.user))
         .set('token', payload.auth_token)
         .set('error', '');
 
@@ -330,7 +326,7 @@ function* RegisterRequest({ payload }) {
     });
     if (response.status === 200) {
       yield put(registerRequestSuccess(response.data.response));
-      // yield put(requestUser());
+      yield put(requestUser());
     } else {
       yield put(registerRequestFailed(response.data.error));
     }
