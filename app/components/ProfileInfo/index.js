@@ -15,8 +15,13 @@ import Divider from '@material-ui/core/Divider';
 import Avatar from '@material-ui/core/Avatar';
 
 import Link from 'components/Link';
+import Icon from 'components/Icon';
 
 import EmptyAvatarImg from 'images/empty_avatar.png';
+import FacebookIcon from 'images/sprite/facebook.svg';
+import TwitterIcon from 'images/sprite/twitter.svg';
+import LinkedInIcon from 'images/sprite/linkedin.svg';
+import YoutubeIcon from 'images/sprite/youtube.svg';
 
 const styles = theme => ({
   root: {
@@ -94,12 +99,38 @@ const styles = theme => ({
     fontWeight: 500,
     textTransform: 'capitalize',
     marginLeft: 30,
+  },
+  distance: {
+    marginLeft: 30,
+    fontSize: 15,
+    color: 'rgba(60, 62, 67, 0.6)',
+  },
+  location: {
+    marginLeft: 30,
+    fontSize: 15,
+    color: 'rgba(60, 62, 67, 0.6)',
+  },
+  divider: {
+    marginTop: 20,
     marginBottom: 20,
   },
   bio: {
     fontSize: 18,
-    marginTop: 20,
     marginLeft: 30,
+    marginBottom: 20,
+  },
+  socialButtons: {
+    marginLeft: 30,
+  },
+  iconButton: {
+    '&:hover svg': {
+      color: theme.palette.primary.main,
+      fill: theme.palette.primary.main,
+    },
+  },
+  icon: {
+    color: '#b3b9bf',
+    fill: '#b3b9bf',
   },
 });
 
@@ -109,6 +140,9 @@ type Props = {
 };
 
 class ProfileInfo extends Component<Props> {
+  openUrl = url => {
+    window.open(url, '_blank');
+  };
   render() {
     const { user, classes } = this.props;
     return (
@@ -152,10 +186,80 @@ class ProfileInfo extends Component<Props> {
           <Typography className={classes.username}>
             {`${user.get('firstName')} ${user.get('lastName')}`}
           </Typography>
-          <Divider />
-          <Typography className={classes.bio}>
-            {`Hey, I am ${user.get('firstName')} ${user.get('lastName')}...`}
+          <Typography className={classes.distance}>
+            {`Works within ${user.getIn(['profile', 'distance'])} of`}
           </Typography>
+          <Typography className={classes.location}>
+            {user.getIn(['profile', 'location'])}
+          </Typography>
+          <Divider className={classes.divider} />
+          <Typography className={classes.bio}>
+            {user.getIn(['profile', 'bio'])
+              ? user.getIn(['profile', 'bio'])
+              : `Hey, I am ${user.get('firstName')} ${user.get('lastName')}...`}
+          </Typography>
+          <Grid container className={classes.socialButtons}>
+            <Grid item>
+              <IconButton
+                className={classes.iconButton}
+                onClick={() =>
+                  this.openUrl(
+                    `https://www.facebook.com/${user.getIn([
+                      'profile',
+                      'facebook',
+                    ])}`
+                  )
+                }
+              >
+                <Icon glyph={FacebookIcon} className={classes.icon} />
+              </IconButton>
+            </Grid>
+            <Grid item>
+              <IconButton
+                className={classes.iconButton}
+                onClick={() =>
+                  this.openUrl(
+                    `https://www.twitter.com/${user.getIn([
+                      'profile',
+                      'twitter',
+                    ])}`
+                  )
+                }
+              >
+                <Icon glyph={TwitterIcon} className={classes.icon} />
+              </IconButton>
+            </Grid>
+            <Grid item>
+              <IconButton
+                className={classes.iconButton}
+                onClick={() =>
+                  this.openUrl(
+                    `https://www.linkedin.com/${user.getIn([
+                      'profile',
+                      'linkedin',
+                    ])}`
+                  )
+                }
+              >
+                <Icon glyph={LinkedInIcon} className={classes.icon} />
+              </IconButton>
+            </Grid>
+            <Grid item>
+              <IconButton
+                className={classes.iconButton}
+                onClick={() =>
+                  this.openUrl(
+                    `https://www.youtube.com/${user.getIn([
+                      'profile',
+                      'youtube',
+                    ])}`
+                  )
+                }
+              >
+                <Icon glyph={YoutubeIcon} className={classes.icon} />
+              </IconButton>
+            </Grid>
+          </Grid>
         </div>
       </div>
     );
