@@ -60,6 +60,7 @@ type Props = {
   data: Object,
   units: Array<string>,
   mode: string, // eslint-disable-line
+  editable: boolean,
   classes: Object,
   onCancel: Function,
   addTalent?: Function,
@@ -73,6 +74,9 @@ type State = {
 };
 
 class TalentInput extends Component<Props, State> {
+  static defaultProps = {
+    editable: true,
+  };
   static getDerivedStateFromProps(nextProps: Props, prevState: State) {
     if (!prevState.model) {
       return {
@@ -114,9 +118,12 @@ class TalentInput extends Component<Props, State> {
     }
   };
   onEdit = () => {
-    this.setState({
-      mode: 'edit',
-    });
+    const { editable } = this.props;
+    if (editable) {
+      this.setState({
+        mode: 'edit',
+      });
+    }
   };
   onDelete = () => {
     const { data, deleteTalent } = this.props;
@@ -170,7 +177,7 @@ class TalentInput extends Component<Props, State> {
   // };
   node: ?HTMLElement;
   render() {
-    const { data, units, classes } = this.props;
+    const { data, units, classes, editable } = this.props;
     const { mode, model } = this.state;
     return (
       <div
@@ -191,12 +198,14 @@ class TalentInput extends Component<Props, State> {
                 </Typography>
               </Grid>
               <Grid item sm={3} lg={1}>
-                <IconButton
-                  className={cx(classes.iconButton, classes.doneButton)}
-                  onClick={this.onEdit}
-                >
-                  <EditIcon />
-                </IconButton>
+                {editable && (
+                  <IconButton
+                    className={cx(classes.iconButton, classes.doneButton)}
+                    onClick={this.onEdit}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                )}
               </Grid>
             </Grid>
             <Divider />
