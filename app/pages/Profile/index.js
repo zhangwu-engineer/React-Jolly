@@ -1,16 +1,24 @@
 // @flow
 
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import { generate } from 'shortid';
 
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
 import EditIcon from '@material-ui/icons/Edit';
 
+import { history } from 'components/ConnectedRouter';
 import ProfileInfo from 'components/ProfileInfo';
+import TalentInput from 'components/TalentInput';
 import Link from 'components/Link';
+
+import { requestUser } from 'containers/App/sagas';
+import saga, { reducer, requestTalents } from 'containers/Talent/sagas';
+import injectSagas from 'utils/injectSagas';
 
 const styles = theme => ({
   root: {
@@ -43,18 +51,48 @@ const styles = theme => ({
       backgroundColor: theme.palette.common.white,
     },
   },
+  bottomBanner: {
+    padding: '25px 70px',
+    backgroundColor: '#2b2b2b',
+  },
+  bannerText: {
+    color: theme.palette.common.white,
+    fontWeight: 500,
+  },
+  bannerButton: {
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.common.white,
+    fontSize: 14,
+    fontWeight: 500,
+    padding: '11px 20px',
+    '&:hover': {
+      backgroundColor: theme.palette.primary.main,
+    },
+  },
 });
 
 type Props = {
   user: Object,
+  talents: Object,
   classes: Object,
   match: Object,
+  requestUser: Function,
+  requestTalents: Function,
 };
 
 class Profile extends Component<Props> {
+  componentDidMount() {
+    this.props.requestUser();
+    this.props.requestTalents();
+  }
+  seePublicProfile = () => {
+    const { user } = this.props;
+    history.push(`/f/${user.get('slug')}`);
+  };
   render() {
     const {
       user,
+      talents,
       classes,
       match: {
         params: { slug },
@@ -64,27 +102,80 @@ class Profile extends Component<Props> {
       return null;
     }
     return (
-      <div className={classes.root}>
-        <div className={classes.profileInfo}>
-          <ProfileInfo user={user} />
-        </div>
-        <div className={classes.section}>
-          <div className={classes.sectionHeader}>
-            <Typography variant="h6">Talents</Typography>
+      <Fragment>
+        <div className={classes.root}>
+          <div className={classes.profileInfo}>
+            <ProfileInfo user={user} />
           </div>
-          <div className={classes.sectionBody}>
-            <Button
-              className={classes.editButton}
-              component={props => (
-                <Link to={`/f/${user.get('slug')}/work`} {...props} />
-              )}
-            >
-              <EditIcon />
-              &nbsp;Edit Talents and Rates
-            </Button>
+          <div className={classes.section}>
+            <div className={classes.sectionHeader}>
+              <Typography variant="h6">Talents</Typography>
+            </div>
+            <div className={classes.sectionBody}>
+              {talents &&
+                talents.map(talent => (
+                  <TalentInput
+                    key={generate()}
+                    mode="read"
+                    data={talent.toJS()}
+                    editable={false}
+                  />
+                ))}
+              <Button
+                className={classes.editButton}
+                component={props => (
+                  <Link to={`/f/${user.get('slug')}/work`} {...props} />
+                )}
+              >
+                <EditIcon />
+                &nbsp;Edit Talents and Rates
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+        {user.getIn(['profile', 'avatar']) ? (
+          <Grid
+            className={classes.bottomBanner}
+            container
+            justify="space-between"
+            alignItems="center"
+          >
+            <Grid item>
+              <Typography className={classes.bannerText}>
+                Ready to share? View your new public page and grab the&nbsp;
+                link to share it!
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Button
+                className={classes.bannerButton}
+                onClick={() => this.seePublicProfile()}
+              >
+                SEE MY PULIC PROFILE
+              </Button>
+            </Grid>
+          </Grid>
+        ) : (
+          <Grid
+            className={classes.bottomBanner}
+            container
+            justify="space-between"
+            alignItems="center"
+          >
+            <Grid item>
+              <Typography className={classes.bannerText}>
+                Before you share your profile, you need to add a&nbsp;profile
+                picture.
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Button className={classes.bannerButton}>
+                Add PICTURE&nbsp;+
+              </Button>
+            </Grid>
+          </Grid>
+        )}
+      </Fragment>
     );
   }
 }
@@ -93,11 +184,16 @@ const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
   isLoading: state.getIn(['app', 'isLoading']),
   error: state.getIn(['app', 'error']),
+  talents: state.getIn(['talent', 'talents']),
 });
 
-const mapDispatchToProps = () => ({});
+const mapDispatchToProps = dispatch => ({
+  requestUser: () => dispatch(requestUser()),
+  requestTalents: () => dispatch(requestTalents()),
+});
 
 export default compose(
+  injectSagas({ key: 'talent', saga, reducer }),
   connect(
     mapStateToProps,
     mapDispatchToProps
