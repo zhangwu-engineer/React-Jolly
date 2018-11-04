@@ -84,6 +84,7 @@ const styles = theme => ({
 });
 
 type Props = {
+  currentUser: Object,
   data: Object,
   talents: Object,
   classes: Object,
@@ -95,20 +96,34 @@ type Props = {
 class Member extends Component<Props> {
   componentDidMount() {
     const {
+      currentUser,
       match: {
         params: { slug },
       },
     } = this.props;
-    this.props.requestMemberProfile(slug);
+    if (currentUser.get('slug') !== slug) {
+      this.props.requestMemberProfile(slug);
+    }
     this.props.requestMemberTalents(slug);
   }
   render() {
-    const { data, talents, classes } = this.props;
+    const {
+      currentUser,
+      data,
+      talents,
+      classes,
+      match: {
+        params: { slug },
+      },
+    } = this.props;
+
     return (
       <Fragment>
         <div className={classes.root}>
           <div className={classes.profileInfo}>
-            <MemberProfileInfo user={data} />
+            <MemberProfileInfo
+              user={currentUser.get('slug') === slug ? currentUser : data}
+            />
           </div>
           {talents.size > 0 && (
             <div className={classes.section}>
@@ -167,6 +182,7 @@ class Member extends Component<Props> {
 }
 
 const mapStateToProps = state => ({
+  currentUser: state.getIn(['app', 'user']),
   data: state.getIn(['member', 'data']),
   isLoading: state.getIn(['member', 'isMemberLoading']),
   error: state.getIn(['member', 'memberError']),
