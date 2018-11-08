@@ -14,6 +14,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { history } from 'components/ConnectedRouter';
 import ProfileInfo from 'components/ProfileInfo';
 import TalentInput from 'components/TalentInput';
+import CompletionBanner from 'components/CompletionBanner';
 import Link from 'components/Link';
 
 import { requestUser } from 'containers/App/sagas';
@@ -129,6 +130,7 @@ class Profile extends Component<Props, State> {
     }
     return (
       <Fragment>
+        <CompletionBanner user={user} talents={talents.size} />
         {showEmailConfirmed && (
           <Grid
             className={classes.topBanner}
