@@ -64,7 +64,7 @@ module.exports = {
     DOMAIN_NAME: DOMAIN,
 
     /** Application Base Url */
-    BASE_URL: `${PROTOCOL}://${ENV.DOMAIN}`,
+    BASE_URL: `${PROTOCOL}://${DOMAIN}`,
 
     PRE_RENDER_SERVICE_URL: 'http://localhost:3001',
 
