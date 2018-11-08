@@ -21,8 +21,8 @@ const SOCIAL_LOGIN = 'Acheev/App/SOCIAL_LOGIN';
 const LOGOUT = 'Jolly/App/LOGOUT';
 const USER = 'Jolly/App/USER';
 const USER_DATA_UPDATE = 'Jolly/App/UPDATE_USER_DATA';
-
 const USER_PHOTO_UPLOAD = 'Jolly/App/UPLOAD_USER_PHOTO';
+const EMAIL_VERIFICATION = 'Jolly/App/EMAIL_VERIFICATION';
 
 const OPEN_NAVBAR = 'Jolly/App/OPEN_NAVBAR';
 const CLOSE_NAVBAR = 'Jolly/App/CLOSE_NAVBAR';
@@ -139,6 +139,23 @@ const userRequestFailed = (error: string) => ({
 });
 const userRequestError = (error: string) => ({
   type: USER + ERROR,
+  payload: error,
+});
+
+export const requestUserEmailVerification = (payload: Object) => ({
+  type: EMAIL_VERIFICATION + REQUESTED,
+  payload,
+});
+const userEmailVerificationRequestSuccess = (payload: Object) => ({
+  type: EMAIL_VERIFICATION + SUCCEDED,
+  payload,
+});
+const userEmailVerificationRequestFailed = (error: string) => ({
+  type: EMAIL_VERIFICATION + FAILED,
+  payload: error,
+});
+const userEmailVerificationRequestError = (error: string) => ({
+  type: EMAIL_VERIFICATION + ERROR,
   payload: error,
 });
 
@@ -291,6 +308,22 @@ export const reducer = (
     case USER + ERROR:
       return state.set('isLoading', false);
 
+    case EMAIL_VERIFICATION + REQUESTED:
+      return state.set('isLoading', true);
+
+    case EMAIL_VERIFICATION + SUCCEDED:
+      return state.set('isLoading', false).set('error', '');
+
+    case EMAIL_VERIFICATION + FAILED:
+      return state.set('isLoading', false).set('error', payload);
+
+    case EMAIL_VERIFICATION + ERROR:
+      return state.set('isLoading', false).set(
+        'error',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
     case OPEN_NAVBAR:
       return state.set('navbarOpen', true);
 
@@ -437,6 +470,23 @@ function* UploadUserPhotoRequest({ payload }) {
   }
 }
 
+function* UserEmailVerificationRequest({ payload }) {
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/user/verify-email`,
+      data: payload,
+    });
+    if (response.status === 200) {
+      yield put(userEmailVerificationRequestSuccess(response.data));
+    } else {
+      yield put(userEmailVerificationRequestFailed(response.data.message));
+    }
+  } catch (error) {
+    yield put(userEmailVerificationRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(REGISTER + REQUESTED, RegisterRequest),
@@ -445,5 +495,6 @@ export default function*(): Saga<void> {
     takeLatest(USER + REQUESTED, UserRequest),
     takeLatest(USER_DATA_UPDATE + REQUESTED, UpdateUserDataRequest),
     takeLatest(USER_PHOTO_UPLOAD + REQUESTED, UploadUserPhotoRequest),
+    takeLatest(EMAIL_VERIFICATION + REQUESTED, UserEmailVerificationRequest),
   ]);
 }

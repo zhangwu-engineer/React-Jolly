@@ -13,6 +13,8 @@ import ShareIcon from '@material-ui/icons/Share';
 
 import MemberProfileInfo from 'components/MemberProfileInfo';
 import TalentInput from 'components/TalentInput';
+import Link from 'components/Link';
+import ShareProfileModal from 'components/ShareProfileModal';
 
 import saga, {
   reducer,
@@ -81,11 +83,33 @@ const styles = theme => ({
       backgroundColor: theme.palette.primary.main,
     },
   },
+  topBanner: {
+    padding: '25px 70px',
+    backgroundColor: '#b8f3ce',
+  },
+  topBannerText: {
+    color: '#303532',
+    fontWeight: 500,
+    fontSize: 18,
+  },
+  topBannerButton: {
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.common.white,
+    fontSize: 14,
+    fontWeight: 500,
+    padding: '11px 23px',
+    '&:hover': {
+      backgroundColor: theme.palette.primary.main,
+    },
+  },
+  backButton: {
+    marginRight: 15,
+  },
 });
 
 type Props = {
   currentUser: Object,
-  data: Object,
+  member: Object,
   talents: Object,
   classes: Object,
   match: Object,
@@ -93,7 +117,14 @@ type Props = {
   requestMemberTalents: Function,
 };
 
-class Member extends Component<Props> {
+type State = {
+  isOpen: boolean,
+};
+
+class Member extends Component<Props, State> {
+  state = {
+    isOpen: false,
+  };
   componentDidMount() {
     const {
       currentUser,
@@ -106,24 +137,54 @@ class Member extends Component<Props> {
     }
     this.props.requestMemberTalents(slug);
   }
+  onCloseModal = () => {
+    this.setState({ isOpen: false });
+  };
   render() {
     const {
       currentUser,
-      data,
+      member,
       talents,
       classes,
       match: {
         params: { slug },
       },
     } = this.props;
-
+    const { isOpen } = this.state;
+    const data = currentUser.get('slug') === slug ? currentUser : member;
     return (
       <Fragment>
+        {currentUser.get('slug') === slug && (
+          <Grid
+            className={classes.topBanner}
+            container
+            justify="space-between"
+            alignItems="center"
+          >
+            <Grid item>
+              <Typography className={classes.topBannerText}>
+                You&apos;re currently viewing your public profile.
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Button
+                className={classes.backButton}
+                component={props => (
+                  <Link to={`/f/${currentUser.get('slug')}/edit`} {...props} />
+                )}
+                color="primary"
+              >
+                Back
+              </Button>
+              <Button className={classes.topBannerButton} onClick={() => {}}>
+                Copy Link
+              </Button>
+            </Grid>
+          </Grid>
+        )}
         <div className={classes.root}>
           <div className={classes.profileInfo}>
-            <MemberProfileInfo
-              user={currentUser.get('slug') === slug ? currentUser : data}
-            />
+            <MemberProfileInfo user={data} />
           </div>
           {talents.size > 0 && (
             <div className={classes.section}>
@@ -152,7 +213,12 @@ class Member extends Component<Props> {
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <Button className={classes.shareProfileButton}>
+                  <Button
+                    className={classes.shareProfileButton}
+                    onClick={() => {
+                      this.setState({ isOpen: true });
+                    }}
+                  >
                     <ShareIcon />
                     &nbsp;Share this profile
                   </Button>
@@ -176,6 +242,7 @@ class Member extends Component<Props> {
             <Button className={classes.bannerButton}>Contact Options</Button>
           </Grid>
         </Grid>
+        <ShareProfileModal isOpen={isOpen} onCloseModal={this.onCloseModal} />
       </Fragment>
     );
   }
@@ -183,7 +250,7 @@ class Member extends Component<Props> {
 
 const mapStateToProps = state => ({
   currentUser: state.getIn(['app', 'user']),
-  data: state.getIn(['member', 'data']),
+  member: state.getIn(['member', 'data']),
   isLoading: state.getIn(['member', 'isMemberLoading']),
   error: state.getIn(['member', 'memberError']),
   talents: state.getIn(['member', 'talents']),

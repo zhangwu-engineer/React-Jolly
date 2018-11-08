@@ -4,11 +4,11 @@
 
 const path = require('path');
 const ENVIRONMENTS = require('../enum/environments');
-const DOMAIN = require('./env/domain');
 
 const ENV = process.env;
 const NODE_ENV = ENV.NODE_ENV || ENVIRONMENTS.DEV;
 const isDev = NODE_ENV === ENVIRONMENTS.DEV;
+const DOMAIN = isDev ? 'dev-jolly.co' : ENV.HOST;
 const PROTOCOL = 'https';
 const ROOT_DIR = process.cwd();
 
@@ -64,39 +64,27 @@ module.exports = {
     DOMAIN_NAME: DOMAIN,
 
     /** Application Base Url */
-    BASE_URL: `${PROTOCOL}://${DOMAIN}`,
-
-    // Todo: OKsand, this need to be fixed and all assigned image url path in server need to be migrated to follow `https://cdn.${DOMAIN}`
-    /** Application CDN Url */
-    CDN_URL: `https://images.lift.co`,
+    BASE_URL: `${PROTOCOL}://${ENV.DOMAIN}`,
 
     PRE_RENDER_SERVICE_URL: 'http://localhost:3001',
 
-    /** New Url */
-    NEWS_URL: isDev
-      ? 'https://staging.news.lift.co/wp-json/wp/v2/'
-      : 'https://lift.co/wp-json/wp/v2/',
-
     /** IP to listen on */
-    IP: '0.0.0.0',
+    IP: ENV.HOST || '0.0.0.0',
 
     /** Port Number To Listen To */
-    PORT: 3000,
+    PORT: ENV.PORT || 3000,
   },
 
   FACEBOOK: {
-    APP_ID: isDev ? '306996470119992' : '306996470119992',
+    APP_ID: isDev ? '306996470119992' : '335568877232309',
   },
   LINKEDIN: {
-    APP_ID: isDev ? '862j54unk910vg' : '862j54unk910vg',
+    APP_ID: isDev ? '862j54unk910vg' : '78qrisch5bmx23',
   },
   /** Application API */
   API: {
     /** Application API Base Url */
     // URL: `${PROTOCOL}://${DOMAIN}/api`,
-    URL: isDev
-      ? 'http://localhost:3001'
-      : 'https://di22th5915.execute-api.us-west-2.amazonaws.com/prod',
-    RECO_URL: `${PROTOCOL}://${DOMAIN}/reco`,
+    URL: isDev ? 'http://localhost:3001' : 'https://jollyapi.herokuapp.com',
   },
 };

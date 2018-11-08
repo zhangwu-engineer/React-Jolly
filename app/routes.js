@@ -16,6 +16,10 @@ const Profile = load(() => import('pages/Profile'));
 const Member = load(() => import('pages/Member'));
 const Talent = load(() => import('pages/Talent'));
 const PersonalInformation = load(() => import('pages/PersonalInformation'));
+const Settings = load(() => import('pages/Settings'));
+const EmailVerification = load(() => import('pages/EmailVerification'));
+const ForgotPassword = load(() => import('pages/ForgotPassword'));
+const ResetPassword = load(() => import('pages/ResetPassword'));
 const FourOfour = load(() => import('pages/404'));
 
 class Routes extends Component<{}> {
@@ -36,9 +40,25 @@ class Routes extends Component<{}> {
           path="/email-sign-in"
           render={props => <EmailSignIn {...props} />}
         />
+        <Route
+          path="/email-verification/:token"
+          render={props => <EmailVerification {...props} />}
+        />
+        <Route
+          path="/forgot-password"
+          render={props => <ForgotPassword {...props} />}
+        />
+        <Route
+          path="/reset-password/:token"
+          render={props => <ResetPassword {...props} />}
+        />
         <PrivateRoute
           path="/f/:slug/edit/personal-information"
           render={props => <PersonalInformation {...props} />}
+        />
+        <PrivateRoute
+          path="/f/:slug/settings"
+          render={props => <Settings {...props} />}
         />
         <PrivateRoute
           path="/f/:slug/edit"

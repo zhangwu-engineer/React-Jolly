@@ -9,25 +9,21 @@ import { withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Grid from '@material-ui/core/Grid';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
 import { history } from 'components/ConnectedRouter';
-import Link from 'components/Link';
 
-import { requestLogin } from 'containers/App/sagas';
+import injectSagas from 'utils/injectSagas';
+import saga, { reducer, requestResetPassword } from 'containers/Password/sagas';
 
 const styles = theme => ({
   root: {},
@@ -77,43 +73,37 @@ const styles = theme => ({
 });
 
 const schema = yup.object().shape({
-  email: yup
-    .string()
-    .email()
-    .required(),
   password: yup.string().required(),
 });
 
 type Props = {
-  user: Object,
   isLoading: boolean,
   error: string,
   classes: Object,
-  requestLogin: Function,
+  match: Object,
+  requestResetPassword: Function,
 };
 
 type State = {
   model: {
-    email: string,
     password: string,
   },
   showPassword: boolean,
   validationError: Object,
 };
 
-class EmailSignIn extends Component<Props, State> {
+class ResetPassword extends Component<Props, State> {
   state = {
     model: {
-      email: '',
       password: '',
     },
     showPassword: false,
     validationError: {},
   };
   componentDidUpdate(prevProps: Props) {
-    const { isLoading, error, user } = this.props;
-    if (prevProps.isLoading && !isLoading && !error && user) {
-      history.push(`/f/${user.get('slug')}/edit`);
+    const { isLoading, error } = this.props;
+    if (prevProps.isLoading && !isLoading && !error) {
+      history.push('/email-sign-in');
     }
   }
   handleChange = (e: Object) => {
@@ -128,13 +118,18 @@ class EmailSignIn extends Component<Props, State> {
   handleClickShowPassword = () => {
     this.setState(state => ({ showPassword: !state.showPassword }));
   };
-  handleSignIn = () => {
+  handleSubmit = () => {
+    const {
+      match: {
+        params: { token },
+      },
+    } = this.props;
     const { model } = this.state;
     schema
       .validate(model)
       .then(() => {
         this.setState({ validationError: {} });
-        this.props.requestLogin(model);
+        this.props.requestResetPassword(Object.assign({}, model, { token }));
       })
       .catch(err => {
         this.setState({ validationError: err });
@@ -149,29 +144,15 @@ class EmailSignIn extends Component<Props, State> {
         <div className={classes.root}>
           <Paper className={classes.panel} elevation={1}>
             <Typography className={classes.title} variant="h5" component="h1">
-              Sign in to your account
+              Reset Password
             </Typography>
-            <TextField
-              id="email"
-              label="Email"
-              value={model.email}
-              onChange={this.handleChange}
-              className={classes.fieldMargin}
-              fullWidth
-              error={validationError && validationError.path === 'email'}
-              helperText={
-                validationError &&
-                validationError.path === 'email' &&
-                validationError.message
-              }
-            />
             <FormControl
               className={classes.fieldMargin}
               fullWidth
               error={validationError && validationError.path === 'password'}
               aria-describedby="password-helper-text"
             >
-              <InputLabel htmlFor="password">Password</InputLabel>
+              <InputLabel htmlFor="password">New Password</InputLabel>
               <Input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
@@ -194,17 +175,6 @@ class EmailSignIn extends Component<Props, State> {
                   validationError.message}
               </FormHelperText>
             </FormControl>
-            <Grid container justify="space-between" alignItems="center">
-              <Grid item>
-                <FormControlLabel
-                  control={<Checkbox value="remember" color="primary" />}
-                  label="Remember me"
-                />
-              </Grid>
-              <Grid>
-                <Link to="/forgot-password">Forgot password?</Link>
-              </Grid>
-            </Grid>
             {error && (
               <FormHelperText className={classes.fieldMargin} error>
                 {error}
@@ -215,10 +185,10 @@ class EmailSignIn extends Component<Props, State> {
               variant="contained"
               color="primary"
               fullWidth
-              onClick={this.handleSignIn}
+              onClick={this.handleSubmit}
               disabled={isLoading}
             >
-              Sign In
+              Save
               {isLoading && (
                 <CircularProgress
                   className={classes.progress}
@@ -235,19 +205,19 @@ class EmailSignIn extends Component<Props, State> {
 }
 
 const mapStateToProps = state => ({
-  user: state.getIn(['app', 'user']),
-  isLoading: state.getIn(['app', 'isLoading']),
-  error: state.getIn(['app', 'error']),
+  isLoading: state.getIn(['password', 'isLoading']),
+  error: state.getIn(['password', 'error']),
 });
 
 const mapDispatchToProps = dispatch => ({
-  requestLogin: payload => dispatch(requestLogin(payload)),
+  requestResetPassword: payload => dispatch(requestResetPassword(payload)),
 });
 
 export default compose(
+  injectSagas({ key: 'password', saga, reducer }),
   connect(
     mapStateToProps,
     mapDispatchToProps
   ),
   withStyles(styles)
-)(EmailSignIn);
+)(ResetPassword);

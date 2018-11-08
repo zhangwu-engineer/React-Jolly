@@ -8,8 +8,6 @@ export const USERNAME_MIN_CHAR = 2;
 export const USERNAME_MAX_CHAR = 30;
 
 export const API_URL = CONFIG.API.URL;
-export const RECO_API_URL = CONFIG.API.RECO_URL;
-export const NEWS_API_URL = CONFIG.APP.NEWS_URL;
 
 export const REQUESTED = '_REQUESTED';
 export const SUCCEDED = '_SUCCEDED';

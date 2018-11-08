@@ -46,7 +46,7 @@ const styles = theme => ({
 
 type Props = {
   label: string,
-  value: string, // eslint-disable-line
+  value: boolean, // eslint-disable-line
   id: string, // eslint-disable-line
   modalTitle: string,
   modalContent: string,
@@ -61,9 +61,9 @@ type State = {
 
 class Option extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State) {
-    if (nextProps.value && prevState.checked === undefined) {
+    if (nextProps.value !== null && prevState.checked === undefined) {
       return {
-        checked: true,
+        checked: nextProps.value,
       };
     }
     return null;

@@ -5,10 +5,12 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Popper from '@material-ui/core/Popper';
-import Grow from '@material-ui/core/Grow';
+import Fade from '@material-ui/core/Fade';
 import Paper from '@material-ui/core/Paper';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import MenuList from '@material-ui/core/MenuList';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
@@ -17,8 +19,12 @@ import MenuIcon from '@material-ui/icons/Menu';
 
 import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
+import Icon from 'components/Icon';
 
 import LogoWhite from 'images/logo-white.png';
+import UserIcon from 'images/sprite/user.svg';
+import SettingsIcon from 'images/sprite/settings.svg';
+import LogoutIcon from 'images/sprite/logout.svg';
 
 const styles = theme => ({
   root: {
@@ -48,6 +54,15 @@ const styles = theme => ({
   avatar: {
     backgroundColor: theme.palette.primary.main,
   },
+  menuTop: {
+    padding: '30px 40px 20px 30px',
+  },
+  menuAvatar: {
+    width: 54,
+    height: 54,
+    marginRight: 15,
+    backgroundColor: theme.palette.common.gray,
+  },
   menuButton: {
     backgroundColor: theme.palette.primary.main,
     boxShadow: 'none',
@@ -57,6 +72,19 @@ const styles = theme => ({
     '&:active': {
       boxShadow: 'none',
     },
+  },
+  menuList: {
+    padding: 0,
+  },
+  menuItem: {
+    paddingLeft: 30,
+  },
+  menuItemIcon: {
+    margin: 0,
+  },
+  menuItemText: {
+    fontSize: 16,
+    color: '#424242',
   },
 });
 
@@ -124,8 +152,6 @@ class Header extends Component<Props, State> {
                 buttonRef={node => {
                   this.anchorEl = node;
                 }}
-                aria-owns={open ? 'menu-list-grow' : null}
-                aria-haspopup="true"
                 onClick={this.handleToggle}
                 color="inherit"
                 variant="fab"
@@ -137,42 +163,77 @@ class Header extends Component<Props, State> {
                 open={open}
                 anchorEl={this.anchorEl}
                 transition
-                disablePortal
+                placement="bottom-end"
               >
-                {({ TransitionProps, placement }) => (
-                  <Grow
-                    {...TransitionProps}
-                    id="menu-list-grow"
-                    style={{
-                      transformOrigin:
-                        placement === 'bottom' ? 'center top' : 'center bottom',
-                    }}
-                  >
+                {({ TransitionProps }) => (
+                  <Fade {...TransitionProps} timeout={350}>
                     <Paper>
                       <ClickAwayListener onClickAway={this.handleClose}>
-                        <MenuList>
-                          <MenuItem
-                            onClick={e => {
-                              this.handleClose(e);
-                              history.push(
-                                `/f/${user.get(
-                                  'slug'
-                                )}/edit/personal-information`
-                              );
-                            }}
-                          >
-                            Profile
-                          </MenuItem>
-                          <MenuItem onClick={this.handleClose}>
-                            Settings
-                          </MenuItem>
-                          <MenuItem onClick={this.handleLogout}>
-                            Logout
-                          </MenuItem>
-                        </MenuList>
+                        <Fragment>
+                          <Grid container className={classes.menuTop}>
+                            <Grid item>
+                              <Avatar className={classes.menuAvatar} />
+                            </Grid>
+                            <Grid item>
+                              <Typography variant="h6">
+                                {`${user.get('firstName')} ${user.get(
+                                  'lastName'
+                                )}`}
+                              </Typography>
+                              <Typography>
+                                {user.getIn(['profile', 'location'])}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                          <MenuList className={classes.menuList}>
+                            <MenuItem
+                              className={classes.menuItem}
+                              onClick={e => {
+                                this.handleClose(e);
+                                history.push(`/f/${user.get('slug')}/edit`);
+                              }}
+                            >
+                              <ListItemIcon className={classes.menuItemIcon}>
+                                <Icon glyph={UserIcon} size={18} />
+                              </ListItemIcon>
+                              <ListItemText
+                                classes={{ primary: classes.menuItemText }}
+                                primary="Profile"
+                              />
+                            </MenuItem>
+                            <MenuItem
+                              className={classes.menuItem}
+                              onClick={e => {
+                                this.handleClose(e);
+                                history.push(`/f/${user.get('slug')}/settings`);
+                              }}
+                            >
+                              <ListItemIcon className={classes.menuItemIcon}>
+                                <Icon glyph={SettingsIcon} size={18} />
+                              </ListItemIcon>
+                              <ListItemText
+                                classes={{ primary: classes.menuItemText }}
+                                primary="Settings"
+                              />
+                            </MenuItem>
+                            <MenuItem
+                              className={classes.menuItem}
+                              onClick={this.handleLogout}
+                            >
+                              <ListItemIcon className={classes.menuItemIcon}>
+                                <Icon glyph={LogoutIcon} size={18} />
+                              </ListItemIcon>
+                              <ListItemText
+                                classes={{ primary: classes.menuItemText }}
+                                inset
+                                primary="Log out"
+                              />
+                            </MenuItem>
+                          </MenuList>
+                        </Fragment>
                       </ClickAwayListener>
                     </Paper>
-                  </Grow>
+                  </Fade>
                 )}
               </Popper>
             </Fragment>

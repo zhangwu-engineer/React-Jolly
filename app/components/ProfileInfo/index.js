@@ -175,7 +175,10 @@ class ProfileInfo extends Component<Props> {
               <Button
                 className={classes.editButton}
                 component={props => (
-                  <Link to={`/f/${user.get('slug')}/work`} {...props} />
+                  <Link
+                    to={`/f/${user.get('slug')}/edit/personal-information`}
+                    {...props}
+                  />
                 )}
               >
                 <EditIcon />
