@@ -15,6 +15,7 @@ import MemberProfileInfo from 'components/MemberProfileInfo';
 import TalentInput from 'components/TalentInput';
 import Link from 'components/Link';
 import ShareProfileModal from 'components/ShareProfileModal';
+import ContactOptionModal from 'components/ContactOptionModal';
 
 import saga, {
   reducer,
@@ -119,11 +120,13 @@ type Props = {
 
 type State = {
   isOpen: boolean,
+  isContactOpen: boolean,
 };
 
 class Member extends Component<Props, State> {
   state = {
     isOpen: false,
+    isContactOpen: false,
   };
   componentDidMount() {
     const {
@@ -140,6 +143,9 @@ class Member extends Component<Props, State> {
   onCloseModal = () => {
     this.setState({ isOpen: false });
   };
+  onCloseContactModal = () => {
+    this.setState({ isContactOpen: false });
+  };
   render() {
     const {
       currentUser,
@@ -150,7 +156,7 @@ class Member extends Component<Props, State> {
         params: { slug },
       },
     } = this.props;
-    const { isOpen } = this.state;
+    const { isOpen, isContactOpen } = this.state;
     const data = currentUser.get('slug') === slug ? currentUser : member;
     return (
       <Fragment>
@@ -239,10 +245,21 @@ class Member extends Component<Props, State> {
             </Typography>
           </Grid>
           <Grid item>
-            <Button className={classes.bannerButton}>Contact Options</Button>
+            <Button
+              className={classes.bannerButton}
+              onClick={() => {
+                this.setState({ isContactOpen: true });
+              }}
+            >
+              Contact Options
+            </Button>
           </Grid>
         </Grid>
         <ShareProfileModal isOpen={isOpen} onCloseModal={this.onCloseModal} />
+        <ContactOptionModal
+          isOpen={isContactOpen}
+          onCloseModal={this.onCloseContactModal}
+        />
       </Fragment>
     );
   }
