@@ -14,6 +14,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
+import Drawer from '@material-ui/core/Drawer';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import MenuIcon from '@material-ui/icons/Menu';
 
@@ -72,6 +73,23 @@ const styles = theme => ({
     '&:active': {
       boxShadow: 'none',
     },
+    [theme.breakpoints.down('sm')]: {
+      display: 'none',
+    },
+  },
+  mobileMenuButton: {
+    backgroundColor: theme.palette.primary.main,
+    boxShadow: 'none',
+    display: 'none',
+    '&:hover': {
+      backgroundColor: theme.palette.primary.main,
+    },
+    '&:active': {
+      boxShadow: 'none',
+    },
+    [theme.breakpoints.down('sm')]: {
+      display: 'inline-flex',
+    },
   },
   menuList: {
     padding: 0,
@@ -97,11 +115,13 @@ type Props = {
 
 type State = {
   open: boolean,
+  side: boolean,
 };
 
 class Header extends Component<Props, State> {
   state = {
     open: false,
+    side: false,
   };
   handleToggle = () => {
     this.setState(state => ({ open: !state.open }));
@@ -120,10 +140,75 @@ class Header extends Component<Props, State> {
       this.props.logout();
     });
   };
+  toggleDrawer = open => () => {
+    this.setState({
+      side: open,
+    });
+  };
   anchorEl: HTMLElement;
+  renderMenu = () => {
+    const { user, classes } = this.props;
+    return (
+      <Fragment>
+        <Grid container className={classes.menuTop}>
+          <Grid item>
+            <Avatar className={classes.menuAvatar} />
+          </Grid>
+          <Grid item>
+            <Typography variant="h6">
+              {`${user.get('firstName')} ${user.get('lastName')}`}
+            </Typography>
+            <Typography>{user.getIn(['profile', 'location'])}</Typography>
+          </Grid>
+        </Grid>
+        <MenuList className={classes.menuList}>
+          <MenuItem
+            className={classes.menuItem}
+            onClick={e => {
+              this.handleClose(e);
+              history.push(`/f/${user.get('slug')}/edit`);
+            }}
+          >
+            <ListItemIcon className={classes.menuItemIcon}>
+              <Icon glyph={UserIcon} size={18} />
+            </ListItemIcon>
+            <ListItemText
+              classes={{ primary: classes.menuItemText }}
+              primary="Profile"
+            />
+          </MenuItem>
+          <MenuItem
+            className={classes.menuItem}
+            onClick={e => {
+              this.handleClose(e);
+              history.push(`/f/${user.get('slug')}/settings`);
+            }}
+          >
+            <ListItemIcon className={classes.menuItemIcon}>
+              <Icon glyph={SettingsIcon} size={18} />
+            </ListItemIcon>
+            <ListItemText
+              classes={{ primary: classes.menuItemText }}
+              primary="Settings"
+            />
+          </MenuItem>
+          <MenuItem className={classes.menuItem} onClick={this.handleLogout}>
+            <ListItemIcon className={classes.menuItemIcon}>
+              <Icon glyph={LogoutIcon} size={18} />
+            </ListItemIcon>
+            <ListItemText
+              classes={{ primary: classes.menuItemText }}
+              inset
+              primary="Log out"
+            />
+          </MenuItem>
+        </MenuList>
+      </Fragment>
+    );
+  };
   render() {
     const { user, classes, pathname } = this.props;
-    const { open } = this.state;
+    const { open, side } = this.state;
     return (
       <Grid
         className={classes.root}
@@ -159,6 +244,14 @@ class Header extends Component<Props, State> {
               >
                 <MenuIcon />
               </Button>
+              <Button
+                onClick={this.toggleDrawer(true)}
+                color="inherit"
+                variant="fab"
+                className={classes.mobileMenuButton}
+              >
+                <MenuIcon />
+              </Button>
               <Popper
                 open={open}
                 anchorEl={this.anchorEl}
@@ -169,73 +262,26 @@ class Header extends Component<Props, State> {
                   <Fade {...TransitionProps} timeout={350}>
                     <Paper>
                       <ClickAwayListener onClickAway={this.handleClose}>
-                        <Fragment>
-                          <Grid container className={classes.menuTop}>
-                            <Grid item>
-                              <Avatar className={classes.menuAvatar} />
-                            </Grid>
-                            <Grid item>
-                              <Typography variant="h6">
-                                {`${user.get('firstName')} ${user.get(
-                                  'lastName'
-                                )}`}
-                              </Typography>
-                              <Typography>
-                                {user.getIn(['profile', 'location'])}
-                              </Typography>
-                            </Grid>
-                          </Grid>
-                          <MenuList className={classes.menuList}>
-                            <MenuItem
-                              className={classes.menuItem}
-                              onClick={e => {
-                                this.handleClose(e);
-                                history.push(`/f/${user.get('slug')}/edit`);
-                              }}
-                            >
-                              <ListItemIcon className={classes.menuItemIcon}>
-                                <Icon glyph={UserIcon} size={18} />
-                              </ListItemIcon>
-                              <ListItemText
-                                classes={{ primary: classes.menuItemText }}
-                                primary="Profile"
-                              />
-                            </MenuItem>
-                            <MenuItem
-                              className={classes.menuItem}
-                              onClick={e => {
-                                this.handleClose(e);
-                                history.push(`/f/${user.get('slug')}/settings`);
-                              }}
-                            >
-                              <ListItemIcon className={classes.menuItemIcon}>
-                                <Icon glyph={SettingsIcon} size={18} />
-                              </ListItemIcon>
-                              <ListItemText
-                                classes={{ primary: classes.menuItemText }}
-                                primary="Settings"
-                              />
-                            </MenuItem>
-                            <MenuItem
-                              className={classes.menuItem}
-                              onClick={this.handleLogout}
-                            >
-                              <ListItemIcon className={classes.menuItemIcon}>
-                                <Icon glyph={LogoutIcon} size={18} />
-                              </ListItemIcon>
-                              <ListItemText
-                                classes={{ primary: classes.menuItemText }}
-                                inset
-                                primary="Log out"
-                              />
-                            </MenuItem>
-                          </MenuList>
-                        </Fragment>
+                        {this.renderMenu()}
                       </ClickAwayListener>
                     </Paper>
                   </Fade>
                 )}
               </Popper>
+              <Drawer
+                anchor="right"
+                open={side}
+                onClose={this.toggleDrawer(false)}
+              >
+                <div
+                  tabIndex={0}
+                  role="button"
+                  onClick={this.toggleDrawer(false)}
+                  onKeyDown={this.toggleDrawer(false)}
+                >
+                  {this.renderMenu()}
+                </div>
+              </Drawer>
             </Fragment>
           ) : (
             <Typography className={classes.desc}>
