@@ -258,7 +258,7 @@ export const reducer = (
         .set('error', '');
 
     case LOGIN + FAILED:
-      return state.set('isLoading', false).set('error', payload.message);
+      return state.set('isLoading', false).set('error', payload);
 
     case LOGIN + ERROR:
       return state.set('isLoading', false).set(
@@ -361,7 +361,7 @@ function* RegisterRequest({ payload }) {
       yield put(registerRequestSuccess(response.data.response));
       yield put(requestUser());
     } else {
-      yield put(registerRequestFailed(response.data.error));
+      yield put(registerRequestFailed(response.data.error.message));
     }
   } catch (error) {
     yield put(registerRequestError(error));
@@ -379,7 +379,7 @@ function* LoginRequest({ payload }) {
       yield put(loginRequestSuccess(response.data.response));
       yield put(requestUser());
     } else {
-      yield put(loginRequestFailed(response.data.error));
+      yield put(loginRequestFailed(response.data.error.message));
     }
   } catch (error) {
     yield put(loginRequestError(error));
@@ -400,7 +400,7 @@ function* SocialLoginRequest({ payload, meta: { type } }) {
       yield put(socialLoginRequestSuccess(response.data.response));
       yield put(requestUser());
     } else {
-      yield put(socialLoginRequestFailed(response.data.error));
+      yield put(socialLoginRequestFailed(response.data.error.message));
     }
   } catch (error) {
     yield put(socialLoginRequestError(error));
@@ -416,8 +416,11 @@ function* UserRequest() {
     });
     if (response.status === 200) {
       yield put(userRequestSuccess(response.data.response));
+    } else if (response.data.error.message === 'jwt expired') {
+      yield put(userRequestFailed(''));
+      yield put(logout());
     } else {
-      yield put(userRequestFailed(response.data.message));
+      yield put(userRequestFailed(response.data.error.message));
     }
   } catch (error) {
     yield put(userRequestError(error));
@@ -440,7 +443,7 @@ function* UpdateUserDataRequest({ payload }) {
     } else if (response.status === 403 || response.status === 401) {
       yield put(logout());
     } else {
-      yield put(userDataUpdateFailed(response.data.message));
+      yield put(userDataUpdateFailed(response.data.error.message));
     }
   } catch (error) {
     yield put(userDataUpdateError(error));
@@ -463,7 +466,7 @@ function* UploadUserPhotoRequest({ payload }) {
       yield put(userPhotoUploadSuccess(response.data));
       yield put(requestUser());
     } else {
-      yield put(userPhotoUploadFailed(response.data.message));
+      yield put(userPhotoUploadFailed(response.data.error.message));
     }
   } catch (error) {
     yield put(userPhotoUploadError(error));
@@ -480,7 +483,9 @@ function* UserEmailVerificationRequest({ payload }) {
     if (response.status === 200) {
       yield put(userEmailVerificationRequestSuccess(response.data));
     } else {
-      yield put(userEmailVerificationRequestFailed(response.data.message));
+      yield put(
+        userEmailVerificationRequestFailed(response.data.error.message)
+      );
     }
   } catch (error) {
     yield put(userEmailVerificationRequestError(error));

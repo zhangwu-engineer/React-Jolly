@@ -237,6 +237,7 @@ class PersonalInformationPage extends Component<Props, State> {
                 label="Phone"
                 id="phone"
                 value={model && model.profile.phone}
+                slug={user.get('slug')}
               />
               <EditableInput
                 label="Bio"

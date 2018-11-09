@@ -16,6 +16,8 @@ import DoneIcon from '@material-ui/icons/Done';
 import EditIcon from '@material-ui/icons/Edit';
 import ClearIcon from '@material-ui/icons/Clear';
 
+import { history } from 'components/ConnectedRouter';
+
 const styles = theme => ({
   root: {
     marginBottom: 15,
@@ -61,6 +63,7 @@ type Props = {
   label: string,
   value: string,
   id: string,
+  slug?: string,
   classes: Object,
   multiline: boolean,
   startWith?: string,
@@ -98,6 +101,14 @@ class EditableInput extends Component<Props, State> {
     this.setState({ isEditing: false }, () => {
       this.props.onChange(this.props.id, this.state.value);
     });
+  };
+  onEdit = () => {
+    const { id, slug } = this.props;
+    if (id === 'phone' && slug) {
+      history.push(`/f/${slug}/mobile`);
+    } else {
+      this.setState({ isEditing: true });
+    }
   };
   handleChange = (e: Object) => {
     e.persist();
@@ -173,7 +184,7 @@ class EditableInput extends Component<Props, State> {
               <Grid item sm={3} lg={1}>
                 <IconButton
                   className={cx(classes.iconButton, classes.doneButton)}
-                  onClick={() => this.setState({ isEditing: true })}
+                  onClick={this.onEdit}
                 >
                   <EditIcon />
                 </IconButton>

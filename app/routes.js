@@ -20,6 +20,7 @@ const Settings = load(() => import('pages/Settings'));
 const EmailVerification = load(() => import('pages/EmailVerification'));
 const ForgotPassword = load(() => import('pages/ForgotPassword'));
 const ResetPassword = load(() => import('pages/ResetPassword'));
+const Mobile = load(() => import('pages/Mobile'));
 const FourOfour = load(() => import('pages/404'));
 
 class Routes extends Component<{}> {
@@ -67,6 +68,10 @@ class Routes extends Component<{}> {
         <PrivateRoute
           path="/f/:slug/work"
           render={props => <Talent {...props} />}
+        />
+        <PrivateRoute
+          path="/f/:slug/mobile"
+          render={props => <Mobile {...props} />}
         />
         <PrivateRoute path="/f/:slug" render={props => <Member {...props} />} />
         <Route render={props => <FourOfour {...props} />} />
