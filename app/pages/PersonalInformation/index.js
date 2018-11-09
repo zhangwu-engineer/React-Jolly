@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import EditableInput from 'components/EditableInput';
 import Option from 'components/Option';
 
-import { requestUserDataUpdate } from 'containers/App/sagas';
+import { requestUserDataUpdate, requestUser } from 'containers/App/sagas';
 
 const styles = theme => ({
   root: {
@@ -90,6 +90,7 @@ type Props = {
   user: Object,
   classes: Object,
   updateUser: Function,
+  requestUser: Function,
 };
 
 type State = {
@@ -121,12 +122,35 @@ class PersonalInformationPage extends Component<Props, State> {
         },
       };
     }
+    if (prevState.model && prevState.model.profile) {
+      const {
+        model: {
+          profile: { phone },
+        },
+      } = prevState;
+      if (nextProps.user.getIn(['profile', 'phone']) !== phone) {
+        const prevProfile = prevState.model ? prevState.model.profile : {};
+        return {
+          ...prevState,
+          model: {
+            profile: {
+              ...prevProfile,
+              phone: nextProps.user.getIn(['profile', 'phone']),
+            },
+          },
+        };
+      }
+    }
+
     return null;
   }
   state = {
     selectedSection: 'basic',
     model: null,
   };
+  componentDidMount() {
+    this.props.requestUser();
+  }
   onChange = (id, value) => {
     this.setState(
       update(this.state, {
@@ -359,6 +383,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   updateUser: payload => dispatch(requestUserDataUpdate(payload)),
+  requestUser: () => dispatch(requestUser()),
 });
 
 export default compose(

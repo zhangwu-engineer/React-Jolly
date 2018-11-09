@@ -11,8 +11,17 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 import Link from 'components/Link';
+
+import injectSagas from 'utils/injectSagas';
+import saga, {
+  reducer,
+  requestPhoneVerification,
+  requestTokenVerification,
+  resetStep,
+} from 'containers/Mobile/sagas';
 
 import SuccessIcon from 'images/success_icon.png';
 
@@ -42,7 +51,6 @@ const styles = theme => ({
   },
   inputPhone: {
     width: 324,
-    marginBottom: 20,
     '& .react-phone-number-input__icon': {
       position: 'relative',
       border: 'none',
@@ -57,15 +65,23 @@ const styles = theme => ({
       },
     },
   },
+  phoneError: {
+    marginLeft: 55,
+  },
   inputPhoneDesc: {
     maxWidth: 337,
     color: '#4a4a4a',
-    marginBottom: 70,
+    marginTop: 20,
+  },
+  nextButton: {
+    marginTop: 70,
   },
   inputToken: {
     marginTop: 0,
-    marginBottom: 130,
     width: 259,
+  },
+  verifyButton: {
+    marginTop: 130,
   },
   successIcon: {
     marginTop: 30,
@@ -94,40 +110,50 @@ const styles = theme => ({
 });
 
 type Props = {
+  step: number,
   user: Object,
+  isPhoneLoading: boolean,
+  phoneError: string,
+  isTokenLoading: boolean,
+  tokenError: string,
   classes: Object,
+  requestPhoneVerification: Function,
+  requestTokenVerification: Function,
+  resetStep: Function,
 };
 
 type State = {
-  step: number,
   phone: string,
   token: string,
 };
 
 class Mobile extends Component<Props, State> {
   state = {
-    step: 1,
     phone: '',
     token: '',
   };
+  componentWillUnmount() {
+    this.props.resetStep();
+  }
   onChange = (e: Object) => {
     this.setState({ [e.target.id]: e.target.value });
   };
   verifyPhone = () => {
+    const { user } = this.props;
     const { phone } = this.state;
     if (phone) {
-      this.setState({ step: 2 });
+      this.props.requestPhoneVerification({ slug: user.get('slug'), phone });
     }
   };
   verifyToken = () => {
     const { token } = this.state;
     if (token) {
-      this.setState({ step: 3 });
+      this.props.requestTokenVerification({ token });
     }
   };
   render() {
-    const { user, classes } = this.props;
-    const { step, phone, token } = this.state;
+    const { step, user, classes, phoneError, tokenError } = this.props;
+    const { phone, token } = this.state;
     return (
       <div className={classes.root}>
         <div className={classes.section}>
@@ -149,13 +175,22 @@ class Mobile extends Component<Props, State> {
                   country="US"
                   onChange={value => this.setState({ phone: value })}
                 />
+                {phoneError && (
+                  <FormHelperText className={classes.phoneError} error>
+                    {phoneError}
+                  </FormHelperText>
+                )}
                 <Typography className={classes.inputPhoneDesc}>
                   Please use a valid phone number. You need to verify this
                   number
                 </Typography>
                 <Grid container justify="flex-end">
                   <Grid item>
-                    <Button color="primary" onClick={this.verifyPhone}>
+                    <Button
+                      className={classes.nextButton}
+                      color="primary"
+                      onClick={this.verifyPhone}
+                    >
                       Next
                     </Button>
                   </Grid>
@@ -175,9 +210,14 @@ class Mobile extends Component<Props, State> {
                   onChange={this.onChange}
                   className={classes.inputToken}
                 />
+                <FormHelperText error>{tokenError}</FormHelperText>
                 <Grid container justify="flex-end">
                   <Grid item>
-                    <Button color="primary" onClick={this.verifyToken}>
+                    <Button
+                      className={classes.verifyButton}
+                      color="primary"
+                      onClick={this.verifyToken}
+                    >
                       Verify
                     </Button>
                   </Grid>
@@ -230,11 +270,23 @@ class Mobile extends Component<Props, State> {
 
 const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
+  step: state.getIn(['mobile', 'step']),
+  isPhoneLoading: state.getIn(['mobile', 'isPhoneLoading']),
+  phoneError: state.getIn(['mobile', 'phoneError']),
+  isTokenLoading: state.getIn(['mobile', 'isTokenLoading']),
+  tokenError: state.getIn(['mobile', 'tokenError']),
 });
 
-const mapDispatchToProps = () => ({});
+const mapDispatchToProps = dispatch => ({
+  requestPhoneVerification: payload =>
+    dispatch(requestPhoneVerification(payload)),
+  requestTokenVerification: payload =>
+    dispatch(requestTokenVerification(payload)),
+  resetStep: () => dispatch(resetStep()),
+});
 
 export default compose(
+  injectSagas({ key: 'mobile', saga, reducer }),
   connect(
     mapStateToProps,
     mapDispatchToProps
