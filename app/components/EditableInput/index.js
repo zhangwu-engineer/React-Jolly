@@ -1,7 +1,6 @@
 // @flow
 
 import React, { Component } from 'react';
-import cx from 'classnames';
 
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -31,11 +30,17 @@ const styles = theme => ({
   },
   nameFieldWrapper: {
     paddingRight: 30,
+    [theme.breakpoints.down('xs')]: {
+      paddingRight: 0,
+    },
   },
   iconButton: {
     color: '#a4acb3',
     '&:hover': {
       color: theme.palette.primary.main,
+    },
+    [theme.breakpoints.down('xs')]: {
+      padding: 6,
     },
   },
   labelField: {
@@ -48,6 +53,16 @@ const styles = theme => ({
     letterSpacing: '0.5px',
     color: '#4a4a4a',
     marginBottom: 15,
+    [theme.breakpoints.down('xs')]: {
+      marginBottom: 10,
+    },
+  },
+  textInput: {
+    '& input': {
+      [theme.breakpoints.down('xs')]: {
+        paddingBottom: 10,
+      },
+    },
   },
   adornment: {
     marginRight: 0,
@@ -56,6 +71,11 @@ const styles = theme => ({
     color: theme.palette.text.main,
     fontSize: 18,
     paddingBottom: 5,
+  },
+  editModeButtons: {
+    [theme.breakpoints.down('xs')]: {
+      textAlign: 'right',
+    },
   },
 });
 
@@ -124,10 +144,11 @@ class EditableInput extends Component<Props, State> {
         {isEditing ? (
           <div className={classes.editView}>
             <Grid container>
-              <Grid item sm={10} className={classes.nameFieldWrapper}>
+              <Grid item xs={9} className={classes.nameFieldWrapper}>
                 <FormControl className={classes.fieldMargin} fullWidth>
                   <InputLabel htmlFor={id}>{label}</InputLabel>
                   <Input
+                    className={classes.textInput}
                     id={id}
                     value={this.state.value}
                     onChange={this.handleChange}
@@ -150,15 +171,15 @@ class EditableInput extends Component<Props, State> {
                   />
                 </FormControl>
               </Grid>
-              <Grid item sm={2}>
+              <Grid item xs={3} className={classes.editModeButtons}>
                 <IconButton
-                  className={cx(classes.iconButton, classes.doneButton)}
+                  className={classes.iconButton}
                   onClick={this.onConfirm}
                 >
                   <DoneIcon />
                 </IconButton>
                 <IconButton
-                  className={cx(classes.iconButton, classes.deleteButton)}
+                  className={classes.iconButton}
                   onClick={this.onClear}
                 >
                   <ClearIcon />
@@ -169,7 +190,7 @@ class EditableInput extends Component<Props, State> {
         ) : (
           <div className={classes.readView}>
             <Grid container alignItems="center">
-              <Grid item sm={9} lg={11}>
+              <Grid item xs={11} lg={11}>
                 <Typography variant="h6" className={classes.labelField}>
                   {label}
                 </Typography>
@@ -181,9 +202,9 @@ class EditableInput extends Component<Props, State> {
                   {value}
                 </Typography>
               </Grid>
-              <Grid item sm={3} lg={1}>
+              <Grid item xs={1} lg={1}>
                 <IconButton
-                  className={cx(classes.iconButton, classes.doneButton)}
+                  className={classes.iconButton}
                   onClick={this.onEdit}
                 >
                   <EditIcon />
