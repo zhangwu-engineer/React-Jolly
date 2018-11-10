@@ -162,6 +162,9 @@ const styles = theme => ({
   divider: {
     marginTop: 20,
     marginBottom: 20,
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
   },
   bio: {
     fontSize: 18,
@@ -170,6 +173,7 @@ const styles = theme => ({
     marginBottom: 20,
     [theme.breakpoints.down('xs')]: {
       textAlign: 'center',
+      marginTop: 20,
     },
   },
   socialButtons: {
