@@ -50,6 +50,20 @@ const styles = theme => ({
       paddingRight: 0,
     },
   },
+  textInput: {
+    '& input': {
+      [theme.breakpoints.down('xs')]: {
+        paddingBottom: 10,
+      },
+    },
+  },
+  selectInput: {
+    '& div>div': {
+      [theme.breakpoints.down('xs')]: {
+        paddingBottom: 10,
+      },
+    },
+  },
   iconButton: {
     color: '#a4acb3',
     '&:hover': {
@@ -249,7 +263,7 @@ class TalentInput extends Component<Props, State> {
                       label="Name"
                       value={model && model.name}
                       onChange={this.handleChange}
-                      className={classes.fieldMargin}
+                      className={cx(classes.fieldMargin, classes.textInput)}
                       fullWidth
                     />
                   </Grid>
@@ -261,7 +275,7 @@ class TalentInput extends Component<Props, State> {
                           label="Rate"
                           value={model && model.rate}
                           onChange={this.handleChange}
-                          className={classes.fieldMargin}
+                          className={cx(classes.fieldMargin, classes.textInput)}
                         />
                       </Grid>
                       <Grid item xs={6} className={classes.unitFieldWrapper}>
@@ -274,6 +288,7 @@ class TalentInput extends Component<Props, State> {
                             inputProps={{
                               id: 'unit',
                             }}
+                            className={classes.selectInput}
                           >
                             <MenuItem value="">None</MenuItem>
                             <MenuItem value="hour">Hour</MenuItem>
