@@ -29,9 +29,17 @@ const styles = theme => ({
   root: {
     maxWidth: '712px',
     margin: '40px auto 300px auto',
+    [theme.breakpoints.down('xs')]: {
+      margin: 0,
+      padding: '0px 10px',
+    },
   },
   section: {
     boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
+    [theme.breakpoints.down('xs')]: {
+      boxShadow: 'none',
+      marginBottom: 0,
+    },
   },
   sectionHeader: {
     paddingLeft: 30,
@@ -39,10 +47,24 @@ const styles = theme => ({
     paddingBottom: 20,
     paddingRight: 30,
     backgroundColor: '#edeeee',
+    [theme.breakpoints.down('xs')]: {
+      backgroundColor: 'transparent',
+      padding: '25px 0px 15px 0px',
+    },
+  },
+  sectionTitle: {
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 18,
+    },
   },
   sectionBody: {
     backgroundColor: theme.palette.common.white,
     padding: 30,
+    [theme.breakpoints.down('xs')]: {
+      boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
+      borderRadius: 3,
+      padding: '10px 15px',
+    },
   },
   title: {
     fontSize: 18,
@@ -158,7 +180,7 @@ class Mobile extends Component<Props, State> {
       <div className={classes.root}>
         <div className={classes.section}>
           <div className={classes.sectionHeader}>
-            <Typography variant="h6">
+            <Typography variant="h6" className={classes.sectionTitle}>
               Connect phone by text verification
             </Typography>
           </div>
