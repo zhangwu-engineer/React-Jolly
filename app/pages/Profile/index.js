@@ -72,6 +72,9 @@ const styles = theme => ({
   bottomBanner: {
     padding: '25px 70px',
     backgroundColor: '#2b2b2b',
+    [theme.breakpoints.down('xs')]: {
+      padding: '15px 20px',
+    },
   },
   bannerText: {
     color: theme.palette.common.white,
@@ -85,6 +88,12 @@ const styles = theme => ({
     padding: '11px 20px',
     '&:hover': {
       backgroundColor: theme.palette.primary.main,
+    },
+    [theme.breakpoints.down('xs')]: {
+      backgroundColor: 'transparent',
+      fontSize: 16,
+      color: theme.palette.primary.main,
+      padding: '11px 0px',
     },
   },
   topBanner: {
