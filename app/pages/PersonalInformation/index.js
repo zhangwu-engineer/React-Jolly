@@ -395,8 +395,8 @@ class PersonalInformationPage extends Component<Props, State> {
                 label="Image library on public profile"
                 id="showImageLibrary"
                 value={model && model.profile.showImageLibrary}
-                modalTitle="Email Button on Profile"
-                modalContent="When enabled, visitors to your public profile will see a button to send an email message"
+                modalTitle="Image gallery on Profile"
+                modalContent="When enabled, this will show an image gallery icon on your profile that visitors can click to look through your uploaded photos and videos."
               />
             </div>
           </div>
