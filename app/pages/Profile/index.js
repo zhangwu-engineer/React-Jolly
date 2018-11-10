@@ -37,6 +37,9 @@ const styles = theme => ({
   },
   section: {
     boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
+    [theme.breakpoints.down('xs')]: {
+      boxShadow: 'none',
+    },
   },
   sectionHeader: {
     paddingLeft: 30,
@@ -69,11 +72,19 @@ const styles = theme => ({
       width: '100%',
     },
   },
+  bottomBannerContainer: {
+    [theme.breakpoints.down('xs')]: {
+      backgroundColor: theme.palette.common.white,
+      padding: '30px 10px',
+    },
+  },
   bottomBanner: {
     padding: '25px 70px',
     backgroundColor: '#2b2b2b',
     [theme.breakpoints.down('xs')]: {
       padding: '15px 20px',
+      width: 'auto',
+      borderRadius: 3,
     },
   },
   bannerText: {
@@ -201,48 +212,50 @@ class Profile extends Component<Props, State> {
             </div>
           </div>
         </div>
-        {user.getIn(['profile', 'avatar']) ? (
-          <Grid
-            className={classes.bottomBanner}
-            container
-            justify="space-between"
-            alignItems="center"
-          >
-            <Grid item>
-              <Typography className={classes.bannerText}>
-                Ready to share? View your new public page and grab the&nbsp;
-                link to share it!
-              </Typography>
+        <div className={classes.bottomBannerContainer}>
+          {user.getIn(['profile', 'avatar']) ? (
+            <Grid
+              className={classes.bottomBanner}
+              container
+              justify="space-between"
+              alignItems="center"
+            >
+              <Grid item>
+                <Typography className={classes.bannerText}>
+                  Ready to share? View your new public page and grab the&nbsp;
+                  link to share it!
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Button
+                  className={classes.bannerButton}
+                  onClick={() => this.seePublicProfile()}
+                >
+                  SEE MY PULIC PROFILE
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Button
-                className={classes.bannerButton}
-                onClick={() => this.seePublicProfile()}
-              >
-                SEE MY PULIC PROFILE
-              </Button>
+          ) : (
+            <Grid
+              className={classes.bottomBanner}
+              container
+              justify="space-between"
+              alignItems="center"
+            >
+              <Grid item>
+                <Typography className={classes.bannerText}>
+                  Before you share your profile, you need to add a&nbsp;profile
+                  picture.
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Button className={classes.bannerButton}>
+                  Add PICTURE&nbsp;+
+                </Button>
+              </Grid>
             </Grid>
-          </Grid>
-        ) : (
-          <Grid
-            className={classes.bottomBanner}
-            container
-            justify="space-between"
-            alignItems="center"
-          >
-            <Grid item>
-              <Typography className={classes.bannerText}>
-                Before you share your profile, you need to add a&nbsp;profile
-                picture.
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Button className={classes.bannerButton}>
-                Add PICTURE&nbsp;+
-              </Button>
-            </Grid>
-          </Grid>
-        )}
+          )}
+        </div>
       </Fragment>
     );
   }
