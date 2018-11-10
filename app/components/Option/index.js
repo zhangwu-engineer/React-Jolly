@@ -56,6 +56,7 @@ const styles = theme => ({
     color: '#8c9099',
     letterSpacing: '0.1px',
     lineHeight: 1.6,
+    marginBottom: 20,
   },
 });
 
