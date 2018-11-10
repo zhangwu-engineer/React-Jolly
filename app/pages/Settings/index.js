@@ -9,12 +9,11 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
-import Divider from '@material-ui/core/Divider';
 import OpenInNewIcon from '@material-ui/icons/OpenInNewOutlined';
-import ArrowRightIcon from '@material-ui/icons/ArrowForwardIosOutlined';
 
 import { history } from 'components/ConnectedRouter';
 import Option from 'components/Option';
+import EditableInput from 'components/EditableInput';
 
 import { requestUserDataUpdate } from 'containers/App/sagas';
 
@@ -23,11 +22,14 @@ const styles = theme => ({
     maxWidth: '989px',
     margin: '50px auto 300px auto',
     display: 'flex',
+    [theme.breakpoints.down('xs')]: {
+      margin: 0,
+    },
   },
   leftPanel: {
     width: 242,
     marginRight: 35,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('xs')]: {
       display: 'none',
     },
   },
@@ -70,13 +72,17 @@ const styles = theme => ({
   },
   rightPanel: {
     flex: 1,
-    [theme.breakpoints.down('sm')]: {
-      margin: 5,
+    [theme.breakpoints.down('xs')]: {
+      margin: 10,
     },
   },
   section: {
     boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
     marginBottom: 20,
+    [theme.breakpoints.down('xs')]: {
+      boxShadow: 'none',
+      marginBottom: 0,
+    },
   },
   sectionHeader: {
     paddingLeft: 30,
@@ -84,15 +90,32 @@ const styles = theme => ({
     paddingBottom: 20,
     paddingRight: 30,
     backgroundColor: '#edeeee',
+    [theme.breakpoints.down('xs')]: {
+      backgroundColor: 'transparent',
+      padding: '25px 0px 15px 0px',
+    },
+  },
+  sectionTitle: {
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 18,
+    },
   },
   sectionBody: {
     backgroundColor: theme.palette.common.white,
     padding: 30,
+    [theme.breakpoints.down('xs')]: {
+      boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
+      borderRadius: 3,
+      padding: '10px 15px',
+    },
   },
   iconButton: {
     color: '#a4acb3',
     '&:hover': {
       color: theme.palette.primary.main,
+    },
+    [theme.breakpoints.down('xs')]: {
+      padding: 6,
     },
   },
   valueField: {
@@ -208,55 +231,34 @@ class SettingsPage extends Component<Props, State> {
         <div className={classes.rightPanel}>
           <div className={classes.section}>
             <div className={classes.sectionHeader}>
-              <Typography variant="h6">Personal information</Typography>
+              <Typography variant="h6" className={classes.sectionTitle}>
+                Personal information
+              </Typography>
             </div>
             <div className={classes.sectionBody}>
+              <EditableInput
+                label="Name"
+                id="name"
+                value={`${user.get('firstName')} ${user.get('lastName')}`}
+              />
+              <EditableInput
+                label="Email"
+                id="email"
+                value={user.get('email')}
+              />
+              <EditableInput
+                label="Phone"
+                id="phone"
+                value={model && model.profile.phone}
+                slug={user.get('slug')}
+              />
               <Grid container alignItems="center">
-                <Grid item sm={9} lg={11}>
-                  <Typography variant="h6" className={classes.valueField}>
-                    {`${user.get('firstName')} ${user.get('lastName')}`}
-                  </Typography>
-                </Grid>
-                <Grid item sm={3} lg={1}>
-                  <IconButton className={classes.iconButton}>
-                    <ArrowRightIcon />
-                  </IconButton>
-                </Grid>
-              </Grid>
-              <Divider className={classes.divider} />
-              <Grid container alignItems="center">
-                <Grid item sm={9} lg={11}>
-                  <Typography variant="h6" className={classes.valueField}>
-                    {user.get('email')}
-                  </Typography>
-                </Grid>
-                <Grid item sm={3} lg={1}>
-                  <IconButton className={classes.iconButton}>
-                    <ArrowRightIcon />
-                  </IconButton>
-                </Grid>
-              </Grid>
-              <Divider className={classes.divider} />
-              <Grid container alignItems="center">
-                <Grid item sm={9} lg={11}>
-                  <Typography variant="h6" className={classes.valueField}>
-                    {`Phone: ${user.getIn(['profile', 'phone']) || ''}`}
-                  </Typography>
-                </Grid>
-                <Grid item sm={3} lg={1}>
-                  <IconButton className={classes.iconButton}>
-                    <ArrowRightIcon />
-                  </IconButton>
-                </Grid>
-              </Grid>
-              <Divider className={classes.divider} />
-              <Grid container alignItems="center">
-                <Grid item sm={9} lg={11}>
+                <Grid item xs={11} lg={11}>
                   <Typography variant="h6" className={classes.valueField}>
                     Edit profile details
                   </Typography>
                 </Grid>
-                <Grid item sm={3} lg={1}>
+                <Grid item xs={1} lg={1}>
                   <IconButton
                     className={classes.iconButton}
                     onClick={() => {
@@ -271,7 +273,9 @@ class SettingsPage extends Component<Props, State> {
           </div>
           <div className={classes.section}>
             <div className={classes.sectionHeader}>
-              <Typography variant="h6">Public profile actions</Typography>
+              <Typography variant="h6" className={classes.sectionTitle}>
+                Public profile actions
+              </Typography>
             </div>
             <div className={classes.sectionBody}>
               <Option
@@ -302,7 +306,9 @@ class SettingsPage extends Component<Props, State> {
           </div>
           <div className={classes.section}>
             <div className={classes.sectionHeader}>
-              <Typography variant="h6">Privacy</Typography>
+              <Typography variant="h6" className={classes.sectionTitle}>
+                Privacy
+              </Typography>
             </div>
             <div className={classes.sectionBody}>
               <Option
