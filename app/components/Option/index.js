@@ -19,6 +19,9 @@ const styles = theme => ({
     fontSize: 18,
     letterSpacing: '0.5px',
     color: '#4a4a4a',
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 16,
+    },
   },
   blueText: {
     fontSize: 16,
@@ -27,8 +30,16 @@ const styles = theme => ({
     marginBottom: 15,
     cursor: 'pointer',
   },
+  checkboxContainer: {
+    [theme.breakpoints.down('xs')]: {
+      textAlign: 'right',
+    },
+  },
   checkboxRoot: {
     color: '#dadada',
+    [theme.breakpoints.down('xs')]: {
+      paddingRight: 0,
+    },
   },
   checkboxChecked: {
     color: theme.palette.common.green,
@@ -36,6 +47,10 @@ const styles = theme => ({
   modal: {
     width: 320,
     padding: 30,
+    [theme.breakpoints.down('xs')]: {
+      padding: '25px 20px',
+      width: 280,
+    },
   },
   modalContent: {
     color: '#8c9099',
@@ -101,7 +116,7 @@ class Option extends Component<Props, State> {
     return (
       <div className={classes.root}>
         <Grid container>
-          <Grid item sm={9} lg={11}>
+          <Grid item xs={10} lg={11}>
             <Typography variant="h6" className={classes.labelField}>
               {label}
             </Typography>
@@ -112,7 +127,7 @@ class Option extends Component<Props, State> {
               What&apos;s this
             </Typography>
           </Grid>
-          <Grid item sm={3} lg={1}>
+          <Grid item xs={2} lg={1} className={classes.checkboxContainer}>
             <Checkbox
               classes={{
                 root: classes.checkboxRoot,
