@@ -35,14 +35,33 @@ const styles = theme => ({
     paddingLeft: 30,
     paddingRight: 57,
     paddingBottom: 55,
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: 10,
+      marginRight: 10,
+      marginTop: 23,
+      padding: 20,
+    },
   },
   title: {
     marginBottom: 40,
     fontWeight: 500,
     fontSize: 26,
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
   },
   fieldMargin: {
     marginBottom: 20,
+    [theme.breakpoints.down('xs')]: {
+      marginBottom: 10,
+    },
+  },
+  textInput: {
+    '& input': {
+      [theme.breakpoints.down('xs')]: {
+        paddingBottom: 10,
+      },
+    },
   },
   button: {
     fontSize: 13,
@@ -157,6 +176,7 @@ class ResetPassword extends Component<Props, State> {
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 value={model.password}
+                className={classes.textInput}
                 onChange={this.handleChange}
                 endAdornment={
                   <InputAdornment position="end">
@@ -169,11 +189,15 @@ class ResetPassword extends Component<Props, State> {
                   </InputAdornment>
                 }
               />
-              <FormHelperText id="password-helper-text">
-                {validationError &&
-                  validationError.path === 'password' &&
-                  validationError.message}
-              </FormHelperText>
+              {validationError &&
+                validationError.path === 'password' &&
+                validationError.message && (
+                  <FormHelperText id="password-helper-text">
+                    {validationError &&
+                      validationError.path === 'password' &&
+                      validationError.message}
+                  </FormHelperText>
+                )}
             </FormControl>
             {error && (
               <FormHelperText className={classes.fieldMargin} error>
