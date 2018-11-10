@@ -33,11 +33,14 @@ const styles = theme => ({
     maxWidth: '989px',
     margin: '50px auto 300px auto',
     display: 'flex',
+    [theme.breakpoints.down('xs')]: {
+      margin: 0,
+    },
   },
   leftPanel: {
     width: 242,
     marginRight: 35,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('xs')]: {
       display: 'none',
     },
   },
@@ -81,7 +84,7 @@ const styles = theme => ({
   rightPanel: {
     flex: 1,
     [theme.breakpoints.down('sm')]: {
-      margin: 5,
+      margin: 10,
     },
   },
   profileInfo: {
@@ -90,6 +93,10 @@ const styles = theme => ({
   section: {
     boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
     marginBottom: 20,
+    [theme.breakpoints.down('xs')]: {
+      boxShadow: 'none',
+      marginBottom: 0,
+    },
   },
   sectionHeader: {
     paddingLeft: 30,
@@ -97,6 +104,15 @@ const styles = theme => ({
     paddingBottom: 20,
     paddingRight: 30,
     backgroundColor: '#edeeee',
+    [theme.breakpoints.down('sm')]: {
+      backgroundColor: 'transparent',
+      padding: '25px 0px 5px 0px',
+    },
+  },
+  sectionTitle: {
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 18,
+    },
   },
   helpButton: {
     padding: 0,
@@ -105,6 +121,16 @@ const styles = theme => ({
   sectionBody: {
     backgroundColor: theme.palette.common.white,
     padding: 30,
+    [theme.breakpoints.down('xs')]: {
+      boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
+      borderRadius: 3,
+      padding: '10px 15px',
+    },
+  },
+  addButtonContainer: {
+    [theme.breakpoints.down('xs')]: {
+      flex: 1,
+    },
   },
   addButton: {
     color: theme.palette.primary.main,
@@ -117,7 +143,7 @@ const styles = theme => ({
     '&:hover': {
       backgroundColor: theme.palette.common.white,
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('xs')]: {
       width: '100%',
     },
   },
@@ -283,7 +309,9 @@ class TalentPage extends Component<Props, State> {
             <div className={classes.sectionHeader}>
               <Grid container justify="space-between" alignItems="center">
                 <Grid item>
-                  <Typography variant="h6">Talents &amp; Rate</Typography>
+                  <Typography variant="h6" className={classes.sectionTitle}>
+                    Talents &amp; Rate
+                  </Typography>
                 </Grid>
                 <Grid item>
                   <Button
@@ -325,7 +353,7 @@ class TalentPage extends Component<Props, State> {
                 />
               )}
               <Grid container justify="center">
-                <Grid item>
+                <Grid item className={classes.addButtonContainer}>
                   <Button
                     className={classes.addButton}
                     onClick={this.addNewTalent}
@@ -341,7 +369,9 @@ class TalentPage extends Component<Props, State> {
             <div className={classes.sectionHeader}>
               <Grid container justify="space-between" alignItems="center">
                 <Grid item>
-                  <Typography variant="h6">Custom Billing Units</Typography>
+                  <Typography variant="h6" className={classes.sectionTitle}>
+                    Custom Billing Units
+                  </Typography>
                 </Grid>
                 <Grid item>
                   <Button
@@ -381,7 +411,7 @@ class TalentPage extends Component<Props, State> {
                 />
               )}
               <Grid container justify="center">
-                <Grid item>
+                <Grid item className={classes.addButtonContainer}>
                   <Button
                     className={classes.addButton}
                     onClick={this.addNewUnit}
