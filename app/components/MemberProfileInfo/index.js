@@ -26,45 +26,32 @@ const styles = theme => ({
   topSection: {
     position: 'relative',
   },
-  addCoverButton: {
-    position: 'absolute',
-    top: 30,
-    left: 30,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    color: theme.palette.common.white,
-    paddingLeft: 10,
-    paddingRight: 10,
-    textTransform: 'none',
-    fontSize: 14,
-    '&:hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    },
-  },
   shareButton: {
     position: 'absolute',
     top: 30,
     right: 20,
     color: theme.palette.common.white,
+    [theme.breakpoints.down('xs')]: {
+      top: '15px',
+      right: '13px',
+    },
   },
   avatarContainer: {
     position: 'absolute',
     left: 30,
     bottom: -60,
+    [theme.breakpoints.down('xs')]: {
+      left: '50%',
+      bottom: '-47.5px',
+      transform: 'translate(-50%)',
+    },
   },
   avatar: {
     width: 120,
     height: 120,
-  },
-  editAvatarButton: {
-    color: theme.palette.primary.main,
-    backgroundColor: theme.palette.common.white,
-    position: 'absolute',
-    boxShadow: '0 2px 4px 0 rgba(187, 187, 187, 0.5)',
-    bottom: '10px',
-    right: 0,
-    padding: 5,
-    '&:hover': {
-      backgroundColor: theme.palette.common.white,
+    [theme.breakpoints.down('xs')]: {
+      width: 95,
+      height: 95,
     },
   },
   overlay: {
@@ -72,52 +59,66 @@ const styles = theme => ({
     opacity: 0.5,
     backgroundImage:
       'linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7))',
+    [theme.breakpoints.down('xs')]: {
+      height: '180px',
+    },
   },
   bottomSection: {
     backgroundColor: theme.palette.common.white,
     paddingBottom: 20,
     paddingTop: 80,
   },
-  editButtonContainer: {
-    padding: '20px',
-  },
-  editButton: {
-    color: theme.palette.primary.main,
-    border: '1px solid #e5e5e5',
-    textTransform: 'none',
-    backgroundColor: theme.palette.common.white,
-    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.08)',
-    '&:hover': {
-      backgroundColor: theme.palette.common.white,
-    },
-  },
   username: {
     fontSize: 24,
     fontWeight: 500,
     textTransform: 'capitalize',
     marginLeft: 30,
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: 0,
+      textAlign: 'center',
+    },
   },
   distance: {
     marginLeft: 30,
     fontSize: 15,
     color: 'rgba(60, 62, 67, 0.6)',
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: 0,
+      textAlign: 'center',
+    },
   },
   location: {
     marginLeft: 30,
     fontSize: 15,
     color: 'rgba(60, 62, 67, 0.6)',
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: 0,
+      textAlign: 'center',
+    },
   },
   divider: {
     marginTop: 20,
     marginBottom: 20,
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
   },
   bio: {
     fontSize: 18,
     marginLeft: 30,
     marginBottom: 20,
+    [theme.breakpoints.down('xs')]: {
+      textAlign: 'center',
+      marginTop: 20,
+    },
   },
   socialButtons: {
     marginLeft: 30,
+    marginRight: 30,
+    width: 'auto',
+    [theme.breakpoints.down('xs')]: {
+      justifyContent: 'center',
+    },
   },
   iconButton: {
     '&:hover svg': {
