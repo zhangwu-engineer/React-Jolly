@@ -43,21 +43,38 @@ const styles = theme => ({
     '&:hover': {
       backgroundColor: 'rgba(0, 0, 0, 0.4)',
     },
+    [theme.breakpoints.down('xs')]: {
+      top: '15px',
+      left: '15px',
+    },
   },
   shareButton: {
     position: 'absolute',
     top: 30,
     right: 20,
     color: theme.palette.common.white,
+    [theme.breakpoints.down('xs')]: {
+      top: '15px',
+      right: '13px',
+    },
   },
   avatarContainer: {
     position: 'absolute',
     left: 30,
     bottom: -60,
+    [theme.breakpoints.down('xs')]: {
+      left: '50%',
+      bottom: '-47.5px',
+      transform: 'translate(-50%)',
+    },
   },
   avatar: {
     width: 120,
     height: 120,
+    [theme.breakpoints.down('xs')]: {
+      width: 95,
+      height: 95,
+    },
   },
   editAvatarButton: {
     color: theme.palette.primary.main,
@@ -76,6 +93,9 @@ const styles = theme => ({
     opacity: 0.5,
     backgroundImage:
       'linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7))',
+    [theme.breakpoints.down('xs')]: {
+      height: '180px',
+    },
   },
   bottomSection: {
     backgroundColor: theme.palette.common.white,
@@ -93,22 +113,51 @@ const styles = theme => ({
     '&:hover': {
       backgroundColor: theme.palette.common.white,
     },
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+  },
+  smallEditButton: {
+    color: theme.palette.primary.main,
+    border: '1px solid #e5e5e5',
+    textTransform: 'none',
+    backgroundColor: theme.palette.common.white,
+    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.08)',
+    display: 'none',
+    '&:hover': {
+      backgroundColor: theme.palette.common.white,
+    },
+    [theme.breakpoints.down('xs')]: {
+      display: 'inline-flex',
+    },
   },
   username: {
     fontSize: 24,
     fontWeight: 500,
     textTransform: 'capitalize',
     marginLeft: 30,
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: 0,
+      textAlign: 'center',
+    },
   },
   distance: {
     marginLeft: 30,
     fontSize: 15,
     color: 'rgba(60, 62, 67, 0.6)',
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: 0,
+      textAlign: 'center',
+    },
   },
   location: {
     marginLeft: 30,
     fontSize: 15,
     color: 'rgba(60, 62, 67, 0.6)',
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: 0,
+      textAlign: 'center',
+    },
   },
   divider: {
     marginTop: 20,
@@ -117,10 +166,19 @@ const styles = theme => ({
   bio: {
     fontSize: 18,
     marginLeft: 30,
+    marginRight: 30,
     marginBottom: 20,
+    [theme.breakpoints.down('xs')]: {
+      textAlign: 'center',
+    },
   },
   socialButtons: {
     marginLeft: 30,
+    marginRight: 30,
+    width: 'auto',
+    [theme.breakpoints.down('xs')]: {
+      justifyContent: 'center',
+    },
   },
   iconButton: {
     '&:hover svg': {
@@ -183,6 +241,18 @@ class ProfileInfo extends Component<Props> {
               >
                 <EditIcon />
                 &nbsp;Edit Personal Information
+              </Button>
+              <Button
+                className={classes.smallEditButton}
+                component={props => (
+                  <Link
+                    to={`/f/${user.get('slug')}/edit/personal-information`}
+                    {...props}
+                  />
+                )}
+              >
+                <EditIcon />
+                &nbsp;Edit
               </Button>
             </Grid>
           </Grid>
