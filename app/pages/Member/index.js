@@ -4,6 +4,7 @@ import React, { Component, Fragment } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { generate } from 'shortid';
+import cx from 'classnames';
 
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -28,13 +29,22 @@ const styles = theme => ({
   root: {
     maxWidth: '712px',
     margin: '40px auto 300px auto',
+    [theme.breakpoints.down('xs')]: {
+      margin: 0,
+    },
   },
   profileInfo: {
     marginBottom: 20,
+    [theme.breakpoints.down('xs')]: {
+      marginBottom: 0,
+    },
   },
   section: {
     boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
     marginBottom: 20,
+    [theme.breakpoints.down('xs')]: {
+      boxShadow: 'none',
+    },
   },
   sectionHeader: {
     paddingLeft: 30,
@@ -42,10 +52,29 @@ const styles = theme => ({
     paddingBottom: 20,
     paddingRight: 30,
     backgroundColor: '#edeeee',
+    [theme.breakpoints.down('xs')]: {
+      backgroundColor: theme.palette.common.white,
+      padding: '25px 15px 0px 15px',
+      borderTop: '2px solid #eef2f2',
+    },
   },
   sectionBody: {
     backgroundColor: theme.palette.common.white,
     padding: 30,
+    [theme.breakpoints.down('xs')]: {
+      padding: 15,
+    },
+  },
+  shareSection: {
+    [theme.breakpoints.down('xs')]: {
+      margin: '30px 10px',
+      boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
+    },
+  },
+  shareSectionBody: {
+    [theme.breakpoints.down('xs')]: {
+      borderRadius: 3,
+    },
   },
   shareText: {
     fontSize: 20,
@@ -67,11 +96,17 @@ const styles = theme => ({
   bottomBanner: {
     padding: '25px 70px',
     backgroundColor: '#2b2b2b',
+    [theme.breakpoints.down('xs')]: {
+      padding: '25px 15px',
+    },
   },
   bannerText: {
     color: theme.palette.common.white,
     fontWeight: 500,
     fontSize: 26,
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 18,
+    },
   },
   bannerButton: {
     backgroundColor: theme.palette.primary.main,
@@ -83,15 +118,32 @@ const styles = theme => ({
     '&:hover': {
       backgroundColor: theme.palette.primary.main,
     },
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 15,
+    },
   },
   topBanner: {
     padding: '25px 70px',
     backgroundColor: '#b8f3ce',
+    [theme.breakpoints.down('xs')]: {
+      padding: '20px 10px',
+    },
+  },
+  topBannerTextContainer: {
+    width: '100%',
   },
   topBannerText: {
     color: '#303532',
     fontWeight: 500,
     fontSize: 18,
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 16,
+      marginBottom: 20,
+    },
+  },
+  topBannerButtonsContainer: {
+    width: '100%',
+    textAlign: 'right',
   },
   topBannerButton: {
     backgroundColor: theme.palette.primary.main,
@@ -167,12 +219,12 @@ class Member extends Component<Props, State> {
             justify="space-between"
             alignItems="center"
           >
-            <Grid item>
+            <Grid item className={classes.topBannerTextContainer}>
               <Typography className={classes.topBannerText}>
                 You&apos;re currently viewing your public profile.
               </Typography>
             </Grid>
-            <Grid item>
+            <Grid item className={classes.topBannerButtonsContainer}>
               <Button
                 className={classes.backButton}
                 component={props => (
@@ -210,8 +262,8 @@ class Member extends Component<Props, State> {
               </div>
             </div>
           )}
-          <div className={classes.section}>
-            <div className={classes.sectionBody}>
+          <div className={cx(classes.section, classes.shareSection)}>
+            <div className={cx(classes.sectionBody, classes.shareSectionBody)}>
               <Grid container justify="space-between" alignItems="center">
                 <Grid item lg={6}>
                   <Typography className={classes.shareText}>
