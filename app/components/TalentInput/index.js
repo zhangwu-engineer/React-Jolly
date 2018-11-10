@@ -32,17 +32,31 @@ const styles = theme => ({
   },
   nameFieldWrapper: {
     paddingRight: 30,
+    [theme.breakpoints.down('xs')]: {
+      paddingRight: 0,
+      marginBottom: 10,
+    },
   },
   rateFieldWrapper: {
     paddingRight: 30,
+    [theme.breakpoints.down('xs')]: {
+      paddingRight: 10,
+    },
   },
   unitFieldWrapper: {
     paddingRight: 30,
+    [theme.breakpoints.down('xs')]: {
+      paddingLeft: 10,
+      paddingRight: 0,
+    },
   },
   iconButton: {
     color: '#a4acb3',
     '&:hover': {
       color: theme.palette.primary.main,
+    },
+    [theme.breakpoints.down('xs')]: {
+      padding: 6,
     },
   },
   name: {
@@ -53,6 +67,14 @@ const styles = theme => ({
     fontSize: 16,
     color: '#a0a0a0',
     marginBottom: 20,
+    [theme.breakpoints.down('xs')]: {
+      marginBottom: 10,
+    },
+  },
+  editModeButtons: {
+    [theme.breakpoints.down('xs')]: {
+      textAlign: 'right',
+    },
   },
 });
 
@@ -189,7 +211,7 @@ class TalentInput extends Component<Props, State> {
         {mode === 'read' && (
           <div className={classes.readView}>
             <Grid container>
-              <Grid item sm={9} lg={11}>
+              <Grid item xs={11} lg={11}>
                 <Typography variant="h6" className={classes.name}>
                   {data.name}
                 </Typography>
@@ -197,7 +219,7 @@ class TalentInput extends Component<Props, State> {
                   {data.rate && data.unit ? `$${data.rate}/${data.unit}` : ''}
                 </Typography>
               </Grid>
-              <Grid item sm={3} lg={1}>
+              <Grid item xs={1} lg={1}>
                 {editable && (
                   <IconButton
                     className={cx(classes.iconButton, classes.doneButton)}
@@ -214,11 +236,11 @@ class TalentInput extends Component<Props, State> {
         {mode === 'edit' && (
           <div className={classes.editView}>
             <Grid container>
-              <Grid item sm={10}>
+              <Grid item xs={9} lg={10}>
                 <Grid container>
                   <Grid
                     item
-                    sm={12}
+                    xs={12}
                     lg={6}
                     className={classes.nameFieldWrapper}
                   >
@@ -231,9 +253,9 @@ class TalentInput extends Component<Props, State> {
                       fullWidth
                     />
                   </Grid>
-                  <Grid item sm={12} lg={6}>
+                  <Grid item xs={12} lg={6}>
                     <Grid container>
-                      <Grid item sm={6} className={classes.rateFieldWrapper}>
+                      <Grid item xs={6} className={classes.rateFieldWrapper}>
                         <TextField
                           id="rate"
                           label="Rate"
@@ -242,7 +264,7 @@ class TalentInput extends Component<Props, State> {
                           className={classes.fieldMargin}
                         />
                       </Grid>
-                      <Grid item sm={6} className={classes.unitFieldWrapper}>
+                      <Grid item xs={6} className={classes.unitFieldWrapper}>
                         <FormControl fullWidth>
                           <InputLabel htmlFor="unit">Unit</InputLabel>
                           <Select
@@ -270,7 +292,7 @@ class TalentInput extends Component<Props, State> {
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid item sm={2}>
+              <Grid item xs={3} lg={2} className={classes.editModeButtons}>
                 <IconButton
                   className={cx(classes.iconButton, classes.doneButton)}
                   onClick={this.onConfirm}
