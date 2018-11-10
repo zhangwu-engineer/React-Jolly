@@ -40,13 +40,39 @@ const styles = theme => ({
     paddingLeft: 30,
     paddingRight: 57,
     paddingBottom: 64,
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: 10,
+      marginRight: 10,
+      marginTop: 23,
+      padding: 20,
+    },
   },
   title: {
     marginBottom: 30,
     fontWeight: 500,
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
   },
   fieldMargin: {
     marginBottom: 20,
+    [theme.breakpoints.down('xs')]: {
+      marginBottom: 10,
+    },
+  },
+  textInput: {
+    '& input': {
+      [theme.breakpoints.down('xs')]: {
+        paddingBottom: 10,
+      },
+    },
+  },
+  passwordDesc: {
+    marginBottom: 40,
+    [theme.breakpoints.down('xs')]: {
+      marginBottom: 30,
+      fontSize: 14,
+    },
   },
   button: {
     backgroundColor: theme.palette.common.green,
@@ -184,7 +210,7 @@ class SignUp extends Component<Props, State> {
               label="Email"
               value={model.email}
               onChange={this.handleChange}
-              className={classes.fieldMargin}
+              className={cx(classes.fieldMargin, classes.textInput)}
               fullWidth
               error={validationError && validationError.path === 'email'}
               helperText={
@@ -198,7 +224,7 @@ class SignUp extends Component<Props, State> {
               label="Full name"
               value={model.fullname}
               onChange={this.handleChange}
-              className={classes.fieldMargin}
+              className={cx(classes.fieldMargin, classes.textInput)}
               fullWidth
               error={validationError && validationError.path === 'fullname'}
               helperText={
@@ -218,6 +244,7 @@ class SignUp extends Component<Props, State> {
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 value={model.password}
+                className={classes.textInput}
                 onChange={this.handleChange}
                 endAdornment={
                   <InputAdornment position="end">
@@ -230,13 +257,17 @@ class SignUp extends Component<Props, State> {
                   </InputAdornment>
                 }
               />
-              <FormHelperText id="password-helper-text">
-                {validationError &&
-                  validationError.path === 'password' &&
-                  validationError.message}
-              </FormHelperText>
+              {validationError &&
+                validationError.path === 'password' &&
+                validationError.message && (
+                  <FormHelperText id="password-helper-text">
+                    {validationError &&
+                      validationError.path === 'password' &&
+                      validationError.message}
+                  </FormHelperText>
+                )}
             </FormControl>
-            <Typography className="mb-xl">
+            <Typography className={classes.passwordDesc}>
               Password must be 8+ characters containing uppercase, lower case,
               and number or special characters
             </Typography>
