@@ -144,7 +144,7 @@ class EditableInput extends Component<Props, State> {
         {isEditing ? (
           <div className={classes.editView}>
             <Grid container>
-              <Grid item xs={9} className={classes.nameFieldWrapper}>
+              <Grid item xs={9} lg={10} className={classes.nameFieldWrapper}>
                 <FormControl className={classes.fieldMargin} fullWidth>
                   <InputLabel htmlFor={id}>{label}</InputLabel>
                   <Input
@@ -171,7 +171,7 @@ class EditableInput extends Component<Props, State> {
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={3} className={classes.editModeButtons}>
+              <Grid item xs={3} lg={2} className={classes.editModeButtons}>
                 <IconButton
                   className={classes.iconButton}
                   onClick={this.onConfirm}
