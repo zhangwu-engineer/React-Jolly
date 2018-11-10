@@ -14,6 +14,9 @@ const styles = theme => ({
   root: {
     padding: '20px 70px',
     backgroundColor: '#b8f3ce',
+    [theme.breakpoints.down('sm')]: {
+      padding: '8px 6px',
+    },
   },
   progressbar: {
     width: 54,
@@ -24,6 +27,15 @@ const styles = theme => ({
       fontWeight: 500,
       color: '#303532 !important',
     },
+    [theme.breakpoints.down('sm')]: {
+      width: 74,
+      height: 74,
+    },
+  },
+  textContent: {
+    [theme.breakpoints.down('sm')]: {
+      flex: 1,
+    },
   },
   thickText: {
     fontSize: 18,
@@ -33,6 +45,9 @@ const styles = theme => ({
   thinText: {
     fontSize: 15,
     color: '#556059',
+  },
+  buttons: {
+    textAlign: 'right',
   },
   button: {
     backgroundColor: 'transparent',
@@ -116,12 +131,12 @@ class CompletionBanner extends Component<Props> {
         justify="space-between"
         alignItems="center"
       >
-        <Grid item>
+        <Grid item xs={12} lg={8}>
           <Grid container>
             <Grid item>
               <div ref={this.progressBar} className={classes.progressbar} />
             </Grid>
-            <Grid item>
+            <Grid item className={classes.textContent}>
               <Typography className={classes.thickText}>
                 Your profile is incomplete!
               </Typography>
@@ -132,7 +147,7 @@ class CompletionBanner extends Component<Props> {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item>
+        <Grid item xs={12} lg={4} className={classes.buttons}>
           <Button className={classes.button} color="primary">
             Add Picture&nbsp;+
           </Button>
