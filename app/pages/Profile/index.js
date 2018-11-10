@@ -25,9 +25,15 @@ const styles = theme => ({
   root: {
     maxWidth: '712px',
     margin: '40px auto 300px auto',
+    [theme.breakpoints.down('xs')]: {
+      margin: 0,
+    },
   },
   profileInfo: {
     marginBottom: 20,
+    [theme.breakpoints.down('xs')]: {
+      marginBottom: 0,
+    },
   },
   section: {
     boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
@@ -38,10 +44,18 @@ const styles = theme => ({
     paddingBottom: 20,
     paddingRight: 30,
     backgroundColor: '#edeeee',
+    [theme.breakpoints.down('xs')]: {
+      backgroundColor: theme.palette.common.white,
+      padding: '25px 15px 0px 15px',
+      borderTop: '2px solid #eef2f2',
+    },
   },
   sectionBody: {
     backgroundColor: theme.palette.common.white,
     padding: 30,
+    [theme.breakpoints.down('xs')]: {
+      padding: 15,
+    },
   },
   editButton: {
     color: theme.palette.primary.main,
@@ -50,6 +64,9 @@ const styles = theme => ({
     boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.08)',
     '&:hover': {
       backgroundColor: theme.palette.common.white,
+    },
+    [theme.breakpoints.down('xs')]: {
+      width: '100%',
     },
   },
   bottomBanner: {
