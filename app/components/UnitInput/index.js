@@ -27,11 +27,24 @@ const styles = theme => ({
   },
   nameFieldWrapper: {
     paddingRight: 30,
+    [theme.breakpoints.down('xs')]: {
+      paddingRight: 0,
+    },
+  },
+  textInput: {
+    '& input': {
+      [theme.breakpoints.down('xs')]: {
+        paddingBottom: 10,
+      },
+    },
   },
   iconButton: {
     color: '#a4acb3',
     '&:hover': {
       color: theme.palette.primary.main,
+    },
+    [theme.breakpoints.down('xs')]: {
+      padding: 6,
     },
   },
   name: {
@@ -42,6 +55,11 @@ const styles = theme => ({
     fontSize: 16,
     color: '#a0a0a0',
     marginBottom: 20,
+  },
+  editModeButtons: {
+    [theme.breakpoints.down('xs')]: {
+      textAlign: 'right',
+    },
   },
 });
 
@@ -164,12 +182,12 @@ class UnitInput extends Component<Props, State> {
         {mode === 'read' && (
           <div className={classes.readView}>
             <Grid container alignItems="center">
-              <Grid item sm={9} lg={11}>
+              <Grid item xs={11} lg={11}>
                 <Typography variant="h6" className={classes.name}>
                   {data.name}
                 </Typography>
               </Grid>
-              <Grid item sm={3} lg={1}>
+              <Grid item xs={1} lg={1}>
                 <IconButton
                   className={cx(classes.iconButton, classes.doneButton)}
                   onClick={this.onEdit}
@@ -184,17 +202,17 @@ class UnitInput extends Component<Props, State> {
         {mode === 'edit' && (
           <div className={classes.editView}>
             <Grid container>
-              <Grid item sm={10} className={classes.nameFieldWrapper}>
+              <Grid item xs={9} lg={10} className={classes.nameFieldWrapper}>
                 <TextField
                   id="name"
                   label="Name"
                   value={model && model.name}
                   onChange={this.handleChange}
-                  className={classes.fieldMargin}
+                  className={cx(classes.fieldMargin, classes.textInput)}
                   fullWidth
                 />
               </Grid>
-              <Grid item sm={2}>
+              <Grid item xs={3} lg={2} className={classes.editModeButtons}>
                 <IconButton
                   className={cx(classes.iconButton, classes.doneButton)}
                   onClick={this.onConfirm}
