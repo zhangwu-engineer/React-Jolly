@@ -13,6 +13,7 @@ import SocialButton from 'components/SocialButton';
 import { requestSocialLogin } from 'containers/App/sagas';
 
 import Logo from 'images/logo.png';
+import MobileLogo from 'images/mobile_logo.png';
 
 import './styles.scss';
 
@@ -54,13 +55,19 @@ class Welcome extends Component<Props> {
         <div className="welcome__leftPanel">
           <img className="welcome__logo" src={Logo} alt="logo" />
           <div className="welcome__leftPanelContent">
+            <img
+              className="welcome__mobileLogo"
+              src={MobileLogo}
+              alt="mobile logo"
+            />
             <h1 className="welcome__title mb-xl">Create your FREE account</h1>
+            <h1 className="welcome__mobileTitle">Bring Your Work to Life</h1>
             <SocialButton
               provider="facebook"
               appId={CONFIG.FACEBOOK.APP_ID}
               onLoginSuccess={this.handleFBLogin}
               onLoginFailure={this.handleFBLoginFailure}
-              className="welcome__btn purple-blue mb-md"
+              className="welcome__btn purple-blue"
             >
               Continue with facebook
             </SocialButton>
