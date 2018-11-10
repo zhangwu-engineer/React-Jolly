@@ -18,11 +18,14 @@ const styles = theme => ({
     maxWidth: '989px',
     margin: '50px auto 300px auto',
     display: 'flex',
+    [theme.breakpoints.down('xs')]: {
+      margin: 0,
+    },
   },
   leftPanel: {
     width: 242,
     marginRight: 35,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('xs')]: {
       display: 'none',
     },
   },
@@ -65,13 +68,17 @@ const styles = theme => ({
   },
   rightPanel: {
     flex: 1,
-    [theme.breakpoints.down('sm')]: {
-      margin: 5,
+    [theme.breakpoints.down('xs')]: {
+      margin: 10,
     },
   },
   section: {
     boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
     marginBottom: 20,
+    [theme.breakpoints.down('xs')]: {
+      boxShadow: 'none',
+      marginBottom: 0,
+    },
   },
   sectionHeader: {
     paddingLeft: 30,
@@ -79,10 +86,23 @@ const styles = theme => ({
     paddingBottom: 20,
     paddingRight: 30,
     backgroundColor: '#edeeee',
+    [theme.breakpoints.down('sm')]: {
+      backgroundColor: 'transparent',
+      padding: '25px 0px 15px 0px',
+    },
+  },
+  sectionTitle: {
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 18,
+    },
   },
   sectionBody: {
     backgroundColor: theme.palette.common.white,
     padding: 30,
+    [theme.breakpoints.down('xs')]: {
+      boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
+      borderRadius: 3,
+    },
   },
 });
 
@@ -242,7 +262,7 @@ class PersonalInformationPage extends Component<Props, State> {
         <div className={classes.rightPanel}>
           <div className={classes.section}>
             <div className={classes.sectionHeader}>
-              <Typography variant="h6">
+              <Typography variant="h6" className={classes.sectionTitle}>
                 Basic and contact information
               </Typography>
             </div>
@@ -274,7 +294,9 @@ class PersonalInformationPage extends Component<Props, State> {
           </div>
           <div className={classes.section}>
             <div className={classes.sectionHeader}>
-              <Typography variant="h6">Public profile actions</Typography>
+              <Typography variant="h6" className={classes.sectionTitle}>
+                Public profile actions
+              </Typography>
             </div>
             <div className={classes.sectionBody}>
               <Option
@@ -305,7 +327,9 @@ class PersonalInformationPage extends Component<Props, State> {
           </div>
           <div className={classes.section}>
             <div className={classes.sectionHeader}>
-              <Typography variant="h6">Location</Typography>
+              <Typography variant="h6" className={classes.sectionTitle}>
+                Location
+              </Typography>
             </div>
             <div className={classes.sectionBody}>
               <EditableInput
@@ -324,7 +348,9 @@ class PersonalInformationPage extends Component<Props, State> {
           </div>
           <div className={classes.section}>
             <div className={classes.sectionHeader}>
-              <Typography variant="h6">Social media</Typography>
+              <Typography variant="h6" className={classes.sectionTitle}>
+                Social media
+              </Typography>
             </div>
             <div className={classes.sectionBody}>
               <EditableInput
@@ -359,7 +385,9 @@ class PersonalInformationPage extends Component<Props, State> {
           </div>
           <div className={classes.section}>
             <div className={classes.sectionHeader}>
-              <Typography variant="h6">Privacy</Typography>
+              <Typography variant="h6" className={classes.sectionTitle}>
+                Privacy
+              </Typography>
             </div>
             <div className={classes.sectionBody}>
               <Option
