@@ -12,6 +12,7 @@ import SocialButton from 'components/SocialButton';
 import { requestSocialLogin } from 'containers/App/sagas';
 
 import Logo from 'images/logo.png';
+import MobileLogo from 'images/mobile_logo.png';
 
 import './styles.scss';
 
@@ -51,17 +52,24 @@ class SignIn extends Component<Props> {
     return (
       <div className="signin">
         <div className="signin__leftPanel">
+          <div className="signin__leftOverlay" />
           <img className="signin__logo" src={Logo} alt="logo" />
           <div className="signin__leftPanelContent">
+            <img
+              className="signin__mobileLogo"
+              src={MobileLogo}
+              alt="mobile logo"
+            />
             <h1 className="signin__title mb-xl">
               Sign in to your Jolly account
             </h1>
+            <h1 className="signin__mobileTitle">Bring Your Work to Life</h1>
             <SocialButton
               provider="facebook"
               appId={CONFIG.FACEBOOK.APP_ID}
               onLoginSuccess={this.handleFBLogin}
               onLoginFailure={this.handleFBLoginFailure}
-              className="signin__btn purple-blue mb-md"
+              className="signin__btn purple-blue"
             >
               Sign In with facebook
             </SocialButton>
@@ -70,7 +78,7 @@ class SignIn extends Component<Props> {
               appId={CONFIG.LINKEDIN.APP_ID}
               onLoginSuccess={this.handleLinkedInLogin}
               onLoginFailure={this.handleLinkedInLoginFailure}
-              className="signin__btn secondary nm"
+              className="signin__btn secondary"
             >
               Sign In with linkedin
             </SocialButton>
