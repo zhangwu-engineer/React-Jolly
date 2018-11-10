@@ -4,6 +4,7 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import * as yup from 'yup';
+import cx from 'classnames';
 
 import { withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -32,14 +33,33 @@ const styles = theme => ({
     paddingLeft: 30,
     paddingRight: 57,
     paddingBottom: 55,
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: 10,
+      marginRight: 10,
+      marginTop: 23,
+      padding: 20,
+    },
   },
   title: {
     marginBottom: 40,
     fontWeight: 500,
     fontSize: 26,
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
   },
   fieldMargin: {
     marginBottom: 20,
+    [theme.breakpoints.down('xs')]: {
+      marginBottom: 10,
+    },
+  },
+  textInput: {
+    '& input': {
+      [theme.breakpoints.down('xs')]: {
+        paddingBottom: 10,
+      },
+    },
   },
   button: {
     fontSize: 13,
@@ -140,7 +160,7 @@ class ForgotPassword extends Component<Props, State> {
               label="Email"
               value={model.email}
               onChange={this.handleChange}
-              className={classes.fieldMargin}
+              className={cx(classes.fieldMargin, classes.textInput)}
               fullWidth
               error={validationError && validationError.path === 'email'}
               helperText={
