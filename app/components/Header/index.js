@@ -285,7 +285,9 @@ class Header extends Component<Props, State> {
             </Fragment>
           ) : (
             <Typography className={classes.desc}>
-              Already a user?{' '}
+              {pathname === '/email-sign-in'
+                ? 'No account yet? '
+                : 'Already a user? '}
               <Link
                 to={
                   pathname === '/email-sign-in'
