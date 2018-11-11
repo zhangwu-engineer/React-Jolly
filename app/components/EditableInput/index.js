@@ -168,6 +168,7 @@ class EditableInput extends Component<Props, State> {
                         </InputAdornment>
                       ) : null
                     }
+                    autoFocus
                   />
                 </FormControl>
               </Grid>

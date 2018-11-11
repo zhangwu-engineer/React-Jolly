@@ -265,6 +265,7 @@ class TalentInput extends Component<Props, State> {
                       onChange={this.handleChange}
                       className={cx(classes.fieldMargin, classes.textInput)}
                       fullWidth
+                      autoFocus
                     />
                   </Grid>
                   <Grid item xs={12} lg={6}>

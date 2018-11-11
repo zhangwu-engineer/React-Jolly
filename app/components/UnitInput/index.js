@@ -210,6 +210,7 @@ class UnitInput extends Component<Props, State> {
                   onChange={this.handleChange}
                   className={cx(classes.fieldMargin, classes.textInput)}
                   fullWidth
+                  autoFocus
                 />
               </Grid>
               <Grid item xs={3} lg={2} className={classes.editModeButtons}>
