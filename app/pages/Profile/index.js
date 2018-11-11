@@ -107,15 +107,6 @@ const styles = theme => ({
       padding: '11px 0px',
     },
   },
-  topBanner: {
-    padding: '25px 70px',
-    backgroundColor: '#b8f3ce',
-  },
-  topBannerText: {
-    color: '#303532',
-    fontWeight: 500,
-    fontSize: 18,
-  },
 });
 
 type Props = {
@@ -127,23 +118,7 @@ type Props = {
   requestTalents: Function,
 };
 
-type State = {
-  showEmailConfirmed: boolean,
-};
-
 class Profile extends Component<Props, State> {
-  static getDerivedStateFromProps() {
-    if (window.localStorage.getItem('emailConfirmed') === 'yes') {
-      window.localStorage.removeItem('emailConfirmed');
-      return {
-        showEmailConfirmed: true,
-      };
-    }
-    return null;
-  }
-  state = {
-    showEmailConfirmed: false,
-  };
   componentDidMount() {
     this.props.requestUser();
     this.props.requestTalents();
@@ -161,27 +136,12 @@ class Profile extends Component<Props, State> {
         params: { slug },
       },
     } = this.props;
-    const { showEmailConfirmed } = this.state;
     if (user.get('slug') !== slug) {
       return null;
     }
     return (
       <Fragment>
         <CompletionBanner user={user} talents={talents.size} />
-        {showEmailConfirmed && (
-          <Grid
-            className={classes.topBanner}
-            container
-            justify="space-between"
-            alignItems="center"
-          >
-            <Grid item>
-              <Typography className={classes.topBannerText}>
-                Email Address Confirmed!
-              </Typography>
-            </Grid>
-          </Grid>
-        )}
         <div className={classes.root}>
           <div className={classes.profileInfo}>
             <ProfileInfo user={user} />

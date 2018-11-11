@@ -29,7 +29,6 @@ class EmailVerificationPage extends Component<Props> {
   componentDidUpdate(prevProps: Props) {
     const { user, isLoading, error } = this.props;
     if (prevProps.isLoading && !isLoading && !error) {
-      window.localStorage.setItem('emailConfirmed', 'yes');
       if (user) {
         history.push(`/f/${user.get('slug')}/edit`);
       } else {
