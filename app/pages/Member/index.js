@@ -210,6 +210,10 @@ class Member extends Component<Props, State> {
     } = this.props;
     const { isOpen, isContactOpen } = this.state;
     const data = currentUser.get('slug') === slug ? currentUser : member;
+    const showContactOptions =
+      data.getIn(['profile', 'receiveEmail']) ||
+      data.getIn(['profile', 'receiveSMS']) ||
+      data.getIn(['profile', 'receiveCall']);
     return (
       <Fragment>
         {currentUser.get('slug') === slug && (
@@ -285,28 +289,30 @@ class Member extends Component<Props, State> {
             </div>
           </div>
         </div>
-        <Grid
-          className={classes.bottomBanner}
-          container
-          justify="space-between"
-          alignItems="center"
-        >
-          <Grid item>
-            <Typography className={classes.bannerText}>
-              Get in Touch!
-            </Typography>
+        {showContactOptions && (
+          <Grid
+            className={classes.bottomBanner}
+            container
+            justify="space-between"
+            alignItems="center"
+          >
+            <Grid item>
+              <Typography className={classes.bannerText}>
+                Get in Touch!
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Button
+                className={classes.bannerButton}
+                onClick={() => {
+                  this.setState({ isContactOpen: true });
+                }}
+              >
+                Contact Options
+              </Button>
+            </Grid>
           </Grid>
-          <Grid item>
-            <Button
-              className={classes.bannerButton}
-              onClick={() => {
-                this.setState({ isContactOpen: true });
-              }}
-            >
-              Contact Options
-            </Button>
-          </Grid>
-        </Grid>
+        )}
         <ShareProfileModal isOpen={isOpen} onCloseModal={this.onCloseModal} />
         <ContactOptionModal
           isOpen={isContactOpen}
