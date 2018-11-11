@@ -14,6 +14,7 @@ import CameraIcon from '@material-ui/icons/CameraAltOutlined';
 import Divider from '@material-ui/core/Divider';
 import Avatar from '@material-ui/core/Avatar';
 
+import PhotoModal from 'components/PhotoModal';
 import Link from 'components/Link';
 import Icon from 'components/Icon';
 
@@ -201,19 +202,35 @@ type Props = {
   classes: Object,
 };
 
-class ProfileInfo extends Component<Props> {
+type State = {
+  isOpen: boolean,
+};
+
+class ProfileInfo extends Component<Props, State> {
+  state = {
+    isOpen: false,
+  };
   openUrl = url => {
     window.open(url, '_blank');
   };
+  closeModal = () => {
+    this.setState({ isOpen: false });
+  };
   render() {
     const { user, classes } = this.props;
+    const { isOpen } = this.state;
     return (
       <div className={classes.root}>
         <div className={classes.topSection}>
           <div>
             <div className={classes.overlay} />
           </div>
-          <Button className={classes.addCoverButton}>
+          <Button
+            className={classes.addCoverButton}
+            onClick={() => {
+              this.setState({ isOpen: true });
+            }}
+          >
             <CameraIcon />
             &nbsp;&nbsp;Add cover
           </Button>
@@ -222,7 +239,12 @@ class ProfileInfo extends Component<Props> {
           </IconButton>
           <div className={classes.avatarContainer}>
             <Avatar className={classes.avatar} src={EmptyAvatarImg} />
-            <IconButton className={classes.editAvatarButton}>
+            <IconButton
+              className={classes.editAvatarButton}
+              onClick={() => {
+                this.setState({ isOpen: true });
+              }}
+            >
               <EditIcon fontSize="small" />
             </IconButton>
           </div>
@@ -338,6 +360,7 @@ class ProfileInfo extends Component<Props> {
             </Grid>
           </Grid>
         </div>
+        <PhotoModal isOpen={isOpen} onCloseModal={this.closeModal} />
       </div>
     );
   }
