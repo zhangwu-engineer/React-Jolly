@@ -49,6 +49,9 @@ const styles = theme => ({
 });
 
 type Props = {
+  showEmail: boolean,
+  showSMS: boolean,
+  showCall: boolean,
   classes: Object,
   isOpen: boolean,
   onCloseModal: Function,
@@ -60,7 +63,7 @@ class ContactOptionModal extends Component<Props> {
     this.props.onCloseModal();
   };
   render() {
-    const { classes, isOpen } = this.props;
+    const { showEmail, showSMS, showCall, classes, isOpen } = this.props;
     return (
       <BaseModal
         className={classes.modal}
@@ -70,25 +73,31 @@ class ContactOptionModal extends Component<Props> {
         <Typography variant="h6" component="h1" className={classes.title}>
           Contact Options
         </Typography>
-        <Grid container justify="space-between">
-          <Grid item>
-            <Button className={classes.button}>
-              <TextSMSIcon />
-              &nbsp;Text
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button className={classes.button}>
-              <EmailIcon />
-              &nbsp;Email
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button className={classes.button}>
-              <PhoneIcon />
-              &nbsp;Call
-            </Button>
-          </Grid>
+        <Grid container>
+          {showSMS && (
+            <Grid item xs={4}>
+              <Button className={classes.button}>
+                <TextSMSIcon />
+                &nbsp;Text
+              </Button>
+            </Grid>
+          )}
+          {showEmail && (
+            <Grid item xs={4}>
+              <Button className={classes.button}>
+                <EmailIcon />
+                &nbsp;Email
+              </Button>
+            </Grid>
+          )}
+          {showCall && (
+            <Grid item xs={4}>
+              <Button className={classes.button}>
+                <PhoneIcon />
+                &nbsp;Call
+              </Button>
+            </Grid>
+          )}
         </Grid>
       </BaseModal>
     );
