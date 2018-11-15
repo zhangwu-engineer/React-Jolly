@@ -22,6 +22,7 @@ const LOGOUT = 'Jolly/App/LOGOUT';
 const USER = 'Jolly/App/USER';
 const USER_DATA_UPDATE = 'Jolly/App/UPDATE_USER_DATA';
 const USER_PHOTO_UPLOAD = 'Jolly/App/UPLOAD_USER_PHOTO';
+const USER_FILES = 'Jolly/App/USER_FILES';
 const EMAIL_VERIFICATION = 'Jolly/App/EMAIL_VERIFICATION';
 
 const OPEN_NAVBAR = 'Jolly/App/OPEN_NAVBAR';
@@ -142,6 +143,22 @@ const userRequestError = (error: string) => ({
   payload: error,
 });
 
+export const requestUserFiles = () => ({
+  type: USER_FILES + REQUESTED,
+});
+const userFilesRequestSuccess = (payload: Object) => ({
+  type: USER_FILES + SUCCEDED,
+  payload,
+});
+const userFilesRequestFailed = (error: string) => ({
+  type: USER_FILES + FAILED,
+  payload: error,
+});
+const userFilesRequestError = (error: string) => ({
+  type: USER_FILES + ERROR,
+  payload: error,
+});
+
 export const requestUserEmailVerification = (payload: Object) => ({
   type: EMAIL_VERIFICATION + REQUESTED,
   payload,
@@ -184,10 +201,14 @@ const initialState = fromJS({
   isLoading: false,
   error: '',
   isUploading: false,
+  uploadError: '',
   navbarOpen: false,
   metaJson: {},
   isSocialLoading: false,
   socialError: '',
+  files: [],
+  isFileLoading: false,
+  fileError: '',
 });
 
 export const reducer = (
@@ -232,17 +253,17 @@ export const reducer = (
       );
 
     case USER_PHOTO_UPLOAD + REQUESTED:
-      return state.set('isUploading', true).set('error', null);
+      return state.set('isUploading', true).set('uploadError', null);
 
     case USER_PHOTO_UPLOAD + SUCCEDED:
-      return state.set('isUploading', false).set('error', '');
+      return state.set('isUploading', false).set('uploadError', '');
 
     case USER_PHOTO_UPLOAD + FAILED:
-      return state.set('isUploading', false).set('error', payload);
+      return state.set('isUploading', false).set('uploadError', payload);
 
     case USER_PHOTO_UPLOAD + ERROR:
       return state.set('isUploading', false).set(
-        'error',
+        'uploadError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -307,6 +328,21 @@ export const reducer = (
 
     case USER + ERROR:
       return state.set('isLoading', false);
+
+    case USER_FILES + REQUESTED:
+      return state.set('isFileLoading', true);
+
+    case USER_FILES + SUCCEDED:
+      return state
+        .set('isFileLoading', false)
+        .set('files', fromJS(payload))
+        .set('fileError', '');
+
+    case USER_FILES + FAILED:
+      return state.set('isFileLoading', false).set('fileError', payload);
+
+    case USER_FILES + ERROR:
+      return state.set('isFileLoading', false);
 
     case EMAIL_VERIFICATION + REQUESTED:
       return state.set('isLoading', true);
@@ -438,7 +474,7 @@ function* UpdateUserDataRequest({ payload }) {
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
-      yield put(userDataUpdateSuccess(response.data));
+      yield put(userDataUpdateSuccess(response.data.response));
       yield put(requestUser());
     } else if (response.status === 403 || response.status === 401) {
       yield put(logout());
@@ -452,24 +488,41 @@ function* UpdateUserDataRequest({ payload }) {
 
 function* UploadUserPhotoRequest({ payload }) {
   const token = yield select(getToken);
-  const userId = yield select(getUserId);
   try {
     const response = yield call(request, {
       method: 'POST',
-      url: `${API_URL}/user/${userId}/avatar`,
+      url: `${API_URL}/user/image`,
       data: {
         image: payload,
       },
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
-      yield put(userPhotoUploadSuccess(response.data));
+      yield put(userPhotoUploadSuccess(response.data.response));
       yield put(requestUser());
     } else {
       yield put(userPhotoUploadFailed(response.data.error.message));
     }
   } catch (error) {
     yield put(userPhotoUploadError(error));
+  }
+}
+
+function* UserFilesRequest() {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/user/files`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(userFilesRequestSuccess(response.data.response));
+    } else {
+      yield put(userFilesRequestFailed(response.data.error.message));
+    }
+  } catch (error) {
+    yield put(userFilesRequestError(error));
   }
 }
 
@@ -500,6 +553,7 @@ export default function*(): Saga<void> {
     takeLatest(USER + REQUESTED, UserRequest),
     takeLatest(USER_DATA_UPDATE + REQUESTED, UpdateUserDataRequest),
     takeLatest(USER_PHOTO_UPLOAD + REQUESTED, UploadUserPhotoRequest),
+    takeLatest(USER_FILES + REQUESTED, UserFilesRequest),
     takeLatest(EMAIL_VERIFICATION + REQUESTED, UserEmailVerificationRequest),
   ]);
 }

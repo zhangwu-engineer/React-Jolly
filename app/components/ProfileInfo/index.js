@@ -63,6 +63,10 @@ const styles = theme => ({
     position: 'absolute',
     left: 30,
     bottom: -60,
+    padding: 3,
+    borderRadius: '50%',
+    backgroundColor: theme.palette.common.white,
+    boxShadow: '0 2px 4px 0 rgba(187, 187, 187, 0.5)',
     [theme.breakpoints.down('xs')]: {
       left: '50%',
       bottom: '-47.5px',
@@ -88,6 +92,11 @@ const styles = theme => ({
     '&:hover': {
       backgroundColor: theme.palette.common.white,
     },
+  },
+  backgroundImage: {
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
   },
   overlay: {
     height: '342px',
@@ -199,15 +208,20 @@ const styles = theme => ({
 
 type Props = {
   user: Object,
+  files: Object,
   classes: Object,
+  uploadPhoto: Function,
+  updateUser: Function,
 };
 
 type State = {
+  type: string,
   isOpen: boolean,
 };
 
 class ProfileInfo extends Component<Props, State> {
   state = {
+    type: '',
     isOpen: false,
   };
   openUrl = url => {
@@ -217,32 +231,43 @@ class ProfileInfo extends Component<Props, State> {
     this.setState({ isOpen: false });
   };
   render() {
-    const { user, classes } = this.props;
-    const { isOpen } = this.state;
+    const { user, files, classes } = this.props;
+    const { isOpen, type } = this.state;
+    const avatarImg = user.getIn(['profile', 'avatar']) || EmptyAvatarImg;
     return (
       <div className={classes.root}>
         <div className={classes.topSection}>
-          <div>
+          <div
+            className={classes.backgroundImage}
+            style={{
+              backgroundImage: `url('${user.getIn([
+                'profile',
+                'backgroundImage',
+              ])}')`,
+            }}
+          >
             <div className={classes.overlay} />
           </div>
           <Button
             className={classes.addCoverButton}
             onClick={() => {
-              this.setState({ isOpen: true });
+              this.setState({ type: 'backgroundImage', isOpen: true });
             }}
           >
             <CameraIcon />
-            &nbsp;&nbsp;Add cover
+            &nbsp;&nbsp;
+            {user.getIn(['profile', 'backgroundImage']) ? 'Change' : 'Add'}{' '}
+            cover
           </Button>
           <IconButton className={classes.shareButton}>
             <ShareIcon />
           </IconButton>
           <div className={classes.avatarContainer}>
-            <Avatar className={classes.avatar} src={EmptyAvatarImg} />
+            <Avatar className={classes.avatar} src={avatarImg} />
             <IconButton
               className={classes.editAvatarButton}
               onClick={() => {
-                this.setState({ isOpen: true });
+                this.setState({ type: 'avatar', isOpen: true });
               }}
             >
               <EditIcon fontSize="small" />
@@ -360,7 +385,15 @@ class ProfileInfo extends Component<Props, State> {
             </Grid>
           </Grid>
         </div>
-        <PhotoModal isOpen={isOpen} onCloseModal={this.closeModal} />
+        <PhotoModal
+          user={user}
+          type={type}
+          files={files}
+          isOpen={isOpen}
+          onCloseModal={this.closeModal}
+          uploadPhoto={this.props.uploadPhoto}
+          updateUser={this.props.updateUser}
+        />
       </div>
     );
   }

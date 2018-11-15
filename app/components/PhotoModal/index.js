@@ -1,6 +1,8 @@
 // @flow
 
 import React, { Component } from 'react';
+import { generate } from 'shortid';
+import cx from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -39,13 +41,29 @@ const styles = theme => ({
   contentWrapper: {
     padding: 20,
     height: 565,
+    display: 'flex',
+    flexWrap: 'wrap',
+    alignContent: 'flex-start',
+  },
+  fileWrapper: {
+    width: 174,
+    height: 174,
+    padding: 3,
+  },
+  selected: {
+    border: '2px solid #000000',
   },
 });
 
 type Props = {
+  user: Object,
+  type: string,
+  files: Object,
   isOpen: boolean,
   classes: Object,
   onCloseModal: Function,
+  uploadPhoto: Function,
+  updateUser: Function,
 };
 
 class PhotoModal extends Component<Props> {
@@ -59,6 +77,7 @@ class PhotoModal extends Component<Props> {
       const block = e.target.result.split(';');
       const [, base64] = block;
       const [, realData] = base64.split(','); // eslint-disable-line
+      this.props.uploadPhoto(realData);
     };
     if (target instanceof HTMLInputElement) {
       const [file] = target.files;
@@ -68,9 +87,22 @@ class PhotoModal extends Component<Props> {
       reader.readAsDataURL(file);
     }
   };
+  updateSelection = path => {
+    this.props.updateUser({
+      profile: {
+        [this.props.type]: path,
+      },
+    });
+  };
   fileInput = React.createRef();
   render() {
-    const { isOpen, classes } = this.props;
+    const { user, type, files, isOpen, classes } = this.props;
+    let selectedFile = '';
+    if (type === 'avatar') {
+      selectedFile = user.getIn(['profile', 'avatar']);
+    } else {
+      selectedFile = user.getIn(['profile', 'backgroundImage']);
+    }
     return (
       <BaseModal
         className={classes.modal}
@@ -101,7 +133,20 @@ class PhotoModal extends Component<Props> {
             />
           </Grid>
         </Grid>
-        <div className={classes.contentWrapper} />
+        <div className={classes.contentWrapper}>
+          {files.map(file => (
+            <div
+              className={cx(classes.fileWrapper, {
+                [classes.selected]: selectedFile === file.get('path'),
+              })}
+              key={generate()}
+              onClick={() => this.updateSelection(file.get('path'))}
+              role="button"
+            >
+              <img src={file.get('path')} alt={file.get('_id')} />
+            </div>
+          ))}
+        </div>
       </BaseModal>
     );
   }

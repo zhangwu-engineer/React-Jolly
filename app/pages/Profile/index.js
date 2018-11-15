@@ -17,7 +17,12 @@ import TalentInput from 'components/TalentInput';
 import CompletionBanner from 'components/CompletionBanner';
 import Link from 'components/Link';
 
-import { requestUser } from 'containers/App/sagas';
+import {
+  requestUser,
+  requestUserPhotoUpload,
+  requestUserFiles,
+  requestUserDataUpdate,
+} from 'containers/App/sagas';
 import saga, { reducer, requestTalents } from 'containers/Talent/sagas';
 import injectSagas from 'utils/injectSagas';
 
@@ -111,17 +116,30 @@ const styles = theme => ({
 
 type Props = {
   user: Object,
+  files: Object,
+  isUploading: boolean,
+  uploadError: string,
   talents: Object,
   classes: Object,
   match: Object,
   requestUser: Function,
+  requestUserFiles: Function,
+  requestUserPhotoUpload: Function,
+  updateUser: Function,
   requestTalents: Function,
 };
 
 class Profile extends Component<Props, State> {
   componentDidMount() {
     this.props.requestUser();
+    this.props.requestUserFiles();
     this.props.requestTalents();
+  }
+  componentDidUpdate(prevProps: Props) {
+    const { isUploading, uploadError } = this.props;
+    if (prevProps.isUploading && !isUploading && !uploadError) {
+      this.props.requestUserFiles();
+    }
   }
   seePublicProfile = () => {
     const { user } = this.props;
@@ -130,6 +148,7 @@ class Profile extends Component<Props, State> {
   render() {
     const {
       user,
+      files,
       talents,
       classes,
       match: {
@@ -144,7 +163,12 @@ class Profile extends Component<Props, State> {
         <CompletionBanner user={user} talents={talents.size} />
         <div className={classes.root}>
           <div className={classes.profileInfo}>
-            <ProfileInfo user={user} />
+            <ProfileInfo
+              user={user}
+              files={files}
+              uploadPhoto={this.props.requestUserPhotoUpload}
+              updateUser={this.props.updateUser}
+            />
           </div>
           <div className={classes.section}>
             <div className={classes.sectionHeader}>
@@ -225,12 +249,20 @@ const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
   isLoading: state.getIn(['app', 'isLoading']),
   error: state.getIn(['app', 'error']),
+  files: state.getIn(['app', 'files']),
+  isFileLoading: state.getIn(['app', 'isFileLoading']),
+  fileError: state.getIn(['app', 'fileError']),
+  isUploading: state.getIn(['app', 'isUploading']),
+  uploadError: state.getIn(['app', 'uploadError']),
   talents: state.getIn(['talent', 'talents']),
 });
 
 const mapDispatchToProps = dispatch => ({
   requestUser: () => dispatch(requestUser()),
   requestTalents: () => dispatch(requestTalents()),
+  requestUserPhotoUpload: payload => dispatch(requestUserPhotoUpload(payload)),
+  requestUserFiles: () => dispatch(requestUserFiles()),
+  updateUser: payload => dispatch(requestUserDataUpdate(payload)),
 });
 
 export default compose(
