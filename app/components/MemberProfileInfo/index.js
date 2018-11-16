@@ -205,18 +205,22 @@ class MemberProfileInfo extends Component<Props, State> {
           >
             <div className={classes.overlay} />
           </div>
-          <IconButton
-            className={classes.imageButton}
-            onClick={() => this.setState({ isOpen: true })}
-          >
-            <ImageIcon />
-          </IconButton>
-          <IconButton
-            className={classes.smallImageButton}
-            onClick={() => history.push(`/f/${user.get('slug')}/gallery`)}
-          >
-            <ImageIcon />
-          </IconButton>
+          {user.getIn(['profile', 'showImageLibrary']) && (
+            <Fragment>
+              <IconButton
+                className={classes.imageButton}
+                onClick={() => this.setState({ isOpen: true })}
+              >
+                <ImageIcon />
+              </IconButton>
+              <IconButton
+                className={classes.smallImageButton}
+                onClick={() => history.push(`/f/${user.get('slug')}/gallery`)}
+              >
+                <ImageIcon />
+              </IconButton>
+            </Fragment>
+          )}
           <IconButton className={classes.shareButton}>
             <ShareIcon />
           </IconButton>
