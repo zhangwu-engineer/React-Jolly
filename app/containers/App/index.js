@@ -65,6 +65,8 @@ class App extends Component<Props> {
         <Switch>
           <Route path="/freelancer-signup" />
           <Route path="/sign-in" />
+          <Route path="/f/:slug/edit/avatar" />
+          <Route path="/f/:slug/edit/background-image" />
           <Route
             path="/"
             render={() => (

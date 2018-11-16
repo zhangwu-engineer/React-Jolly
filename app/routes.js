@@ -13,6 +13,7 @@ const SignUp = load(() => import('pages/SignUp'));
 const SignIn = load(() => import('pages/SignIn'));
 const EmailSignIn = load(() => import('pages/EmailSignIn'));
 const Profile = load(() => import('pages/Profile'));
+const ProfileGallery = load(() => import('pages/ProfileGallery'));
 const Member = load(() => import('pages/Member'));
 const Talent = load(() => import('pages/Talent'));
 const PersonalInformation = load(() => import('pages/PersonalInformation'));
@@ -60,6 +61,14 @@ class Routes extends Component<{}> {
         <PrivateRoute
           path="/f/:slug/settings"
           render={props => <Settings {...props} />}
+        />
+        <PrivateRoute
+          path="/f/:slug/edit/avatar"
+          render={props => <ProfileGallery {...props} />}
+        />
+        <PrivateRoute
+          path="/f/:slug/edit/background-image"
+          render={props => <ProfileGallery {...props} />}
         />
         <PrivateRoute
           path="/f/:slug/edit"

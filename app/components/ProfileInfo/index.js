@@ -14,6 +14,7 @@ import CameraIcon from '@material-ui/icons/CameraAltOutlined';
 import Divider from '@material-ui/core/Divider';
 import Avatar from '@material-ui/core/Avatar';
 
+import { history } from 'components/ConnectedRouter';
 import PhotoModal from 'components/PhotoModal';
 import Link from 'components/Link';
 import Icon from 'components/Icon';
@@ -47,6 +48,27 @@ const styles = theme => ({
     [theme.breakpoints.down('xs')]: {
       top: '15px',
       left: '15px',
+      display: 'none',
+    },
+  },
+  smallAddCoverButton: {
+    position: 'absolute',
+    top: 30,
+    left: 30,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    color: theme.palette.common.white,
+    paddingLeft: 10,
+    paddingRight: 10,
+    textTransform: 'none',
+    fontSize: 14,
+    display: 'none',
+    '&:hover': {
+      backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    },
+    [theme.breakpoints.down('xs')]: {
+      top: '15px',
+      left: '15px',
+      display: 'flex',
     },
   },
   shareButton: {
@@ -91,6 +113,25 @@ const styles = theme => ({
     padding: 5,
     '&:hover': {
       backgroundColor: theme.palette.common.white,
+    },
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+  },
+  smallEditAvatarButton: {
+    color: theme.palette.primary.main,
+    backgroundColor: theme.palette.common.white,
+    position: 'absolute',
+    boxShadow: '0 2px 4px 0 rgba(187, 187, 187, 0.5)',
+    bottom: '10px',
+    right: 0,
+    padding: 5,
+    display: 'none',
+    '&:hover': {
+      backgroundColor: theme.palette.common.white,
+    },
+    [theme.breakpoints.down('xs')]: {
+      display: 'flex',
     },
   },
   backgroundImage: {
@@ -259,6 +300,17 @@ class ProfileInfo extends Component<Props, State> {
             {user.getIn(['profile', 'backgroundImage']) ? 'Change' : 'Add'}{' '}
             cover
           </Button>
+          <Button
+            className={classes.smallAddCoverButton}
+            onClick={() => {
+              history.push(`/f/${user.get('slug')}/edit/background-image`);
+            }}
+          >
+            <CameraIcon />
+            &nbsp;&nbsp;
+            {user.getIn(['profile', 'backgroundImage']) ? 'Change' : 'Add'}{' '}
+            cover
+          </Button>
           <IconButton className={classes.shareButton}>
             <ShareIcon />
           </IconButton>
@@ -268,6 +320,14 @@ class ProfileInfo extends Component<Props, State> {
               className={classes.editAvatarButton}
               onClick={() => {
                 this.setState({ type: 'avatar', isOpen: true });
+              }}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+            <IconButton
+              className={classes.smallEditAvatarButton}
+              onClick={() => {
+                history.push(`/f/${user.get('slug')}/edit/avatar`);
               }}
             >
               <EditIcon fontSize="small" />
