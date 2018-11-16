@@ -397,6 +397,7 @@ class PersonalInformationPage extends Component<Props, State> {
                 value={model && model.profile.showImageLibrary}
                 modalTitle="Image gallery on Profile"
                 modalContent="When enabled, this will show an image gallery icon on your profile that visitors can click to look through your uploaded photos and videos."
+                onChange={this.onChange}
               />
             </div>
           </div>

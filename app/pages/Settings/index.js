@@ -317,6 +317,7 @@ class SettingsPage extends Component<Props, State> {
                 value={model && model.profile.showImageLibrary}
                 modalTitle="Email Button on Profile"
                 modalContent="When enabled, visitors to your public profile will see a button to send an email message"
+                onChange={this.onChange}
               />
             </div>
           </div>
