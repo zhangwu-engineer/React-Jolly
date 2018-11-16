@@ -227,7 +227,7 @@ export const reducer = (
         .set('error', '');
 
     case REGISTER + FAILED:
-      return state.set('isLoading', false).set('error', payload.message);
+      return state.set('isLoading', false).set('error', payload);
 
     case REGISTER + ERROR:
       return state.set('isLoading', false).set(
