@@ -131,6 +131,7 @@ const styles = theme => ({
 
 type Props = {
   user: Object,
+  match: Object,
   classes: Object,
   updateUser: Function,
 };
@@ -144,9 +145,14 @@ class SettingsPage extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State) {
     if (nextProps.user && !prevState.model) {
       const profile = nextProps.user.get('profile');
+      const name = `${nextProps.user.get('firstName')} ${nextProps.user.get(
+        'lastName'
+      )}`;
       return {
         ...prevState,
         model: {
+          name,
+          email: nextProps.user.get('email'),
           profile: {
             phone: profile.get('phone') || '',
             bio: profile.get('bio') || '',
@@ -164,27 +170,76 @@ class SettingsPage extends Component<Props, State> {
     selectedSection: 'personal',
     model: null,
   };
+  componentDidUpdate(prevProps: Props) {
+    const { user } = this.props;
+    if (prevProps.user.get('slug') !== user.get('slug')) {
+      window.location.href = `${window.location.origin}/f/${user.get(
+        'slug'
+      )}/settings`;
+    }
+  }
   onChange = (id, value) => {
-    this.setState(
-      update(this.state, {
-        model: {
-          profile: {
-            [id]: { $set: value },
+    if (id === 'name') {
+      this.setState(
+        update(this.state, {
+          model: {
+            name: { $set: value },
           },
-        },
-      }),
-      () => {
-        this.props.updateUser({
-          profile: {
-            [id]: value,
+        }),
+        () => {
+          if (value.split(' ').length >= 2) {
+            const [firstName, ...rest] = value.split(' ');
+            this.props.updateUser({
+              firstName,
+              lastName: rest.join(' '),
+            });
+          }
+        }
+      );
+    } else if (id === 'email') {
+      this.setState(
+        update(this.state, {
+          model: {
+            email: { $set: value },
           },
-        });
-      }
-    );
+        }),
+        () => {
+          this.props.updateUser({
+            email: value,
+          });
+        }
+      );
+    } else {
+      this.setState(
+        update(this.state, {
+          model: {
+            profile: {
+              [id]: { $set: value },
+            },
+          },
+        }),
+        () => {
+          this.props.updateUser({
+            profile: {
+              [id]: value,
+            },
+          });
+        }
+      );
+    }
   };
   render() {
-    const { user, classes } = this.props;
+    const {
+      user,
+      classes,
+      match: {
+        params: { slug },
+      },
+    } = this.props;
     const { selectedSection, model } = this.state;
+    if (user.get('slug') !== slug) {
+      return null;
+    }
     return (
       <div className={classes.root}>
         <div className={classes.leftPanel}>
@@ -239,12 +294,14 @@ class SettingsPage extends Component<Props, State> {
               <EditableInput
                 label="Name"
                 id="name"
-                value={`${user.get('firstName')} ${user.get('lastName')}`}
+                value={model && model.name}
+                onChange={this.onChange}
               />
               <EditableInput
                 label="Email"
                 id="email"
-                value={user.get('email')}
+                value={model && model.email}
+                onChange={this.onChange}
               />
               <EditableInput
                 label="Phone"
