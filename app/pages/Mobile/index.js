@@ -176,6 +176,11 @@ class Mobile extends Component<Props, State> {
   render() {
     const { step, user, classes, phoneError, tokenError } = this.props;
     const { phone, token } = this.state;
+    const prevPath = window.localStorage.getItem('mobilePrevPath');
+    const title =
+      prevPath && prevPath.includes('/personal-information')
+        ? 'Personal Information'
+        : 'Settings';
     return (
       <div className={classes.root}>
         <div className={classes.section}>
@@ -270,14 +275,12 @@ class Mobile extends Component<Props, State> {
                       color="primary"
                       component={props => (
                         <Link
-                          to={`/f/${user.get(
-                            'slug'
-                          )}/edit/personal-information`}
+                          to={prevPath || `/f/${user.get('slug')}/settings`}
                           {...props}
                         />
                       )}
                     >
-                      Back to Settings
+                      Back to {title}
                     </Button>
                   </Grid>
                 </Grid>

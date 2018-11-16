@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import EditableInput from 'components/EditableInput';
 import Option from 'components/Option';
 
-import { requestUserDataUpdate } from 'containers/App/sagas';
+import { requestUserDataUpdate, requestUser } from 'containers/App/sagas';
 
 const styles = theme => ({
   root: {
@@ -112,6 +112,7 @@ type Props = {
   classes: Object,
   match: Object,
   updateUser: Function,
+  requestUser: Function,
 };
 
 type State = {
@@ -178,6 +179,9 @@ class PersonalInformationPage extends Component<Props, State> {
     selectedSection: 'basic',
     model: null,
   };
+  componentDidMount() {
+    this.props.requestUser();
+  }
   componentDidUpdate(prevProps: Props) {
     const { user } = this.props;
     if (prevProps.user.get('slug') !== user.get('slug')) {
@@ -470,6 +474,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   updateUser: payload => dispatch(requestUserDataUpdate(payload)),
+  requestUser: () => dispatch(requestUser()),
 });
 
 export default compose(

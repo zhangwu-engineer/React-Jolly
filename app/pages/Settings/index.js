@@ -15,7 +15,7 @@ import { history } from 'components/ConnectedRouter';
 import Option from 'components/Option';
 import EditableInput from 'components/EditableInput';
 
-import { requestUserDataUpdate } from 'containers/App/sagas';
+import { requestUserDataUpdate, requestUser } from 'containers/App/sagas';
 
 const styles = theme => ({
   root: {
@@ -134,6 +134,7 @@ type Props = {
   match: Object,
   classes: Object,
   updateUser: Function,
+  requestUser: Function,
 };
 
 type State = {
@@ -193,6 +194,9 @@ class SettingsPage extends Component<Props, State> {
     selectedSection: 'personal',
     model: null,
   };
+  componentDidMount() {
+    this.props.requestUser();
+  }
   componentDidUpdate(prevProps: Props) {
     const { user } = this.props;
     if (prevProps.user.get('slug') !== user.get('slug')) {
@@ -413,6 +417,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   updateUser: payload => dispatch(requestUserDataUpdate(payload)),
+  requestUser: () => dispatch(requestUser()),
 });
 
 export default compose(

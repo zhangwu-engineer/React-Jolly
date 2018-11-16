@@ -128,6 +128,7 @@ class EditableInput extends Component<Props, State> {
   onEdit = () => {
     const { id, slug } = this.props;
     if (id === 'phone' && slug) {
+      window.localStorage.setItem('mobilePrevPath', window.location.pathname);
       history.push(`/f/${slug}/mobile`);
     } else {
       this.setState({ isEditing: true });
