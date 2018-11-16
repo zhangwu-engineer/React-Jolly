@@ -49,6 +49,7 @@ const styles = theme => ({
 });
 
 type Props = {
+  email: string,
   showEmail: boolean,
   showSMS: boolean,
   showCall: boolean,
@@ -61,6 +62,10 @@ class ContactOptionModal extends Component<Props> {
   share = () => {};
   closeModal = () => {
     this.props.onCloseModal();
+  };
+  sendEmail = () => {
+    const { email } = this.props;
+    window.location.href = `mailto:${email}`;
   };
   render() {
     const { showEmail, showSMS, showCall, classes, isOpen } = this.props;
@@ -84,7 +89,7 @@ class ContactOptionModal extends Component<Props> {
           )}
           {showEmail && (
             <Grid item xs={4}>
-              <Button className={classes.button}>
+              <Button className={classes.button} onClick={this.sendEmail}>
                 <EmailIcon />
                 &nbsp;Email
               </Button>

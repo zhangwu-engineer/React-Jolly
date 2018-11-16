@@ -325,6 +325,7 @@ class Member extends Component<Props, State> {
           showEmail={data.getIn(['profile', 'receiveEmail'])}
           showSMS={data.getIn(['profile', 'receiveSMS'])}
           showCall={data.getIn(['profile', 'receiveCall'])}
+          email={data.get('email')}
         />
       </Fragment>
     );
