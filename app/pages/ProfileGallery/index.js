@@ -27,6 +27,7 @@ const styles = theme => ({
     padding: '10px 15px',
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.common.white,
+    height: 48,
   },
   backButton: {
     color: theme.palette.common.white,

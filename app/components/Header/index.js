@@ -1,6 +1,7 @@
 // @flow
 
 import React, { Component, Fragment } from 'react';
+import cx from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -26,6 +27,7 @@ import LogoWhite from 'images/logo-white.png';
 import UserIcon from 'images/sprite/user.svg';
 import SettingsIcon from 'images/sprite/settings.svg';
 import LogoutIcon from 'images/sprite/logout.svg';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 const styles = theme => ({
   root: {
@@ -35,10 +37,43 @@ const styles = theme => ({
     paddingLeft: theme.spacing.unit * 5,
     paddingRight: theme.spacing.unit * 5,
     color: theme.palette.common.white,
+    position: 'relative',
+    [theme.breakpoints.down('xs')]: {
+      height: 48,
+      padding: 0,
+    },
+  },
+  centerLogoContainer: {
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
+  },
+  hiddenOnSmallDevice: {
+    [theme.breakpoints.down('xs')]: {
+      display: 'none !important',
+    },
+  },
+  shownOnSmallDevice: {
+    [theme.breakpoints.down('xs')]: {
+      display: 'flex !important',
+    },
   },
   logo: {
     width: 70,
     height: 45,
+    [theme.breakpoints.down('xs')]: {
+      width: 46,
+      height: 30,
+    },
+  },
+  backButton: {
+    color: theme.palette.common.white,
+    textTransform: 'none',
+    display: 'none',
+    '&:hover': {
+      color: theme.palette.common.white,
+    },
   },
   desc: {
     color: '#9dbad6',
@@ -73,7 +108,7 @@ const styles = theme => ({
     '&:active': {
       boxShadow: 'none',
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('xs')]: {
       display: 'none',
     },
   },
@@ -87,7 +122,9 @@ const styles = theme => ({
     '&:active': {
       boxShadow: 'none',
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('xs')]: {
+      height: 48,
+      width: 48,
       display: 'inline-flex',
     },
   },
@@ -212,6 +249,19 @@ class Header extends Component<Props, State> {
   render() {
     const { user, classes, pathname } = this.props;
     const { open, side } = this.state;
+    const hideLogo = pathname.includes('/f/');
+    const hideTopRightButtons =
+      pathname.includes('/settings') ||
+      pathname.includes('/personal-information') ||
+      pathname.includes('/work');
+    let title = '';
+    if (pathname.includes('/settings')) {
+      title = 'Settings';
+    } else if (pathname.includes('/personal-information')) {
+      title = 'Profile Information';
+    } else if (pathname.includes('/work')) {
+      title = 'Talents & Rates';
+    }
     return (
       <Grid
         className={classes.root}
@@ -220,14 +270,65 @@ class Header extends Component<Props, State> {
         alignItems="center"
       >
         <Grid item>
-          <Link to="/">
+          <Link
+            to="/"
+            className={cx(classes.logoContainer, {
+              [classes.centerLogoContainer]:
+                user ||
+                pathname.includes('/email-sign-in') ||
+                pathname.includes('/forgot-password') ||
+                pathname.includes('/reset-password') ||
+                pathname.includes('/email-verification') ||
+                pathname.includes('/freelancer-signup-2'),
+              [classes.hiddenOnSmallDevice]: hideLogo,
+            })}
+          >
             <img className={classes.logo} src={LogoWhite} alt="logo" />
           </Link>
+          <Button
+            className={cx(classes.backButton, {
+              [classes.shownOnSmallDevice]:
+                pathname.includes('/email-sign-in') ||
+                pathname.includes('/forgot-password') ||
+                pathname.includes('/reset-password') ||
+                pathname.includes('/freelancer-signup-2'),
+            })}
+            onClick={() => {
+              if (pathname.includes('/email-sign-in')) {
+                history.replace('/sign-in');
+              } else if (pathname.includes('/freelancer-signup-2')) {
+                history.replace('/freelancer-signup');
+              } else if (pathname.includes('/forgot-password')) {
+                history.replace('/email-sign-in');
+              } else if (pathname.includes('/reset-password')) {
+                history.replace('/email-sign-in');
+              }
+            }}
+          >
+            <ArrowBackIcon />
+          </Button>
+          {user && (
+            <Button
+              className={cx(classes.backButton, {
+                [classes.shownOnSmallDevice]: hideTopRightButtons,
+              })}
+              component={props => (
+                <Link to={`/f/${user.get('slug')}/edit`} {...props} />
+              )}
+            >
+              <ArrowBackIcon />
+              &nbsp;&nbsp;&nbsp;
+              {title}
+            </Button>
+          )}
         </Grid>
         <Grid item>
           {user ? (
             <Fragment>
               <Button
+                className={cx({
+                  [classes.hiddenOnSmallDevice]: hideTopRightButtons,
+                })}
                 onClick={() => {
                   history.push(`/f/${user.get('slug')}/edit`);
                 }}
@@ -251,7 +352,9 @@ class Header extends Component<Props, State> {
                 onClick={this.toggleDrawer(true)}
                 color="inherit"
                 variant="fab"
-                className={classes.mobileMenuButton}
+                className={cx(classes.mobileMenuButton, {
+                  [classes.hiddenOnSmallDevice]: hideTopRightButtons,
+                })}
               >
                 <MenuIcon />
               </Button>
@@ -287,7 +390,16 @@ class Header extends Component<Props, State> {
               </Drawer>
             </Fragment>
           ) : (
-            <Typography className={classes.desc}>
+            <Typography
+              className={cx(classes.desc, {
+                [classes.hiddenOnSmallDevice]:
+                  pathname.includes('/email-sign-in') ||
+                  pathname.includes('/forgot-password') ||
+                  pathname.includes('/reset-password') ||
+                  pathname.includes('/email-verification') ||
+                  pathname.includes('/freelancer-signup-2'),
+              })}
+            >
               {pathname === '/email-sign-in'
                 ? 'No account yet? '
                 : 'Already a user? '}
