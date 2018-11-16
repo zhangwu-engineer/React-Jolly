@@ -372,7 +372,7 @@ class PersonalInformationPage extends Component<Props, State> {
                 label="Linkedin"
                 id="linkedin"
                 value={model && model.profile.linkedin}
-                startWith="/"
+                startWith="/in/"
                 onChange={this.onChange}
               />
               <EditableInput
