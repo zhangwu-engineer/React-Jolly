@@ -370,12 +370,16 @@ class ProfileInfo extends Component<Props, State> {
           <Typography className={classes.username}>
             {`${user.get('firstName')} ${user.get('lastName')}`}
           </Typography>
-          <Typography className={classes.distance}>
-            {`Works within ${user.getIn(['profile', 'distance'])} of`}
-          </Typography>
-          <Typography className={classes.location}>
-            {user.getIn(['profile', 'location'])}
-          </Typography>
+          {user.getIn(['profile', 'distance']) && (
+            <Typography className={classes.distance}>
+              {`Works within ${user.getIn(['profile', 'distance'])} of`}
+            </Typography>
+          )}
+          {user.getIn(['profile', 'location']) && (
+            <Typography className={classes.location}>
+              {user.getIn(['profile', 'location'])}
+            </Typography>
+          )}
           <Divider className={classes.divider} />
           <Typography className={classes.bio}>
             {user.getIn(['profile', 'bio'])
