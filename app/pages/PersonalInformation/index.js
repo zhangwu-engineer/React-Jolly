@@ -151,6 +151,8 @@ class PersonalInformationPage extends Component<Props, State> {
     if (prevState.model && prevState.model.profile) {
       const {
         model: {
+          name,
+          email,
           profile: { phone },
         },
       } = prevState;
@@ -159,6 +161,8 @@ class PersonalInformationPage extends Component<Props, State> {
         return {
           ...prevState,
           model: {
+            name,
+            email,
             profile: {
               ...prevProfile,
               phone: nextProps.user.getIn(['profile', 'phone']),

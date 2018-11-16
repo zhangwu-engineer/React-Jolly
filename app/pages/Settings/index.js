@@ -164,6 +164,29 @@ class SettingsPage extends Component<Props, State> {
         },
       };
     }
+    if (prevState.model && prevState.model.profile) {
+      const {
+        model: {
+          name,
+          email,
+          profile: { phone },
+        },
+      } = prevState;
+      if (nextProps.user.getIn(['profile', 'phone']) !== phone) {
+        const prevProfile = prevState.model ? prevState.model.profile : {};
+        return {
+          ...prevState,
+          model: {
+            name,
+            email,
+            profile: {
+              ...prevProfile,
+              phone: nextProps.user.getIn(['profile', 'phone']),
+            },
+          },
+        };
+      }
+    }
     return null;
   }
   state = {
