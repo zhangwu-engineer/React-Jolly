@@ -128,7 +128,7 @@ class CompletionBanner extends Component<Props> {
             )}
             color="primary"
           >
-            Add Talents
+            Add Talents&nbsp;+
           </Button>
         </Grid>
       </Grid>
