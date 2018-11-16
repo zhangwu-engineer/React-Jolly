@@ -272,6 +272,7 @@ class TalentInput extends Component<Props, State> {
                     <Grid container>
                       <Grid item xs={6} className={classes.rateFieldWrapper}>
                         <TextField
+                          type="number"
                           id="rate"
                           label="Rate"
                           value={model && model.rate}
