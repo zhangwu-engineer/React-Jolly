@@ -101,7 +101,7 @@ class CompletionBanner extends Component<Props> {
         justify="space-between"
         alignItems="center"
       >
-        <Grid item xs={12} lg={8}>
+        <Grid item xs={12} md={8} lg={8}>
           <Grid container>
             <Grid item>
               <div ref={this.progressBar} className={classes.progressbar} />
@@ -117,7 +117,7 @@ class CompletionBanner extends Component<Props> {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} lg={4} className={classes.buttons}>
+        <Grid item xs={12} md={4} lg={4} className={classes.buttons}>
           <Button className={classes.button} color="primary">
             Add Picture&nbsp;+
           </Button>
