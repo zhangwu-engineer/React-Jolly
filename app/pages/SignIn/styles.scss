@@ -42,6 +42,8 @@
     display: none;
     @include breakpoint(small only) {
       display: block;
+      width: 250px;
+      margin: 0 auto 20px auto;
     }
   }
   &__leftPanelContent {
@@ -72,6 +74,7 @@
     display: none;
     @include breakpoint(small only) {
       display: block;
+      margin-bottom: 40px;
     }
   }
   &__btn {
