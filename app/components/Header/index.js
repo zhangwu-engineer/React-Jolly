@@ -152,7 +152,10 @@ class Header extends Component<Props, State> {
       <Fragment>
         <Grid container className={classes.menuTop}>
           <Grid item>
-            <Avatar className={classes.menuAvatar} />
+            <Avatar
+              className={classes.menuAvatar}
+              src={user.getIn(['profile', 'avatar'])}
+            />
           </Grid>
           <Grid item>
             <Typography variant="h6">
