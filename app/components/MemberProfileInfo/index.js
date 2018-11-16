@@ -40,6 +40,10 @@ const styles = theme => ({
     position: 'absolute',
     left: 30,
     bottom: -60,
+    padding: 3,
+    borderRadius: '50%',
+    backgroundColor: theme.palette.common.white,
+    boxShadow: '0 2px 4px 0 rgba(187, 187, 187, 0.5)',
     [theme.breakpoints.down('xs')]: {
       left: '50%',
       bottom: '-47.5px',
@@ -53,6 +57,11 @@ const styles = theme => ({
       width: 95,
       height: 95,
     },
+  },
+  backgroundImage: {
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
   },
   overlay: {
     height: '342px',
@@ -143,17 +152,26 @@ class MemberProfileInfo extends Component<Props> {
   };
   render() {
     const { user, classes } = this.props;
+    const avatarImg = user.getIn(['profile', 'avatar']) || EmptyAvatarImg;
     return (
       <div className={classes.root}>
         <div className={classes.topSection}>
-          <div>
+          <div
+            className={classes.backgroundImage}
+            style={{
+              backgroundImage: `url('${user.getIn([
+                'profile',
+                'backgroundImage',
+              ])}')`,
+            }}
+          >
             <div className={classes.overlay} />
           </div>
           <IconButton className={classes.shareButton}>
             <ShareIcon />
           </IconButton>
           <div className={classes.avatarContainer}>
-            <Avatar className={classes.avatar} src={EmptyAvatarImg} />
+            <Avatar className={classes.avatar} src={avatarImg} />
           </div>
         </div>
         <div className={classes.bottomSection}>
