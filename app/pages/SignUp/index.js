@@ -115,7 +115,7 @@ const schema = yup.object().shape({
     .test(
       'is-valid-fullname',
       'Fullname is not valid',
-      value => value.trim().split(' ').length === 2
+      value => value.trim().split(' ').length >= 2
     ),
   password: yup.string().required(),
 });
@@ -184,12 +184,12 @@ class SignUp extends Component<Props, State> {
   };
   handleRegister = () => {
     const { email, fullname, password } = cloneDeep(this.state.model);
-    const [firstName, lastName] = fullname.split(' ');
+    const [firstName, ...rest] = fullname.split(' ');
     this.setState({ isOpen: false }, () => {
       this.props.requestRegister({
         email,
         firstName,
-        lastName,
+        lastName: rest.join(' '),
         password,
       });
     });
