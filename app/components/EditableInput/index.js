@@ -1,7 +1,7 @@
 // @flow
 
 import React, { Component } from 'react';
-
+import cx from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import FormControl from '@material-ui/core/FormControl';
@@ -56,6 +56,9 @@ const styles = theme => ({
     [theme.breakpoints.down('xs')]: {
       marginBottom: 10,
     },
+  },
+  nameField: {
+    textTransform: 'capitalize',
   },
   textInput: {
     '& input': {
@@ -198,7 +201,9 @@ class EditableInput extends Component<Props, State> {
                 <Typography
                   variant="h6"
                   component={multiline ? 'div' : 'h6'}
-                  className={classes.valueField}
+                  className={cx(classes.valueField, {
+                    [classes.nameField]: id === 'name',
+                  })}
                 >
                   {value}
                 </Typography>
