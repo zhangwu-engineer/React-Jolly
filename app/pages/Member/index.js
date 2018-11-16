@@ -228,12 +228,24 @@ class Member extends Component<Props, State> {
             justify="space-between"
             alignItems="center"
           >
-            <Grid item className={classes.topBannerTextContainer}>
+            <Grid
+              item
+              xs={12}
+              md={8}
+              lg={8}
+              className={classes.topBannerTextContainer}
+            >
               <Typography className={classes.topBannerText}>
                 You&apos;re currently viewing your public profile.
               </Typography>
             </Grid>
-            <Grid item className={classes.topBannerButtonsContainer}>
+            <Grid
+              item
+              xs={12}
+              md={4}
+              lg={4}
+              className={classes.topBannerButtonsContainer}
+            >
               <Button
                 className={classes.backButton}
                 component={props => (
