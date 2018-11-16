@@ -50,7 +50,7 @@ class App extends Component<Props> {
   }
   componentDidUpdate() {
     if (this.props.location.pathname === '/' && !this.props.user) {
-      history.push('/freelancer-signup');
+      history.push('/sign-in');
     }
   }
   render() {
