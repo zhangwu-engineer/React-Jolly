@@ -158,9 +158,42 @@ class Profile extends Component<Props, State> {
     if (user.get('slug') !== slug) {
       return null;
     }
+    let progress = 0;
+    if (user.get('email')) {
+      progress += 1;
+    }
+    if (user.getIn(['profile', 'avatar'])) {
+      progress += 1;
+    }
+    if (user.getIn(['profile', 'backgroundImage'])) {
+      progress += 1;
+    }
+    if (user.getIn(['profile', 'phone'])) {
+      progress += 1;
+    }
+    if (user.getIn(['profile', 'bio'])) {
+      progress += 1;
+    }
+    if (
+      user.getIn(['profile', 'location']) ||
+      user.getIn(['profile', 'distance'])
+    ) {
+      progress += 1;
+    }
+    if (talents.size > 0) {
+      progress += 1;
+    }
+    if (
+      user.getIn(['profile', 'facebook']) ||
+      user.getIn(['profile', 'twitter']) ||
+      user.getIn(['profile', 'linkedin']) ||
+      user.getIn(['profile', 'youtube'])
+    ) {
+      progress += 1;
+    }
     return (
       <Fragment>
-        <CompletionBanner user={user} talents={talents.size} />
+        {progress < 8 && <CompletionBanner progress={progress} user={user} />}
         <div className={classes.root}>
           <div className={classes.profileInfo}>
             <ProfileInfo
