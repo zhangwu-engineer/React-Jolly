@@ -8,10 +8,13 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import ShareIcon from '@material-ui/icons/Share';
+import ImageIcon from '@material-ui/icons/Image';
 import Divider from '@material-ui/core/Divider';
 import Avatar from '@material-ui/core/Avatar';
 
+import { history } from 'components/ConnectedRouter';
 import Icon from 'components/Icon';
+import PhotoModal from 'components/PhotoModal';
 
 import EmptyAvatarImg from 'images/empty_avatar.png';
 import FacebookIcon from 'images/sprite/facebook.svg';
@@ -34,6 +37,29 @@ const styles = theme => ({
     [theme.breakpoints.down('xs')]: {
       top: '15px',
       right: '13px',
+    },
+  },
+  imageButton: {
+    position: 'absolute',
+    top: 30,
+    right: 60,
+    color: theme.palette.common.white,
+    [theme.breakpoints.down('xs')]: {
+      top: '15px',
+      right: '53px',
+      display: 'none',
+    },
+  },
+  smallImageButton: {
+    position: 'absolute',
+    top: 30,
+    right: 60,
+    color: theme.palette.common.white,
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      top: '15px',
+      right: '53px',
+      display: 'flex',
     },
   },
   avatarContainer: {
@@ -143,15 +169,27 @@ const styles = theme => ({
 
 type Props = {
   user: Object,
+  files: Object,
   classes: Object,
 };
 
-class MemberProfileInfo extends Component<Props> {
+type State = {
+  isOpen: boolean,
+};
+
+class MemberProfileInfo extends Component<Props, State> {
+  state = {
+    isOpen: false,
+  };
   openUrl = url => {
     window.open(url, '_blank');
   };
+  closeModal = () => {
+    this.setState({ isOpen: false });
+  };
   render() {
-    const { user, classes } = this.props;
+    const { user, files, classes } = this.props;
+    const { isOpen } = this.state;
     const avatarImg = user.getIn(['profile', 'avatar']) || EmptyAvatarImg;
     return (
       <div className={classes.root}>
@@ -167,6 +205,18 @@ class MemberProfileInfo extends Component<Props> {
           >
             <div className={classes.overlay} />
           </div>
+          <IconButton
+            className={classes.imageButton}
+            onClick={() => this.setState({ isOpen: true })}
+          >
+            <ImageIcon />
+          </IconButton>
+          <IconButton
+            className={classes.smallImageButton}
+            onClick={() => history.push(`/f/${user.get('slug')}/gallery`)}
+          >
+            <ImageIcon />
+          </IconButton>
           <IconButton className={classes.shareButton}>
             <ShareIcon />
           </IconButton>
@@ -263,6 +313,12 @@ class MemberProfileInfo extends Component<Props> {
             </Fragment>
           )}
         </div>
+        <PhotoModal
+          user={user}
+          files={files}
+          isOpen={isOpen}
+          onCloseModal={this.closeModal}
+        />
       </div>
     );
   }

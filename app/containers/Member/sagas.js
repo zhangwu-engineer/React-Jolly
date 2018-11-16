@@ -15,6 +15,7 @@ import { getToken } from 'containers/App/selectors';
 // ------------------------------------
 const TALENTS = 'Jolly/Member/TALENTS';
 const MEMBER_PROFILE = 'Jolly/Member/MEMBER_PROFILE';
+const FILES = 'Jolly/Member/FILES';
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -51,6 +52,23 @@ const memberTalentsRequestError = (error: string) => ({
   type: TALENTS + ERROR,
   payload: error,
 });
+
+export const requestMemberFiles = (slug: string) => ({
+  type: FILES + REQUESTED,
+  payload: slug,
+});
+const memberFilesRequestSuccess = (payload: Object) => ({
+  type: FILES + SUCCEDED,
+  payload,
+});
+const memberFilesRequestFailed = (error: string) => ({
+  type: FILES + FAILED,
+  payload: error,
+});
+const memberFilesRequestError = (error: string) => ({
+  type: FILES + ERROR,
+  payload: error,
+});
 // ------------------------------------
 // Reducer
 // ------------------------------------
@@ -61,6 +79,9 @@ const initialState = fromJS({
   data: fromJS({}),
   isMemberLoading: false,
   memberError: '',
+  files: [],
+  isFileLoading: false,
+  fileError: '',
 });
 
 export const reducer = (
@@ -102,6 +123,25 @@ export const reducer = (
     case MEMBER_PROFILE + ERROR:
       return state.set('isMemberLoading', false).set(
         'memberError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case FILES + REQUESTED:
+      return state.set('isFileLoading', true);
+
+    case FILES + SUCCEDED:
+      return state
+        .set('isFileLoading', false)
+        .set('files', fromJS(payload))
+        .set('fileError', '');
+
+    case FILES + FAILED:
+      return state.set('isFileLoading', false).set('fileError', payload);
+
+    case FILES + ERROR:
+      return state.set('isFileLoading', false).set(
+        'fileError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -154,9 +194,28 @@ function* MemberProfileRequest({ payload }) {
   }
 }
 
+function* MemberFilesRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/user/slug/${payload}/files`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(memberFilesRequestSuccess(response.data.response));
+    } else {
+      yield put(memberFilesRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(memberFilesRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(TALENTS + REQUESTED, MemberTalentsRequest),
     takeLatest(MEMBER_PROFILE + REQUESTED, MemberProfileRequest),
+    takeLatest(FILES + REQUESTED, MemberFilesRequest),
   ]);
 }

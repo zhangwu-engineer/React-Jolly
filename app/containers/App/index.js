@@ -67,6 +67,7 @@ class App extends Component<Props> {
           <Route path="/sign-in" />
           <Route path="/f/:slug/edit/avatar" />
           <Route path="/f/:slug/edit/background-image" />
+          <Route path="/f/:slug/gallery" />
           <Route
             path="/"
             render={() => (

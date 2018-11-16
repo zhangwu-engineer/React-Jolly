@@ -15,6 +15,7 @@ const EmailSignIn = load(() => import('pages/EmailSignIn'));
 const Profile = load(() => import('pages/Profile'));
 const ProfileGallery = load(() => import('pages/ProfileGallery'));
 const Member = load(() => import('pages/Member'));
+const MemberGallery = load(() => import('pages/MemberGallery'));
 const Talent = load(() => import('pages/Talent'));
 const PersonalInformation = load(() => import('pages/PersonalInformation'));
 const Settings = load(() => import('pages/Settings'));
@@ -81,6 +82,10 @@ class Routes extends Component<{}> {
         <PrivateRoute
           path="/f/:slug/mobile"
           render={props => <Mobile {...props} />}
+        />
+        <PrivateRoute
+          path="/f/:slug/gallery"
+          render={props => <MemberGallery {...props} />}
         />
         <PrivateRoute path="/f/:slug" render={props => <Member {...props} />} />
         <Route render={props => <FourOfour {...props} />} />

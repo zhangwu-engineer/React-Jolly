@@ -22,6 +22,7 @@ import saga, {
   reducer,
   requestMemberTalents,
   requestMemberProfile,
+  requestMemberFiles,
 } from 'containers/Member/sagas';
 import injectSagas from 'utils/injectSagas';
 
@@ -163,11 +164,13 @@ const styles = theme => ({
 type Props = {
   currentUser: Object,
   member: Object,
+  files: Object,
   talents: Object,
   classes: Object,
   match: Object,
   requestMemberProfile: Function,
   requestMemberTalents: Function,
+  requestMemberFiles: Function,
 };
 
 type State = {
@@ -190,6 +193,7 @@ class Member extends Component<Props, State> {
     if (currentUser.get('slug') !== slug) {
       this.props.requestMemberProfile(slug);
     }
+    this.props.requestMemberFiles(slug);
     this.props.requestMemberTalents(slug);
   }
   onCloseModal = () => {
@@ -202,6 +206,7 @@ class Member extends Component<Props, State> {
     const {
       currentUser,
       member,
+      files,
       talents,
       classes,
       match: {
@@ -246,7 +251,7 @@ class Member extends Component<Props, State> {
         )}
         <div className={classes.root}>
           <div className={classes.profileInfo}>
-            <MemberProfileInfo user={data} />
+            <MemberProfileInfo user={data} files={files} />
           </div>
           {talents.size > 0 && (
             <div className={classes.section}>
@@ -332,11 +337,13 @@ const mapStateToProps = state => ({
   isLoading: state.getIn(['member', 'isMemberLoading']),
   error: state.getIn(['member', 'memberError']),
   talents: state.getIn(['member', 'talents']),
+  files: state.getIn(['member', 'files']),
 });
 
 const mapDispatchToProps = dispatch => ({
   requestMemberProfile: slug => dispatch(requestMemberProfile(slug)),
   requestMemberTalents: slug => dispatch(requestMemberTalents(slug)),
+  requestMemberFiles: slug => dispatch(requestMemberFiles(slug)),
 });
 
 export default compose(

@@ -1,6 +1,6 @@
 // @flow
 
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { generate } from 'shortid';
 import cx from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
@@ -57,13 +57,13 @@ const styles = theme => ({
 
 type Props = {
   user: Object,
-  type: string,
+  type?: string,
   files: Object,
   isOpen: boolean,
   classes: Object,
   onCloseModal: Function,
-  uploadPhoto: Function,
-  updateUser: Function,
+  uploadPhoto?: Function,
+  updateUser?: Function,
 };
 
 class PhotoModal extends Component<Props> {
@@ -88,19 +88,22 @@ class PhotoModal extends Component<Props> {
     }
   };
   updateSelection = path => {
-    this.props.updateUser({
-      profile: {
-        [this.props.type]: path,
-      },
-    });
+    const { updateUser, type } = this.props;
+    if (updateUser && type) {
+      updateUser({
+        profile: {
+          [type]: path,
+        },
+      });
+    }
   };
   fileInput = React.createRef();
   render() {
-    const { user, type, files, isOpen, classes } = this.props;
+    const { user, type, files, isOpen, classes, uploadPhoto } = this.props;
     let selectedFile = '';
-    if (type === 'avatar') {
+    if (uploadPhoto && type === 'avatar') {
       selectedFile = user.getIn(['profile', 'avatar']);
-    } else {
+    } else if (uploadPhoto && type === 'backgroundImage') {
       selectedFile = user.getIn(['profile', 'backgroundImage']);
     }
     return (
@@ -121,16 +124,20 @@ class PhotoModal extends Component<Props> {
             </Typography>
           </Grid>
           <Grid item>
-            <Button className={classes.addButton} onClick={this.onAddClick}>
-              <CameraIcon />
-              &nbsp;Add image
-            </Button>
-            <input
-              type="file"
-              className={classes.fileInput}
-              ref={this.fileInput}
-              onChange={this.handleFileUpload}
-            />
+            {uploadPhoto && (
+              <Fragment>
+                <Button className={classes.addButton} onClick={this.onAddClick}>
+                  <CameraIcon />
+                  &nbsp;Add image
+                </Button>
+                <input
+                  type="file"
+                  className={classes.fileInput}
+                  ref={this.fileInput}
+                  onChange={this.handleFileUpload}
+                />
+              </Fragment>
+            )}
           </Grid>
         </Grid>
         <div className={classes.contentWrapper}>
