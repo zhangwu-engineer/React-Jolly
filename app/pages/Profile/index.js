@@ -29,7 +29,7 @@ import injectSagas from 'utils/injectSagas';
 const styles = theme => ({
   root: {
     maxWidth: '712px',
-    margin: '40px auto 300px auto',
+    margin: '40px auto 100px auto',
     [theme.breakpoints.down('xs')]: {
       margin: 0,
     },
@@ -78,13 +78,15 @@ const styles = theme => ({
     },
   },
   bottomBannerContainer: {
+    marginTop: 20,
     [theme.breakpoints.down('xs')]: {
       backgroundColor: theme.palette.common.white,
       padding: '30px 10px',
+      marginTop: 0,
     },
   },
   bottomBanner: {
-    padding: '25px 70px',
+    padding: '25px 30px',
     backgroundColor: '#2b2b2b',
     [theme.breakpoints.down('xs')]: {
       padding: '15px 20px',
@@ -110,6 +112,12 @@ const styles = theme => ({
       fontSize: 16,
       color: theme.palette.primary.main,
       padding: '11px 0px',
+    },
+  },
+  bannerButtonContainer: {
+    textAlign: 'right',
+    [theme.breakpoints.down('xs')]: {
+      textAlign: 'left',
     },
   },
 });
@@ -193,7 +201,6 @@ class Profile extends Component<Props, State> {
     }
     return (
       <Fragment>
-        {progress < 8 && <CompletionBanner progress={progress} user={user} />}
         <div className={classes.root}>
           <div className={classes.profileInfo}>
             <ProfileInfo
@@ -228,51 +235,62 @@ class Profile extends Component<Props, State> {
               </Button>
             </div>
           </div>
-        </div>
-        <div className={classes.bottomBannerContainer}>
-          {user.getIn(['profile', 'avatar']) ? (
-            <Grid
-              className={classes.bottomBanner}
-              container
-              justify="space-between"
-              alignItems="center"
-            >
-              <Grid item>
-                <Typography className={classes.bannerText}>
-                  Ready to share? View your new public page and grab the&nbsp;
-                  link to share it!
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Button
-                  className={classes.bannerButton}
-                  onClick={() => this.seePublicProfile()}
+          <div className={classes.bottomBannerContainer}>
+            {user.getIn(['profile', 'avatar']) ? (
+              <Grid
+                className={classes.bottomBanner}
+                container
+                justify="space-between"
+                alignItems="center"
+              >
+                <Grid item xs={12} lg={7}>
+                  <Typography className={classes.bannerText}>
+                    Ready to share? View your new public page and grab the&nbsp;
+                    link to share it!
+                  </Typography>
+                </Grid>
+                <Grid
+                  item
+                  xs={12}
+                  lg={5}
+                  className={classes.bannerButtonContainer}
                 >
-                  SEE MY PULIC PROFILE
-                </Button>
+                  <Button
+                    className={classes.bannerButton}
+                    onClick={() => this.seePublicProfile()}
+                  >
+                    SEE MY PULIC PROFILE
+                  </Button>
+                </Grid>
               </Grid>
-            </Grid>
-          ) : (
-            <Grid
-              className={classes.bottomBanner}
-              container
-              justify="space-between"
-              alignItems="center"
-            >
-              <Grid item>
-                <Typography className={classes.bannerText}>
-                  Before you share your profile, you need to add a&nbsp;profile
-                  picture.
-                </Typography>
+            ) : (
+              <Grid
+                className={classes.bottomBanner}
+                container
+                justify="space-between"
+                alignItems="center"
+              >
+                <Grid item xs={12} lg={6}>
+                  <Typography className={classes.bannerText}>
+                    Before you share your profile, you need to add
+                    a&nbsp;profile picture.
+                  </Typography>
+                </Grid>
+                <Grid
+                  item
+                  xs={12}
+                  lg={6}
+                  className={classes.bannerButtonContainer}
+                >
+                  <Button className={classes.bannerButton}>
+                    +&nbsp;Add PICTURE
+                  </Button>
+                </Grid>
               </Grid>
-              <Grid item>
-                <Button className={classes.bannerButton}>
-                  Add PICTURE&nbsp;+
-                </Button>
-              </Grid>
-            </Grid>
-          )}
+            )}
+          </div>
         </div>
+        {progress < 8 && <CompletionBanner progress={progress} user={user} />}
       </Fragment>
     );
   }
