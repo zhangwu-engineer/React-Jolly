@@ -108,18 +108,18 @@ class CompletionBanner extends Component<Props> {
             </Grid>
             <Grid item className={classes.textContent}>
               <Typography className={classes.thickText}>
-                Your profile is incomplete!
+                Let&apos;s spice up your profile!
               </Typography>
               <Typography className={classes.thinText}>
-                Let&apos;s spice it up! Add an image, and show the world your
-                skills by adding some work types.
+                Upload a pic and show off your skills by adding talents and work
+                experience.
               </Typography>
             </Grid>
           </Grid>
         </Grid>
         <Grid item xs={12} md={4} lg={4} className={classes.buttons}>
           <Button className={classes.button} color="primary">
-            Add Picture&nbsp;+
+            +&nbsp;Add Picture
           </Button>
           <Button
             className={classes.button}
@@ -128,7 +128,7 @@ class CompletionBanner extends Component<Props> {
             )}
             color="primary"
           >
-            Add Talents&nbsp;+
+            +&nbsp;Add Talents
           </Button>
         </Grid>
       </Grid>
