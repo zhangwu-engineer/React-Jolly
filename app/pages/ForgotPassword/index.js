@@ -12,9 +12,10 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import CircularProgress from '@material-ui/core/CircularProgress';
+
+import TopBannerMessage from 'components/TopBannerMessage';
 
 import injectSagas from 'utils/injectSagas';
 import saga, {
@@ -86,25 +87,6 @@ const styles = theme => ({
   progress: {
     marginLeft: theme.spacing.unit,
   },
-  topBanner: {
-    padding: '25px 70px',
-    backgroundColor: '#b8f3ce',
-    [theme.breakpoints.down('xs')]: {
-      padding: '20px 10px',
-    },
-  },
-  topBannerTextContainer: {
-    width: '100%',
-  },
-  topBannerText: {
-    color: '#303532',
-    fontWeight: 500,
-    fontSize: 18,
-    [theme.breakpoints.down('xs')]: {
-      fontSize: 16,
-      marginBottom: 20,
-    },
-  },
 });
 
 const schema = yup.object().shape({
@@ -174,26 +156,7 @@ class ForgotPassword extends Component<Props, State> {
     return (
       <Fragment>
         <CssBaseline />
-        {success && (
-          <Grid
-            className={classes.topBanner}
-            container
-            justify="space-between"
-            alignItems="center"
-          >
-            <Grid
-              item
-              xs={12}
-              md={8}
-              lg={8}
-              className={classes.topBannerTextContainer}
-            >
-              <Typography className={classes.topBannerText}>
-                {success}
-              </Typography>
-            </Grid>
-          </Grid>
-        )}
+        {success && <TopBannerMessage msg={success} />}
         <div className={classes.root}>
           <Paper className={classes.panel} elevation={1}>
             <Typography className={classes.title} variant="h5" component="h1">
