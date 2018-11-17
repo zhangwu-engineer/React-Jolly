@@ -14,6 +14,8 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DoneIcon from '@material-ui/icons/Done';
 import EditIcon from '@material-ui/icons/Edit';
@@ -81,6 +83,7 @@ const styles = theme => ({
     fontSize: 16,
     color: '#a0a0a0',
     marginBottom: 20,
+    textTransform: 'capitalize',
     [theme.breakpoints.down('xs')]: {
       marginBottom: 10,
     },
@@ -89,6 +92,14 @@ const styles = theme => ({
     [theme.breakpoints.down('xs')]: {
       textAlign: 'right',
     },
+  },
+  adornment: {
+    marginRight: 0,
+  },
+  adornmentText: {
+    color: theme.palette.text.main,
+    fontSize: 18,
+    paddingBottom: 8,
   },
 });
 
@@ -143,10 +154,16 @@ class TalentInput extends Component<Props, State> {
     if (!this.isEmpty() && this.isUpdated()) {
       if (data.id) {
         if (updateTalent) {
+          if (model && model.rate) {
+            model.rate = parseFloat(model.rate);
+          }
           updateTalent(data.id, model);
         }
       } else if (addTalent) {
         this.props.onCancel();
+        if (model && model.rate) {
+          model.rate = parseFloat(model.rate);
+        }
         addTalent(model);
       }
     } else if (data.id) {
@@ -271,14 +288,31 @@ class TalentInput extends Component<Props, State> {
                   <Grid item xs={12} lg={6}>
                     <Grid container>
                       <Grid item xs={6} className={classes.rateFieldWrapper}>
-                        <TextField
-                          type="number"
-                          id="rate"
-                          label="Rate"
-                          value={model && model.rate}
-                          onChange={this.handleChange}
+                        <FormControl
                           className={cx(classes.fieldMargin, classes.textInput)}
-                        />
+                        >
+                          <InputLabel htmlFor="rate">Rate</InputLabel>
+                          <Input
+                            className={classes.textInput}
+                            id="rate"
+                            value={model && model.rate}
+                            onChange={this.handleChange}
+                            startAdornment={
+                              <InputAdornment
+                                position="start"
+                                className={classes.adornment}
+                              >
+                                <Typography
+                                  variant="h6"
+                                  className={classes.adornmentText}
+                                >
+                                  $
+                                </Typography>
+                              </InputAdornment>
+                            }
+                            autoFocus
+                          />
+                        </FormControl>
                       </Grid>
                       <Grid item xs={6} className={classes.unitFieldWrapper}>
                         <FormControl fullWidth>
