@@ -67,7 +67,13 @@ export const reducer = (
       return state.set('isLoading', true);
 
     case FORGOT_PASSWORD + SUCCEDED:
-      return state.set('isLoading', false).set('error', '');
+      return state
+        .set('isLoading', false)
+        .set(
+          'forgotPasswordSuccess',
+          'Please check for an email from Jolly to reset your password.'
+        )
+        .set('error', '');
 
     case FORGOT_PASSWORD + FAILED:
       return state.set('isLoading', false).set('error', payload.message);
