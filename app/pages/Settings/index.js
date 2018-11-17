@@ -331,7 +331,11 @@ class SettingsPage extends Component<Props, State> {
                 onChange={this.onChange}
               />
               <EditableInput
-                label="Phone"
+                label={
+                  user.getIn(['profile', 'verifiedPhone'])
+                    ? 'Phone (verified)'
+                    : 'Phone (not verified)'
+                }
                 id="phone"
                 value={model && model.profile.phone}
                 slug={user.get('slug')}
