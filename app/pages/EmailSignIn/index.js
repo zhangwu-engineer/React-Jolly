@@ -27,6 +27,7 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
 import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
+import TopBannerMessage from 'components/TopBannerMessage';
 
 import { requestLogin } from 'containers/App/sagas';
 
@@ -108,6 +109,7 @@ type Props = {
   user: Object,
   isLoading: boolean,
   error: string,
+  resetPasswordSuccess: string,
   classes: Object,
   requestLogin: Function,
 };
@@ -161,11 +163,14 @@ class EmailSignIn extends Component<Props, State> {
       });
   };
   render() {
-    const { isLoading, error, classes } = this.props;
+    const { isLoading, error, resetPasswordSuccess, classes } = this.props;
     const { model, showPassword, validationError } = this.state;
     return (
       <Fragment>
         <CssBaseline />
+        {resetPasswordSuccess && (
+          <TopBannerMessage msg={resetPasswordSuccess} />
+        )}
         <div className={classes.root}>
           <Paper className={classes.panel} elevation={1}>
             <Typography className={classes.title} variant="h5" component="h1">
@@ -259,6 +264,7 @@ const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
   isLoading: state.getIn(['app', 'isLoading']),
   error: state.getIn(['app', 'error']),
+  resetPasswordSuccess: state.getIn(['password', 'resetPasswordSuccess']),
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -89,7 +89,13 @@ export const reducer = (
       return state.set('isLoading', true);
 
     case RESET_PASSWORD + SUCCEDED:
-      return state.set('isLoading', false).set('error', '');
+      return state
+        .set('isLoading', false)
+        .set(
+          'resetPasswordSuccess',
+          'Now, use your new password to sign into your account.'
+        )
+        .set('error', '');
 
     case RESET_PASSWORD + FAILED:
       return state.set('isLoading', false).set('error', payload.message);
