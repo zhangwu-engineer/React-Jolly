@@ -20,7 +20,7 @@ import saga, {
   reducer,
   requestPhoneVerification,
   requestTokenVerification,
-  resetStep,
+  resetState,
 } from 'containers/Mobile/sagas';
 
 import SuccessIcon from 'images/success_icon.png';
@@ -141,7 +141,7 @@ type Props = {
   classes: Object,
   requestPhoneVerification: Function,
   requestTokenVerification: Function,
-  resetStep: Function,
+  resetState: Function,
 };
 
 type State = {
@@ -155,7 +155,7 @@ class Mobile extends Component<Props, State> {
     token: '',
   };
   componentWillUnmount() {
-    this.props.resetStep();
+    this.props.resetState();
   }
   onChange = (e: Object) => {
     this.setState({ [e.target.id]: e.target.value });
@@ -307,7 +307,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(requestPhoneVerification(payload)),
   requestTokenVerification: payload =>
     dispatch(requestTokenVerification(payload)),
-  resetStep: () => dispatch(resetStep()),
+  resetState: () => dispatch(resetState()),
 });
 
 export default compose(

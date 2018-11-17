@@ -15,7 +15,7 @@ import { getToken } from 'containers/App/selectors';
 // ------------------------------------
 const PHONE_VERIFICATION = 'Jolly/Mobile/PHONE_VERIFICATION';
 const TOKEN_VERIFICATION = 'Jolly/Mobile/PHONE__TOKEN_VERIFICATION';
-const RESET_STEP = 'Jolly/Mobile/RESET_STEP';
+const RESET_STATE = 'Jolly/Mobile/RESET_STATE';
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -53,8 +53,8 @@ const tokenVerificationRequestError = (error: string) => ({
   payload: error,
 });
 
-export const resetStep = () => ({
-  type: RESET_STEP,
+export const resetState = () => ({
+  type: RESET_STATE,
 });
 // ------------------------------------
 // Reducer
@@ -110,8 +110,11 @@ export const reducer = (
         Please try again later or contact support and provide the following error information: ${payload}`
       );
 
-    case RESET_STEP:
-      return state.set('step', 1);
+    case RESET_STATE:
+      return state
+        .set('step', 1)
+        .set('phoneError', '')
+        .set('tokenError', '');
 
     default:
       return state;
