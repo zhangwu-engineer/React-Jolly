@@ -252,7 +252,7 @@ class TalentPage extends Component<Props, State> {
       newTalent: {
         name: '',
         rate: '',
-        unit: '',
+        unit: 'hour',
       },
     });
   };
