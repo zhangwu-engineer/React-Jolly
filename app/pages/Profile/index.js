@@ -16,6 +16,7 @@ import ProfileInfo from 'components/ProfileInfo';
 import TalentInput from 'components/TalentInput';
 import CompletionBanner from 'components/CompletionBanner';
 import Link from 'components/Link';
+import ShareProfileModal from 'components/ShareProfileModal';
 
 import {
   requestUser,
@@ -137,7 +138,14 @@ type Props = {
   requestTalents: Function,
 };
 
+type State = {
+  isOpen: boolean,
+};
+
 class Profile extends Component<Props, State> {
+  state = {
+    isOpen: false,
+  };
   componentDidMount() {
     this.props.requestUser();
     this.props.requestUserFiles();
@@ -149,6 +157,12 @@ class Profile extends Component<Props, State> {
       this.props.requestUserFiles();
     }
   }
+  onCloseModal = () => {
+    this.setState({ isOpen: false });
+  };
+  openShareModal = () => {
+    this.setState({ isOpen: true });
+  };
   seePublicProfile = () => {
     const { user } = this.props;
     history.push(`/f/${user.get('slug')}`);
@@ -163,6 +177,7 @@ class Profile extends Component<Props, State> {
         params: { slug },
       },
     } = this.props;
+    const { isOpen } = this.state;
     if (user.get('slug') !== slug) {
       return null;
     }
@@ -208,6 +223,7 @@ class Profile extends Component<Props, State> {
               files={files}
               uploadPhoto={this.props.requestUserPhotoUpload}
               updateUser={this.props.updateUser}
+              openShareModal={this.openShareModal}
             />
           </div>
           <div className={classes.section}>
@@ -291,6 +307,7 @@ class Profile extends Component<Props, State> {
           </div>
         </div>
         {progress < 8 && <CompletionBanner progress={progress} user={user} />}
+        <ShareProfileModal isOpen={isOpen} onCloseModal={this.onCloseModal} />
       </Fragment>
     );
   }

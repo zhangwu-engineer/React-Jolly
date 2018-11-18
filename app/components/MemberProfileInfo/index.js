@@ -171,6 +171,7 @@ type Props = {
   user: Object,
   files: Object,
   classes: Object,
+  openShareModal: Function,
 };
 
 type State = {
@@ -221,7 +222,10 @@ class MemberProfileInfo extends Component<Props, State> {
               </IconButton>
             </Fragment>
           )}
-          <IconButton className={classes.shareButton}>
+          <IconButton
+            className={classes.shareButton}
+            onClick={this.props.openShareModal}
+          >
             <ShareIcon />
           </IconButton>
           <div className={classes.avatarContainer}>

@@ -253,6 +253,7 @@ type Props = {
   classes: Object,
   uploadPhoto: Function,
   updateUser: Function,
+  openShareModal: Function,
 };
 
 type State = {
@@ -311,7 +312,10 @@ class ProfileInfo extends Component<Props, State> {
             {user.getIn(['profile', 'backgroundImage']) ? 'Change' : 'Add'}{' '}
             cover
           </Button>
-          <IconButton className={classes.shareButton}>
+          <IconButton
+            className={classes.shareButton}
+            onClick={this.props.openShareModal}
+          >
             <ShareIcon />
           </IconButton>
           <div className={classes.avatarContainer}>

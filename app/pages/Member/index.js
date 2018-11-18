@@ -202,6 +202,9 @@ class Member extends Component<Props, State> {
   onCloseContactModal = () => {
     this.setState({ isContactOpen: false });
   };
+  openShareModal = () => {
+    this.setState({ isOpen: true });
+  };
   render() {
     const {
       currentUser,
@@ -263,7 +266,11 @@ class Member extends Component<Props, State> {
         )}
         <div className={classes.root}>
           <div className={classes.profileInfo}>
-            <MemberProfileInfo user={data} files={files} />
+            <MemberProfileInfo
+              user={data}
+              files={files}
+              openShareModal={this.openShareModal}
+            />
           </div>
           {talents.size > 0 && (
             <div className={classes.section}>
