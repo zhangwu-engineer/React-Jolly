@@ -125,7 +125,7 @@ class Option extends Component<Props, State> {
               className={classes.blueText}
               onClick={() => this.setState({ isOpen: true })}
             >
-              What&apos;s this
+              What&apos;s this?
             </Typography>
           </Grid>
           <Grid item xs={2} lg={1} className={classes.checkboxContainer}>
