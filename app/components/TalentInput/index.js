@@ -310,7 +310,6 @@ class TalentInput extends Component<Props, State> {
                                 </Typography>
                               </InputAdornment>
                             }
-                            autoFocus
                           />
                         </FormControl>
                       </Grid>
