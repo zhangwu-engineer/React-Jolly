@@ -1,6 +1,7 @@
 // @flow
 
 import React, { Component, Fragment } from 'react';
+import { ShareButtons } from 'react-share';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -27,6 +28,16 @@ const styles = theme => ({
     marginLeft: 15,
   },
   iconButton: {
+    padding: 12,
+    transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+    borderRadius: '50%',
+    cursor: 'pointer',
+    '&:focus': {
+      outline: 'none',
+    },
+    '&:hover': {
+      backgroundColor: 'rgba(0, 0, 0, 0.08)',
+    },
     '&:hover svg': {
       color: theme.palette.primary.main,
       fill: theme.palette.primary.main,
@@ -107,6 +118,8 @@ class ShareProfileModal extends Component<Props, State> {
   render() {
     const { classes, isOpen } = this.props;
     const { copied } = this.state;
+    const shareURL = window.location.href;
+    const shareTitle = 'Jolly profile page';
     return (
       <BaseModal
         className={classes.modal}
@@ -155,46 +168,45 @@ class ShareProfileModal extends Component<Props, State> {
             </Typography>
             <Grid container className={classes.socialButtons}>
               <Grid item>
-                <IconButton
+                <ShareButtons.FacebookShareButton
+                  url={shareURL}
+                  quote={shareTitle}
                   className={classes.iconButton}
-                  onClick={() => {
-                    this.share();
-                  }}
                 >
                   <Icon
                     glyph={FacebookIcon}
                     className={classes.icon}
                     size={18}
                   />
-                </IconButton>
+                </ShareButtons.FacebookShareButton>
               </Grid>
               <Grid item>
-                <IconButton
+                <ShareButtons.TwitterShareButton
+                  url={shareURL}
+                  title={shareTitle}
                   className={classes.iconButton}
-                  onClick={() => {
-                    this.share();
-                  }}
                 >
                   <Icon
                     glyph={TwitterIcon}
                     className={classes.icon}
                     size={18}
                   />
-                </IconButton>
+                </ShareButtons.TwitterShareButton>
               </Grid>
               <Grid item>
-                <IconButton
+                <ShareButtons.LinkedinShareButton
+                  url={shareURL}
+                  title={shareTitle}
+                  windowWidth={375}
+                  windowHeight={300}
                   className={classes.iconButton}
-                  onClick={() => {
-                    this.share();
-                  }}
                 >
                   <Icon
                     glyph={LinkedInIcon}
                     className={classes.icon}
                     size={18}
                   />
-                </IconButton>
+                </ShareButtons.LinkedinShareButton>
               </Grid>
               <Grid item>
                 <IconButton
