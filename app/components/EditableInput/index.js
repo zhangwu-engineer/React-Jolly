@@ -1,7 +1,9 @@
 // @flow
 
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import cx from 'classnames';
+import { generate } from 'shortid';
+import PlacesAutocomplete from 'react-places-autocomplete';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import FormControl from '@material-ui/core/FormControl';
@@ -10,6 +12,8 @@ import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import DoneIcon from '@material-ui/icons/Done';
 import EditIcon from '@material-ui/icons/Edit';
@@ -80,6 +84,26 @@ const styles = theme => ({
       textAlign: 'right',
     },
   },
+  placesList: {
+    backgroundColor: theme.palette.common.white,
+    border: '1px solid #e5e5e5',
+    position: 'absolute',
+    width: '100%',
+    maxHeight: 200,
+    top: 58,
+    zIndex: 10,
+    overflowY: 'scroll',
+    '&::-webkit-scrollbar-track': {
+      backgroundColor: '#F5F5F5',
+    },
+    '&::-webkit-scrollbar': {
+      width: 6,
+      backgroundColor: '#F5F5F5',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#a4acb3',
+    },
+  },
 });
 
 type Props = {
@@ -140,6 +164,9 @@ class EditableInput extends Component<Props, State> {
       value: e.target.value,
     });
   };
+  handleLocationChange = address => {
+    this.setState({ value: address });
+  };
   render() {
     const { label, value, id, classes, multiline, startWith } = this.props;
     const { isEditing } = this.state;
@@ -151,29 +178,90 @@ class EditableInput extends Component<Props, State> {
               <Grid item xs={9} lg={10} className={classes.nameFieldWrapper}>
                 <FormControl className={classes.fieldMargin} fullWidth>
                   <InputLabel htmlFor={id}>{label}</InputLabel>
-                  <Input
-                    className={classes.textInput}
-                    id={id}
-                    value={this.state.value}
-                    onChange={this.handleChange}
-                    multiline={multiline}
-                    startAdornment={
-                      startWith ? (
-                        <InputAdornment
-                          position="start"
-                          className={classes.adornment}
-                        >
-                          <Typography
-                            variant="h6"
-                            className={classes.adornmentText}
+                  {id === 'location' ? (
+                    <PlacesAutocomplete
+                      value={this.state.value}
+                      onChange={this.handleLocationChange}
+                      // onSelect={this.handleSelect}
+                    >
+                      {({
+                        getInputProps,
+                        suggestions,
+                        getSuggestionItemProps,
+                        loading,
+                      }) => (
+                        <Fragment>
+                          <Input
+                            id={id}
+                            {...getInputProps({
+                              placeholder: 'Search Places ...',
+                            })}
+                          />
+                          {suggestions.length || loading ? (
+                            <div className={classes.placesList}>
+                              {loading && (
+                                <ListItem>
+                                  <ListItemText primary="Loading..." />
+                                </ListItem>
+                              )}
+                              {suggestions.map(suggestion => {
+                                const className = suggestion.active
+                                  ? 'suggestion-item--active'
+                                  : 'suggestion-item';
+                                // inline style for demonstration purpose
+                                const style = suggestion.active
+                                  ? {
+                                      backgroundColor: '#fafafa',
+                                      cursor: 'pointer',
+                                    }
+                                  : {
+                                      backgroundColor: '#ffffff',
+                                      cursor: 'pointer',
+                                    };
+                                return (
+                                  <ListItem
+                                    {...getSuggestionItemProps(suggestion, {
+                                      className,
+                                      style,
+                                    })}
+                                    key={generate()}
+                                  >
+                                    <ListItemText
+                                      primary={suggestion.description}
+                                    />
+                                  </ListItem>
+                                );
+                              })}
+                            </div>
+                          ) : null}
+                        </Fragment>
+                      )}
+                    </PlacesAutocomplete>
+                  ) : (
+                    <Input
+                      className={classes.textInput}
+                      id={id}
+                      value={this.state.value}
+                      onChange={this.handleChange}
+                      multiline={multiline}
+                      startAdornment={
+                        startWith ? (
+                          <InputAdornment
+                            position="start"
+                            className={classes.adornment}
                           >
-                            {startWith}
-                          </Typography>
-                        </InputAdornment>
-                      ) : null
-                    }
-                    autoFocus
-                  />
+                            <Typography
+                              variant="h6"
+                              className={classes.adornmentText}
+                            >
+                              {startWith}
+                            </Typography>
+                          </InputAdornment>
+                        ) : null
+                      }
+                      autoFocus
+                    />
+                  )}
                 </FormControl>
               </Grid>
               <Grid item xs={3} lg={2} className={classes.editModeButtons}>
