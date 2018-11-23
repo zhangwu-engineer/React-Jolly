@@ -307,7 +307,11 @@ class Profile extends Component<Props, State> {
           </div>
         </div>
         {progress < 8 && <CompletionBanner progress={progress} user={user} />}
-        <ShareProfileModal isOpen={isOpen} onCloseModal={this.onCloseModal} />
+        <ShareProfileModal
+          isOpen={isOpen}
+          onCloseModal={this.onCloseModal}
+          shareURL={`/f/${user.get('slug')}`}
+        />
       </Fragment>
     );
   }

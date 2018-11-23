@@ -337,7 +337,11 @@ class Member extends Component<Props, State> {
             </Grid>
           </Grid>
         )}
-        <ShareProfileModal isOpen={isOpen} onCloseModal={this.onCloseModal} />
+        <ShareProfileModal
+          isOpen={isOpen}
+          onCloseModal={this.onCloseModal}
+          shareURL={`/f/${data.get('slug')}`}
+        />
         <ContactOptionModal
           isOpen={isContactOpen}
           onCloseModal={this.onCloseContactModal}

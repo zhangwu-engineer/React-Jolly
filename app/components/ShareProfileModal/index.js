@@ -6,7 +6,6 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
 import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
 
@@ -16,12 +15,14 @@ import Icon from 'components/Icon';
 import FacebookIcon from 'images/sprite/facebook.svg';
 import TwitterIcon from 'images/sprite/twitter.svg';
 import LinkedInIcon from 'images/sprite/linkedin.svg';
-import YoutubeIcon from 'images/sprite/youtube.svg';
 
 const styles = theme => ({
   modal: {
     padding: 15,
     width: 380,
+    [theme.breakpoints.down('xs')]: {
+      width: 350,
+    },
   },
   socialButtons: {
     marginBottom: 20,
@@ -83,6 +84,7 @@ const styles = theme => ({
 type Props = {
   classes: Object,
   isOpen: boolean,
+  shareURL: string,
   onCloseModal: Function,
 };
 
@@ -96,8 +98,9 @@ class ShareProfileModal extends Component<Props, State> {
   };
   share = () => {};
   copy = () => {
+    const { shareURL } = this.props;
     const el = document.createElement('textarea');
-    el.value = window.location.href;
+    el.value = `${window.location.origin}${shareURL}`;
     el.setAttribute('readonly', '');
     el.style.position = 'absolute';
     el.style.left = '-9999px';
@@ -207,20 +210,6 @@ class ShareProfileModal extends Component<Props, State> {
                     size={18}
                   />
                 </ShareButtons.LinkedinShareButton>
-              </Grid>
-              <Grid item>
-                <IconButton
-                  className={classes.iconButton}
-                  onClick={() => {
-                    this.share();
-                  }}
-                >
-                  <Icon
-                    glyph={YoutubeIcon}
-                    className={classes.icon}
-                    size={18}
-                  />
-                </IconButton>
               </Grid>
             </Grid>
           </Fragment>
