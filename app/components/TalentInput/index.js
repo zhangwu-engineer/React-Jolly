@@ -295,6 +295,7 @@ class TalentInput extends Component<Props, State> {
                           <Input
                             className={classes.textInput}
                             id="rate"
+                            type="number"
                             value={model && model.rate}
                             onChange={this.handleChange}
                             startAdornment={
