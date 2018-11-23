@@ -275,7 +275,7 @@ class Profile extends Component<Props, State> {
                     className={classes.bannerButton}
                     onClick={() => this.seePublicProfile()}
                   >
-                    SEE MY PULIC PROFILE
+                    SEE MY PUBLIC PROFILE
                   </Button>
                 </Grid>
               </Grid>
