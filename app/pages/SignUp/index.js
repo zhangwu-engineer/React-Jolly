@@ -103,6 +103,12 @@ const styles = theme => ({
   progress: {
     marginLeft: theme.spacing.unit,
   },
+  signinLink: {
+    color: '#f44336',
+    '&:hover': {
+      color: '#f44336',
+    },
+  },
 });
 
 const schema = yup.object().shape({
@@ -271,7 +277,16 @@ class SignUp extends Component<Props, State> {
               Password must be 8+ characters containing uppercase, lower case,
               and number or special characters
             </Typography>
-            {error && (
+            {error && error === 'email exists' ? (
+              <FormHelperText className={classes.fieldMargin} error>
+                There is already an account associated with this email address.
+                Please&nbsp;
+                <Link to="/email-sign-in" className={classes.signinLink}>
+                  sign in
+                </Link>
+                &nbsp;here.
+              </FormHelperText>
+            ) : (
               <FormHelperText className={classes.fieldMargin} error>
                 {error}
               </FormHelperText>
