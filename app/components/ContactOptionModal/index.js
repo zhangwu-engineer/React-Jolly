@@ -5,6 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import Avatar from '@material-ui/core/Avatar';
 import TextSMSIcon from '@material-ui/icons/Textsms';
 import EmailIcon from '@material-ui/icons/Email';
 import PhoneIcon from '@material-ui/icons/Phone';
@@ -15,9 +16,45 @@ const styles = theme => ({
   modal: {
     padding: '30px 30px 70px 30px',
     width: 430,
+    [theme.breakpoints.down('xs')]: {
+      width: 350,
+      padding: '15px 15px 35px 15px',
+    },
   },
   title: {
-    marginBottom: 30,
+    fontSize: 14,
+    marginBottom: 10,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+  },
+  name: {
+    fontSize: 20,
+    textAlign: 'center',
+    textTransform: 'capitalize',
+    marginBottom: 15,
+  },
+  avatarContainer: {
+    width: 54,
+    height: 54,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: '50%',
+    backgroundColor: theme.palette.common.white,
+    boxShadow: '0 2px 4px 0 rgba(187, 187, 187, 0.5)',
+    margin: '0 auto 10px auto',
+    [theme.breakpoints.down('xs')]: {
+      width: 54,
+      height: 54,
+    },
+  },
+  avatar: {
+    width: 54,
+    height: 54,
+    [theme.breakpoints.down('xs')]: {
+      width: 50,
+      height: 50,
+    },
   },
   iconButton: {
     '&:hover svg': {
@@ -49,10 +86,7 @@ const styles = theme => ({
 });
 
 type Props = {
-  email: string,
-  showEmail: boolean,
-  showSMS: boolean,
-  showCall: boolean,
+  data: Object,
   classes: Object,
   isOpen: boolean,
   onCloseModal: Function,
@@ -64,11 +98,14 @@ class ContactOptionModal extends Component<Props> {
     this.props.onCloseModal();
   };
   sendEmail = () => {
-    const { email } = this.props;
-    window.location.href = `mailto:${email}`;
+    const { data } = this.props;
+    window.location.href = `mailto:${data.get('email')}`;
   };
   render() {
-    const { showEmail, showSMS, showCall, classes, isOpen } = this.props;
+    const { data, classes, isOpen } = this.props;
+    const showEmail = data.getIn(['profile', 'receiveEmail']);
+    const showSMS = data.getIn(['profile', 'receiveSMS']);
+    const showCall = data.getIn(['profile', 'receiveCall']);
     return (
       <BaseModal
         className={classes.modal}
@@ -76,11 +113,20 @@ class ContactOptionModal extends Component<Props> {
         onCloseModal={this.closeModal}
       >
         <Typography variant="h6" component="h1" className={classes.title}>
-          Contact Options
+          Contact
         </Typography>
-        <Grid container>
-          {showSMS && (
-            <Grid item xs={4}>
+        <div className={classes.avatarContainer}>
+          <Avatar
+            className={classes.avatar}
+            src={data.getIn(['profile', 'avatar'])}
+          />
+        </div>
+        <Typography variant="h6" component="h1" className={classes.name}>
+          {`${data.get('firstName')} ${data.get('lastName')}`}
+        </Typography>
+        <Grid container justify="center" spacing={8}>
+          {!showSMS && (
+            <Grid item>
               <Button className={classes.button}>
                 <TextSMSIcon />
                 &nbsp;Text
@@ -88,7 +134,7 @@ class ContactOptionModal extends Component<Props> {
             </Grid>
           )}
           {showEmail && (
-            <Grid item xs={4}>
+            <Grid item>
               <Button className={classes.button} onClick={this.sendEmail}>
                 <EmailIcon />
                 &nbsp;Email
@@ -96,7 +142,7 @@ class ContactOptionModal extends Component<Props> {
             </Grid>
           )}
           {showCall && (
-            <Grid item xs={4}>
+            <Grid item>
               <Button className={classes.button}>
                 <PhoneIcon />
                 &nbsp;Call

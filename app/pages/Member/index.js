@@ -345,10 +345,7 @@ class Member extends Component<Props, State> {
         <ContactOptionModal
           isOpen={isContactOpen}
           onCloseModal={this.onCloseContactModal}
-          showEmail={data.getIn(['profile', 'receiveEmail'])}
-          showSMS={data.getIn(['profile', 'receiveSMS'])}
-          showCall={data.getIn(['profile', 'receiveCall'])}
-          email={data.get('email')}
+          data={data}
         />
       </Fragment>
     );
