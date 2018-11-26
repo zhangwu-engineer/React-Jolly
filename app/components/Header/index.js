@@ -279,6 +279,7 @@ class Header extends Component<Props, State> {
                 pathname.includes('/forgot-password') ||
                 pathname.includes('/reset-password') ||
                 pathname.includes('/email-verification') ||
+                pathname.includes('/privacy-policy') ||
                 pathname.includes('/freelancer-signup-2'),
               [classes.hiddenOnSmallDevice]: hideLogo,
             })}
@@ -291,6 +292,7 @@ class Header extends Component<Props, State> {
                 pathname.includes('/email-sign-in') ||
                 pathname.includes('/forgot-password') ||
                 pathname.includes('/reset-password') ||
+                pathname.includes('/privacy-policy') ||
                 pathname.includes('/freelancer-signup-2'),
             })}
             onClick={() => {
@@ -302,6 +304,8 @@ class Header extends Component<Props, State> {
                 history.replace('/email-sign-in');
               } else if (pathname.includes('/reset-password')) {
                 history.replace('/email-sign-in');
+              } else if (pathname.includes('/privacy-policy')) {
+                history.replace('/freelancer-signup-2');
               }
             }}
           >
@@ -397,6 +401,7 @@ class Header extends Component<Props, State> {
                   pathname.includes('/forgot-password') ||
                   pathname.includes('/reset-password') ||
                   pathname.includes('/email-verification') ||
+                  pathname.includes('/privacy-policy') ||
                   pathname.includes('/freelancer-signup-2'),
               })}
             >
