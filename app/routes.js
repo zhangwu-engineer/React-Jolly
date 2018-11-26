@@ -23,6 +23,7 @@ const EmailVerification = load(() => import('pages/EmailVerification'));
 const ForgotPassword = load(() => import('pages/ForgotPassword'));
 const ResetPassword = load(() => import('pages/ResetPassword'));
 const Mobile = load(() => import('pages/Mobile'));
+const Privacy = load(() => import('pages/Privacy'));
 const FourOfour = load(() => import('pages/404'));
 
 class Routes extends Component<{}> {
@@ -54,6 +55,10 @@ class Routes extends Component<{}> {
         <Route
           path="/reset-password/:token"
           render={props => <ResetPassword {...props} />}
+        />
+        <Route
+          path="/privacy-policy"
+          render={props => <Privacy {...props} />}
         />
         <PrivateRoute
           path="/f/:slug/edit/personal-information"

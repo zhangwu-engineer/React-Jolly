@@ -313,7 +313,9 @@ class SignUp extends Component<Props, State> {
               <br />
               <Link className={classes.link}>Terms of Use</Link>
               &nbsp;&amp;&nbsp;
-              <Link className={classes.link}>Privacy Policy</Link>
+              <Link to="/privacy-policy" className={classes.link}>
+                Privacy Policy
+              </Link>
             </Typography>
           </Paper>
         </div>
