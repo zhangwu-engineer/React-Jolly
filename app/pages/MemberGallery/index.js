@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { generate } from 'shortid';
+import Masonry from 'react-masonry-component';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -39,13 +40,9 @@ const styles = theme => ({
   },
   contentWrapper: {
     padding: 10,
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignContent: 'flex-start',
   },
   fileWrapper: {
     width: 174,
-    height: 174,
     padding: 3,
   },
   selected: {
@@ -95,11 +92,20 @@ class MemberGallery extends Component<Props> {
           </Grid>
         </Grid>
         <div className={classes.contentWrapper}>
-          {files.map(file => (
-            <div className={classes.fileWrapper} key={generate()}>
-              <img src={file.get('path')} alt={file.get('_id')} />
-            </div>
-          ))}
+          <Masonry
+            className="my-gallery-class" // default ''
+            // elementType={'ul'} // default 'div'
+            // options={masonryOptions} // default {}
+            disableImagesLoaded={false} // default false
+            updateOnEachImageLoad={false} // default false and works only if disableImagesLoaded is false
+            imagesLoadedOptions={{ background: '.my-bg-image-el' }} // default {}
+          >
+            {files.map(file => (
+              <div className={classes.fileWrapper} key={generate()}>
+                <img src={file.get('path')} alt={file.get('_id')} />
+              </div>
+            ))}
+          </Masonry>
         </div>
       </div>
     );

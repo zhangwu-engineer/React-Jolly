@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { generate } from 'shortid';
+import Masonry from 'react-masonry-component';
 import cx from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -42,13 +43,9 @@ const styles = theme => ({
   },
   contentWrapper: {
     padding: 10,
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignContent: 'flex-start',
   },
   fileWrapper: {
     width: 174,
-    height: 174,
     padding: 3,
   },
   selected: {
@@ -151,18 +148,27 @@ class ProfileGallery extends Component<Props> {
           </Grid>
         </Grid>
         <div className={classes.contentWrapper}>
-          {files.map(file => (
-            <div
-              className={cx(classes.fileWrapper, {
-                [classes.selected]: selectedFile === file.get('path'),
-              })}
-              key={generate()}
-              onClick={() => this.updateSelection(file.get('path'))}
-              role="button"
-            >
-              <img src={file.get('path')} alt={file.get('_id')} />
-            </div>
-          ))}
+          <Masonry
+            className="my-gallery-class" // default ''
+            // elementType={'ul'} // default 'div'
+            // options={masonryOptions} // default {}
+            disableImagesLoaded={false} // default false
+            updateOnEachImageLoad={false} // default false and works only if disableImagesLoaded is false
+            imagesLoadedOptions={{ background: '.my-bg-image-el' }} // default {}
+          >
+            {files.map(file => (
+              <div
+                className={cx(classes.fileWrapper, {
+                  [classes.selected]: selectedFile === file.get('path'),
+                })}
+                key={generate()}
+                onClick={() => this.updateSelection(file.get('path'))}
+                role="button"
+              >
+                <img src={file.get('path')} alt={file.get('_id')} />
+              </div>
+            ))}
+          </Masonry>
         </div>
       </div>
     );

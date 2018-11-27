@@ -3,6 +3,7 @@
 import React, { Component, Fragment } from 'react';
 import { generate } from 'shortid';
 import cx from 'classnames';
+import Masonry from 'react-masonry-component';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -41,14 +42,10 @@ const styles = theme => ({
   contentWrapper: {
     padding: 20,
     height: 565,
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignContent: 'flex-start',
   },
   fileWrapper: {
     width: 174,
-    height: 174,
-    padding: 3,
+    padding: 5,
   },
   selected: {
     border: '2px solid #000000',
@@ -141,18 +138,27 @@ class PhotoModal extends Component<Props> {
           </Grid>
         </Grid>
         <div className={classes.contentWrapper}>
-          {files.map(file => (
-            <div
-              className={cx(classes.fileWrapper, {
-                [classes.selected]: selectedFile === file.get('path'),
-              })}
-              key={generate()}
-              onClick={() => this.updateSelection(file.get('path'))}
-              role="button"
-            >
-              <img src={file.get('path')} alt={file.get('_id')} />
-            </div>
-          ))}
+          <Masonry
+            className="my-gallery-class" // default ''
+            // elementType={'ul'} // default 'div'
+            // options={masonryOptions} // default {}
+            disableImagesLoaded={false} // default false
+            updateOnEachImageLoad={false} // default false and works only if disableImagesLoaded is false
+            imagesLoadedOptions={{ background: '.my-bg-image-el' }} // default {}
+          >
+            {files.map(file => (
+              <div
+                className={cx(classes.fileWrapper, {
+                  [classes.selected]: selectedFile === file.get('path'),
+                })}
+                key={generate()}
+                onClick={() => this.updateSelection(file.get('path'))}
+                role="button"
+              >
+                <img src={file.get('path')} alt={file.get('_id')} />
+              </div>
+            ))}
+          </Masonry>
         </div>
       </BaseModal>
     );
