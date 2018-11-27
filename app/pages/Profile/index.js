@@ -261,8 +261,7 @@ class Profile extends Component<Props, State> {
               >
                 <Grid item xs={12} lg={7}>
                   <Typography className={classes.bannerText}>
-                    Ready to share? View your new public page and grab the&nbsp;
-                    link to share it!
+                    {`Ready to share? View your new public page and grab the link to share it!`}
                   </Typography>
                 </Grid>
                 <Grid
@@ -288,8 +287,7 @@ class Profile extends Component<Props, State> {
               >
                 <Grid item xs={12} lg={6}>
                   <Typography className={classes.bannerText}>
-                    Before you share your profile, you need to add
-                    a&nbsp;profile picture.
+                    {`Before you share your profile, you need to add a profile picture.`}
                   </Typography>
                 </Grid>
                 <Grid
