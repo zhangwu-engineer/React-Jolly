@@ -44,7 +44,7 @@ class App extends Component<Props> {
       if (user) {
         history.push(`/f/${user.get('slug')}/edit`);
       } else {
-        history.push('/sign-in');
+        history.push('/freelancer-signup');
       }
     }
   }
