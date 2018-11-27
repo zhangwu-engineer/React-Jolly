@@ -214,6 +214,18 @@ class TalentInput extends Component<Props, State> {
       },
     }));
   };
+  handleRateChange = (e: Object) => {
+    e.persist();
+    const regEx = /^\d+$/;
+    if (e.target.value === '' || regEx.test(e.target.value)) {
+      this.setState(state => ({
+        model: {
+          ...state.model,
+          [e.target.id]: e.target.value,
+        },
+      }));
+    }
+  };
   handleUnitChange = (e: Object) => {
     this.setState(state => ({
       model: {
@@ -295,9 +307,8 @@ class TalentInput extends Component<Props, State> {
                           <Input
                             className={classes.textInput}
                             id="rate"
-                            type="number"
                             value={model && model.rate}
-                            onChange={this.handleChange}
+                            onChange={this.handleRateChange}
                             startAdornment={
                               <InputAdornment
                                 position="start"
