@@ -44,13 +44,13 @@ class App extends Component<Props> {
       if (user) {
         history.push(`/f/${user.get('slug')}/edit`);
       } else {
-        history.push('/email-sign-in');
+        history.push('/sign-in');
       }
     }
   }
   componentDidUpdate() {
     if (this.props.location.pathname === '/' && !this.props.user) {
-      history.push('/email-sign-in');
+      history.push('/sign-in');
     } else if (this.props.location.pathname === '/' && this.props.user) {
       history.push(`/f/${this.props.user.get('slug')}/edit`);
     }
