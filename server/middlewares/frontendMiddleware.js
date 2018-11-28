@@ -51,15 +51,15 @@ const addProdMiddlewares = (app, options) => {
   const publicPath = options.publicPath || '/';
   const outputPath = options.outputPath || path.resolve(process.cwd(), 'build');
 
-  if (CONFIG.IS_USE_PRE_RENDER_ENGINE) {
-    console.log('PreRender is Enabled');
+  // if (CONFIG.IS_USE_PRE_RENDER_ENGINE) {
+  //   console.log('PreRender is Enabled');
 
-    app.use(
-      require('prerender-node')
-        .set('protocol', 'https')
-        .set('prerenderServiceUrl', CONFIG.APP.PRE_RENDER_SERVICE_URL)
-    );
-  }
+  //   app.use(
+  //     require('prerender-node')
+  //       .set('protocol', 'https')
+  //       .set('prerenderServiceUrl', CONFIG.APP.PRE_RENDER_SERVICE_URL)
+  //   );
+  // }
 
   app.use(compression());
   sitemap(app);
