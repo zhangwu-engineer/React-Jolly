@@ -40,9 +40,9 @@ const webPackConfigs = webPackDefault({
   },
 
   plugins: [
-    // Minify and optimize the index.html
+    // Minify and optimize the index-prod.html
     new HtmlWebpackPlugin({
-      template: 'app/index.html',
+      template: 'app/index-prod.html',
       minify: {
         removeComments: true,
         collapseWhitespace: true,
