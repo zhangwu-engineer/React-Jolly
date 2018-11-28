@@ -204,10 +204,12 @@ class EditableInput extends Component<Props, State> {
                     }) => (
                       <Fragment>
                         <Input
+                          className={classes.textInput}
                           id={id}
                           {...getInputProps({
                             placeholder: 'Search Places ...',
                           })}
+                          autoFocus
                         />
                         {suggestions.length || loading ? (
                           <div className={classes.placesList}>
