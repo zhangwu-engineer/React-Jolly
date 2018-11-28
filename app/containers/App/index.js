@@ -6,6 +6,7 @@ import { compose } from 'redux';
 import { replace } from 'react-router-redux';
 import { withRouter } from 'react-router';
 import { Switch } from 'react-router-dom';
+import { fromJS } from 'immutable';
 import { Route } from 'components/Routes';
 import { history } from 'components/ConnectedRouter';
 
@@ -61,9 +62,16 @@ class App extends Component<Props> {
       navbarOpen,
       location: { pathname },
     } = this.props;
+    const data = fromJS({
+      title: 'Jolly | The Event Freelancer Network',
+      description:
+        'Jolly is a new platform to help event freelancers grow their reputation, find work and network with fellow hustlers like them.',
+    });
+    const ogImage =
+      'https://s3-us-west-2.amazonaws.com/jolly-images/preview.jpg';
     return (
       <div>
-        <PageMeta />
+        <PageMeta data={data} ogImage={ogImage} />
         <Switch>
           <Route path="/freelancer-signup" />
           <Route path="/sign-in" />
