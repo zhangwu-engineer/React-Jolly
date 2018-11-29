@@ -10,6 +10,7 @@ const setup = require('./middlewares/frontendMiddleware');
 const resolve = require('path').resolve;
 const https = require('https');
 const fs = require('fs');
+const enforce = require('express-sslify');
 
 const sslOptions = {
   key: fs.readFileSync(__dirname + '/ssl/key.pem'),
@@ -34,6 +35,7 @@ setup(app, {
  */
 app.set(HTTP_HEADER.X_POWERED_BY, APP_CONFIG.NAME);
 
+app.use(enforce.HTTPS({ trustProtoHeader: true }));
 /**
  * Express App Listening Port
  */
