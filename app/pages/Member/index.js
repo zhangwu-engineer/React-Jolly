@@ -190,7 +190,10 @@ class Member extends Component<Props, State> {
         params: { slug },
       },
     } = this.props;
-    if (currentUser.get('slug') !== slug) {
+    if (currentUser && currentUser.get('slug') !== slug) {
+      this.props.requestMemberProfile(slug);
+    }
+    if (!currentUser) {
       this.props.requestMemberProfile(slug);
     }
     this.props.requestMemberFiles(slug);
@@ -217,53 +220,58 @@ class Member extends Component<Props, State> {
       },
     } = this.props;
     const { isOpen, isContactOpen } = this.state;
-    const data = currentUser.get('slug') === slug ? currentUser : member;
+    const data =
+      currentUser && currentUser.get('slug') === slug ? currentUser : member;
     const showContactOptions =
       data.getIn(['profile', 'receiveEmail']) ||
       data.getIn(['profile', 'receiveSMS']) ||
       data.getIn(['profile', 'receiveCall']);
     return (
       <Fragment>
-        {currentUser.get('slug') === slug && (
-          <Grid
-            className={classes.topBanner}
-            container
-            justify="space-between"
-            alignItems="center"
-          >
+        {currentUser &&
+          currentUser.get('slug') === slug && (
             <Grid
-              item
-              xs={12}
-              md={8}
-              lg={8}
-              className={classes.topBannerTextContainer}
+              className={classes.topBanner}
+              container
+              justify="space-between"
+              alignItems="center"
             >
-              <Typography className={classes.topBannerText}>
-                You&apos;re currently viewing your public profile.
-              </Typography>
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              md={4}
-              lg={4}
-              className={classes.topBannerButtonsContainer}
-            >
-              <Button
-                className={classes.backButton}
-                component={props => (
-                  <Link to={`/f/${currentUser.get('slug')}/edit`} {...props} />
-                )}
-                color="primary"
+              <Grid
+                item
+                xs={12}
+                md={8}
+                lg={8}
+                className={classes.topBannerTextContainer}
               >
-                Back
-              </Button>
-              <Button className={classes.topBannerButton} onClick={() => {}}>
-                Copy Link
-              </Button>
+                <Typography className={classes.topBannerText}>
+                  You&apos;re currently viewing your public profile.
+                </Typography>
+              </Grid>
+              <Grid
+                item
+                xs={12}
+                md={4}
+                lg={4}
+                className={classes.topBannerButtonsContainer}
+              >
+                <Button
+                  className={classes.backButton}
+                  component={props => (
+                    <Link
+                      to={`/f/${currentUser.get('slug')}/edit`}
+                      {...props}
+                    />
+                  )}
+                  color="primary"
+                >
+                  Back
+                </Button>
+                <Button className={classes.topBannerButton} onClick={() => {}}>
+                  Copy Link
+                </Button>
+              </Grid>
             </Grid>
-          </Grid>
-        )}
+          )}
         <div className={classes.root}>
           <div className={classes.profileInfo}>
             <MemberProfileInfo

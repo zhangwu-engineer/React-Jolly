@@ -92,7 +92,7 @@ class Routes extends Component<{}> {
           path="/f/:slug/gallery"
           render={props => <MemberGallery {...props} />}
         />
-        <PrivateRoute path="/f/:slug" render={props => <Member {...props} />} />
+        <Route path="/f/:slug" render={props => <Member {...props} />} />
         <Route render={props => <FourOfour {...props} />} />
       </Switch>
     );
