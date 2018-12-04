@@ -191,7 +191,7 @@ class Mobile extends Component<Props, State> {
           </div>
           <div className={classes.sectionBody}>
             {step === 1 && (
-              <Fragment>
+              <form>
                 <Typography variant="h6" className={classes.title}>
                   Enter the number you&apos;d like to use
                 </Typography>
@@ -222,7 +222,7 @@ class Mobile extends Component<Props, State> {
                     </Button>
                   </Grid>
                 </Grid>
-              </Fragment>
+              </form>
             )}
             {step === 2 && (
               <Fragment>
