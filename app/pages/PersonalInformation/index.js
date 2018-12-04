@@ -361,12 +361,12 @@ class PersonalInformationPage extends Component<Props, State> {
           <div className={classes.section}>
             <div className={classes.sectionHeader}>
               <Typography variant="h6" className={classes.sectionTitle}>
-                Public profile actions
+                Public profile contact actions
               </Typography>
             </div>
             <div className={classes.sectionBody}>
               <Option
-                label="Email (your address will be hidden)"
+                label="Email"
                 id="receiveEmail"
                 value={model && model.profile.receiveEmail}
                 modalTitle="Email Button on Profile"
@@ -374,7 +374,7 @@ class PersonalInformationPage extends Component<Props, State> {
                 onChange={this.onChange}
               />
               <Option
-                label="SMS (your phone # will be hidden)"
+                label="SMS"
                 id="receiveSMS"
                 value={model && model.profile.receiveSMS}
                 modalTitle="SMS Button on Profile"
@@ -382,7 +382,7 @@ class PersonalInformationPage extends Component<Props, State> {
                 onChange={this.onChange}
               />
               <Option
-                label="Call (your phone # will be hidden)"
+                label="Call"
                 id="receiveCall"
                 value={model && model.profile.receiveCall}
                 modalTitle="Call Button on Profile"
