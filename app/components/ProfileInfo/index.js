@@ -1,6 +1,6 @@
 // @flow
 
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -261,7 +261,7 @@ type State = {
   isOpen: boolean,
 };
 
-class ProfileInfo extends Component<Props, State> {
+class ProfileInfo extends PureComponent<Props, State> {
   state = {
     type: '',
     isOpen: false,
