@@ -177,6 +177,7 @@ class EditableInput extends Component<Props, State> {
   handleLocationChange = address => {
     this.setState({ value: address });
   };
+  textInput = React.createRef();
   render() {
     const { label, id, classes, multiline, startWith } = this.props;
     const { isEditing } = this.state;
@@ -264,6 +265,15 @@ class EditableInput extends Component<Props, State> {
                     value={this.state.value}
                     onChange={this.handleChange}
                     multiline={multiline}
+                    inputRef={this.textInput}
+                    onKeyDown={e => {
+                      if (e.keyCode === 13) {
+                        if (this.textInput.current) {
+                          this.textInput.current.blur();
+                        }
+                        this.onConfirm();
+                      }
+                    }}
                     startAdornment={
                       startWith ? (
                         <InputAdornment
