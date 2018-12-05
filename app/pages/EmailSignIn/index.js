@@ -189,6 +189,7 @@ class EmailSignIn extends Component<Props, State> {
                 validationError.path === 'email' &&
                 validationError.message
               }
+              autoFocus
             />
             <FormControl
               className={classes.fieldMargin}
@@ -203,6 +204,11 @@ class EmailSignIn extends Component<Props, State> {
                 value={model.password}
                 className={classes.textInput}
                 onChange={this.handleChange}
+                onKeyDown={e => {
+                  if (e.keyCode === 13) {
+                    this.handleSignIn();
+                  }
+                }}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
