@@ -139,7 +139,7 @@ class EditableInput extends Component<Props, State> {
     }
     if (nextProps.id === 'phone' && prevState.value !== nextProps.value) {
       return {
-        value: nextProps.value,
+        value: nextProps.value || '',
       };
     }
     return null;
