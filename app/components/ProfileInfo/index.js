@@ -13,6 +13,7 @@ import ShareIcon from '@material-ui/icons/Share';
 import CameraIcon from '@material-ui/icons/CameraAltOutlined';
 import Divider from '@material-ui/core/Divider';
 import Avatar from '@material-ui/core/Avatar';
+import ImageIcon from '@material-ui/icons/Image';
 
 import { history } from 'components/ConnectedRouter';
 import PhotoModal from 'components/PhotoModal';
@@ -68,6 +69,29 @@ const styles = theme => ({
     [theme.breakpoints.down('xs')]: {
       top: '15px',
       left: '15px',
+      display: 'flex',
+    },
+  },
+  imageButton: {
+    position: 'absolute',
+    top: 30,
+    right: 60,
+    color: theme.palette.common.white,
+    [theme.breakpoints.down('xs')]: {
+      top: '15px',
+      right: '53px',
+      display: 'none',
+    },
+  },
+  smallImageButton: {
+    position: 'absolute',
+    top: 30,
+    right: 60,
+    color: theme.palette.common.white,
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      top: '15px',
+      right: '53px',
       display: 'flex',
     },
   },
@@ -312,6 +336,21 @@ class ProfileInfo extends PureComponent<Props, State> {
             {user.getIn(['profile', 'backgroundImage']) ? 'Change' : 'Add'}{' '}
             cover
           </Button>
+          <IconButton
+            className={classes.imageButton}
+            onClick={() => this.setState({ type: 'gallery', isOpen: true })}
+          >
+            <ImageIcon />
+          </IconButton>
+          <IconButton
+            className={classes.smallImageButton}
+            onClick={() => {
+              window.localStorage.setItem('privateGallery', 'yes');
+              history.push(`/f/${user.get('slug')}/gallery`);
+            }}
+          >
+            <ImageIcon />
+          </IconButton>
           <IconButton
             className={classes.shareButton}
             onClick={this.props.openShareModal}

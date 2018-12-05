@@ -69,8 +69,13 @@ class MemberGallery extends Component<Props> {
     this.props.requestMemberProfile(slug);
     this.props.requestMemberFiles(slug);
   }
+  componentWillUnmount() {
+    window.localStorage.removeItem('privateGallery');
+  }
   render() {
     const { classes, member, files } = this.props;
+    const privateGallery =
+      window.localStorage.getItem('privateGallery') === 'yes';
     return (
       <div className={classes.root}>
         <Grid
@@ -83,7 +88,14 @@ class MemberGallery extends Component<Props> {
             <Button
               className={classes.backButton}
               component={props => (
-                <Link to={`/f/${member.get('slug')}`} {...props} />
+                <Link
+                  to={
+                    privateGallery
+                      ? `/f/${member.get('slug')}/edit`
+                      : `/f/${member.get('slug')}`
+                  }
+                  {...props}
+                />
               )}
             >
               <ArrowBackIcon />

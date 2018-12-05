@@ -86,7 +86,7 @@ class PhotoModal extends Component<Props> {
   };
   updateSelection = path => {
     const { updateUser, type } = this.props;
-    if (updateUser && type) {
+    if (updateUser && type && type !== 'gallery') {
       updateUser({
         profile: {
           [type]: path,
@@ -121,20 +121,24 @@ class PhotoModal extends Component<Props> {
             </Typography>
           </Grid>
           <Grid item>
-            {uploadPhoto && (
-              <Fragment>
-                <Button className={classes.addButton} onClick={this.onAddClick}>
-                  <CameraIcon />
-                  &nbsp;Add image
-                </Button>
-                <input
-                  type="file"
-                  className={classes.fileInput}
-                  ref={this.fileInput}
-                  onChange={this.handleFileUpload}
-                />
-              </Fragment>
-            )}
+            {type &&
+              type !== 'gallery' && (
+                <Fragment>
+                  <Button
+                    className={classes.addButton}
+                    onClick={this.onAddClick}
+                  >
+                    <CameraIcon />
+                    &nbsp;Add image
+                  </Button>
+                  <input
+                    type="file"
+                    className={classes.fileInput}
+                    ref={this.fileInput}
+                    onChange={this.handleFileUpload}
+                  />
+                </Fragment>
+              )}
           </Grid>
         </Grid>
         <div className={classes.contentWrapper}>
