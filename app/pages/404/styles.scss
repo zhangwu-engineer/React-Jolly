@@ -1,13 +1,6 @@
 @import '~styles/settings/settings';
 
 .notFound {
-  background-image: url('./bg.png');
-  background-repeat: repeat-x;
-  background-color: #e67166;
-  background-position: center;
-  height: 714px;
-  display: flex;
-  align-items: center;
   @include breakpoint(small only) {
     height: 100%;
     padding: rem-calc(100) 0px;

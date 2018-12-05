@@ -99,7 +99,7 @@ export const reducer = (
         .set('error', '');
 
     case TALENTS + FAILED:
-      return state.set('isLoading', false).set('error', payload);
+      return state.set('isLoading', false).set('error', payload.message);
 
     case TALENTS + ERROR:
       return state.set('isLoading', false).set(
@@ -118,7 +118,9 @@ export const reducer = (
         .set('memberError', '');
 
     case MEMBER_PROFILE + FAILED:
-      return state.set('isMemberLoading', false).set('memberError', payload);
+      return state
+        .set('isMemberLoading', false)
+        .set('memberError', payload.message);
 
     case MEMBER_PROFILE + ERROR:
       return state.set('isMemberLoading', false).set(
@@ -137,7 +139,9 @@ export const reducer = (
         .set('fileError', '');
 
     case FILES + FAILED:
-      return state.set('isFileLoading', false).set('fileError', payload);
+      return state
+        .set('isFileLoading', false)
+        .set('fileError', payload.message);
 
     case FILES + ERROR:
       return state.set('isFileLoading', false).set(

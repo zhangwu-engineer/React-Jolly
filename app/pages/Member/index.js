@@ -12,6 +12,7 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import ShareIcon from '@material-ui/icons/Share';
 
+import { history } from 'components/ConnectedRouter';
 import MemberProfileInfo from 'components/MemberProfileInfo';
 import TalentInput from 'components/TalentInput';
 import Link from 'components/Link';
@@ -164,6 +165,8 @@ const styles = theme => ({
 type Props = {
   currentUser: Object,
   member: Object,
+  isLoading: boolean,
+  error: string,
   files: Object,
   talents: Object,
   classes: Object,
@@ -185,19 +188,22 @@ class Member extends Component<Props, State> {
   };
   componentDidMount() {
     const {
-      currentUser,
       match: {
         params: { slug },
       },
     } = this.props;
-    if (currentUser && currentUser.get('slug') !== slug) {
-      this.props.requestMemberProfile(slug);
-    }
-    if (!currentUser) {
-      this.props.requestMemberProfile(slug);
-    }
+    this.props.requestMemberProfile(slug);
     this.props.requestMemberFiles(slug);
     this.props.requestMemberTalents(slug);
+  }
+  componentDidUpdate(prevProps: Props) {
+    if (
+      prevProps.isLoading &&
+      !this.props.isLoading &&
+      this.props.error === 'User not found'
+    ) {
+      history.push('/404');
+    }
   }
   onCloseModal = () => {
     this.setState({ isOpen: false });
@@ -220,12 +226,10 @@ class Member extends Component<Props, State> {
       },
     } = this.props;
     const { isOpen, isContactOpen } = this.state;
-    const data =
-      currentUser && currentUser.get('slug') === slug ? currentUser : member;
     const showContactOptions =
-      data.getIn(['profile', 'receiveEmail']) ||
-      data.getIn(['profile', 'receiveSMS']) ||
-      data.getIn(['profile', 'receiveCall']);
+      member.getIn(['profile', 'receiveEmail']) ||
+      member.getIn(['profile', 'receiveSMS']) ||
+      member.getIn(['profile', 'receiveCall']);
     return (
       <Fragment>
         {currentUser &&
@@ -275,7 +279,7 @@ class Member extends Component<Props, State> {
         <div className={classes.root}>
           <div className={classes.profileInfo}>
             <MemberProfileInfo
-              user={data}
+              user={member}
               files={files}
               openShareModal={this.openShareModal}
             />
@@ -348,12 +352,12 @@ class Member extends Component<Props, State> {
         <ShareProfileModal
           isOpen={isOpen}
           onCloseModal={this.onCloseModal}
-          shareURL={`/f/${data.get('slug')}`}
+          shareURL={`/f/${member.get('slug')}`}
         />
         <ContactOptionModal
           isOpen={isContactOpen}
           onCloseModal={this.onCloseContactModal}
-          data={data}
+          data={member}
         />
       </Fragment>
     );
