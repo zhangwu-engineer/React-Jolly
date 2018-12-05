@@ -60,7 +60,7 @@ secondaryFontObserver.load().then(
 ReactDOM.render(
   <ConnectedRouter>
     <MuiThemeProvider theme={theme}>
-      <div>
+      <React.Fragment>
         <ReduxToastr
           timeOut={3000}
           newestOnTop={false}
@@ -72,7 +72,7 @@ ReactDOM.render(
         />
         <ScrollMemory />
         <App />
-      </div>
+      </React.Fragment>
     </MuiThemeProvider>
   </ConnectedRouter>,
   document.getElementById('app')

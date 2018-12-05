@@ -70,7 +70,7 @@ class App extends Component<Props> {
     const ogImage =
       'https://s3-us-west-2.amazonaws.com/jolly-images/preview.jpg';
     return (
-      <div>
+      <React.Fragment>
         <PageMeta data={data} ogImage={ogImage} />
         <Switch>
           <Route path="/freelancer-signup" />
@@ -78,6 +78,7 @@ class App extends Component<Props> {
           <Route path="/f/:slug/edit/avatar" />
           <Route path="/f/:slug/edit/background-image" />
           <Route path="/f/:slug/gallery" />
+          <Route path="/f/:slug/add" />
           <Route
             path="/"
             render={() => (
@@ -94,7 +95,7 @@ class App extends Component<Props> {
           />
         </Switch>
         <Routes />
-      </div>
+      </React.Fragment>
     );
   }
 }
