@@ -227,6 +227,7 @@ class SignUp extends Component<Props, State> {
                 validationError.path === 'email' &&
                 validationError.message
               }
+              autoFocus
             />
             <TextField
               id="fullname"
@@ -255,6 +256,11 @@ class SignUp extends Component<Props, State> {
                 value={model.password}
                 className={classes.textInput}
                 onChange={this.handleChange}
+                onKeyDown={e => {
+                  if (e.keyCode === 13) {
+                    this.confirmEmail();
+                  }
+                }}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
