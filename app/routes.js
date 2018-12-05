@@ -90,12 +90,12 @@ class Routes extends Component<{}> {
           render={props => <Mobile {...props} />}
         />
         <PrivateRoute
-          path="/f/:slug/gallery"
-          render={props => <MemberGallery {...props} />}
-        />
-        <PrivateRoute
           path="/f/:slug/add"
           render={props => <AddWork {...props} />}
+        />
+        <Route
+          path="/f/:slug/gallery"
+          render={props => <MemberGallery {...props} />}
         />
         <Route path="/f/:slug" render={props => <Member {...props} />} />
         <Route render={props => <FourOfour {...props} />} />
