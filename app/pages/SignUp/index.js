@@ -109,6 +109,9 @@ const styles = theme => ({
       color: '#f44336',
     },
   },
+  modalTitle: {
+    fontSize: 18,
+  },
 });
 
 const schema = yup.object().shape({
@@ -324,8 +327,12 @@ class SignUp extends Component<Props, State> {
           isOpen={isOpen}
           onCloseModal={this.onCloseModal}
         >
-          <Typography variant="h6" component="h1">
-            Is this email correct?
+          <Typography
+            variant="h6"
+            component="h1"
+            className={classes.modalTitle}
+          >
+            Did you type your email correctly?
           </Typography>
           <Typography
             className={classes.emailText}
@@ -336,10 +343,10 @@ class SignUp extends Component<Props, State> {
           </Typography>
           <Grid container justify="flex-end">
             <Grid item>
-              <Button onClick={this.onCloseModal}>EDIT</Button>
+              <Button onClick={this.onCloseModal}>No, Update</Button>
             </Grid>
             <Grid item>
-              <Button onClick={this.handleRegister}>YES</Button>
+              <Button onClick={this.handleRegister}>Yes</Button>
             </Grid>
           </Grid>
         </BaseModal>
