@@ -168,19 +168,8 @@ class Profile extends Component<Props, State> {
     history.push(`/f/${user.get('slug')}`);
   };
   render() {
-    const {
-      user,
-      files,
-      talents,
-      classes,
-      match: {
-        params: { slug },
-      },
-    } = this.props;
+    const { user, files, talents, classes } = this.props;
     const { isOpen } = this.state;
-    if (user.get('slug') !== slug) {
-      return null;
-    }
     let progress = 0;
     if (user.get('email')) {
       progress += 1;

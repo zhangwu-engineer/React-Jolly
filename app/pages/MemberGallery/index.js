@@ -3,6 +3,7 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import { matchPath } from 'react-router';
 import { generate } from 'shortid';
 import Masonry from 'react-masonry-component';
 import { withStyles } from '@material-ui/core/styles';
@@ -62,10 +63,13 @@ type Props = {
 class MemberGallery extends Component<Props> {
   componentDidMount() {
     const {
-      match: {
-        params: { slug },
-      },
+      match: { url },
     } = this.props;
+    const {
+      params: { slug },
+    } = matchPath(url, {
+      path: '/f/:slug/gallery',
+    });
     this.props.requestMemberProfile(slug);
     this.props.requestMemberFiles(slug);
   }

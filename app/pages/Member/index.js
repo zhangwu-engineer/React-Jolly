@@ -3,6 +3,7 @@
 import React, { Component, Fragment } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import { matchPath } from 'react-router';
 import { generate } from 'shortid';
 import cx from 'classnames';
 
@@ -12,7 +13,6 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import ShareIcon from '@material-ui/icons/Share';
 
-import { history } from 'components/ConnectedRouter';
 import MemberProfileInfo from 'components/MemberProfileInfo';
 import TalentInput from 'components/TalentInput';
 import Link from 'components/Link';
@@ -188,22 +188,16 @@ class Member extends Component<Props, State> {
   };
   componentDidMount() {
     const {
-      match: {
-        params: { slug },
-      },
+      match: { url },
     } = this.props;
+    const {
+      params: { slug },
+    } = matchPath(url, {
+      path: '/f/:slug',
+    });
     this.props.requestMemberProfile(slug);
     this.props.requestMemberFiles(slug);
     this.props.requestMemberTalents(slug);
-  }
-  componentDidUpdate(prevProps: Props) {
-    if (
-      prevProps.isLoading &&
-      !this.props.isLoading &&
-      this.props.error === 'User not found'
-    ) {
-      history.push('/404');
-    }
   }
   onCloseModal = () => {
     this.setState({ isOpen: false });
@@ -221,15 +215,18 @@ class Member extends Component<Props, State> {
       files,
       talents,
       classes,
-      match: {
-        params: { slug },
-      },
+      match: { url },
     } = this.props;
     const { isOpen, isContactOpen } = this.state;
     const showContactOptions =
       member.getIn(['profile', 'receiveEmail']) ||
       member.getIn(['profile', 'receiveSMS']) ||
       member.getIn(['profile', 'receiveCall']);
+    const {
+      params: { slug },
+    } = matchPath(url, {
+      path: '/f/:slug',
+    });
     return (
       <Fragment>
         {currentUser &&

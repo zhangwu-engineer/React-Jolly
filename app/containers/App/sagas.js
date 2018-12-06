@@ -24,6 +24,7 @@ const USER_DATA_UPDATE = 'Jolly/App/UPDATE_USER_DATA';
 const USER_PHOTO_UPLOAD = 'Jolly/App/UPLOAD_USER_PHOTO';
 const USER_FILES = 'Jolly/App/USER_FILES';
 const EMAIL_VERIFICATION = 'Jolly/App/EMAIL_VERIFICATION';
+const MEMBER = 'Jolly/App/Member';
 
 const OPEN_NAVBAR = 'Jolly/App/OPEN_NAVBAR';
 const CLOSE_NAVBAR = 'Jolly/App/CLOSE_NAVBAR';
@@ -176,6 +177,23 @@ const userEmailVerificationRequestError = (error: string) => ({
   payload: error,
 });
 
+export const requestMember = (slug: string) => ({
+  type: MEMBER + REQUESTED,
+  payload: slug,
+});
+const memberRequestSuccess = (payload: Object) => ({
+  type: MEMBER + SUCCEDED,
+  payload,
+});
+const memberRequestFailed = (error: string) => ({
+  type: MEMBER + FAILED,
+  payload: error,
+});
+const memberRequestError = (error: string) => ({
+  type: MEMBER + ERROR,
+  payload: error,
+});
+
 export const openNavbar = () => ({
   type: OPEN_NAVBAR,
 });
@@ -209,6 +227,9 @@ const initialState = fromJS({
   files: [],
   isFileLoading: false,
   fileError: '',
+  member: fromJS({}),
+  isMemberLoading: false,
+  memberError: '',
 });
 
 export const reducer = (
@@ -356,6 +377,27 @@ export const reducer = (
     case EMAIL_VERIFICATION + ERROR:
       return state.set('isLoading', false).set(
         'error',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case MEMBER + REQUESTED:
+      return state.set('isMemberLoading', true);
+
+    case MEMBER + SUCCEDED:
+      return state
+        .set('isMemberLoading', false)
+        .set('member', fromJS(payload))
+        .set('memberError', '');
+
+    case MEMBER + FAILED:
+      return state
+        .set('isMemberLoading', false)
+        .set('memberError', payload.message);
+
+    case MEMBER + ERROR:
+      return state.set('isMemberLoading', false).set(
+        'memberError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -545,6 +587,24 @@ function* UserEmailVerificationRequest({ payload }) {
   }
 }
 
+function* MemberRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/user/slug/${payload}`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(memberRequestSuccess(response.data.response));
+    } else {
+      yield put(memberRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(memberRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(REGISTER + REQUESTED, RegisterRequest),
@@ -555,5 +615,6 @@ export default function*(): Saga<void> {
     takeLatest(USER_PHOTO_UPLOAD + REQUESTED, UploadUserPhotoRequest),
     takeLatest(USER_FILES + REQUESTED, UserFilesRequest),
     takeLatest(EMAIL_VERIFICATION + REQUESTED, UserEmailVerificationRequest),
+    takeLatest(MEMBER + REQUESTED, MemberRequest),
   ]);
 }

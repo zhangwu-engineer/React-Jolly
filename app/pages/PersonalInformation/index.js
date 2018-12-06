@@ -110,7 +110,6 @@ const styles = theme => ({
 type Props = {
   user: Object,
   classes: Object,
-  match: Object,
   updateUser: Function,
   requestUser: Function,
 };
@@ -241,17 +240,8 @@ class PersonalInformationPage extends Component<Props, State> {
     }
   };
   render() {
-    const {
-      user,
-      classes,
-      match: {
-        params: { slug },
-      },
-    } = this.props;
+    const { user, classes } = this.props;
     const { selectedSection, model } = this.state;
-    if (user.get('slug') !== slug) {
-      return null;
-    }
     return (
       <div className={classes.root}>
         <div className={classes.leftPanel}>
