@@ -11,12 +11,31 @@ type Props = {
   location?: Object,
 };
 
+const userPrivateRoute = [
+  '/edit/personal-information',
+  '/edit/avatar',
+  '/edit/background-image',
+  '/edit',
+  '/settings',
+  '/work',
+  '/mobile',
+  '/add',
+];
+
 class PrivateRoute extends Component<Props> {
   render() {
     const { render, ...rest } = this.props;
     const pathname = get(rest, ['location', 'pathname']);
     const isAuthenticated = storage.get('user');
-    const redirect = '/';
+    let redirect = '/';
+    let isRedirect = true;
+    for (let i = 0; i < userPrivateRoute.length; i += 1) {
+      if (pathname.indexOf(userPrivateRoute[i]) !== -1) {
+        redirect = pathname.replace(userPrivateRoute[i], '');
+        isRedirect = false;
+        break;
+      }
+    }
     return (
       <Route
         render={props =>
@@ -24,10 +43,16 @@ class PrivateRoute extends Component<Props> {
             render(props)
           ) : (
             <Redirect
-              to={{
-                pathname: redirect,
-                search: `?redirect=${pathname}`,
-              }}
+              to={
+                isRedirect
+                  ? {
+                      pathname: redirect,
+                      search: `?redirect=${pathname}`,
+                    }
+                  : {
+                      pathname: redirect,
+                    }
+              }
             />
           )
         }
