@@ -203,6 +203,8 @@ class SignUp extends Component<Props, State> {
       });
     });
   };
+  nameInput = React.createRef();
+  passwordInput = React.createRef();
   render() {
     const { isLoading, error, classes } = this.props;
     const { model, showPassword, isOpen, validationError } = this.state;
@@ -219,6 +221,11 @@ class SignUp extends Component<Props, State> {
               label="Email"
               value={model.email}
               onChange={this.handleChange}
+              onKeyDown={e => {
+                if (e.keyCode === 13 && this.nameInput.current) {
+                  this.nameInput.current.focus();
+                }
+              }}
               className={cx(classes.fieldMargin, classes.textInput)}
               fullWidth
               error={validationError && validationError.path === 'email'}
@@ -234,6 +241,11 @@ class SignUp extends Component<Props, State> {
               label="Full name"
               value={model.fullname}
               onChange={this.handleChange}
+              onKeyDown={e => {
+                if (e.keyCode === 13 && this.passwordInput.current) {
+                  this.passwordInput.current.focus();
+                }
+              }}
               className={cx(classes.fieldMargin, classes.textInput)}
               fullWidth
               error={validationError && validationError.path === 'fullname'}
@@ -242,6 +254,7 @@ class SignUp extends Component<Props, State> {
                 validationError.path === 'fullname' &&
                 validationError.message
               }
+              inputRef={this.nameInput}
             />
             <FormControl
               className={classes.fieldMargin}
@@ -271,6 +284,7 @@ class SignUp extends Component<Props, State> {
                     </IconButton>
                   </InputAdornment>
                 }
+                inputRef={this.passwordInput}
               />
               {validationError &&
                 validationError.path === 'password' &&

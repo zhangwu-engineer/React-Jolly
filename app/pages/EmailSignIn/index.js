@@ -162,6 +162,7 @@ class EmailSignIn extends Component<Props, State> {
         this.setState({ validationError: err });
       });
   };
+  passwordInput = React.createRef();
   render() {
     const { isLoading, error, resetPasswordSuccess, classes } = this.props;
     const { model, showPassword, validationError } = this.state;
@@ -181,6 +182,11 @@ class EmailSignIn extends Component<Props, State> {
               label="Email"
               value={model.email}
               onChange={this.handleChange}
+              onKeyDown={e => {
+                if (e.keyCode === 13 && this.passwordInput.current) {
+                  this.passwordInput.current.focus();
+                }
+              }}
               className={cx(classes.fieldMargin, classes.textInput)}
               fullWidth
               error={validationError && validationError.path === 'email'}
@@ -203,6 +209,7 @@ class EmailSignIn extends Component<Props, State> {
                 type={showPassword ? 'text' : 'password'}
                 value={model.password}
                 className={classes.textInput}
+                inputRef={this.passwordInput}
                 onChange={this.handleChange}
                 onKeyDown={e => {
                   if (e.keyCode === 13) {
