@@ -175,6 +175,7 @@ class Header extends Component<Props, State> {
     }
     this.setState({ open: false }, () => {
       this.props.logout();
+      history.push('/sign-in');
     });
   };
   toggleDrawer = open => () => {
