@@ -94,7 +94,7 @@
     "immutability-helper": "^2.8.1",
     "immutable": "3.8.2",
     "ip": "1.1.4",
-    "lodash-es": "^4.17.10",
+    "lodash-es": "^4.17.11",
     "marked": "^0.3.6",
     "material-ui-pickers": "^2.0.4",
     "mime-types": "^2.1.16",
