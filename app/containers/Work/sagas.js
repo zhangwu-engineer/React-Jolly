@@ -13,11 +13,29 @@ import { getToken } from 'containers/App/selectors';
 // ------------------------------------
 // Constants
 // ------------------------------------
+const CREATE_WORK = 'Jolly/Work/CREATE_WORK';
 const ROLES = 'Jolly/Work/ROLES';
 
 // ------------------------------------
 // Actions
 // ------------------------------------
+export const requestCreateWork = (payload: Object) => ({
+  type: CREATE_WORK + REQUESTED,
+  payload,
+});
+const workCreateRequestSuccess = (payload: Object) => ({
+  type: CREATE_WORK + SUCCEDED,
+  payload,
+});
+const workCreateRequestFailed = (error: string) => ({
+  type: CREATE_WORK + FAILED,
+  payload: error,
+});
+const workCreateRequestError = (error: string) => ({
+  type: CREATE_WORK + ERROR,
+  payload: error,
+});
+
 export const requestRoles = () => ({
   type: ROLES + REQUESTED,
 });
@@ -38,6 +56,8 @@ const rolesRequestError = (error: string) => ({
 // Reducer
 // ------------------------------------
 const initialState = fromJS({
+  isLoading: false,
+  error: '',
   roles: fromJS([]),
   isRolesLoading: false,
   rolesError: '',
@@ -48,6 +68,22 @@ export const reducer = (
   { type, payload }: Action
 ) => {
   switch (type) {
+    case CREATE_WORK + REQUESTED:
+      return state.set('isLoading', true);
+
+    case CREATE_WORK + SUCCEDED:
+      return state.set('isLoading', false).set('error', '');
+
+    case CREATE_WORK + FAILED:
+      return state.set('isLoading', false).set('error', payload.message);
+
+    case CREATE_WORK + ERROR:
+      return state.set('isLoading', false).set(
+        'error',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
     case ROLES + REQUESTED:
       return state.set('isRolesLoading', true);
 
@@ -81,6 +117,25 @@ export const reducer = (
 // ------------------------------------
 // Sagas
 // ------------------------------------
+function* CreateWorkRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/work`,
+      data: payload,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(workCreateRequestSuccess(response.data.response));
+    } else {
+      yield put(workCreateRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(workCreateRequestError(error));
+  }
+}
+
 function* RolesRequest() {
   const token = yield select(getToken);
   try {
@@ -100,5 +155,8 @@ function* RolesRequest() {
 }
 
 export default function*(): Saga<void> {
-  yield all([takeLatest(ROLES + REQUESTED, RolesRequest)]);
+  yield all([
+    takeLatest(CREATE_WORK + REQUESTED, CreateWorkRequest),
+    takeLatest(ROLES + REQUESTED, RolesRequest),
+  ]);
 }

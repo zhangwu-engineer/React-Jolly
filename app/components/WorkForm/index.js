@@ -16,6 +16,7 @@ import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import ClearIcon from '@material-ui/icons/Clear';
 import LeftArrowIcon from '@material-ui/icons/KeyboardArrowLeft';
 import RightArrowIcon from '@material-ui/icons/KeyboardArrowRight';
@@ -32,6 +33,11 @@ import PeopleIcon from 'images/sprite/people.svg';
 import ROLES from 'enum/roles';
 
 const styles = theme => ({
+  root: {
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+  },
   topline: {
     backgroundColor: theme.palette.primary.main,
   },
@@ -170,8 +176,11 @@ const styles = theme => ({
 
 type Props = {
   user: Object,
+  isLoading: boolean,
+  error: string,
   roles: Object,
   classes: Object,
+  requestCreateWork: Function,
 };
 
 type State = {
@@ -250,15 +259,16 @@ class WorkForm extends Component<Props, State> {
     }));
   };
   registerWorkExperience = () => {
-    // const { model } = this.state;
+    const { model } = this.state;
+    this.props.requestCreateWork(model);
   };
   dropzoneRef = React.createRef();
   dropzoneDiv = React.createRef();
   render() {
-    const { classes, user } = this.props;
+    const { classes, user, isLoading, error } = this.props;
     const { model, filteredRoles } = this.state;
     return (
-      <div>
+      <div className={classes.root}>
         <div className={classes.topline}>
           <div className={classes.toplineInner}>
             <div className={classes.clearButtonWrapper}>
@@ -478,11 +488,17 @@ class WorkForm extends Component<Props, State> {
                   <div style={{ width: 18 }} />
                 </Grid>
                 <Grid item className={classes.alignSelfCenter}>
+                  {error && (
+                    <FormHelperText className={classes.fieldMargin} error>
+                      {error}
+                    </FormHelperText>
+                  )}
                   <Button
                     variant="contained"
                     color="primary"
                     size="large"
                     onClick={this.registerWorkExperience}
+                    disabled={isLoading}
                   >
                     Save
                   </Button>
