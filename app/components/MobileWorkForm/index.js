@@ -3,7 +3,11 @@
 import React, { Component } from 'react';
 import DateFnsUtils from '@date-io/date-fns';
 import { format } from 'date-fns';
-import { MuiPickersUtilsProvider, InlineDatePicker, BasePicker, Calendar } from 'material-ui-pickers';
+import {
+  MuiPickersUtilsProvider,
+  BasePicker,
+  Calendar,
+} from 'material-ui-pickers';
 import { debounce } from 'lodash-es';
 import { generate } from 'shortid';
 import cx from 'classnames';
@@ -71,6 +75,7 @@ const styles = theme => ({
   formSection: {
     backgroundColor: theme.palette.common.white,
     padding: 15,
+    height: 'calc(100vh - 100px)',
   },
   formFieldGroup: {
     marginBottom: 20,
@@ -122,6 +127,26 @@ const styles = theme => ({
   fullWidth: {
     flex: 1,
   },
+  searchWorkList: {
+    backgroundColor: theme.palette.common.white,
+    border: '1px solid #e5e5e5',
+    position: 'absolute',
+    width: '100%',
+    height: 'calc(100vh - 100px)',
+    top: 50,
+    zIndex: 10,
+    overflowY: 'scroll',
+    '&::-webkit-scrollbar-track': {
+      backgroundColor: '#F5F5F5',
+    },
+    '&::-webkit-scrollbar': {
+      width: 6,
+      backgroundColor: '#F5F5F5',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#a4acb3',
+    },
+  },
   searchResultList: {
     backgroundColor: theme.palette.common.white,
     border: '1px solid #e5e5e5',
@@ -143,6 +168,7 @@ const styles = theme => ({
     },
   },
   resultItem: {
+    display: 'block',
     paddingLeft: 20,
     cursor: 'pointer',
   },
@@ -152,6 +178,16 @@ const styles = theme => ({
     lineHeight: 1.25,
     letterSpacing: '0.4px',
     color: '#4a4a4a',
+  },
+  resultDateText: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#9b9b9b',
+  },
+  addEventButton: {
+    fontSize: 14,
+    fontWeight: 500,
+    textTransform: 'none',
   },
   formText: {
     fontSize: 14,
@@ -206,6 +242,7 @@ type Props = {
   user: Object,
   isLoading: boolean,
   error: string,
+  works: Object,
   roles: Object,
   classes: Object,
   requestCreateWork: Function,
@@ -221,6 +258,8 @@ type State = {
     caption: string,
     pinToProfile: boolean,
   },
+  works?: Array<Object>,
+  filteredWorks: Array<Object>,
   roles?: Array<string>,
   filteredRoles: Array<string>,
   activeSection: string,
@@ -238,6 +277,11 @@ class MobileWorkForm extends Component<Props, State> {
         roles: nextProps.roles,
       };
     }
+    if (nextProps.works.size > 0 && prevState.works === undefined) {
+      return {
+        works: nextProps.works.toJS(),
+      };
+    }
     return null;
   }
   state = {
@@ -250,6 +294,8 @@ class MobileWorkForm extends Component<Props, State> {
       caption: '',
       pinToProfile: true,
     },
+    works: undefined,
+    filteredWorks: [],
     roles: undefined,
     filteredRoles: [],
     activeSection: 'main',
@@ -266,6 +312,15 @@ class MobileWorkForm extends Component<Props, State> {
   // };
   debouncedSearch = debounce((name, value) => {
     switch (name) {
+      case 'title': {
+        const filteredWorks =
+          this.state.works &&
+          this.state.works.filter(
+            w => w.title.toLowerCase().indexOf(value.toLowerCase()) !== -1
+          );
+        this.setState({ filteredWorks });
+        break;
+      }
       case 'newRole': {
         const filteredRoles = ROLES.filter(
           r => r.toLowerCase().indexOf(value.toLowerCase()) !== -1
@@ -314,6 +369,8 @@ class MobileWorkForm extends Component<Props, State> {
     const { classes, user, isLoading, error } = this.props;
     const {
       model,
+      works,
+      filteredWorks,
       roles,
       filteredRoles,
       activeSection,
@@ -360,11 +417,64 @@ class MobileWorkForm extends Component<Props, State> {
                 classes={{
                   input: classes.titleInput,
                 }}
-                onChange={this.handleChange}
+                onChange={e => {
+                  e.persist();
+                  this.setState(
+                    state => ({
+                      ...state,
+                      model: {
+                        ...state.model,
+                        title: e.target.value,
+                      },
+                    }),
+                    () => {
+                      this.debouncedSearch(e.target.name, e.target.value);
+                    }
+                  );
+                }}
                 autoFocus
                 disableUnderline
                 fullWidth
               />
+              {filteredWorks.length ? (
+                <div className={classes.searchWorkList}>
+                  {filteredWorks.map(w => (
+                    <ListItem
+                      className={classes.resultItem}
+                      key={generate()}
+                      onClick={() =>
+                        this.setState(state => ({
+                          ...state,
+                          model: {
+                            ...state.model,
+                            title: w.title,
+                            from: new Date(w.from),
+                            to: new Date(w.to),
+                          },
+                          filteredWorks: [],
+                        }))
+                      }
+                    >
+                      <Typography className={classes.resultText}>
+                        {w.title}
+                      </Typography>
+                      <Typography className={classes.resultDateText}>
+                        {`from ${format(
+                          new Date(w.from),
+                          'MM/dd/yy'
+                        )} to ${format(new Date(w.to), 'MM/dd/yy')}`}
+                      </Typography>
+                    </ListItem>
+                  ))}
+                  <Button
+                    className={classes.addEventButton}
+                    color="primary"
+                    onClick={() => this.setState({ isEditingRole: true })}
+                  >
+                    + Add a new event name
+                  </Button>
+                </div>
+              ) : null}
             </FormControl>
           </div>
           <div className={classes.formSection}>

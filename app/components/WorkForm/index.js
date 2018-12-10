@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, InlineDatePicker } from 'material-ui-pickers';
 import { debounce } from 'lodash-es';
+import { format } from 'date-fns';
 import { generate } from 'shortid';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -162,6 +163,7 @@ const styles = theme => ({
     },
   },
   resultItem: {
+    display: 'block',
     paddingLeft: 20,
     cursor: 'pointer',
   },
@@ -172,12 +174,18 @@ const styles = theme => ({
     letterSpacing: '0.4px',
     color: '#4a4a4a',
   },
+  resultDateText: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#9b9b9b',
+  },
 });
 
 type Props = {
   user: Object,
   isLoading: boolean,
   error: string,
+  works: Object,
   roles: Object,
   classes: Object,
   requestCreateWork: Function,
@@ -192,6 +200,7 @@ type State = {
     caption: string,
     pinToProfile: boolean,
   },
+  filteredWorks: Array<Object>,
   filteredRoles: Array<string>,
 };
 
@@ -205,6 +214,7 @@ class WorkForm extends Component<Props, State> {
       caption: '',
       pinToProfile: true,
     },
+    filteredWorks: [],
     filteredRoles: [],
   };
   // onDrop = async (accepted: Array<Object>) => {
@@ -214,6 +224,15 @@ class WorkForm extends Component<Props, State> {
   // };
   debouncedSearch = debounce((name, value) => {
     switch (name) {
+      case 'title': {
+        const filteredWorks = this.props.works
+          .toJS()
+          .filter(
+            w => w.title.toLowerCase().indexOf(value.toLowerCase()) !== -1
+          );
+        this.setState({ filteredWorks });
+        break;
+      }
       case 'role': {
         let filteredRoles = this.props.roles
           .toJS()
@@ -266,7 +285,7 @@ class WorkForm extends Component<Props, State> {
   dropzoneDiv = React.createRef();
   render() {
     const { classes, user, isLoading, error } = this.props;
-    const { model, filteredRoles } = this.state;
+    const { model, filteredWorks, filteredRoles } = this.state;
     return (
       <div className={classes.root}>
         <div className={classes.topline}>
@@ -295,6 +314,38 @@ class WorkForm extends Component<Props, State> {
                 onChange={this.handleChange}
                 autoFocus
               />
+              {filteredWorks.length ? (
+                <div className={classes.searchResultList}>
+                  {filteredWorks.map(w => (
+                    <ListItem
+                      className={classes.resultItem}
+                      key={generate()}
+                      onClick={() =>
+                        this.setState(state => ({
+                          ...state,
+                          model: {
+                            ...state.model,
+                            title: w.title,
+                            from: new Date(w.from),
+                            to: new Date(w.to),
+                          },
+                          filteredWorks: [],
+                        }))
+                      }
+                    >
+                      <Typography className={classes.resultText}>
+                        {w.title}
+                      </Typography>
+                      <Typography className={classes.resultDateText}>
+                        {`from ${format(
+                          new Date(w.from),
+                          'MM/dd/yy'
+                        )} to ${format(new Date(w.to), 'MM/dd/yy')}`}
+                      </Typography>
+                    </ListItem>
+                  ))}
+                </div>
+              ) : null}
             </FormControl>
           </div>
         </div>

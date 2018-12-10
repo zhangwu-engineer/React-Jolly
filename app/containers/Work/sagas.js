@@ -15,7 +15,7 @@ import { getToken } from 'containers/App/selectors';
 // ------------------------------------
 const CREATE_WORK = 'Jolly/Work/CREATE_WORK';
 const ROLES = 'Jolly/Work/ROLES';
-
+const WORKS = 'Jolly/Work/WORKS';
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -33,6 +33,22 @@ const workCreateRequestFailed = (error: string) => ({
 });
 const workCreateRequestError = (error: string) => ({
   type: CREATE_WORK + ERROR,
+  payload: error,
+});
+
+export const requestWorks = () => ({
+  type: WORKS + REQUESTED,
+});
+const worksRequestSuccess = (payload: Object) => ({
+  type: WORKS + SUCCEDED,
+  payload,
+});
+const worksRequestFailed = (error: string) => ({
+  type: WORKS + FAILED,
+  payload: error,
+});
+const worksRequestError = (error: string) => ({
+  type: WORKS + ERROR,
   payload: error,
 });
 
@@ -58,6 +74,9 @@ const rolesRequestError = (error: string) => ({
 const initialState = fromJS({
   isLoading: false,
   error: '',
+  works: fromJS([]),
+  isWorksLoading: false,
+  worksError: '',
   roles: fromJS([]),
   isRolesLoading: false,
   rolesError: '',
@@ -80,6 +99,27 @@ export const reducer = (
     case CREATE_WORK + ERROR:
       return state.set('isLoading', false).set(
         'error',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case WORKS + REQUESTED:
+      return state.set('isWorksLoading', true);
+
+    case WORKS + SUCCEDED:
+      return state
+        .set('isWorksLoading', false)
+        .set('works', fromJS(payload.work_list))
+        .set('worksError', '');
+
+    case WORKS + FAILED:
+      return state
+        .set('isWorksLoading', false)
+        .set('worksError', payload.message);
+
+    case WORKS + ERROR:
+      return state.set('isWorksLoading', false).set(
+        'worksError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -136,6 +176,24 @@ function* CreateWorkRequest({ payload }) {
   }
 }
 
+function* WorksRequest() {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/work`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(worksRequestSuccess(response.data.response));
+    } else {
+      yield put(worksRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(worksRequestError(error));
+  }
+}
+
 function* RolesRequest() {
   const token = yield select(getToken);
   try {
@@ -157,6 +215,7 @@ function* RolesRequest() {
 export default function*(): Saga<void> {
   yield all([
     takeLatest(CREATE_WORK + REQUESTED, CreateWorkRequest),
+    takeLatest(WORKS + REQUESTED, WorksRequest),
     takeLatest(ROLES + REQUESTED, RolesRequest),
   ]);
 }

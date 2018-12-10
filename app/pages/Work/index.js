@@ -11,6 +11,7 @@ import WorkForm from 'components/WorkForm';
 import saga, {
   reducer,
   requestCreateWork,
+  requestWorks,
   requestRoles,
 } from 'containers/Work/sagas';
 import injectSagas from 'utils/injectSagas';
@@ -22,13 +23,16 @@ type Props = {
   roles: Object,
   // isRolesLoading: boolean,
   // rolesError: string,
+  works: Object,
   requestCreateWork: Function,
+  requestWorks: Function,
   requestRoles: Function,
 };
 
 class AddWorkPage extends Component<Props> {
   componentDidMount() {
     this.props.requestRoles();
+    this.props.requestWorks();
   }
   componentDidUpdate(prevProps: Props) {
     const { user, isLoading, error } = this.props;
@@ -37,7 +41,7 @@ class AddWorkPage extends Component<Props> {
     }
   }
   render() {
-    const { user, isLoading, error, roles } = this.props;
+    const { user, isLoading, error, works, roles } = this.props;
     const filteredRoles = this.props.roles.toJS().map(r => r.name);
     return (
       <React.Fragment>
@@ -45,6 +49,7 @@ class AddWorkPage extends Component<Props> {
           user={user}
           isLoading={isLoading}
           error={error}
+          works={works}
           roles={filteredRoles}
           requestCreateWork={this.props.requestCreateWork}
         />
@@ -52,6 +57,7 @@ class AddWorkPage extends Component<Props> {
           user={user}
           isLoading={isLoading}
           error={error}
+          works={works}
           roles={roles}
           requestCreateWork={this.props.requestCreateWork}
         />
@@ -64,6 +70,9 @@ const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
   isLoading: state.getIn(['work', 'isLoading']),
   error: state.getIn(['work', 'error']),
+  works: state.getIn(['work', 'works']),
+  isWorksLoading: state.getIn(['work', 'isWorksLoading']),
+  worksError: state.getIn(['work', 'worksError']),
   roles: state.getIn(['work', 'roles']),
   isRolesLoading: state.getIn(['work', 'isRolesLoading']),
   rolesError: state.getIn(['work', 'rolesError']),
@@ -71,6 +80,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   requestCreateWork: payload => dispatch(requestCreateWork(payload)),
+  requestWorks: () => dispatch(requestWorks()),
   requestRoles: () => dispatch(requestRoles()),
 });
 
