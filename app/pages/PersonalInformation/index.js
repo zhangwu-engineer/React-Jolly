@@ -395,7 +395,7 @@ class PersonalInformationPage extends Component<Props, State> {
                 onChange={this.onChange}
               />
               <EditableInput
-                label="Distance you'll travel for work"
+                label="Miles you'll travel for work"
                 id="distance"
                 value={model && model.profile.distance}
                 onChange={this.onChange}

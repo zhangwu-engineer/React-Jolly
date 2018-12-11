@@ -415,7 +415,7 @@ class ProfileInfo extends PureComponent<Props, State> {
           </Typography>
           {user.getIn(['profile', 'distance']) && (
             <Typography className={classes.distance}>
-              {`Works within ${user.getIn(['profile', 'distance'])} of`}
+              {`Works within ${user.getIn(['profile', 'distance'])} miles of`}
             </Typography>
           )}
           {user.getIn(['profile', 'location']) && (

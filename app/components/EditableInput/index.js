@@ -170,9 +170,18 @@ class EditableInput extends Component<Props, State> {
   };
   handleChange = (e: Object) => {
     e.persist();
-    this.setState({
-      value: e.target.value,
-    });
+    if (e.target.id === 'distance') {
+      const regEx = /^\d+(\.)?(\d)?$/;
+      if (e.target.value === '' || regEx.test(e.target.value)) {
+        this.setState({
+          value: e.target.value,
+        });
+      }
+    } else {
+      this.setState({
+        value: e.target.value,
+      });
+    }
   };
   handleLocationChange = address => {
     this.setState({ value: address });
