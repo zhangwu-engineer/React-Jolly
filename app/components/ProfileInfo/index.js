@@ -430,66 +430,74 @@ class ProfileInfo extends PureComponent<Props, State> {
               : `Hey, I am ${user.get('firstName')} ${user.get('lastName')}...`}
           </Typography>
           <Grid container className={classes.socialButtons}>
-            <Grid item>
-              <IconButton
-                className={classes.iconButton}
-                onClick={() =>
-                  this.openUrl(
-                    `https://www.facebook.com/${user.getIn([
-                      'profile',
-                      'facebook',
-                    ])}`
-                  )
-                }
-              >
-                <Icon glyph={FacebookIcon} className={classes.icon} />
-              </IconButton>
-            </Grid>
-            <Grid item>
-              <IconButton
-                className={classes.iconButton}
-                onClick={() =>
-                  this.openUrl(
-                    `https://www.twitter.com/${user.getIn([
-                      'profile',
-                      'twitter',
-                    ])}`
-                  )
-                }
-              >
-                <Icon glyph={TwitterIcon} className={classes.icon} />
-              </IconButton>
-            </Grid>
-            <Grid item>
-              <IconButton
-                className={classes.iconButton}
-                onClick={() =>
-                  this.openUrl(
-                    `https://www.linkedin.com/${user.getIn([
-                      'profile',
-                      'linkedin',
-                    ])}`
-                  )
-                }
-              >
-                <Icon glyph={LinkedInIcon} className={classes.icon} />
-              </IconButton>
-            </Grid>
-            <Grid item>
-              <IconButton
-                className={classes.iconButton}
-                onClick={() =>
-                  this.openUrl(
-                    `https://www.youtube.com/${user.getIn([
-                      'profile',
-                      'youtube',
-                    ])}`
-                  )
-                }
-              >
-                <Icon glyph={YoutubeIcon} className={classes.icon} />
-              </IconButton>
-            </Grid>
+            {user.getIn(['profile', 'facebook']) && (
+              <Grid item>
+                <IconButton
+                  className={classes.iconButton}
+                  onClick={() =>
+                    this.openUrl(
+                      `https://www.facebook.com/${user.getIn([
+                        'profile',
+                        'facebook',
+                      ])}`
+                    )
+                  }
+                >
+                  <Icon glyph={FacebookIcon} className={classes.icon} />
+                </IconButton>
+              </Grid>
+            )}
+            {user.getIn(['profile', 'twitter']) && (
+              <Grid item>
+                <IconButton
+                  className={classes.iconButton}
+                  onClick={() =>
+                    this.openUrl(
+                      `https://www.twitter.com/${user.getIn([
+                        'profile',
+                        'twitter',
+                      ])}`
+                    )
+                  }
+                >
+                  <Icon glyph={TwitterIcon} className={classes.icon} />
+                </IconButton>
+              </Grid>
+            )}
+            {user.getIn(['profile', 'linkedin']) && (
+              <Grid item>
+                <IconButton
+                  className={classes.iconButton}
+                  onClick={() =>
+                    this.openUrl(
+                      `https://www.linkedin.com/${user.getIn([
+                        'profile',
+                        'linkedin',
+                      ])}`
+                    )
+                  }
+                >
+                  <Icon glyph={LinkedInIcon} className={classes.icon} />
+                </IconButton>
+              </Grid>
+            )}
+            {user.getIn(['profile', 'youtube']) && (
+              <Grid item>
+                <IconButton
+                  className={classes.iconButton}
+                  onClick={() =>
+                    this.openUrl(
+                      `https://www.youtube.com/${user.getIn([
+                        'profile',
+                        'youtube',
+                      ])}`
+                    )
+                  }
+                >
+                  <Icon glyph={YoutubeIcon} className={classes.icon} />
+                </IconButton>
+              </Grid>
+            )}
           </Grid>
         </div>
         <PhotoModal
