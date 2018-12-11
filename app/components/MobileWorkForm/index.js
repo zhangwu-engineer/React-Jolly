@@ -31,10 +31,10 @@ import LeftArrowIcon from '@material-ui/icons/KeyboardArrowLeft';
 import RightArrowIcon from '@material-ui/icons/KeyboardArrowRight';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import DoneIcon from '@material-ui/icons/Done';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import Link from 'components/Link';
 import Icon from 'components/Icon';
-import Dropzone from 'components/Dropzone';
 
 import RoleIcon from 'images/sprite/role.svg';
 import CaptionIcon from 'images/sprite/caption.svg';
@@ -272,6 +272,22 @@ const styles = theme => ({
     textAlign: 'center',
     marginTop: 40,
   },
+  fileInput: {
+    display: 'none',
+  },
+  photoList: {
+    padding: 15,
+  },
+  photo: {
+    width: 95,
+    height: 95,
+  },
+  removeImageButton: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#4e4e4e',
+    textTransform: 'none',
+  },
 });
 
 type Props = {
@@ -296,6 +312,7 @@ type State = {
     caption: string,
     pinToProfile: boolean,
     coworkers: Array,
+    photos: Array,
   },
   works?: Array<Object>,
   filteredWorks: Array<Object>,
@@ -333,7 +350,7 @@ class MobileWorkForm extends Component<Props, State> {
       to: new Date(),
       caption: '',
       pinToProfile: true,
-      coworkers: [],
+      photos: [],
     },
     works: undefined,
     filteredWorks: [],
@@ -347,11 +364,24 @@ class MobileWorkForm extends Component<Props, State> {
     isEditingCaption: false,
     newUser: '',
   };
-  // onDrop = async (accepted: Array<Object>) => {
-  //   const promises = accepted.map(this.setupReader);
-  //   const data = await Promise.all(promises);
-  //   this.props.uploadPhoto(data);
-  // };
+  onAddClick = (e: Event) => {
+    e.preventDefault();
+    if (this.fileInput.current) this.fileInput.current.click();
+  };
+  setupReader = file =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        // const block = e.target.result.split(';');
+        // const [, base64] = block;
+        // const [, realData] = base64.split(',');
+        resolve(e.target.result);
+      };
+      reader.onerror = () => {
+        reject();
+      };
+      reader.readAsDataURL(file);
+    });
   debouncedSearch = debounce((name, value) => {
     switch (name) {
       case 'title': {
@@ -416,8 +446,21 @@ class MobileWorkForm extends Component<Props, State> {
     const { model } = this.state;
     this.props.requestCreateWork(model);
   };
+  handleFileUpload = async ({ target }: Event) => {
+    const files = [...target.files];
+    const promises = files.map(this.setupReader);
+    const data = await Promise.all(promises);
+    this.setState(state => ({
+      ...state,
+      model: {
+        ...state.model,
+        photos: [...state.model.photos, ...data],
+      },
+    }));
+  };
   dropzoneRef = React.createRef();
   dropzoneDiv = React.createRef();
+  fileInput = React.createRef();
   render() {
     const { classes, user, isLoading, error, users } = this.props;
     const {
@@ -560,19 +603,6 @@ class MobileWorkForm extends Component<Props, State> {
                     ? `${model.coworkers.length} Coworkers`
                     : 'Add coworkers'}
                 </Typography>
-                {/* <FormControl fullWidth>
-                  <Input
-                    id="coworker"
-                    name="coworker"
-                    placeholder="Add Coworkers"
-                    classes={{
-                      input: classes.formInput,
-                      formControl: classes.formInputWrapper,
-                    }}
-                    disableUnderline
-                    fullWidth
-                  />
-                </FormControl> */}
               </Grid>
             </Grid>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -724,36 +754,20 @@ class MobileWorkForm extends Component<Props, State> {
                 )}
               </Grid>
             </Grid>
-            <Grid container className={classes.formFieldGroup}>
+            <Grid
+              container
+              className={classes.formFieldGroup}
+              onClick={() => this.setState({ activeSection: 'image' })}
+            >
               <Grid item className={classes.iconWrapper}>
                 <Icon glyph={AddPhotoIcon} size={18} />
               </Grid>
-              <Grid item>
-                <Dropzone
-                  className={classes.dropzone}
-                  ref={this.dropzoneRef}
-                  accept="image/*"
-                  // onDrop={this.onDrop}
-                >
-                  <div ref={this.dropzoneDiv}>
-                    <Typography className={classes.dropzoneText}>
-                      Drag &amp; drop here
-                    </Typography>
-                  </div>
-                </Dropzone>
-              </Grid>
-              <Grid item className={classes.uploadButtonWrapper}>
-                <Button
-                  className={classes.uploadButton}
-                  color="primary"
-                  onClick={() => {
-                    if (this.dropzoneDiv.current) {
-                      this.dropzoneDiv.current.click();
-                    }
-                  }}
-                >
-                  or upload from computer
-                </Button>
+              <Grid item className={classes.fullWidth}>
+                <Typography className={classes.formText}>
+                  {model.photos.length
+                    ? `${model.photos.length} Images`
+                    : 'Add images'}
+                </Typography>
               </Grid>
             </Grid>
             <Grid container className={classes.formFieldGroup}>
@@ -1031,6 +1045,63 @@ class MobileWorkForm extends Component<Props, State> {
                 </ListItem>
               ))}
             </List>
+          </div>
+        </div>
+        <div
+          className={cx(classes.roleRoot, {
+            [classes.activeRoleRoot]: activeSection === 'image',
+          })}
+        >
+          <div className={classes.topline}>
+            <Grid container justify="space-between" alignItems="center">
+              <Grid item>
+                <Button
+                  className={classes.backButton}
+                  onClick={() => {
+                    this.setState({ activeSection: 'main' });
+                  }}
+                >
+                  <ArrowBackIcon />
+                  &nbsp;&nbsp;&nbsp;&nbsp;Images
+                </Button>
+              </Grid>
+            </Grid>
+          </div>
+          <div className={classes.roleSection}>
+            <div className={classes.photoList}>
+              {model.photos.map((photo, index) => (
+                <Grid
+                  container
+                  spacing={8}
+                  key={generate()}
+                  alignItems="center"
+                >
+                  <Grid item>
+                    <img src={photo} alt={index} className={classes.photo} />
+                  </Grid>
+                  <Grid item>
+                    <Button className={classes.removeImageButton}>
+                      <DeleteIcon />
+                      Remove Image
+                    </Button>
+                  </Grid>
+                </Grid>
+              ))}
+            </div>
+            <input
+              type="file"
+              className={classes.fileInput}
+              ref={this.fileInput}
+              onChange={this.handleFileUpload}
+              multiple="multiple"
+            />
+            <Button
+              className={classes.addRoleButton}
+              color="primary"
+              onClick={this.onAddClick}
+            >
+              + Add another image
+            </Button>
           </div>
         </div>
       </div>

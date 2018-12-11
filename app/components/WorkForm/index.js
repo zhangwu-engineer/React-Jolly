@@ -193,6 +193,12 @@ const styles = theme => ({
     paddingLeft: 0,
     paddingRight: 0,
   },
+  photoList: {
+    marginTop: 15,
+  },
+  photo: {
+    height: 100,
+  },
 });
 
 type Props = {
@@ -216,6 +222,7 @@ type State = {
     caption: string,
     pinToProfile: boolean,
     coworkers: Array,
+    photos: Array,
   },
   newUser: string,
   filteredWorks: Array<Object>,
@@ -232,16 +239,37 @@ class WorkForm extends Component<Props, State> {
       caption: '',
       pinToProfile: true,
       coworkers: [],
+      photos: [],
     },
     newUser: '',
     filteredWorks: [],
     filteredRoles: [],
   };
-  // onDrop = async (accepted: Array<Object>) => {
-  //   const promises = accepted.map(this.setupReader);
-  //   const data = await Promise.all(promises);
-  //   this.props.uploadPhoto(data);
-  // };
+  onDrop = async (accepted: Array<Object>) => {
+    const promises = accepted.map(this.setupReader);
+    const data = await Promise.all(promises);
+    this.setState(state => ({
+      ...state,
+      model: {
+        ...state.model,
+        photos: [...state.model.photos, ...data],
+      },
+    }));
+  };
+  setupReader = file =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        // const block = e.target.result.split(';');
+        // const [, base64] = block;
+        // const [, realData] = base64.split(',');
+        resolve(e.target.result);
+      };
+      reader.onerror = () => {
+        reject();
+      };
+      reader.readAsDataURL(file);
+    });
   debouncedSearch = debounce((name, value) => {
     switch (name) {
       case 'title': {
@@ -517,31 +545,46 @@ class WorkForm extends Component<Props, State> {
                   <Icon glyph={AddPhotoIcon} size={18} />
                 </Grid>
                 <Grid item>
-                  <Dropzone
-                    className={classes.dropzone}
-                    ref={this.dropzoneRef}
-                    accept="image/*"
-                    // onDrop={this.onDrop}
-                  >
-                    <div ref={this.dropzoneDiv}>
-                      <Typography className={classes.dropzoneText}>
-                        Drag &amp; drop here
-                      </Typography>
-                    </div>
-                  </Dropzone>
-                </Grid>
-                <Grid item className={classes.uploadButtonWrapper}>
-                  <Button
-                    className={classes.uploadButton}
-                    color="primary"
-                    onClick={() => {
-                      if (this.dropzoneDiv.current) {
-                        this.dropzoneDiv.current.click();
-                      }
-                    }}
-                  >
-                    or upload from computer
-                  </Button>
+                  <Grid container>
+                    <Grid item>
+                      <Dropzone
+                        className={classes.dropzone}
+                        ref={this.dropzoneRef}
+                        accept="image/*"
+                        onDrop={this.onDrop}
+                      >
+                        <div ref={this.dropzoneDiv}>
+                          <Typography className={classes.dropzoneText}>
+                            Drag &amp; drop here
+                          </Typography>
+                        </div>
+                      </Dropzone>
+                    </Grid>
+                    <Grid item className={classes.uploadButtonWrapper}>
+                      <Button
+                        className={classes.uploadButton}
+                        color="primary"
+                        onClick={() => {
+                          if (this.dropzoneDiv.current) {
+                            this.dropzoneDiv.current.click();
+                          }
+                        }}
+                      >
+                        or upload from computer
+                      </Button>
+                    </Grid>
+                  </Grid>
+                  <Grid container spacing={8} className={classes.photoList}>
+                    {model.photos.map((photo, index) => (
+                      <Grid item key={generate()}>
+                        <img
+                          src={photo}
+                          alt={index}
+                          className={classes.photo}
+                        />
+                      </Grid>
+                    ))}
+                  </Grid>
                 </Grid>
               </Grid>
               <Grid container className={classes.formFieldGroup}>
