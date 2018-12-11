@@ -8,7 +8,7 @@ import {
   BasePicker,
   Calendar,
 } from 'material-ui-pickers';
-import { debounce } from 'lodash-es';
+import { debounce, get } from 'lodash-es';
 import { generate } from 'shortid';
 import cx from 'classnames';
 
@@ -20,10 +20,12 @@ import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
+import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Paper from '@material-ui/core/Paper';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import Avatar from '@material-ui/core/Avatar';
 import ClearIcon from '@material-ui/icons/Clear';
 import LeftArrowIcon from '@material-ui/icons/KeyboardArrowLeft';
 import RightArrowIcon from '@material-ui/icons/KeyboardArrowRight';
@@ -236,6 +238,40 @@ const styles = theme => ({
     paddingTop: 0,
     paddingBottom: 0,
   },
+  coworkerInput: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: theme.palette.common.white,
+    padding: '14px 20px',
+    boxSizing: 'border-box',
+  },
+  searchCoworkerList: {
+    backgroundColor: theme.palette.common.white,
+    border: '1px solid #e5e5e5',
+    position: 'absolute',
+    width: '100%',
+    height: 'calc(100vh - 49px)',
+    top: 49,
+    zIndex: 10,
+    overflowY: 'scroll',
+    '&::-webkit-scrollbar-track': {
+      backgroundColor: '#F5F5F5',
+    },
+    '&::-webkit-scrollbar': {
+      width: 6,
+      backgroundColor: '#F5F5F5',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#a4acb3',
+    },
+  },
+  emptyResultText: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#494949',
+    textAlign: 'center',
+    marginTop: 40,
+  },
 });
 
 type Props = {
@@ -244,7 +280,9 @@ type Props = {
   error: string,
   works: Object,
   roles: Object,
+  users: Object,
   classes: Object,
+  searchUsers: Function,
   requestCreateWork: Function,
 };
 
@@ -257,6 +295,7 @@ type State = {
     to: Date,
     caption: string,
     pinToProfile: boolean,
+    coworkers: Array,
   },
   works?: Array<Object>,
   filteredWorks: Array<Object>,
@@ -268,6 +307,7 @@ type State = {
   isEditingFrom: boolean,
   isEditingTo: boolean,
   isEditingCaption: boolean,
+  newUser: string,
 };
 
 class MobileWorkForm extends Component<Props, State> {
@@ -293,6 +333,7 @@ class MobileWorkForm extends Component<Props, State> {
       to: new Date(),
       caption: '',
       pinToProfile: true,
+      coworkers: [],
     },
     works: undefined,
     filteredWorks: [],
@@ -304,6 +345,7 @@ class MobileWorkForm extends Component<Props, State> {
     isEditingFrom: false,
     isEditingTo: false,
     isEditingCaption: false,
+    newUser: '',
   };
   // onDrop = async (accepted: Array<Object>) => {
   //   const promises = accepted.map(this.setupReader);
@@ -328,6 +370,11 @@ class MobileWorkForm extends Component<Props, State> {
         this.setState({ filteredRoles });
         break;
       }
+      case 'newUser':
+        if (value) {
+          this.props.searchUsers(value);
+        }
+        break;
       default:
         break;
     }
@@ -337,18 +384,24 @@ class MobileWorkForm extends Component<Props, State> {
   }, 500);
   handleChange = (e: Object) => {
     const { name, value } = e.target;
-    this.setState(
-      state => ({
-        ...state,
-        model: {
-          ...state.model,
-          [name]: value,
-        },
-      }),
-      () => {
+    if (name === 'newUser') {
+      this.setState({ newUser: value }, () => {
         this.debouncedSearch(name, value);
-      }
-    );
+      });
+    } else {
+      this.setState(
+        state => ({
+          ...state,
+          model: {
+            ...state.model,
+            [name]: value,
+          },
+        }),
+        () => {
+          this.debouncedSearch(name, value);
+        }
+      );
+    }
   };
   handleCheckChange = () => {
     this.setState(state => ({
@@ -366,7 +419,7 @@ class MobileWorkForm extends Component<Props, State> {
   dropzoneRef = React.createRef();
   dropzoneDiv = React.createRef();
   render() {
-    const { classes, user, isLoading, error } = this.props;
+    const { classes, user, isLoading, error, users } = this.props;
     const {
       model,
       works,
@@ -379,6 +432,7 @@ class MobileWorkForm extends Component<Props, State> {
       isEditingFrom,
       isEditingTo,
       isEditingCaption,
+      newUser,
     } = this.state;
     return (
       <div className={classes.root}>
@@ -492,7 +546,11 @@ class MobileWorkForm extends Component<Props, State> {
                 </Typography>
               </Grid>
             </Grid>
-            <Grid container className={classes.formFieldGroup}>
+            <Grid
+              container
+              className={classes.formFieldGroup}
+              onClick={() => this.setState({ activeSection: 'coworker' })}
+            >
               <Grid item className={classes.iconWrapper}>
                 <Icon glyph={PeopleIcon} size={18} />
               </Grid>
@@ -854,6 +912,125 @@ class MobileWorkForm extends Component<Props, State> {
             >
               + Add new role
             </Button>
+          </div>
+        </div>
+        <div
+          className={cx(classes.roleRoot, {
+            [classes.activeRoleRoot]: activeSection === 'coworker',
+          })}
+        >
+          <div className={classes.topline}>
+            <Grid container justify="space-between" alignItems="center">
+              <Grid item xs={2}>
+                <Button
+                  className={classes.backButton}
+                  onClick={() => {
+                    this.setState({ activeSection: 'main' });
+                  }}
+                >
+                  <ArrowBackIcon />
+                </Button>
+              </Grid>
+              <Grid item xs={10}>
+                <FormControl fullWidth>
+                  <Input
+                    id="newUser"
+                    name="newUser"
+                    placeholder="Add Coworkers"
+                    value={newUser}
+                    classes={{
+                      input: classes.coworkerInput,
+                    }}
+                    disableUnderline
+                    fullWidth
+                    onChange={this.handleChange}
+                  />
+                </FormControl>
+              </Grid>
+            </Grid>
+            {newUser && users.size > 0 ? (
+              <div className={classes.searchCoworkerList}>
+                {users.map(u => (
+                  <ListItem
+                    className={classes.userResultItem}
+                    key={generate()}
+                    onClick={() =>
+                      this.setState(state => ({
+                        ...state,
+                        model: {
+                          ...state.model,
+                          coworkers: [...state.model.coworkers, u.toJS()],
+                        },
+                        newUser: '',
+                      }))
+                    }
+                  >
+                    <Avatar
+                      alt={`${u.get('firstName')} ${u.get('lastName')}`}
+                      src={u.getIn(['profile', 'avatar'])}
+                    />
+                    <ListItemText
+                      primary={`${u.get('firstName')} ${u.get('lastName')}`}
+                      secondary={u.get('email')}
+                      classes={{
+                        primary: classes.resultText,
+                        secondary: classes.resultDateText,
+                      }}
+                    />
+                  </ListItem>
+                ))}
+              </div>
+            ) : null}
+            {newUser && users.size === 0 ? (
+              <div className={classes.searchCoworkerList}>
+                <Typography className={classes.emptyResultText}>
+                  Don’t see who you’re looking for?
+                  <br />
+                  Enter their email address &amp; invite them to join jolly
+                </Typography>
+              </div>
+            ) : null}
+          </div>
+          <div className={classes.roleSection}>
+            <Typography className={classes.roleLabel}>
+              ADDED COWORKERS
+            </Typography>
+            <List className={classes.coworkersList}>
+              {model.coworkers.map(c => (
+                <ListItem className={classes.coworkerItem} key={generate()}>
+                  <Avatar
+                    alt={`${get(c, ['firstName'])} ${get(c, ['lastName'])}`}
+                    src={get(c, ['profile', 'avatar'])}
+                  />
+                  <ListItemText
+                    primary={`${get(c, ['firstName'])} ${get(c, ['lastName'])}`}
+                    secondary={get(c, ['email'])}
+                    classes={{
+                      primary: classes.resultText,
+                      secondary: classes.resultDateText,
+                    }}
+                  />
+                  <ListItemSecondaryAction>
+                    <IconButton
+                      onClick={() => {
+                        const newCoworkers = this.state.model.coworkers.filter(
+                          i => get(i, ['id']) !== get(c, ['id'])
+                        );
+                        this.setState(state => ({
+                          ...state,
+                          model: {
+                            ...state.model,
+                            coworkers: newCoworkers,
+                          },
+                        }));
+                      }}
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              ))}
+            </List>
           </div>
         </div>
       </div>

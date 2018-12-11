@@ -13,6 +13,7 @@ import saga, {
   requestCreateWork,
   requestWorks,
   requestRoles,
+  requestSearchUsers,
 } from 'containers/Work/sagas';
 import injectSagas from 'utils/injectSagas';
 
@@ -24,9 +25,11 @@ type Props = {
   // isRolesLoading: boolean,
   // rolesError: string,
   works: Object,
+  users: Object,
   requestCreateWork: Function,
   requestWorks: Function,
   requestRoles: Function,
+  requestSearchUsers: Function,
 };
 
 class AddWorkPage extends Component<Props> {
@@ -41,7 +44,7 @@ class AddWorkPage extends Component<Props> {
     }
   }
   render() {
-    const { user, isLoading, error, works, roles } = this.props;
+    const { user, isLoading, error, works, roles, users } = this.props;
     const filteredRoles = this.props.roles.toJS().map(r => r.name);
     return (
       <React.Fragment>
@@ -51,6 +54,8 @@ class AddWorkPage extends Component<Props> {
           error={error}
           works={works}
           roles={filteredRoles}
+          users={users}
+          searchUsers={this.props.requestSearchUsers}
           requestCreateWork={this.props.requestCreateWork}
         />
         <WorkForm
@@ -59,6 +64,8 @@ class AddWorkPage extends Component<Props> {
           error={error}
           works={works}
           roles={roles}
+          users={users}
+          searchUsers={this.props.requestSearchUsers}
           requestCreateWork={this.props.requestCreateWork}
         />
       </React.Fragment>
@@ -76,12 +83,14 @@ const mapStateToProps = state => ({
   roles: state.getIn(['work', 'roles']),
   isRolesLoading: state.getIn(['work', 'isRolesLoading']),
   rolesError: state.getIn(['work', 'rolesError']),
+  users: state.getIn(['work', 'users']),
 });
 
 const mapDispatchToProps = dispatch => ({
   requestCreateWork: payload => dispatch(requestCreateWork(payload)),
   requestWorks: () => dispatch(requestWorks()),
   requestRoles: () => dispatch(requestRoles()),
+  requestSearchUsers: payload => dispatch(requestSearchUsers(payload)),
 });
 
 export default compose(

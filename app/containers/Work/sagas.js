@@ -16,6 +16,7 @@ import { getToken } from 'containers/App/selectors';
 const CREATE_WORK = 'Jolly/Work/CREATE_WORK';
 const ROLES = 'Jolly/Work/ROLES';
 const WORKS = 'Jolly/Work/WORKS';
+const SEARCH_USERS = 'Jolly/Work/SEARCH_USERS';
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -68,6 +69,23 @@ const rolesRequestError = (error: string) => ({
   payload: error,
 });
 
+export const requestSearchUsers = (keyword: string) => ({
+  type: SEARCH_USERS + REQUESTED,
+  payload: keyword,
+});
+const usersSearchRequestSuccess = (payload: Object) => ({
+  type: SEARCH_USERS + SUCCEDED,
+  payload,
+});
+const usersSearchRequestFailed = (error: string) => ({
+  type: SEARCH_USERS + FAILED,
+  payload: error,
+});
+const usersSearchRequestError = (error: string) => ({
+  type: SEARCH_USERS + ERROR,
+  payload: error,
+});
+
 // ------------------------------------
 // Reducer
 // ------------------------------------
@@ -80,6 +98,9 @@ const initialState = fromJS({
   roles: fromJS([]),
   isRolesLoading: false,
   rolesError: '',
+  users: fromJS([]),
+  isUsersLoading: false,
+  usersError: '',
 });
 
 export const reducer = (
@@ -141,6 +162,27 @@ export const reducer = (
     case ROLES + ERROR:
       return state.set('isRolesLoading', false).set(
         'rolesError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case SEARCH_USERS + REQUESTED:
+      return state.set('isUsersLoading', true);
+
+    case SEARCH_USERS + SUCCEDED:
+      return state
+        .set('isUsersLoading', false)
+        .set('users', fromJS(payload.user_list))
+        .set('usersError', '');
+
+    case SEARCH_USERS + FAILED:
+      return state
+        .set('isUsersLoading', false)
+        .set('usersError', payload.message);
+
+    case SEARCH_USERS + ERROR:
+      return state.set('isUsersLoading', false).set(
+        'usersError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -212,10 +254,32 @@ function* RolesRequest() {
   }
 }
 
+function* UsersSearchRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/user/search`,
+      data: {
+        keyword: payload,
+      },
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(usersSearchRequestSuccess(response.data.response));
+    } else {
+      yield put(usersSearchRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(usersSearchRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(CREATE_WORK + REQUESTED, CreateWorkRequest),
     takeLatest(WORKS + REQUESTED, WorksRequest),
     takeLatest(ROLES + REQUESTED, RolesRequest),
+    takeLatest(SEARCH_USERS + REQUESTED, UsersSearchRequest),
   ]);
 }

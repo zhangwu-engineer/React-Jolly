@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, InlineDatePicker } from 'material-ui-pickers';
-import { debounce } from 'lodash-es';
+import { debounce, get } from 'lodash-es';
 import { format } from 'date-fns';
 import { generate } from 'shortid';
 
@@ -15,9 +15,12 @@ import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
+import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import Avatar from '@material-ui/core/Avatar';
 import ClearIcon from '@material-ui/icons/Clear';
 import LeftArrowIcon from '@material-ui/icons/KeyboardArrowLeft';
 import RightArrowIcon from '@material-ui/icons/KeyboardArrowRight';
@@ -167,6 +170,10 @@ const styles = theme => ({
     paddingLeft: 20,
     cursor: 'pointer',
   },
+  userResultItem: {
+    paddingLeft: 20,
+    cursor: 'pointer',
+  },
   resultText: {
     fontSize: 16,
     fontWeight: 500,
@@ -179,6 +186,13 @@ const styles = theme => ({
     fontWeight: 500,
     color: '#9b9b9b',
   },
+  coworkersList: {
+    marginTop: 10,
+  },
+  coworkerItem: {
+    paddingLeft: 0,
+    paddingRight: 0,
+  },
 });
 
 type Props = {
@@ -187,7 +201,9 @@ type Props = {
   error: string,
   works: Object,
   roles: Object,
+  users: Object,
   classes: Object,
+  searchUsers: Function,
   requestCreateWork: Function,
 };
 
@@ -199,7 +215,9 @@ type State = {
     to: Date,
     caption: string,
     pinToProfile: boolean,
+    coworkers: Array,
   },
+  newUser: string,
   filteredWorks: Array<Object>,
   filteredRoles: Array<string>,
 };
@@ -213,7 +231,9 @@ class WorkForm extends Component<Props, State> {
       to: new Date(),
       caption: '',
       pinToProfile: true,
+      coworkers: [],
     },
+    newUser: '',
     filteredWorks: [],
     filteredRoles: [],
   };
@@ -246,6 +266,11 @@ class WorkForm extends Component<Props, State> {
         this.setState({ filteredRoles });
         break;
       }
+      case 'newUser':
+        if (value) {
+          this.props.searchUsers(value);
+        }
+        break;
       default:
         break;
     }
@@ -255,18 +280,24 @@ class WorkForm extends Component<Props, State> {
   }, 500);
   handleChange = (e: Object) => {
     const { name, value } = e.target;
-    this.setState(
-      state => ({
-        ...state,
-        model: {
-          ...state.model,
-          [name]: value,
-        },
-      }),
-      () => {
+    if (name === 'newUser') {
+      this.setState({ newUser: value }, () => {
         this.debouncedSearch(name, value);
-      }
-    );
+      });
+    } else {
+      this.setState(
+        state => ({
+          ...state,
+          model: {
+            ...state.model,
+            [name]: value,
+          },
+        }),
+        () => {
+          this.debouncedSearch(name, value);
+        }
+      );
+    }
   };
   handleCheckChange = () => {
     this.setState(state => ({
@@ -284,8 +315,8 @@ class WorkForm extends Component<Props, State> {
   dropzoneRef = React.createRef();
   dropzoneDiv = React.createRef();
   render() {
-    const { classes, user, isLoading, error } = this.props;
-    const { model, filteredWorks, filteredRoles } = this.state;
+    const { classes, user, isLoading, error, users } = this.props;
+    const { model, newUser, filteredWorks, filteredRoles } = this.state;
     return (
       <div className={classes.root}>
         <div className={classes.topline}>
@@ -564,17 +595,100 @@ class WorkForm extends Component<Props, State> {
                 <Grid item className={classes.fullWidth}>
                   <FormControl fullWidth>
                     <Input
-                      id="coworker"
-                      name="coworker"
+                      id="newUser"
+                      name="newUser"
                       placeholder="Add Coworkers"
+                      value={newUser}
                       classes={{
                         input: classes.formInput,
                         formControl: classes.formInputWrapper,
                       }}
                       disableUnderline
                       fullWidth
+                      onChange={this.handleChange}
                     />
+                    {newUser && users.size > 0 ? (
+                      <div className={classes.searchResultList}>
+                        {users.map(u => (
+                          <ListItem
+                            className={classes.userResultItem}
+                            key={generate()}
+                            onClick={() =>
+                              this.setState(state => ({
+                                ...state,
+                                model: {
+                                  ...state.model,
+                                  coworkers: [
+                                    ...state.model.coworkers,
+                                    u.toJS(),
+                                  ],
+                                },
+                                newUser: '',
+                              }))
+                            }
+                          >
+                            <Avatar
+                              alt={`${u.get('firstName')} ${u.get('lastName')}`}
+                              src={u.getIn(['profile', 'avatar'])}
+                            />
+                            <ListItemText
+                              primary={`${u.get('firstName')} ${u.get(
+                                'lastName'
+                              )}`}
+                              secondary={u.get('email')}
+                              classes={{
+                                primary: classes.resultText,
+                                secondary: classes.resultDateText,
+                              }}
+                            />
+                          </ListItem>
+                        ))}
+                      </div>
+                    ) : null}
                   </FormControl>
+                  <List className={classes.coworkersList}>
+                    {model.coworkers.map(c => (
+                      <ListItem
+                        className={classes.coworkerItem}
+                        key={generate()}
+                      >
+                        <Avatar
+                          alt={`${get(c, ['firstName'])} ${get(c, [
+                            'lastName',
+                          ])}`}
+                          src={get(c, ['profile', 'avatar'])}
+                        />
+                        <ListItemText
+                          primary={`${get(c, ['firstName'])} ${get(c, [
+                            'lastName',
+                          ])}`}
+                          secondary={get(c, ['email'])}
+                          classes={{
+                            primary: classes.resultText,
+                            secondary: classes.resultDateText,
+                          }}
+                        />
+                        <ListItemSecondaryAction>
+                          <IconButton
+                            onClick={() => {
+                              const newCoworkers = this.state.model.coworkers.filter(
+                                i => get(i, ['id']) !== get(c, ['id'])
+                              );
+                              this.setState(state => ({
+                                ...state,
+                                model: {
+                                  ...state.model,
+                                  coworkers: newCoworkers,
+                                },
+                              }));
+                            }}
+                          >
+                            <ClearIcon />
+                          </IconButton>
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                    ))}
+                  </List>
                 </Grid>
               </Grid>
             </Grid>
