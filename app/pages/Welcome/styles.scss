@@ -128,4 +128,21 @@
     margin-left: 80px;
     margin-bottom: 0px;
   }
+  &__pp {
+    text-align: center;
+    margin-bottom: $rem-lg;
+    font-weight: 500;
+    color: #3c3e43;
+    @include breakpoint(small only) {
+      margin-bottom: $rem-sm;
+      color: #ffffff;
+    }
+  }
+  &__link {
+    color: #1976d2;
+    font-size: 15px;
+    text-decoration: none;
+    text-transform: none;
+    font-weight: normal;
+  }
 }

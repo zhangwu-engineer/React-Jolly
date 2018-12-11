@@ -88,6 +88,15 @@ class Welcome extends Component<Props> {
             >
               Continue with email
             </Button>
+            <p className="welcome__pp">
+              By continuing, I agree to Jolly&apos;s
+              <br />
+              <Link className="welcome__link">Terms of Use</Link>
+              &nbsp;&amp;&nbsp;
+              <Link to="/privacy-policy" className="welcome__link">
+                Privacy Policy
+              </Link>
+            </p>
             <div className="welcome__signInLink">
               Already a user? <Link to="/sign-in">Sign In</Link>
             </div>

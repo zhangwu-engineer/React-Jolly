@@ -85,7 +85,7 @@ const styles = theme => ({
     },
   },
   link: {
-    color: theme.palette.primary,
+    color: theme.palette.primary.main,
     fontSize: 15,
     textDecoration: 'none',
     textTransform: 'none',
