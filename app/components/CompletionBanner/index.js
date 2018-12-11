@@ -17,6 +17,8 @@ const styles = theme => ({
     [theme.breakpoints.down('sm')]: {
       padding: '8px 6px',
     },
+    position: 'fixed',
+    bottom: 0,
   },
   progressbar: {
     width: 54,

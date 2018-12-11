@@ -4,6 +4,7 @@ import React, { Component, Fragment } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { generate } from 'shortid';
+import cx from 'classnames';
 
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -33,6 +34,12 @@ const styles = theme => ({
     margin: '40px auto 100px auto',
     [theme.breakpoints.down('xs')]: {
       margin: 0,
+    },
+  },
+  rootExtraSpace: {
+    paddingBottom: 10,
+    [theme.breakpoints.down('xs')]: {
+      paddingBottom: 130,
     },
   },
   profileInfo: {
@@ -205,7 +212,11 @@ class Profile extends Component<Props, State> {
     }
     return (
       <Fragment>
-        <div className={classes.root}>
+        <div
+          className={cx(classes.root, {
+            [classes.rootExtraSpace]: progress < 8,
+          })}
+        >
           <div className={classes.profileInfo}>
             <ProfileInfo
               user={user}
