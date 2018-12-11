@@ -30,9 +30,10 @@ import injectSagas from 'utils/injectSagas';
 const styles = theme => ({
   root: {
     maxWidth: '712px',
-    margin: '40px auto 300px auto',
+    margin: '40px auto 150px auto',
     [theme.breakpoints.down('xs')]: {
       margin: 0,
+      marginBottom: 120,
     },
   },
   profileInfo: {
@@ -96,8 +97,10 @@ const styles = theme => ({
     },
   },
   bottomBanner: {
+    position: 'fixed',
+    bottom: 0,
     padding: '25px 70px',
-    backgroundColor: '#2b2b2b',
+    backgroundColor: 'rgba(43, 43, 43, 0.9)',
     [theme.breakpoints.down('xs')]: {
       padding: '25px 15px',
     },
