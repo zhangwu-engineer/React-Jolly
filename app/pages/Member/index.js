@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { matchPath } from 'react-router';
 import { generate } from 'shortid';
 import cx from 'classnames';
+import Waypoint from 'react-waypoint';
 
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -163,6 +164,11 @@ const styles = theme => ({
   backButton: {
     marginRight: 15,
   },
+  fixedTopBanner: {
+    position: 'fixed',
+    top: 0,
+    zIndex: 10,
+  },
 });
 
 type Props = {
@@ -182,12 +188,14 @@ type Props = {
 type State = {
   isOpen: boolean,
   isContactOpen: boolean,
+  fixedTopBanner: boolean,
 };
 
 class Member extends Component<Props, State> {
   state = {
     isOpen: false,
     isContactOpen: false,
+    fixedTopBanner: false,
   };
   componentDidMount() {
     const {
@@ -211,6 +219,14 @@ class Member extends Component<Props, State> {
   openShareModal = () => {
     this.setState({ isOpen: true });
   };
+  positionChange = ({ currentPosition, previousPosition }) => {
+    if (currentPosition === 'above' && previousPosition === 'inside') {
+      this.setState({ fixedTopBanner: true });
+    }
+    if (currentPosition === 'inside' && previousPosition === 'above') {
+      this.setState({ fixedTopBanner: false });
+    }
+  };
   render() {
     const {
       currentUser,
@@ -220,7 +236,7 @@ class Member extends Component<Props, State> {
       classes,
       match: { url },
     } = this.props;
-    const { isOpen, isContactOpen } = this.state;
+    const { isOpen, isContactOpen, fixedTopBanner } = this.state;
     const showContactOptions =
       member.getIn(['profile', 'receiveEmail']) ||
       member.getIn(['profile', 'receiveSMS']) ||
@@ -232,10 +248,13 @@ class Member extends Component<Props, State> {
     });
     return (
       <Fragment>
+        <Waypoint onPositionChange={this.positionChange} />
         {currentUser &&
           currentUser.get('slug') === slug && (
             <Grid
-              className={classes.topBanner}
+              className={cx(classes.topBanner, {
+                [classes.fixedTopBanner]: fixedTopBanner === true,
+              })}
               container
               justify="space-between"
               alignItems="center"

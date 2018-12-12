@@ -123,6 +123,7 @@
     "react-router-scroll-memory": "^1.0.1",
     "react-share": "^1.19.1",
     "react-social-login": "^3.4.2",
+    "react-waypoint": "^8.1.0",
     "redux": "3.6.0",
     "redux-immutable": "3.0.8",
     "redux-saga": "0.16.0",
