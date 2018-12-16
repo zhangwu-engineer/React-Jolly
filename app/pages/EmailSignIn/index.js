@@ -156,7 +156,10 @@ class EmailSignIn extends Component<Props, State> {
       .validate(model)
       .then(() => {
         this.setState({ validationError: {} });
-        this.props.requestLogin(model);
+        this.props.requestLogin({
+          email: model.email.toLowerCase(),
+          password: model.password,
+        });
       })
       .catch(err => {
         this.setState({ validationError: err });
