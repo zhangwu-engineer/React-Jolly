@@ -10,14 +10,13 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import EditIcon from '@material-ui/icons/Edit';
 
 import { history } from 'components/ConnectedRouter';
 import ProfileInfo from 'components/ProfileInfo';
-import TalentInput from 'components/TalentInput';
 import CompletionBanner from 'components/CompletionBanner';
 import Link from 'components/Link';
 import ShareProfileModal from 'components/ShareProfileModal';
+import RoleCard from 'components/RoleCard';
 
 import {
   requestUser,
@@ -128,6 +127,22 @@ const styles = theme => ({
       textAlign: 'left',
     },
   },
+  rolesSection: {
+    backgroundColor: '#f3faff',
+  },
+  rolesSectionHeader: {
+    backgroundColor: '#f3faff',
+    paddingBottom: 20,
+  },
+  rolesSectionBody: {
+    backgroundColor: '#f3faff',
+    paddingTop: 0,
+  },
+  addRoleLabel: {
+    fontSize: 14,
+    fontWeight: 600,
+    color: '#0074d7',
+  },
 });
 
 type Props = {
@@ -226,29 +241,32 @@ class Profile extends Component<Props, State> {
               openShareModal={this.openShareModal}
             />
           </div>
-          <div className={classes.section}>
-            <div className={classes.sectionHeader}>
-              <Typography variant="h6">Talents</Typography>
+          <div className={cx(classes.section, classes.rolesSection)}>
+            <div
+              className={cx(classes.sectionHeader, classes.rolesSectionHeader)}
+            >
+              <Typography variant="h6">Roles</Typography>
             </div>
-            <div className={classes.sectionBody}>
+            <div className={cx(classes.sectionBody, classes.rolesSectionBody)}>
               {talents &&
                 talents.map(talent => (
-                  <TalentInput
-                    key={generate()}
-                    mode="read"
-                    data={talent.toJS()}
-                    editable={false}
-                  />
+                  <RoleCard key={generate()} role={talent.toJS()} />
                 ))}
-              <Button
-                className={classes.editButton}
-                component={props => (
-                  <Link to={`/f/${user.get('slug')}/work`} {...props} />
-                )}
-              >
-                <EditIcon />
-                &nbsp;Edit Talents and Rates
-              </Button>
+              <Grid container justify="center">
+                <Grid item>
+                  <Button
+                    component={props => (
+                      <Link to={`/f/${user.get('slug')}/work`} {...props} />
+                    )}
+                    classes={{
+                      root: classes.addRoleButton,
+                      label: classes.addRoleLabel,
+                    }}
+                  >
+                    + Add Role
+                  </Button>
+                </Grid>
+              </Grid>
             </div>
           </div>
           <div className={classes.bottomBannerContainer}>
