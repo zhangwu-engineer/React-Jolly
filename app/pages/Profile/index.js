@@ -10,6 +10,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import ShareIcon from '@material-ui/icons/ShareOutlined';
 
 import { history } from 'components/ConnectedRouter';
 import ProfileInfo from 'components/ProfileInfo';
@@ -87,14 +88,16 @@ const styles = theme => ({
   bottomBannerContainer: {
     marginTop: 20,
     [theme.breakpoints.down('xs')]: {
-      backgroundColor: theme.palette.common.white,
+      backgroundColor: '#f3faff',
       padding: '30px 10px',
       marginTop: 0,
     },
   },
   bottomBanner: {
     padding: '25px 30px',
-    backgroundColor: '#2b2b2b',
+    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.08)',
+    borderRadius: 3,
+    backgroundColor: theme.palette.common.white,
     [theme.breakpoints.down('xs')]: {
       padding: '15px 20px',
       width: 'auto',
@@ -102,23 +105,19 @@ const styles = theme => ({
     },
   },
   bannerText: {
-    color: theme.palette.common.white,
     fontWeight: 500,
   },
   bannerButton: {
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.common.white,
-    fontSize: 14,
+    fontSize: 17,
     fontWeight: 500,
     padding: '11px 20px',
-    '&:hover': {
-      backgroundColor: theme.palette.primary.main,
-    },
+    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.08)',
+    textTransform: 'none',
     [theme.breakpoints.down('xs')]: {
       backgroundColor: 'transparent',
       fontSize: 16,
       color: theme.palette.primary.main,
-      padding: '11px 0px',
+      marginTop: 15,
     },
   },
   bannerButtonContainer: {
@@ -142,6 +141,11 @@ const styles = theme => ({
     fontSize: 14,
     fontWeight: 600,
     color: '#0074d7',
+  },
+  link: {
+    textTransform: 'none',
+    textDecoration: 'none',
+    fontSize: 16,
   },
 });
 
@@ -277,22 +281,31 @@ class Profile extends Component<Props, State> {
                 justify="space-between"
                 alignItems="center"
               >
-                <Grid item xs={12} lg={7}>
+                <Grid item xs={12} lg={6}>
                   <Typography className={classes.bannerText}>
-                    {`Ready to share? View your new public page and grab the link to share it!`}
+                    {`Ready to share your profile? Grab the link here (`}
+                    <Link
+                      className={classes.link}
+                      to={`/f/${user.get('slug')}`}
+                    >
+                      or view as public
+                    </Link>
+                    {'):'}
                   </Typography>
                 </Grid>
                 <Grid
                   item
                   xs={12}
-                  lg={5}
+                  lg={6}
                   className={classes.bannerButtonContainer}
                 >
                   <Button
+                    color="primary"
                     className={classes.bannerButton}
-                    onClick={() => this.seePublicProfile()}
+                    onClick={this.openShareModal}
                   >
-                    SEE MY PUBLIC PROFILE
+                    <ShareIcon />
+                    &nbsp;&nbsp;Share my profile
                   </Button>
                 </Grid>
               </Grid>
