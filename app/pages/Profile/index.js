@@ -16,8 +16,12 @@ import { history } from 'components/ConnectedRouter';
 import ProfileInfo from 'components/ProfileInfo';
 import CompletionBanner from 'components/CompletionBanner';
 import Link from 'components/Link';
+import Icon from 'components/Icon';
 import ShareProfileModal from 'components/ShareProfileModal';
 import RoleCard from 'components/RoleCard';
+import PhotoModal from 'components/PhotoModal';
+
+import AddPhotoIcon from 'images/sprite/add-photo-blue.svg';
 
 import {
   requestUser,
@@ -147,6 +151,17 @@ const styles = theme => ({
     textDecoration: 'none',
     fontSize: 16,
   },
+  addPictureButton: {
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+  },
+  smallAddPictureButton: {
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'flex',
+    },
+  },
 });
 
 type Props = {
@@ -166,11 +181,15 @@ type Props = {
 
 type State = {
   isOpen: boolean,
+  type: string,
+  isPhotoModalOpen: boolean,
 };
 
 class Profile extends Component<Props, State> {
   state = {
     isOpen: false,
+    type: '',
+    isPhotoModalOpen: false,
   };
   componentDidMount() {
     this.props.requestUser();
@@ -193,9 +212,15 @@ class Profile extends Component<Props, State> {
     const { user } = this.props;
     history.push(`/f/${user.get('slug')}`);
   };
+  openPhotoModal = type => {
+    this.setState({ type, isPhotoModalOpen: true });
+  };
+  closePhotoModal = () => {
+    this.setState({ isPhotoModalOpen: false });
+  };
   render() {
     const { user, files, talents, classes } = this.props;
-    const { isOpen } = this.state;
+    const { isOpen, type, isPhotoModalOpen } = this.state;
     let progress = 0;
     if (user.get('email')) {
       progress += 1;
@@ -239,10 +264,8 @@ class Profile extends Component<Props, State> {
           <div className={classes.profileInfo}>
             <ProfileInfo
               user={user}
-              files={files}
-              uploadPhoto={this.props.requestUserPhotoUpload}
-              updateUser={this.props.updateUser}
               openShareModal={this.openShareModal}
+              openPhotoModal={this.openPhotoModal}
             />
           </div>
           <div className={cx(classes.section, classes.rolesSection)}>
@@ -327,8 +350,29 @@ class Profile extends Component<Props, State> {
                   lg={6}
                   className={classes.bannerButtonContainer}
                 >
-                  <Button className={classes.bannerButton}>
-                    +&nbsp;Add PICTURE
+                  <Button
+                    color="primary"
+                    className={cx(
+                      classes.bannerButton,
+                      classes.addPictureButton
+                    )}
+                    onClick={() => this.openPhotoModal('avatar')}
+                  >
+                    <Icon glyph={AddPhotoIcon} size={20} />
+                    &nbsp;&nbsp;Add picture
+                  </Button>
+                  <Button
+                    color="primary"
+                    className={cx(
+                      classes.bannerButton,
+                      classes.smallAddPictureButton
+                    )}
+                    onClick={() => {
+                      history.push(`/f/${user.get('slug')}/edit/avatar`);
+                    }}
+                  >
+                    <Icon glyph={AddPhotoIcon} size={20} />
+                    &nbsp;&nbsp;Add picture
                   </Button>
                 </Grid>
               </Grid>
@@ -340,6 +384,15 @@ class Profile extends Component<Props, State> {
           isOpen={isOpen}
           onCloseModal={this.onCloseModal}
           shareURL={`/f/${user.get('slug')}`}
+        />
+        <PhotoModal
+          user={user}
+          type={type}
+          files={files}
+          isOpen={isPhotoModalOpen}
+          onCloseModal={this.closePhotoModal}
+          uploadPhoto={this.props.requestUserPhotoUpload}
+          updateUser={this.props.updateUser}
         />
       </Fragment>
     );

@@ -1,6 +1,6 @@
 // @flow
 
-import React, { Component, Fragment } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { generate } from 'shortid';
 import cx from 'classnames';
 import Masonry from 'react-masonry-component';
@@ -63,7 +63,7 @@ type Props = {
   updateUser?: Function,
 };
 
-class PhotoModal extends Component<Props> {
+class PhotoModal extends PureComponent<Props> {
   onAddClick = (e: Event) => {
     e.preventDefault();
     if (this.fileInput.current) this.fileInput.current.click();

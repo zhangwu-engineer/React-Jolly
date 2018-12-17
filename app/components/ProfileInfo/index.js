@@ -16,7 +16,6 @@ import Avatar from '@material-ui/core/Avatar';
 import ImageIcon from '@material-ui/icons/Image';
 
 import { history } from 'components/ConnectedRouter';
-import PhotoModal from 'components/PhotoModal';
 import Link from 'components/Link';
 import Icon from 'components/Icon';
 
@@ -273,32 +272,17 @@ const styles = theme => ({
 
 type Props = {
   user: Object,
-  files: Object,
   classes: Object,
-  uploadPhoto: Function,
-  updateUser: Function,
   openShareModal: Function,
+  openPhotoModal: Function,
 };
 
-type State = {
-  type: string,
-  isOpen: boolean,
-};
-
-class ProfileInfo extends PureComponent<Props, State> {
-  state = {
-    type: '',
-    isOpen: false,
-  };
+class ProfileInfo extends PureComponent<Props> {
   openUrl = url => {
     window.open(url, '_blank');
   };
-  closeModal = () => {
-    this.setState({ isOpen: false });
-  };
   render() {
-    const { user, files, classes } = this.props;
-    const { isOpen, type } = this.state;
+    const { user, classes } = this.props;
     const avatarImg = user.getIn(['profile', 'avatar']) || EmptyAvatarImg;
     return (
       <div className={classes.root}>
@@ -317,7 +301,7 @@ class ProfileInfo extends PureComponent<Props, State> {
           <Button
             className={classes.addCoverButton}
             onClick={() => {
-              this.setState({ type: 'backgroundImage', isOpen: true });
+              this.props.openPhotoModal('backgroundImage');
             }}
           >
             <CameraIcon />
@@ -338,7 +322,7 @@ class ProfileInfo extends PureComponent<Props, State> {
           </Button>
           <IconButton
             className={classes.imageButton}
-            onClick={() => this.setState({ type: 'gallery', isOpen: true })}
+            onClick={() => this.props.openPhotoModal('gallery')}
           >
             <ImageIcon />
           </IconButton>
@@ -362,7 +346,7 @@ class ProfileInfo extends PureComponent<Props, State> {
             <IconButton
               className={classes.editAvatarButton}
               onClick={() => {
-                this.setState({ type: 'avatar', isOpen: true });
+                this.props.openPhotoModal('avatar');
               }}
             >
               <EditIcon fontSize="small" />
@@ -500,15 +484,6 @@ class ProfileInfo extends PureComponent<Props, State> {
             )}
           </Grid>
         </div>
-        <PhotoModal
-          user={user}
-          type={type}
-          files={files}
-          isOpen={isOpen}
-          onCloseModal={this.closeModal}
-          uploadPhoto={this.props.uploadPhoto}
-          updateUser={this.props.updateUser}
-        />
       </div>
     );
   }
