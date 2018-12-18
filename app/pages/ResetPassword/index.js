@@ -154,6 +154,7 @@ class ResetPassword extends Component<Props, State> {
         this.setState({ validationError: err });
       });
   };
+  textInput = React.createRef();
   render() {
     const { isLoading, error, classes } = this.props;
     const { model, showPassword, validationError } = this.state;
@@ -178,6 +179,7 @@ class ResetPassword extends Component<Props, State> {
                 value={model.password}
                 className={classes.textInput}
                 onChange={this.handleChange}
+                inputRef={this.textInput}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
@@ -188,6 +190,14 @@ class ResetPassword extends Component<Props, State> {
                     </IconButton>
                   </InputAdornment>
                 }
+                onKeyDown={e => {
+                  if (e.keyCode === 13) {
+                    if (this.textInput.current) {
+                      this.textInput.current.blur();
+                    }
+                    this.handleSubmit();
+                  }
+                }}
               />
               {validationError &&
                 validationError.path === 'password' &&
