@@ -118,6 +118,7 @@ const styles = theme => ({
     padding: '11px 20px',
     boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.08)',
     textTransform: 'none',
+    border: '1px solid #e5e5e5',
     [theme.breakpoints.down('xs')]: {
       backgroundColor: 'transparent',
       fontSize: 16,
@@ -403,6 +404,7 @@ class Profile extends Component<Props, State> {
             user={user}
             showTagButton={showTagButton}
             updateUser={this.props.updateUser}
+            openPhotoModal={this.openPhotoModal}
           />
         )}
         <ShareProfileModal

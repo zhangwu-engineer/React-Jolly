@@ -81,6 +81,7 @@ type Props = {
   progress: number,
   classes: Object,
   updateUser: Function,
+  openPhotoModal: Function,
 };
 
 class CompletionBanner extends Component<Props> {
@@ -136,15 +137,11 @@ class CompletionBanner extends Component<Props> {
                     className={classes.button}
                     color="primary"
                     component={props => (
-                      <Link to={`/f/${user.get('slug')}/work`} {...props} />
+                      <Link
+                        to={`/f/${user.get('slug')}/edit/avatar`}
+                        {...props}
+                      />
                     )}
-                    onClick={() => {
-                      this.props.updateUser({
-                        profile: {
-                          clickedRoleButton: true,
-                        },
-                      });
-                    }}
                   >
                     +&nbsp;Picture
                   </Button>
@@ -205,15 +202,8 @@ class CompletionBanner extends Component<Props> {
             <Button
               className={classes.button}
               color="primary"
-              component={props => (
-                <Link to={`/f/${user.get('slug')}/work`} {...props} />
-              )}
               onClick={() => {
-                this.props.updateUser({
-                  profile: {
-                    clickedRoleButton: true,
-                  },
-                });
+                this.props.openPhotoModal('avatar');
               }}
             >
               +&nbsp;Picture
