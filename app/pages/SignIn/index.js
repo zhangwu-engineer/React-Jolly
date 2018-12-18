@@ -63,7 +63,7 @@ class SignIn extends Component<Props> {
             <h1 className="signin__title mb-xl">
               Sign in to your Jolly account
             </h1>
-            <h1 className="signin__mobileTitle">Bring Your Work to Life</h1>
+            <h1 className="signin__mobileTitle">Better Work Together</h1>
             <SocialButton
               provider="facebook"
               appId={CONFIG.FACEBOOK.APP_ID}
@@ -95,9 +95,9 @@ class SignIn extends Component<Props> {
         <div className="signin__rightPanel">
           <div className="signin__overlay" />
           <h1 className="signin__bigTitle">
-            Bring Your Work
+            Better Work
             <br />
-            to Life
+            Together
           </h1>
         </div>
       </div>

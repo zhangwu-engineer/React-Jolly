@@ -61,7 +61,7 @@ class Welcome extends Component<Props> {
               alt="mobile logo"
             />
             <h1 className="welcome__title mb-xl">Create your FREE account</h1>
-            <h1 className="welcome__mobileTitle">Bring Your Work to Life</h1>
+            <h1 className="welcome__mobileTitle">Better Work Together</h1>
             <SocialButton
               provider="facebook"
               appId={CONFIG.FACEBOOK.APP_ID}
@@ -104,9 +104,9 @@ class Welcome extends Component<Props> {
         </div>
         <div className="welcome__rightPanel">
           <h1 className="welcome__bigTitle">
-            Bring Your Work
+            Better Work
             <br />
-            to Life
+            Together
           </h1>
         </div>
       </div>
