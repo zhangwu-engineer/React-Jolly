@@ -25,6 +25,7 @@ const USER_PHOTO_UPLOAD = 'Jolly/App/UPLOAD_USER_PHOTO';
 const USER_FILES = 'Jolly/App/USER_FILES';
 const EMAIL_VERIFICATION = 'Jolly/App/EMAIL_VERIFICATION';
 const MEMBER = 'Jolly/App/Member';
+const WORKS = 'Jolly/App/WORKS';
 
 const OPEN_NAVBAR = 'Jolly/App/OPEN_NAVBAR';
 const CLOSE_NAVBAR = 'Jolly/App/CLOSE_NAVBAR';
@@ -194,6 +195,22 @@ const memberRequestError = (error: string) => ({
   payload: error,
 });
 
+export const requestWorks = () => ({
+  type: WORKS + REQUESTED,
+});
+const worksRequestSuccess = (payload: Object) => ({
+  type: WORKS + SUCCEDED,
+  payload,
+});
+const worksRequestFailed = (error: string) => ({
+  type: WORKS + FAILED,
+  payload: error,
+});
+const worksRequestError = (error: string) => ({
+  type: WORKS + ERROR,
+  payload: error,
+});
+
 export const openNavbar = () => ({
   type: OPEN_NAVBAR,
 });
@@ -230,6 +247,9 @@ const initialState = fromJS({
   member: fromJS({}),
   isMemberLoading: false,
   memberError: '',
+  works: fromJS([]),
+  isWorksLoading: false,
+  worksError: '',
 });
 
 export const reducer = (
@@ -398,6 +418,27 @@ export const reducer = (
     case MEMBER + ERROR:
       return state.set('isMemberLoading', false).set(
         'memberError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case WORKS + REQUESTED:
+      return state.set('isWorksLoading', true);
+
+    case WORKS + SUCCEDED:
+      return state
+        .set('isWorksLoading', false)
+        .set('works', fromJS(payload.work_list))
+        .set('worksError', '');
+
+    case WORKS + FAILED:
+      return state
+        .set('isWorksLoading', false)
+        .set('worksError', payload.message);
+
+    case WORKS + ERROR:
+      return state.set('isWorksLoading', false).set(
+        'worksError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -605,6 +646,24 @@ function* MemberRequest({ payload }) {
   }
 }
 
+function* WorksRequest() {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/work`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(worksRequestSuccess(response.data.response));
+    } else {
+      yield put(worksRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(worksRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(REGISTER + REQUESTED, RegisterRequest),
@@ -616,5 +675,6 @@ export default function*(): Saga<void> {
     takeLatest(USER_FILES + REQUESTED, UserFilesRequest),
     takeLatest(EMAIL_VERIFICATION + REQUESTED, UserEmailVerificationRequest),
     takeLatest(MEMBER + REQUESTED, MemberRequest),
+    takeLatest(WORKS + REQUESTED, WorksRequest),
   ]);
 }

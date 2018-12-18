@@ -13,9 +13,9 @@ import Link from 'components/Link';
 const styles = theme => ({
   root: {
     padding: '20px 70px',
-    backgroundColor: '#b8f3ce',
-    [theme.breakpoints.down('sm')]: {
-      padding: '8px 6px',
+    backgroundColor: theme.palette.primary.main,
+    [theme.breakpoints.down('xs')]: {
+      padding: 20,
     },
     position: 'fixed',
     bottom: 0,
@@ -27,46 +27,60 @@ const styles = theme => ({
     '& div': {
       fontSize: 14,
       fontWeight: 500,
-      color: '#303532 !important',
+      color: '#ffffff !important',
     },
-    [theme.breakpoints.down('sm')]: {
-      width: 74,
-      height: 74,
+    [theme.breakpoints.down('xs')]: {
+      width: 80,
+      height: 80,
     },
   },
   textContent: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('xs')]: {
       flex: 1,
     },
   },
   thickText: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: 500,
-    color: '#303532',
-  },
-  thinText: {
-    fontSize: 15,
-    color: '#556059',
+    color: theme.palette.common.white,
+    [theme.breakpoints.down('xs')]: {
+      marginBottom: 13,
+    },
   },
   buttons: {
     textAlign: 'right',
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+  },
+  smallButtons: {
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+    },
   },
   button: {
-    backgroundColor: 'transparent',
-    fontSize: 14,
-    fontWeight: 500,
+    backgroundColor: theme.palette.common.white,
+    fontSize: 15,
+    fontWeight: 600,
+    color: theme.palette.primary.main,
     padding: '11px 23px',
+    '&:first-child': {
+      marginRight: 25,
+    },
     '&:hover': {
-      backgroundColor: theme.palette.primary.main,
-      color: theme.palette.common.white,
+      backgroundColor: theme.palette.common.white,
+      color: theme.palette.primary.main,
     },
   },
 });
 
 type Props = {
   user: Object,
+  showTagButton: boolean,
   progress: number,
   classes: Object,
+  updateUser: Function,
 };
 
 class CompletionBanner extends Component<Props> {
@@ -81,21 +95,25 @@ class CompletionBanner extends Component<Props> {
     const options = {
       strokeWidth: 8,
       color: '#6bd258',
-      trailColor: '#a9e7c0',
+      trailColor: '#ffffff',
       trailWidth: 8,
     };
     if (this.shape === null) {
       this.shape = new ProgressBar.Circle(this.progressBar.current, options);
     }
-    this.shape.set(progress / 8);
+    this.shape.set(progress / 10);
     if (this.shape) {
-      this.shape.setText(`${progress * 12.5}%`);
+      this.shape.setText(`${progress * 10}%`);
     }
   }
   shape = null;
   progressBar = React.createRef();
   render() {
-    const { user, classes } = this.props;
+    const { user, showTagButton, classes } = this.props;
+    const showPictureButton =
+      (user.getIn(['profile', 'clickedRoleButton']) ||
+        user.getIn(['profile', 'clickedJobButton'])) &&
+      !user.getIn(['profile', 'avatar']);
     return (
       <Grid
         className={classes.root}
@@ -104,34 +122,150 @@ class CompletionBanner extends Component<Props> {
         alignItems="center"
       >
         <Grid item xs={12} md={8} lg={8}>
-          <Grid container>
+          <Grid container alignItems="center">
             <Grid item>
               <div ref={this.progressBar} className={classes.progressbar} />
             </Grid>
             <Grid item className={classes.textContent}>
               <Typography className={classes.thickText}>
-                Let&apos;s spice up your profile!
+                Your profile is incomplete!
               </Typography>
-              <Typography className={classes.thinText}>
-                Upload a pic and show off your skills by adding talents and work
-                experience.
-              </Typography>
+              <div className={classes.smallButtons}>
+                {showPictureButton && (
+                  <Button
+                    className={classes.button}
+                    color="primary"
+                    component={props => (
+                      <Link to={`/f/${user.get('slug')}/work`} {...props} />
+                    )}
+                    onClick={() => {
+                      this.props.updateUser({
+                        profile: {
+                          clickedRoleButton: true,
+                        },
+                      });
+                    }}
+                  >
+                    +&nbsp;Picture
+                  </Button>
+                )}
+                {!user.getIn(['profile', 'clickedRoleButton']) && (
+                  <Button
+                    className={classes.button}
+                    color="primary"
+                    component={props => (
+                      <Link to={`/f/${user.get('slug')}/work`} {...props} />
+                    )}
+                    onClick={() => {
+                      this.props.updateUser({
+                        profile: {
+                          clickedRoleButton: true,
+                        },
+                      });
+                    }}
+                  >
+                    +&nbsp;Role
+                  </Button>
+                )}
+                {!user.getIn(['profile', 'clickedJobButton']) && (
+                  <Button
+                    className={classes.button}
+                    component={props => (
+                      <Link to={`/f/${user.get('slug')}/add`} {...props} />
+                    )}
+                    color="primary"
+                    onClick={() => {
+                      this.props.updateUser({
+                        profile: {
+                          clickedJobButton: true,
+                        },
+                      });
+                    }}
+                  >
+                    +&nbsp;Job
+                  </Button>
+                )}
+                {showTagButton && (
+                  <Button
+                    className={classes.button}
+                    color="primary"
+                    component={props => (
+                      <Link to={`/f/${user.get('slug')}/add`} {...props} />
+                    )}
+                  >
+                    Tag a Coworker
+                  </Button>
+                )}
+              </div>
             </Grid>
           </Grid>
         </Grid>
         <Grid item xs={12} md={4} lg={4} className={classes.buttons}>
-          <Button className={classes.button} color="primary">
-            +&nbsp;Add Picture
-          </Button>
-          <Button
-            className={classes.button}
-            component={props => (
-              <Link to={`/f/${user.get('slug')}/work`} {...props} />
-            )}
-            color="primary"
-          >
-            +&nbsp;Add Talents
-          </Button>
+          {showPictureButton && (
+            <Button
+              className={classes.button}
+              color="primary"
+              component={props => (
+                <Link to={`/f/${user.get('slug')}/work`} {...props} />
+              )}
+              onClick={() => {
+                this.props.updateUser({
+                  profile: {
+                    clickedRoleButton: true,
+                  },
+                });
+              }}
+            >
+              +&nbsp;Picture
+            </Button>
+          )}
+          {!user.getIn(['profile', 'clickedRoleButton']) && (
+            <Button
+              className={classes.button}
+              color="primary"
+              component={props => (
+                <Link to={`/f/${user.get('slug')}/work`} {...props} />
+              )}
+              onClick={() => {
+                this.props.updateUser({
+                  profile: {
+                    clickedRoleButton: true,
+                  },
+                });
+              }}
+            >
+              +&nbsp;Role
+            </Button>
+          )}
+          {!user.getIn(['profile', 'clickedJobButton']) && (
+            <Button
+              className={classes.button}
+              component={props => (
+                <Link to={`/f/${user.get('slug')}/add`} {...props} />
+              )}
+              color="primary"
+              onClick={() => {
+                this.props.updateUser({
+                  profile: {
+                    clickedJobButton: true,
+                  },
+                });
+              }}
+            >
+              +&nbsp;Job
+            </Button>
+          )}
+          {showTagButton && (
+            <Button
+              className={classes.button}
+              color="primary"
+              component={props => (
+                <Link to={`/f/${user.get('slug')}/add`} {...props} />
+              )}
+            >
+              Tag a Coworker
+            </Button>
+          )}
         </Grid>
       </Grid>
     );

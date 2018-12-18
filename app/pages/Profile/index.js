@@ -28,6 +28,7 @@ import {
   requestUserPhotoUpload,
   requestUserFiles,
   requestUserDataUpdate,
+  requestWorks,
 } from 'containers/App/sagas';
 import saga, { reducer, requestTalents } from 'containers/Talent/sagas';
 import injectSagas from 'utils/injectSagas';
@@ -170,6 +171,7 @@ type Props = {
   isUploading: boolean,
   uploadError: string,
   talents: Object,
+  works: Object,
   classes: Object,
   match: Object,
   requestUser: Function,
@@ -177,6 +179,7 @@ type Props = {
   requestUserPhotoUpload: Function,
   updateUser: Function,
   requestTalents: Function,
+  requestWorks: Function,
 };
 
 type State = {
@@ -195,6 +198,7 @@ class Profile extends Component<Props, State> {
     this.props.requestUser();
     this.props.requestUserFiles();
     this.props.requestTalents();
+    this.props.requestWorks();
   }
   componentDidUpdate(prevProps: Props) {
     const { isUploading, uploadError } = this.props;
@@ -219,9 +223,10 @@ class Profile extends Component<Props, State> {
     this.setState({ isPhotoModalOpen: false });
   };
   render() {
-    const { user, files, talents, classes } = this.props;
+    const { user, files, talents, works, classes } = this.props;
     const { isOpen, type, isPhotoModalOpen } = this.state;
     let progress = 0;
+    let tagged = false;
     if (user.get('email')) {
       progress += 1;
     }
@@ -254,6 +259,19 @@ class Profile extends Component<Props, State> {
     ) {
       progress += 1;
     }
+    if (works.size > 0) {
+      progress += 1;
+      tagged = works.toJS().some(w => w.coworkers.length > 0);
+      if (tagged) {
+        progress += 1;
+      }
+    }
+    const showTagButton =
+      user.getIn(['profile', 'clickedRoleButton']) &&
+      user.getIn(['profile', 'clickedJobButton']) &&
+      user.getIn(['profile', 'avatar']) &&
+      works.size > 0 &&
+      !tagged;
     return (
       <Fragment>
         <div
@@ -379,7 +397,14 @@ class Profile extends Component<Props, State> {
             )}
           </div>
         </div>
-        {progress < 8 && <CompletionBanner progress={progress} user={user} />}
+        {progress < 8 && (
+          <CompletionBanner
+            progress={progress}
+            user={user}
+            showTagButton={showTagButton}
+            updateUser={this.props.updateUser}
+          />
+        )}
         <ShareProfileModal
           isOpen={isOpen}
           onCloseModal={this.onCloseModal}
@@ -409,6 +434,7 @@ const mapStateToProps = state => ({
   isUploading: state.getIn(['app', 'isUploading']),
   uploadError: state.getIn(['app', 'uploadError']),
   talents: state.getIn(['talent', 'talents']),
+  works: state.getIn(['app', 'works']),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -417,6 +443,7 @@ const mapDispatchToProps = dispatch => ({
   requestUserPhotoUpload: payload => dispatch(requestUserPhotoUpload(payload)),
   requestUserFiles: () => dispatch(requestUserFiles()),
   updateUser: payload => dispatch(requestUserDataUpdate(payload)),
+  requestWorks: () => dispatch(requestWorks()),
 });
 
 export default compose(
