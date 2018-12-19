@@ -271,6 +271,23 @@ const styles = theme => ({
     color: '#b3b9bf',
     fill: '#b3b9bf',
   },
+  aggregateLine: {
+    marginBottom: 20,
+    textAlign: 'center',
+    [theme.breakpoints.down('xs')]: {
+      marginTop: 40,
+    },
+  },
+  aggregateValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#555555',
+  },
+  aggregateLabel: {
+    fontSize: 12,
+    fontWeight: 600,
+    color: '#555555',
+  },
 });
 
 type Props = {
@@ -411,6 +428,24 @@ class ProfileInfo extends PureComponent<Props> {
             </Typography>
           )}
           <Divider className={classes.divider} />
+          <Grid container className={classes.aggregateLine}>
+            <Grid item xs={4}>
+              <Typography className={classes.aggregateValue}>0</Typography>
+              <Typography className={classes.aggregateLabel}>Jobs</Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography className={classes.aggregateValue}>0</Typography>
+              <Typography className={classes.aggregateLabel}>
+                Verifications
+              </Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography className={classes.aggregateValue}>0</Typography>
+              <Typography className={classes.aggregateLabel}>
+                Endorsements
+              </Typography>
+            </Grid>
+          </Grid>
           <Typography className={classes.bio}>
             {user.getIn(['profile', 'bio'])
               ? user.getIn(['profile', 'bio'])
