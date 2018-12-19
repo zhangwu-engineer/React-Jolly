@@ -99,6 +99,9 @@ const styles = theme => ({
     marginRight: 15,
     backgroundColor: theme.palette.common.gray,
   },
+  menuName: {
+    textTransform: 'capitalize',
+  },
   menuButton: {
     backgroundColor: theme.palette.primary.main,
     boxShadow: 'none',
@@ -196,7 +199,7 @@ class Header extends Component<Props, State> {
             />
           </Grid>
           <Grid item>
-            <Typography variant="h6">
+            <Typography variant="h6" className={classes.menuName}>
               {`${user.get('firstName')} ${user.get('lastName')}`}
             </Typography>
             <Typography>{user.getIn(['profile', 'location'])}</Typography>
