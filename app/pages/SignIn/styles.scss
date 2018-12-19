@@ -4,6 +4,9 @@
   height: 100vh;
   display: flex;
   background-color: $white;
+  @include breakpoint(small only) {
+    display: block;
+  }
   &__leftPanel {
     flex: 1;
     display: flex;
@@ -11,6 +14,8 @@
     align-items: center;
     position: relative;
     @include breakpoint(small only) {
+      display: block;
+      height: 100vh;
       background-image: url('~images/signin-bg.png');
       background-repeat: no-repeat;
       background-size: cover;
@@ -29,6 +34,7 @@
     display: none;
     @include breakpoint(small only) {
       display: block;
+      height: calc(100% + 100px);
     }
   }
   &__logo {
@@ -44,12 +50,16 @@
     @include breakpoint(small only) {
       display: block;
       width: 250px;
-      margin: 0 auto 20px auto;
+      margin: 0 auto;
     }
   }
   &__leftPanelContent {
     max-width: 350px;
     position: relative;
+    @include breakpoint(small only) {
+      margin-top: 80px;
+      margin-bottom: 80px;
+    }
   }
   &__title {
     font-family: Avenir !important;
@@ -74,7 +84,7 @@
     display: none;
     @include breakpoint(small only) {
       display: block;
-      margin-bottom: 40px;
+      margin-bottom: 20px;
     }
   }
   &__btn {
