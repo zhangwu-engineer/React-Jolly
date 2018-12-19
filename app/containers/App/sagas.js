@@ -71,9 +71,10 @@ const userDataUpdateError = error => ({
   payload: error,
 });
 
-export const requestUserPhotoUpload = (payload: string) => ({
+export const requestUserPhotoUpload = (photo: string, type: string) => ({
   type: USER_PHOTO_UPLOAD + REQUESTED,
-  payload,
+  payload: photo,
+  meta: type,
 });
 const userPhotoUploadSuccess = (payload: Object) => ({
   type: USER_PHOTO_UPLOAD + SUCCEDED,
@@ -569,7 +570,7 @@ function* UpdateUserDataRequest({ payload }) {
   }
 }
 
-function* UploadUserPhotoRequest({ payload }) {
+function* UploadUserPhotoRequest({ payload, meta }) {
   const token = yield select(getToken);
   try {
     const response = yield call(request, {
@@ -582,7 +583,15 @@ function* UploadUserPhotoRequest({ payload }) {
     });
     if (response.status === 200) {
       yield put(userPhotoUploadSuccess(response.data.response));
-      yield put(requestUser());
+      if (meta === 'avatar' || meta === 'backgroundImage') {
+        yield put(
+          requestUserDataUpdate({
+            profile: {
+              [meta]: response.data.response.path,
+            },
+          })
+        );
+      }
     } else {
       yield put(userPhotoUploadFailed(response.data.error.message));
     }

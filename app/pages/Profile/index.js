@@ -442,7 +442,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   requestUser: () => dispatch(requestUser()),
   requestTalents: () => dispatch(requestTalents()),
-  requestUserPhotoUpload: payload => dispatch(requestUserPhotoUpload(payload)),
+  requestUserPhotoUpload: (photo, type) =>
+    dispatch(requestUserPhotoUpload(photo, type)),
   requestUserFiles: () => dispatch(requestUserFiles()),
   updateUser: payload => dispatch(requestUserDataUpdate(payload)),
   requestWorks: () => dispatch(requestWorks()),

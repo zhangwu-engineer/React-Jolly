@@ -69,12 +69,13 @@ class PhotoModal extends PureComponent<Props> {
     if (this.fileInput.current) this.fileInput.current.click();
   };
   handleFileUpload = ({ target }: Event) => {
+    const { type } = this.props;
     const reader = new FileReader();
     reader.onload = e => {
       const block = e.target.result.split(';');
       const [, base64] = block;
       const [, realData] = base64.split(','); // eslint-disable-line
-      this.props.uploadPhoto(realData);
+      this.props.uploadPhoto(realData, type);
     };
     if (target instanceof HTMLInputElement) {
       const [file] = target.files;

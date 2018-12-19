@@ -83,11 +83,15 @@ class ProfileGallery extends Component<Props> {
   };
   handleFileUpload = ({ target }: Event) => {
     const reader = new FileReader();
+    let type = 'avatar';
+    if (location.pathname.indexOf('background-image') > -1) {
+      type = 'backgroundImage';
+    }
     reader.onload = e => {
       const block = e.target.result.split(';');
       const [, base64] = block;
       const [, realData] = base64.split(',');
-      this.props.uploadPhoto(realData);
+      this.props.uploadPhoto(realData, type);
     };
     if (target instanceof HTMLInputElement) {
       const [file] = target.files;
@@ -188,7 +192,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   requestUser: () => dispatch(requestUser()),
-  uploadPhoto: payload => dispatch(requestUserPhotoUpload(payload)),
+  uploadPhoto: (photo, type) => dispatch(requestUserPhotoUpload(photo, type)),
   requestUserFiles: () => dispatch(requestUserFiles()),
   updateUser: payload => dispatch(requestUserDataUpdate(payload)),
 });
