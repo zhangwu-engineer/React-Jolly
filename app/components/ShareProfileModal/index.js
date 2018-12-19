@@ -6,8 +6,11 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import LinkIcon from '@material-ui/icons/Link';
+import ClearIcon from '@material-ui/icons/Clear';
 
 import BaseModal from 'components/BaseModal';
 import Icon from 'components/Icon';
@@ -20,19 +23,22 @@ const styles = theme => ({
   modal: {
     padding: 15,
     width: 380,
+    textAlign: 'center',
     [theme.breakpoints.down('xs')]: {
-      width: 350,
+      width: 'calc(100% - 30px)',
     },
   },
   socialButtons: {
     marginBottom: 20,
-    marginLeft: 15,
   },
   iconButton: {
     padding: 12,
     transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
     borderRadius: '50%',
     cursor: 'pointer',
+    backgroundColor: '#f2f2f2',
+    marginLeft: 8,
+    marginRight: 8,
     '&:focus': {
       outline: 'none',
     },
@@ -52,14 +58,14 @@ const styles = theme => ({
     marginLeft: 15,
     marginTop: 15,
     marginBottom: 10,
+    fontSize: 20,
   },
   modalText: {
     marginLeft: 15,
     marginBottom: 10,
-    marginTop: 15,
+    marginTop: 30,
   },
   linkField: {
-    marginLeft: 15,
     paddingBottom: 6,
     paddingLeft: 9,
     borderTopLeftRadius: 3,
@@ -78,6 +84,12 @@ const styles = theme => ({
     '&:hover': {
       backgroundColor: theme.palette.primary.main,
     },
+  },
+  closeButton: {
+    position: 'absolute',
+    right: -15,
+    top: -50,
+    color: theme.palette.common.white,
   },
 });
 
@@ -130,7 +142,7 @@ class ShareProfileModal extends Component<Props, State> {
         onCloseModal={this.closeModal}
       >
         <Typography variant="h6" component="h1" className={classes.modalTitle}>
-          {copied ? 'Link copied to clickboard' : 'Share this profile'}
+          {copied ? 'Link copied to clickboard' : 'Share this page:'}
         </Typography>
         {copied ? (
           <Typography
@@ -157,7 +169,7 @@ class ShareProfileModal extends Component<Props, State> {
               endAdornment={
                 <InputAdornment position="end" className={classes.adornment}>
                   <Button className={classes.copyButton} onClick={this.copy}>
-                    Copy
+                    <LinkIcon />
                   </Button>
                 </InputAdornment>
               }
@@ -167,9 +179,9 @@ class ShareProfileModal extends Component<Props, State> {
               variant="body2"
               component="p"
             >
-              OR share on social media
+              or share to social media:
             </Typography>
-            <Grid container className={classes.socialButtons}>
+            <Grid container justify="center" className={classes.socialButtons}>
               <Grid item>
                 <ShareButtons.FacebookShareButton
                   url={shareURL}
@@ -214,13 +226,14 @@ class ShareProfileModal extends Component<Props, State> {
             </Grid>
           </Fragment>
         )}
-        <Grid container justify="flex-end">
-          <Grid item>
-            <Button color="primary" onClick={this.closeModal}>
-              Ok
-            </Button>
-          </Grid>
-        </Grid>
+
+        <IconButton
+          className={classes.closeButton}
+          color="default"
+          onClick={this.closeModal}
+        >
+          <ClearIcon />
+        </IconButton>
       </BaseModal>
     );
   }
