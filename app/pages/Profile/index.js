@@ -36,7 +36,7 @@ import injectSagas from 'utils/injectSagas';
 const styles = theme => ({
   root: {
     maxWidth: '712px',
-    margin: '40px auto 100px auto',
+    margin: '0 auto 100px auto',
     [theme.breakpoints.down('xs')]: {
       margin: 0,
     },
@@ -53,27 +53,17 @@ const styles = theme => ({
       marginBottom: 0,
     },
   },
-  section: {
-    boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
-    [theme.breakpoints.down('xs')]: {
-      boxShadow: 'none',
-    },
-  },
+  section: {},
   sectionHeader: {
-    paddingLeft: 30,
+    paddingLeft: 15,
     paddingTop: 20,
     paddingBottom: 20,
     paddingRight: 30,
-    backgroundColor: '#edeeee',
     [theme.breakpoints.down('xs')]: {
-      backgroundColor: theme.palette.common.white,
       padding: '25px 15px 0px 15px',
-      borderTop: '2px solid #eef2f2',
     },
   },
   sectionBody: {
-    backgroundColor: theme.palette.common.white,
-    padding: 30,
     [theme.breakpoints.down('xs')]: {
       padding: 15,
     },
@@ -132,20 +122,9 @@ const styles = theme => ({
       textAlign: 'left',
     },
   },
-  rolesSection: {
-    backgroundColor: '#f3faff',
-  },
-  rolesSectionHeader: {
-    backgroundColor: '#f3faff',
-    paddingBottom: 20,
-  },
-  rolesSectionBody: {
-    backgroundColor: '#f3faff',
-    paddingTop: 0,
-  },
   addRoleLabel: {
     fontSize: 14,
-    fontWeight: 600,
+    fontWeight: 'bold',
     color: '#0074d7',
   },
   link: {
@@ -287,13 +266,11 @@ class Profile extends Component<Props, State> {
               openPhotoModal={this.openPhotoModal}
             />
           </div>
-          <div className={cx(classes.section, classes.rolesSection)}>
-            <div
-              className={cx(classes.sectionHeader, classes.rolesSectionHeader)}
-            >
+          <div className={classes.section}>
+            <div className={classes.sectionHeader}>
               <Typography variant="h6">Roles</Typography>
             </div>
-            <div className={cx(classes.sectionBody, classes.rolesSectionBody)}>
+            <div className={classes.sectionBody}>
               {talents &&
                 talents.map(talent => (
                   <RoleCard key={generate()} role={talent.toJS()} />
