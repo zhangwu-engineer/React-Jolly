@@ -28,6 +28,9 @@ import YoutubeIcon from 'images/sprite/youtube.svg';
 const styles = theme => ({
   root: {
     boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
+    [theme.breakpoints.down('xs')]: {
+      boxShadow: 'none',
+    },
   },
   topSection: {
     position: 'relative',
