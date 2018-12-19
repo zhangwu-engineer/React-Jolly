@@ -10,6 +10,10 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import CheckCircle from '@material-ui/icons/CheckCircleOutline';
 
+import Icon from 'components/Icon';
+
+import EndorsementIcon from 'images/sprite/endorsement.svg';
+
 const styles = () => ({
   root: {
     marginBottom: 20,
@@ -24,6 +28,10 @@ const styles = () => ({
   actionBar: {
     display: 'flex',
     justifyContent: 'flex-end',
+  },
+  icon: {
+    fontSize: 17,
+    color: '#9B9B9B',
   },
 });
 
@@ -47,11 +55,11 @@ class RoleCard extends Component<Props> {
         </CardContent>
         <CardActions className={classes.actionBar}>
           <Button>
-            <CheckCircle />
+            <CheckCircle className={classes.icon} />
             &nbsp;&nbsp;0
           </Button>
           <Button>
-            <CheckCircle />
+            <Icon glyph={EndorsementIcon} />
             &nbsp;&nbsp;0
           </Button>
         </CardActions>
