@@ -271,10 +271,13 @@ class Profile extends Component<Props, State> {
               <Typography variant="h6">Roles</Typography>
             </div>
             <div className={classes.sectionBody}>
-              {talents &&
+              {talents.size ? (
                 talents.map(talent => (
                   <RoleCard key={generate()} role={talent.toJS()} />
-                ))}
+                ))
+              ) : (
+                <RoleCard />
+              )}
               <Grid container justify="center">
                 <Grid item>
                   <Button

@@ -36,13 +36,25 @@ const styles = () => ({
 });
 
 type Props = {
-  role: Object,
+  role?: Object,
   classes: Object,
 };
 
 class RoleCard extends Component<Props> {
   render() {
     const { role, classes } = this.props;
+    if (!role) {
+      return (
+        <Card className={classes.root}>
+          <CardContent>
+            <Typography variant="h6" className={classes.name}>
+              No Roles added yet
+            </Typography>
+            <Typography component="p">Add your first Role now</Typography>
+          </CardContent>
+        </Card>
+      );
+    }
     return (
       <Card className={classes.root}>
         <CardContent>
