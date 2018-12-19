@@ -270,7 +270,7 @@ class PersonalInformationPage extends Component<Props, State> {
             onClick={() => this.setState({ selectedSection: 'public' })}
           >
             {selectedSection === 'public' && <div className={classes.line} />}
-            Public profile actions
+            Profile Contact Actions
           </div>
           <div
             className={
@@ -351,7 +351,7 @@ class PersonalInformationPage extends Component<Props, State> {
           <div className={classes.section}>
             <div className={classes.sectionHeader}>
               <Typography variant="h6" className={classes.sectionTitle}>
-                Public profile contact actions
+                Profile Contact Actions
               </Typography>
             </div>
             <div className={classes.sectionBody}>
