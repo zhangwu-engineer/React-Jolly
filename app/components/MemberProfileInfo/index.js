@@ -9,7 +9,6 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import ShareIcon from '@material-ui/icons/Share';
 import ImageIcon from '@material-ui/icons/Image';
-import Divider from '@material-ui/core/Divider';
 import Avatar from '@material-ui/core/Avatar';
 
 import { history } from 'components/ConnectedRouter';
@@ -165,6 +164,21 @@ const styles = theme => ({
     color: '#b3b9bf',
     fill: '#b3b9bf',
   },
+  aggregateLine: {
+    marginTop: 40,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  aggregateValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#555555',
+  },
+  aggregateLabel: {
+    fontSize: 12,
+    fontWeight: 600,
+    color: '#555555',
+  },
 });
 
 type Props = {
@@ -246,9 +260,26 @@ class MemberProfileInfo extends Component<Props, State> {
               {user.getIn(['profile', 'location'])}
             </Typography>
           )}
+          <Grid container className={classes.aggregateLine}>
+            <Grid item xs={4}>
+              <Typography className={classes.aggregateValue}>0</Typography>
+              <Typography className={classes.aggregateLabel}>Jobs</Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography className={classes.aggregateValue}>0</Typography>
+              <Typography className={classes.aggregateLabel}>
+                Verifications
+              </Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography className={classes.aggregateValue}>0</Typography>
+              <Typography className={classes.aggregateLabel}>
+                Endorsements
+              </Typography>
+            </Grid>
+          </Grid>
           {user.getIn(['profile', 'bio']) && (
             <Fragment>
-              <Divider className={classes.divider} />
               <Typography className={classes.bio}>
                 {user.getIn(['profile', 'bio'])
                   ? user.getIn(['profile', 'bio'])
