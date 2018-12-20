@@ -40,7 +40,8 @@ const styles = theme => ({
     position: 'relative',
     [theme.breakpoints.down('xs')]: {
       height: 48,
-      padding: 0,
+      paddingLeft: theme.spacing.unit * 2,
+      paddingRight: theme.spacing.unit * 2,
     },
   },
   centerLogoContainer: {
