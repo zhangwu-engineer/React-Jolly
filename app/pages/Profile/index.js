@@ -207,50 +207,55 @@ class Profile extends Component<Props, State> {
     const { isOpen, type, isPhotoModalOpen } = this.state;
     let progress = 0;
     let tagged = false;
-    if (user.get('email')) {
-      progress += 1;
-    }
-    if (user.getIn(['profile', 'avatar'])) {
-      progress += 1;
-    }
-    if (user.getIn(['profile', 'backgroundImage'])) {
-      progress += 1;
-    }
-    if (user.getIn(['profile', 'phone'])) {
-      progress += 1;
-    }
-    if (user.getIn(['profile', 'bio'])) {
-      progress += 1;
-    }
-    if (
-      user.getIn(['profile', 'location']) ||
-      user.getIn(['profile', 'distance'])
-    ) {
-      progress += 1;
-    }
-    if (talents.size > 0) {
-      progress += 1;
-    }
-    if (
-      user.getIn(['profile', 'facebook']) ||
-      user.getIn(['profile', 'twitter']) ||
-      user.getIn(['profile', 'linkedin']) ||
-      user.getIn(['profile', 'youtube'])
-    ) {
-      progress += 1;
-    }
-    if (works.size > 0) {
-      progress += 1;
-      tagged = works.toJS().some(w => w.coworkers.length > 0);
-      if (tagged) {
+    if (talents && works) {
+      if (user.get('email')) {
         progress += 1;
       }
+      if (user.getIn(['profile', 'avatar'])) {
+        progress += 1;
+      }
+      if (user.getIn(['profile', 'backgroundImage'])) {
+        progress += 1;
+      }
+      if (user.getIn(['profile', 'phone'])) {
+        progress += 1;
+      }
+      if (user.getIn(['profile', 'bio'])) {
+        progress += 1;
+      }
+      if (
+        user.getIn(['profile', 'location']) ||
+        user.getIn(['profile', 'distance'])
+      ) {
+        progress += 1;
+      }
+      if (talents.size > 0) {
+        progress += 1;
+      }
+      if (
+        user.getIn(['profile', 'facebook']) ||
+        user.getIn(['profile', 'twitter']) ||
+        user.getIn(['profile', 'linkedin']) ||
+        user.getIn(['profile', 'youtube'])
+      ) {
+        progress += 1;
+      }
+      if (works.size > 0) {
+        progress += 1;
+        tagged = works.toJS().some(w => w.coworkers.length > 0);
+        if (tagged) {
+          progress += 1;
+        }
+      }
     }
+    const showJobButton = works && works.size === 0;
+    const showRoleButton = talents && talents.size === 0;
     const showTagButton =
-      user.getIn(['profile', 'clickedRoleButton']) &&
-      user.getIn(['profile', 'clickedJobButton']) &&
-      user.getIn(['profile', 'avatar']) &&
+      works &&
       works.size > 0 &&
+      talents &&
+      talents.size > 0 &&
+      user.getIn(['profile', 'avatar']) &&
       !tagged;
     return (
       <Fragment>
@@ -271,7 +276,7 @@ class Profile extends Component<Props, State> {
               <Typography variant="h6">Roles</Typography>
             </div>
             <div className={classes.sectionBody}>
-              {talents.size ? (
+              {talents && talents.size ? (
                 talents.map(talent => (
                   <RoleCard key={generate()} role={talent.toJS()} />
                 ))
@@ -378,15 +383,19 @@ class Profile extends Component<Props, State> {
             )}
           </div>
         </div>
-        {progress < 8 && (
-          <CompletionBanner
-            progress={progress}
-            user={user}
-            showTagButton={showTagButton}
-            updateUser={this.props.updateUser}
-            openPhotoModal={this.openPhotoModal}
-          />
-        )}
+        {works &&
+          talents &&
+          progress < 10 && (
+            <CompletionBanner
+              progress={progress}
+              user={user}
+              showJobButton={showJobButton}
+              showRoleButton={showRoleButton}
+              showTagButton={showTagButton}
+              updateUser={this.props.updateUser}
+              openPhotoModal={this.openPhotoModal}
+            />
+          )}
         <ShareProfileModal
           isOpen={isOpen}
           onCloseModal={this.onCloseModal}

@@ -77,6 +77,8 @@ const styles = theme => ({
 
 type Props = {
   user: Object,
+  showJobButton: boolean,
+  showRoleButton: boolean,
   showTagButton: boolean,
   progress: number,
   classes: Object,
@@ -110,11 +112,15 @@ class CompletionBanner extends Component<Props> {
   shape = null;
   progressBar = React.createRef();
   render() {
-    const { user, showTagButton, classes } = this.props;
+    const {
+      user,
+      showTagButton,
+      showRoleButton,
+      showJobButton,
+      classes,
+    } = this.props;
     const showPictureButton =
-      (user.getIn(['profile', 'clickedRoleButton']) ||
-        user.getIn(['profile', 'clickedJobButton'])) &&
-      !user.getIn(['profile', 'avatar']);
+      (!showRoleButton || !showJobButton) && !user.getIn(['profile', 'avatar']);
     return (
       <Grid
         className={classes.root}
@@ -146,38 +152,24 @@ class CompletionBanner extends Component<Props> {
                     +&nbsp;Picture
                   </Button>
                 )}
-                {!user.getIn(['profile', 'clickedRoleButton']) && (
+                {showRoleButton && (
                   <Button
                     className={classes.button}
                     color="primary"
                     component={props => (
                       <Link to={`/f/${user.get('slug')}/work`} {...props} />
                     )}
-                    onClick={() => {
-                      this.props.updateUser({
-                        profile: {
-                          clickedRoleButton: true,
-                        },
-                      });
-                    }}
                   >
                     +&nbsp;Role
                   </Button>
                 )}
-                {!user.getIn(['profile', 'clickedJobButton']) && (
+                {showJobButton && (
                   <Button
                     className={classes.button}
                     component={props => (
                       <Link to={`/f/${user.get('slug')}/add`} {...props} />
                     )}
                     color="primary"
-                    onClick={() => {
-                      this.props.updateUser({
-                        profile: {
-                          clickedJobButton: true,
-                        },
-                      });
-                    }}
                   >
                     +&nbsp;Job
                   </Button>
@@ -209,38 +201,24 @@ class CompletionBanner extends Component<Props> {
               +&nbsp;Picture
             </Button>
           )}
-          {!user.getIn(['profile', 'clickedRoleButton']) && (
+          {showRoleButton && (
             <Button
               className={classes.button}
               color="primary"
               component={props => (
                 <Link to={`/f/${user.get('slug')}/work`} {...props} />
               )}
-              onClick={() => {
-                this.props.updateUser({
-                  profile: {
-                    clickedRoleButton: true,
-                  },
-                });
-              }}
             >
               +&nbsp;Role
             </Button>
           )}
-          {!user.getIn(['profile', 'clickedJobButton']) && (
+          {showJobButton && (
             <Button
               className={classes.button}
               component={props => (
                 <Link to={`/f/${user.get('slug')}/add`} {...props} />
               )}
               color="primary"
-              onClick={() => {
-                this.props.updateUser({
-                  profile: {
-                    clickedJobButton: true,
-                  },
-                });
-              }}
             >
               +&nbsp;Job
             </Button>

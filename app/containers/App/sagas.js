@@ -248,7 +248,7 @@ const initialState = fromJS({
   member: fromJS({}),
   isMemberLoading: false,
   memberError: '',
-  works: fromJS([]),
+  works: null,
   isWorksLoading: false,
   worksError: '',
 });

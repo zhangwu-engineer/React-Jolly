@@ -167,7 +167,7 @@ const unitDeleteRequestError = (error: string) => ({
 // Reducer
 // ------------------------------------
 const initialState = fromJS({
-  talents: fromJS([]),
+  talents: null,
   isLoading: false,
   error: '',
   isSaving: false,
