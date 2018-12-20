@@ -11,7 +11,6 @@ import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import ShareIcon from '@material-ui/icons/Share';
 import CameraIcon from '@material-ui/icons/CameraAltOutlined';
-import Divider from '@material-ui/core/Divider';
 import Avatar from '@material-ui/core/Avatar';
 import ImageIcon from '@material-ui/icons/Image';
 
@@ -236,13 +235,6 @@ const styles = theme => ({
       textAlign: 'center',
     },
   },
-  divider: {
-    marginTop: 20,
-    marginBottom: 20,
-    [theme.breakpoints.down('xs')]: {
-      display: 'none',
-    },
-  },
   bio: {
     fontSize: 18,
     marginLeft: 30,
@@ -272,11 +264,9 @@ const styles = theme => ({
     fill: '#b3b9bf',
   },
   aggregateLine: {
+    marginTop: 40,
     marginBottom: 20,
     textAlign: 'center',
-    [theme.breakpoints.down('xs')]: {
-      marginTop: 40,
-    },
   },
   aggregateValue: {
     fontSize: 18,
@@ -427,7 +417,6 @@ class ProfileInfo extends PureComponent<Props> {
               {user.getIn(['profile', 'location'])}
             </Typography>
           )}
-          <Divider className={classes.divider} />
           <Grid container className={classes.aggregateLine}>
             <Grid item xs={4}>
               <Typography className={classes.aggregateValue}>0</Typography>
