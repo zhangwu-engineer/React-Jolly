@@ -57,8 +57,7 @@
     max-width: 350px;
     position: relative;
     @include breakpoint(small only) {
-      margin-top: 80px;
-      margin-bottom: 80px;
+      margin: 80px auto;
     }
   }
   &__title {

@@ -40,7 +40,7 @@ const styles = theme => ({
     position: 'relative',
     [theme.breakpoints.down('xs')]: {
       height: 48,
-      paddingLeft: theme.spacing.unit * 2,
+      padding: 0,
       paddingRight: theme.spacing.unit * 2,
     },
   },
