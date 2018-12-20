@@ -15,8 +15,8 @@ import Grid from '@material-ui/core/Grid';
 import ShareIcon from '@material-ui/icons/Share';
 
 import MemberProfileInfo from 'components/MemberProfileInfo';
-import TalentInput from 'components/TalentInput';
 import Link from 'components/Link';
+import RoleCard from 'components/RoleCard';
 import ShareProfileModal from 'components/ShareProfileModal';
 import ContactOptionModal from 'components/ContactOptionModal';
 
@@ -43,41 +43,36 @@ const styles = theme => ({
       marginBottom: 0,
     },
   },
-  section: {
-    boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
-    marginBottom: 20,
-    [theme.breakpoints.down('xs')]: {
-      boxShadow: 'none',
-    },
-  },
+  section: {},
   sectionHeader: {
-    paddingLeft: 30,
+    paddingLeft: 15,
     paddingTop: 20,
     paddingBottom: 20,
     paddingRight: 30,
-    backgroundColor: '#edeeee',
     [theme.breakpoints.down('xs')]: {
-      backgroundColor: theme.palette.common.white,
       padding: '25px 15px 0px 15px',
-      borderTop: '2px solid #eef2f2',
     },
   },
   sectionBody: {
-    backgroundColor: theme.palette.common.white,
-    padding: 30,
     [theme.breakpoints.down('xs')]: {
       padding: 15,
     },
   },
   shareSection: {
+    boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
+    marginTop: 40,
+    marginBottom: 20,
     [theme.breakpoints.down('xs')]: {
       margin: '30px 10px',
       boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
     },
   },
   shareSectionBody: {
+    backgroundColor: theme.palette.common.white,
+    padding: 30,
     [theme.breakpoints.down('xs')]: {
       borderRadius: 3,
+      padding: 15,
     },
   },
   shareText: {
@@ -303,26 +298,22 @@ class Member extends Component<Props, State> {
               openShareModal={this.openShareModal}
             />
           </div>
-          {talents.size > 0 && (
-            <div className={classes.section}>
-              <div className={classes.sectionHeader}>
-                <Typography variant="h6">Talents</Typography>
-              </div>
-              <div className={classes.sectionBody}>
-                {talents &&
-                  talents.map(talent => (
-                    <TalentInput
-                      key={generate()}
-                      mode="read"
-                      data={talent.toJS()}
-                      editable={false}
-                    />
-                  ))}
-              </div>
+          <div className={classes.section}>
+            <div className={classes.sectionHeader}>
+              <Typography variant="h6">Roles</Typography>
             </div>
-          )}
-          <div className={cx(classes.section, classes.shareSection)}>
-            <div className={cx(classes.sectionBody, classes.shareSectionBody)}>
+            <div className={classes.sectionBody}>
+              {talents.size ? (
+                talents.map(talent => (
+                  <RoleCard key={generate()} role={talent.toJS()} />
+                ))
+              ) : (
+                <RoleCard />
+              )}
+            </div>
+          </div>
+          <div className={classes.shareSection}>
+            <div className={classes.shareSectionBody}>
               <Grid container justify="space-between" alignItems="center">
                 <Grid item lg={6}>
                   <Typography className={classes.shareText}>
