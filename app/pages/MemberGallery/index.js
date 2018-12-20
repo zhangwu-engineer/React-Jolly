@@ -1,6 +1,6 @@
 // @flow
 
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { matchPath } from 'react-router';
@@ -60,7 +60,7 @@ type Props = {
   requestMemberFiles: Function,
 };
 
-class MemberGallery extends Component<Props> {
+class MemberGallery extends PureComponent<Props> {
   componentDidMount() {
     const {
       match: { url },
