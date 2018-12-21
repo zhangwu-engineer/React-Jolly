@@ -140,6 +140,7 @@ const styles = theme => ({
   bio: {
     fontSize: 18,
     marginLeft: 30,
+    marginRight: 30,
     marginBottom: 20,
     [theme.breakpoints.down('xs')]: {
       textAlign: 'center',
