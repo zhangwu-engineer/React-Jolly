@@ -3,7 +3,10 @@
 import React, { Component } from 'react';
 import { format } from 'date-fns';
 import { generate } from 'shortid';
-import { debounce, get } from 'lodash-es';
+import { debounce } from 'lodash-es';
+import cx from 'classnames';
+import Lightbox from 'react-image-lightbox';
+import 'react-image-lightbox/style.css';
 
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -19,6 +22,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Avatar from '@material-ui/core/Avatar';
 import EditIcon from '@material-ui/icons/Edit';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import Icon from 'components/Icon';
 import PeopleIcon from 'images/sprite/people.svg';
@@ -181,10 +185,11 @@ const styles = theme => ({
     paddingLeft: 0,
     paddingRight: 0,
   },
-  verified: {
+  invited: {
     fontSize: 12,
     fontWeight: 600,
     color: '#a7a7a7',
+    textTransform: 'capitalize',
   },
   label: {
     fontSize: 14,
@@ -230,40 +235,117 @@ const styles = theme => ({
     height: 308,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
+    [theme.breakpoints.down('xs')]: {
+      height: 170,
+      display: 'none',
+    },
+    '&:first-child': {
+      display: 'block',
+    },
+  },
+  verifiable: {
+    width: 24,
+    height: 24,
+    border: '2px solid #939393',
+    borderRadius: 20,
+    marginRight: 16,
+  },
+  addCoworkerButton: {
+    fontSize: 14,
+    fontWeight: 600,
+    textTransform: 'none',
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'inline-flex',
+    },
+  },
+  alignRight: {
+    textAlign: 'right',
+  },
+  searchBox: {
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+  },
+  roleRoot: {
+    position: 'fixed',
+    left: 0,
+    top: 0,
+    width: '100%',
+    transform: 'translate(100%)',
+    transition: 'all .3s ease-in-out',
+  },
+  activeRoleRoot: {
+    transform: 'translate(0)',
+  },
+  roleSection: {
+    height: 'calc(100vh - 40px)',
+    backgroundColor: theme.palette.common.white,
+  },
+  topline: {
+    backgroundColor: theme.palette.primary.main,
+  },
+  backButton: {
+    color: theme.palette.common.white,
+  },
+  mobileSearchResultList: {
+    backgroundColor: theme.palette.common.white,
+    border: '1px solid #e5e5e5',
+    position: 'absolute',
+    width: '100%',
+    height: 'calc(100vh - 49px)',
+    top: 49,
+    zIndex: 10,
+    overflowY: 'scroll',
+    '&::-webkit-scrollbar-track': {
+      backgroundColor: '#F5F5F5',
+    },
+    '&::-webkit-scrollbar': {
+      width: 6,
+      backgroundColor: '#F5F5F5',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#a4acb3',
+    },
+  },
+  coworkerInput: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: theme.palette.common.white,
+    padding: '14px 20px',
+    boxSizing: 'border-box',
+  },
+  emptyResultText: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#494949',
+    textAlign: 'center',
+    marginTop: 40,
   },
 });
 
 type Props = {
   work: Object,
   users: Object,
+  relatedUsers: Object,
   classes: Object,
   searchUsers: Function,
+  requestAddCoworker: Function,
 };
 
 type State = {
-  model: {
-    coworkers: Array,
-  },
   newUser: string,
+  photoIndex: number,
+  isGalleryOpen: boolean,
+  activeSection: string,
 };
 
 class WorkDetail extends Component<Props, State> {
-  static getDerivedStateFromProps(nextProps: Props, prevState: State) {
-    if (nextProps.work && !prevState.model.coworkers) {
-      return {
-        model: {
-          coworkers: nextProps.work.get('coworkers').toJS(),
-        },
-        newUser: '',
-      };
-    }
-    return null;
-  }
   state = {
-    model: {
-      coworkers: undefined,
-    },
     newUser: '',
+    photoIndex: 0,
+    isGalleryOpen: false,
+    activeSection: 'main',
   };
   debouncedSearch = debounce((name, value) => {
     switch (name) {
@@ -285,27 +367,15 @@ class WorkDetail extends Component<Props, State> {
       this.setState({ newUser: value }, () => {
         this.debouncedSearch(name, value);
       });
-    } else {
-      this.setState(
-        state => ({
-          ...state,
-          model: {
-            ...state.model,
-            [name]: value,
-          },
-        }),
-        () => {
-          this.debouncedSearch(name, value);
-        }
-      );
     }
   };
   render() {
-    const { work, users, classes } = this.props;
-    const { model, newUser } = this.state;
+    const { work, users, relatedUsers, classes } = this.props;
+    const { newUser, photoIndex, isGalleryOpen, activeSection } = this.state;
     const photo1 = work.getIn(['photos', 0]);
     const photo2 = work.getIn(['photos', 1]);
     const photo3 = work.getIn(['photos', 2]);
+    const photos = work.get('photos').toJS();
     return (
       <div className={classes.root}>
         <div className={classes.banner}>
@@ -315,6 +385,12 @@ class WorkDetail extends Component<Props, State> {
                 item
                 className={classes.photo}
                 style={{ backgroundImage: `url('${photo1}')` }}
+                onClick={() => {
+                  this.setState({
+                    photoIndex: 0,
+                    isGalleryOpen: true,
+                  });
+                }}
               />
             )}
             {photo2 && (
@@ -322,6 +398,12 @@ class WorkDetail extends Component<Props, State> {
                 item
                 className={classes.photo}
                 style={{ backgroundImage: `url('${photo2}')` }}
+                onClick={() => {
+                  this.setState({
+                    photoIndex: 1,
+                    isGalleryOpen: true,
+                  });
+                }}
               />
             )}
             {photo3 && (
@@ -329,6 +411,12 @@ class WorkDetail extends Component<Props, State> {
                 item
                 className={classes.photo}
                 style={{ backgroundImage: `url('${photo3}')` }}
+                onClick={() => {
+                  this.setState({
+                    photoIndex: 2,
+                    isGalleryOpen: true,
+                  });
+                }}
               />
             )}
           </Grid>
@@ -439,20 +527,32 @@ class WorkDetail extends Component<Props, State> {
               </Grid>
             </Grid>
             <Grid item xs={12} lg={5}>
-              <Grid container>
+              <Grid container alignItems="center">
                 <Grid item className={classes.iconWrapper}>
                   <Icon glyph={PeopleIcon} size={18} />
                 </Grid>
-                <Grid item className={classes.fullWidth}>
+                <Grid item>
                   <Typography className={classes.label}>
-                    <b>{model.coworkers && model.coworkers.length}</b>
+                    <b>{work.get('coworkers').size}</b>
                     &nbsp;coworkers
                   </Typography>
+                </Grid>
+                <Grid
+                  item
+                  className={cx(classes.fullWidth, classes.alignRight)}
+                >
+                  <Button
+                    className={classes.addCoworkerButton}
+                    color="primary"
+                    onClick={() => this.setState({ activeSection: 'coworker' })}
+                  >
+                    + Add Coworkers
+                  </Button>
                 </Grid>
               </Grid>
               <Grid container className={classes.valueField}>
                 <Grid item xs={12}>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth className={classes.searchBox}>
                     <Input
                       id="newUser"
                       name="newUser"
@@ -472,23 +572,18 @@ class WorkDetail extends Component<Props, State> {
                           <ListItem
                             className={classes.userResultItem}
                             key={generate()}
-                            onClick={() =>
-                              this.setState(state => ({
-                                ...state,
-                                model: {
-                                  ...state.model,
-                                  coworkers: [
-                                    ...state.model.coworkers,
-                                    u.toJS(),
-                                  ],
-                                },
-                                newUser: '',
-                              }))
-                            }
+                            onClick={() => {
+                              this.props.requestAddCoworker(
+                                work.get('id'),
+                                u.get('id')
+                              );
+                              this.setState({ newUser: '' });
+                            }}
                           >
                             <Avatar
                               alt={`${u.get('firstName')} ${u.get('lastName')}`}
                               src={u.getIn(['profile', 'avatar'])}
+                              className={classes.avatar}
                             />
                             <ListItemText
                               primary={`${u.get('firstName')} ${u.get(
@@ -506,35 +601,51 @@ class WorkDetail extends Component<Props, State> {
                     ) : null}
                   </FormControl>
                   <List className={classes.coworkersList}>
-                    {model.coworkers &&
-                      model.coworkers.map(c => (
+                    {relatedUsers &&
+                      relatedUsers.map(user => (
                         <ListItem
                           className={classes.coworkerItem}
                           key={generate()}
                         >
                           <Avatar
-                            alt={`${get(c, ['firstName'])} ${get(c, [
-                              'lastName',
-                            ])}`}
-                            src={get(c, ['profile', 'avatar'])}
+                            alt={`${user.getIn([
+                              'user',
+                              'firstName',
+                            ])} ${user.getIn(['user', 'lastName'])}`}
+                            src={user.getIn(['user', 'profile', 'avatar'])}
+                            className={classes.avatar}
                           />
                           <ListItemText
-                            primary={`${get(c, ['firstName'])} ${get(c, [
-                              'lastName',
-                            ])}`}
-                            secondary={get(c, ['email'])}
+                            primary={`${user.getIn([
+                              'user',
+                              'firstName',
+                            ])} ${user.getIn(['user', 'lastName'])}`}
+                            secondary={user.getIn(['user', 'email'])}
                             classes={{
                               primary: classes.resultText,
                               secondary: classes.resultDateText,
                             }}
                           />
                           <ListItemSecondaryAction>
-                            <ListItemText
-                              primary="Verified"
-                              classes={{
-                                primary: classes.verified,
-                              }}
-                            />
+                            {user.get('type') === 'verifiable' ? (
+                              <div
+                                className={classes.verifiable}
+                                onClick={() => {
+                                  this.props.requestAddCoworker(
+                                    work.get('id'),
+                                    user.getIn(['user', 'id'])
+                                  );
+                                }}
+                                role="button"
+                              />
+                            ) : (
+                              <ListItemText
+                                primary={user.get('type')}
+                                classes={{
+                                  primary: classes.invited,
+                                }}
+                              />
+                            )}
                           </ListItemSecondaryAction>
                         </ListItem>
                       ))}
@@ -544,6 +655,104 @@ class WorkDetail extends Component<Props, State> {
             </Grid>
           </Grid>
         </div>
+        <div
+          className={cx(classes.roleRoot, {
+            [classes.activeRoleRoot]: activeSection === 'coworker',
+          })}
+        >
+          <div className={classes.topline}>
+            <Grid container justify="space-between" alignItems="center">
+              <Grid item xs={2}>
+                <Button
+                  className={classes.backButton}
+                  onClick={() => {
+                    this.setState({ activeSection: 'main' });
+                  }}
+                >
+                  <ArrowBackIcon />
+                </Button>
+              </Grid>
+              <Grid item xs={10}>
+                <FormControl fullWidth>
+                  <Input
+                    id="newUser"
+                    name="newUser"
+                    placeholder="Add Coworkers"
+                    value={newUser}
+                    classes={{
+                      input: classes.coworkerInput,
+                    }}
+                    disableUnderline
+                    fullWidth
+                    onChange={this.handleChange}
+                  />
+                </FormControl>
+              </Grid>
+            </Grid>
+            {newUser && users.size > 0 ? (
+              <div className={classes.mobileSearchResultList}>
+                {users.map(u => (
+                  <ListItem
+                    className={classes.userResultItem}
+                    key={generate()}
+                    onClick={() => {
+                      this.props.requestAddCoworker(
+                        work.get('id'),
+                        u.get('id')
+                      );
+                      this.setState({
+                        newUser: '',
+                        activeSection: 'main',
+                      });
+                    }}
+                  >
+                    <Avatar
+                      alt={`${u.get('firstName')} ${u.get('lastName')}`}
+                      src={u.getIn(['profile', 'avatar'])}
+                      className={classes.avatar}
+                    />
+                    <ListItemText
+                      primary={`${u.get('firstName')} ${u.get('lastName')}`}
+                      secondary={u.get('email')}
+                      classes={{
+                        primary: classes.resultText,
+                        secondary: classes.resultDateText,
+                      }}
+                    />
+                  </ListItem>
+                ))}
+              </div>
+            ) : null}
+            {newUser && users.size === 0 ? (
+              <div className={classes.mobileSearchResultList}>
+                <Typography className={classes.emptyResultText}>
+                  Don’t see who you’re looking for?
+                  <br />
+                  Enter their email address &amp; invite them to join jolly
+                </Typography>
+              </div>
+            ) : null}
+          </div>
+          <div className={classes.roleSection} />
+        </div>
+        {isGalleryOpen && (
+          <Lightbox
+            mainSrc={photos[photoIndex]}
+            nextSrc={photos[(photoIndex + 1) % photos.length]}
+            prevSrc={photos[(photoIndex + photos.length - 1) % photos.length]}
+            onCloseRequest={() => this.setState({ isGalleryOpen: false })}
+            onMovePrevRequest={() =>
+              this.setState({
+                photoIndex: (photoIndex + photos.length - 1) % photos.length,
+              })
+            }
+            onMoveNextRequest={() =>
+              this.setState({
+                photoIndex: (photoIndex + 1) % photos.length,
+              })
+            }
+          />
+        )}
       </div>
     );
   }

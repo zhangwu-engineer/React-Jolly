@@ -3,6 +3,7 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import { matchPath } from 'react-router';
 
 import { withStyles } from '@material-ui/core/styles';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -23,6 +24,8 @@ import saga, {
   reducer,
   requestWork,
   requestSearchUsers,
+  requestWorkRelatedUsers,
+  requestAddCoworker,
 } from 'containers/Work/sagas';
 import injectSagas from 'utils/injectSagas';
 
@@ -69,23 +72,56 @@ type Props = {
   isWorkLoading: boolean,
   workError: string,
   users: Object,
+  relatedUsers: Object,
+  isAddingCoworker: boolean,
+  addCoworkerError: string,
   match: Object,
   classes: Object,
   requestWork: Function,
   requestSearchUsers: Function,
+  requestWorkRelatedUsers: Function,
+  requestAddCoworker: Function,
 };
 
 class WorkDetailPage extends Component<Props> {
   componentDidMount() {
     const {
       match: {
+        url,
         params: { eventSlug },
       },
     } = this.props;
-    this.props.requestWork(eventSlug);
+    const {
+      params: { slug },
+    } = matchPath(url, {
+      path: '/f/:slug/e/:eventID',
+    });
+    this.props.requestWork({ slug: eventSlug, userSlug: slug });
+  }
+  componentDidUpdate(prevProps: Props) {
+    const {
+      isWorkLoading,
+      workError,
+      isAddingCoworker,
+      addCoworkerError,
+    } = this.props;
+    if (prevProps.isWorkLoading && !isWorkLoading && !workError) {
+      this.props.requestWorkRelatedUsers(this.props.work.get('id'));
+    }
+    if (prevProps.isAddingCoworker && !isAddingCoworker && !addCoworkerError) {
+      this.props.requestWorkRelatedUsers(this.props.work.get('id'));
+    }
   }
   render() {
-    const { work, user, isWorkLoading, workError, users, classes } = this.props;
+    const {
+      work,
+      user,
+      isWorkLoading,
+      workError,
+      users,
+      relatedUsers,
+      classes,
+    } = this.props;
     if (isWorkLoading) {
       return <Preloader />;
     }
@@ -128,7 +164,9 @@ class WorkDetailPage extends Component<Props> {
           <WorkDetail
             work={work}
             users={users}
+            relatedUsers={relatedUsers}
             searchUsers={this.props.requestSearchUsers}
+            requestAddCoworker={this.props.requestAddCoworker}
           />
         ) : (
           <FormHelperText error>{workError}</FormHelperText>
@@ -146,11 +184,18 @@ const mapStateToProps = state => ({
   isWorkLoading: state.getIn(['work', 'isWorkLoading']),
   workError: state.getIn(['work', 'workError']),
   users: state.getIn(['work', 'users']),
+  relatedUsers: state.getIn(['work', 'relatedUsers']),
+  isAddingCoworker: state.getIn(['work', 'isAddingCoworker']),
+  addCoworkerError: state.getIn(['work', 'addCoworkerError']),
 });
 
 const mapDispatchToProps = dispatch => ({
   requestWork: payload => dispatch(requestWork(payload)),
   requestSearchUsers: payload => dispatch(requestSearchUsers(payload)),
+  requestWorkRelatedUsers: eventId =>
+    dispatch(requestWorkRelatedUsers(eventId)),
+  requestAddCoworker: (eventId, coworker) =>
+    dispatch(requestAddCoworker(eventId, coworker)),
 });
 
 export default compose(

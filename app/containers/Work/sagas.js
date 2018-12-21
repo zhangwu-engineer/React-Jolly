@@ -18,6 +18,8 @@ const ROLES = 'Jolly/Work/ROLES';
 const WORKS = 'Jolly/Work/WORKS';
 const WORK = 'Jolly/Work/WORK';
 const SEARCH_USERS = 'Jolly/Work/SEARCH_USERS';
+const RELATED_USERS = 'Jolly/Work/RELATED_USERS';
+const ADD_COWORKER = 'Jolly/Work/ADD_COWORKER';
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -54,7 +56,7 @@ const worksRequestError = (error: string) => ({
   payload: error,
 });
 
-export const requestWork = (payload: string) => ({
+export const requestWork = (payload: Object) => ({
   type: WORK + REQUESTED,
   payload,
 });
@@ -104,6 +106,40 @@ const usersSearchRequestError = (error: string) => ({
   payload: error,
 });
 
+export const requestWorkRelatedUsers = (eventId: string) => ({
+  type: RELATED_USERS + REQUESTED,
+  payload: eventId,
+});
+const relatedUsersRequestSuccess = (payload: Object) => ({
+  type: RELATED_USERS + SUCCEDED,
+  payload,
+});
+const relatedUsersRequestFailed = (error: string) => ({
+  type: RELATED_USERS + FAILED,
+  payload: error,
+});
+const relatedUsersRequestError = (error: string) => ({
+  type: RELATED_USERS + ERROR,
+  payload: error,
+});
+
+export const requestAddCoworker = (eventId: string, coworker: string) => ({
+  type: ADD_COWORKER + REQUESTED,
+  payload: eventId,
+  meta: coworker,
+});
+const coworkerAddRequestSuccess = (payload: Object) => ({
+  type: ADD_COWORKER + SUCCEDED,
+  payload,
+});
+const coworkerAddRequestFailed = (error: string) => ({
+  type: ADD_COWORKER + FAILED,
+  payload: error,
+});
+const coworkerAddRequestError = (error: string) => ({
+  type: ADD_COWORKER + ERROR,
+  payload: error,
+});
 // ------------------------------------
 // Reducer
 // ------------------------------------
@@ -122,6 +158,11 @@ const initialState = fromJS({
   work: fromJS({}),
   isWorkLoading: false,
   workError: '',
+  relatedUsers: fromJS([]),
+  isRelatedUsersLoading: false,
+  relatedUsersError: '',
+  isAddingCoworker: false,
+  addCoworkerError: '',
 });
 
 export const reducer = (
@@ -172,7 +213,7 @@ export const reducer = (
     case WORK + SUCCEDED:
       return state
         .set('isWorkLoading', false)
-        .set('work', fromJS(payload.work))
+        .set('work', fromJS(payload.work[0]))
         .set('workError', '');
 
     case WORK + FAILED:
@@ -225,6 +266,45 @@ export const reducer = (
     case SEARCH_USERS + ERROR:
       return state.set('isUsersLoading', false).set(
         'usersError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case RELATED_USERS + REQUESTED:
+      return state.set('isRelatedUsersLoading', true);
+
+    case RELATED_USERS + SUCCEDED:
+      return state
+        .set('isRelatedUsersLoading', false)
+        .set('relatedUsers', fromJS(payload.users))
+        .set('relatedUsersError', '');
+
+    case RELATED_USERS + FAILED:
+      return state
+        .set('isRelatedUsersLoading', false)
+        .set('relatedUsersError', payload.message);
+
+    case RELATED_USERS + ERROR:
+      return state.set('isRelatedUsersLoading', false).set(
+        'relatedUsersError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case ADD_COWORKER + REQUESTED:
+      return state.set('isAddingCoworker', true);
+
+    case ADD_COWORKER + SUCCEDED:
+      return state.set('isAddingCoworker', false).set('addCoworkerError', '');
+
+    case ADD_COWORKER + FAILED:
+      return state
+        .set('isAddingCoworker', false)
+        .set('addCoworkerError', payload.message);
+
+    case ADD_COWORKER + ERROR:
+      return state.set('isAddingCoworker', false).set(
+        'addCoworkerError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -321,8 +401,9 @@ function* WorkRequest({ payload }) {
   const token = yield select(getToken);
   try {
     const response = yield call(request, {
-      method: 'GET',
-      url: `${API_URL}/work/${payload}`,
+      method: 'POST',
+      url: `${API_URL}/work/search`,
+      data: payload,
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
@@ -335,6 +416,45 @@ function* WorkRequest({ payload }) {
   }
 }
 
+function* RelatedUsersRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/work/${payload}/user`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(relatedUsersRequestSuccess(response.data.response));
+    } else {
+      yield put(relatedUsersRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(relatedUsersRequestError(error));
+  }
+}
+
+function* CoworkerAddRequest({ payload, meta }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/work/${payload}/addCoworker`,
+      data: {
+        coworker: meta,
+      },
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(coworkerAddRequestSuccess(response.data.response));
+    } else {
+      yield put(coworkerAddRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(coworkerAddRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(CREATE_WORK + REQUESTED, CreateWorkRequest),
@@ -342,5 +462,7 @@ export default function*(): Saga<void> {
     takeLatest(ROLES + REQUESTED, RolesRequest),
     takeLatest(SEARCH_USERS + REQUESTED, UsersSearchRequest),
     takeLatest(WORK + REQUESTED, WorkRequest),
+    takeLatest(RELATED_USERS + REQUESTED, RelatedUsersRequest),
+    takeLatest(ADD_COWORKER + REQUESTED, CoworkerAddRequest),
   ]);
 }
