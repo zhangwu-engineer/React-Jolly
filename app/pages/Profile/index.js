@@ -5,6 +5,8 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { generate } from 'shortid';
 import cx from 'classnames';
+import Lightbox from 'react-image-lightbox';
+import 'react-image-lightbox/style.css';
 
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -19,6 +21,7 @@ import Link from 'components/Link';
 import Icon from 'components/Icon';
 import ShareProfileModal from 'components/ShareProfileModal';
 import RoleCard from 'components/RoleCard';
+import JobCard from 'components/JobCard';
 import PhotoModal from 'components/PhotoModal';
 
 import AddPhotoIcon from 'images/sprite/add-photo-blue.svg';
@@ -166,6 +169,9 @@ type State = {
   isOpen: boolean,
   type: string,
   isPhotoModalOpen: boolean,
+  photos: Array<string>,
+  photoIndex: number,
+  isGalleryOpen: boolean,
 };
 
 class Profile extends Component<Props, State> {
@@ -173,6 +179,9 @@ class Profile extends Component<Props, State> {
     isOpen: false,
     type: '',
     isPhotoModalOpen: false,
+    photos: [],
+    photoIndex: 0,
+    isGalleryOpen: false,
   };
   componentDidMount() {
     this.props.requestUser();
@@ -202,9 +211,23 @@ class Profile extends Component<Props, State> {
   closePhotoModal = () => {
     this.setState({ isPhotoModalOpen: false });
   };
+  openGallery = (photos, index) => {
+    this.setState({
+      photos,
+      photoIndex: index,
+      isGalleryOpen: true,
+    });
+  };
   render() {
     const { user, files, talents, works, classes } = this.props;
-    const { isOpen, type, isPhotoModalOpen } = this.state;
+    const {
+      isOpen,
+      type,
+      isPhotoModalOpen,
+      photos,
+      photoIndex,
+      isGalleryOpen,
+    } = this.state;
     let progress = 0;
     let tagged = false;
     if (talents && works) {
@@ -295,6 +318,39 @@ class Profile extends Component<Props, State> {
                     }}
                   >
                     + Add Role
+                  </Button>
+                </Grid>
+              </Grid>
+            </div>
+          </div>
+          <div className={classes.section}>
+            <div className={classes.sectionHeader}>
+              <Typography variant="h6">Experience</Typography>
+            </div>
+            <div className={classes.sectionBody}>
+              {works && works.size ? (
+                works.map(work => (
+                  <JobCard
+                    key={generate()}
+                    job={work}
+                    openGallery={this.openGallery}
+                  />
+                ))
+              ) : (
+                <JobCard />
+              )}
+              <Grid container justify="center">
+                <Grid item>
+                  <Button
+                    component={props => (
+                      <Link to={`/f/${user.get('slug')}/add`} {...props} />
+                    )}
+                    classes={{
+                      root: classes.addRoleButton,
+                      label: classes.addRoleLabel,
+                    }}
+                  >
+                    + Add Experience
                   </Button>
                 </Grid>
               </Grid>
@@ -410,6 +466,24 @@ class Profile extends Component<Props, State> {
           uploadPhoto={this.props.requestUserPhotoUpload}
           updateUser={this.props.updateUser}
         />
+        {isGalleryOpen && (
+          <Lightbox
+            mainSrc={photos[photoIndex]}
+            nextSrc={photos[(photoIndex + 1) % photos.length]}
+            prevSrc={photos[(photoIndex + photos.length - 1) % photos.length]}
+            onCloseRequest={() => this.setState({ isGalleryOpen: false })}
+            onMovePrevRequest={() =>
+              this.setState({
+                photoIndex: (photoIndex + photos.length - 1) % photos.length,
+              })
+            }
+            onMoveNextRequest={() =>
+              this.setState({
+                photoIndex: (photoIndex + 1) % photos.length,
+              })
+            }
+          />
+        )}
       </Fragment>
     );
   }
