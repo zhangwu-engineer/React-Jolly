@@ -16,7 +16,8 @@ const MemberGallery = load(() => import('pages/MemberGallery'));
 const PersonalInformation = load(() => import('pages/PersonalInformation'));
 const Settings = load(() => import('pages/Settings'));
 const Talent = load(() => import('pages/Talent'));
-const AddWork = load(() => import('pages/Work'));
+const AddWork = load(() => import('pages/AddWork'));
+const WorkDetail = load(() => import('pages/WorkDetail'));
 const Mobile = load(() => import('pages/Mobile'));
 
 type Props = {
@@ -97,6 +98,10 @@ class UserPage extends React.Component<Props> {
         <PrivateRoute
           path={`${url}/add`}
           render={props => <AddWork {...props} />}
+        />
+        <PrivateRoute
+          path={`${url}/e/:eventSlug`}
+          render={props => <WorkDetail {...props} />}
         />
         <Route
           path={`${url}/gallery`}

@@ -79,6 +79,7 @@ class App extends Component<Props> {
           <Route path="/f/:slug/edit/background-image" />
           <Route path="/f/:slug/gallery" />
           <Route path="/f/:slug/add" />
+          <Route path="/f/:slug/e/:eventSlug" />
           <Route
             path="/"
             render={() => (

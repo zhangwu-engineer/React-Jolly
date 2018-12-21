@@ -16,6 +16,7 @@ import { getToken } from 'containers/App/selectors';
 const CREATE_WORK = 'Jolly/Work/CREATE_WORK';
 const ROLES = 'Jolly/Work/ROLES';
 const WORKS = 'Jolly/Work/WORKS';
+const WORK = 'Jolly/Work/WORK';
 const SEARCH_USERS = 'Jolly/Work/SEARCH_USERS';
 // ------------------------------------
 // Actions
@@ -50,6 +51,23 @@ const worksRequestFailed = (error: string) => ({
 });
 const worksRequestError = (error: string) => ({
   type: WORKS + ERROR,
+  payload: error,
+});
+
+export const requestWork = (payload: string) => ({
+  type: WORK + REQUESTED,
+  payload,
+});
+const workRequestSuccess = (payload: Object) => ({
+  type: WORK + SUCCEDED,
+  payload,
+});
+const workRequestFailed = (error: string) => ({
+  type: WORK + FAILED,
+  payload: error,
+});
+const workRequestError = (error: string) => ({
+  type: WORK + ERROR,
   payload: error,
 });
 
@@ -101,6 +119,9 @@ const initialState = fromJS({
   users: fromJS([]),
   isUsersLoading: false,
   usersError: '',
+  work: fromJS({}),
+  isWorkLoading: false,
+  workError: '',
 });
 
 export const reducer = (
@@ -141,6 +162,27 @@ export const reducer = (
     case WORKS + ERROR:
       return state.set('isWorksLoading', false).set(
         'worksError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case WORK + REQUESTED:
+      return state.set('isWorkLoading', true);
+
+    case WORK + SUCCEDED:
+      return state
+        .set('isWorkLoading', false)
+        .set('work', fromJS(payload.work))
+        .set('workError', '');
+
+    case WORK + FAILED:
+      return state
+        .set('isWorkLoading', false)
+        .set('workError', payload.message);
+
+    case WORK + ERROR:
+      return state.set('isWorkLoading', false).set(
+        'workError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -275,11 +317,30 @@ function* UsersSearchRequest({ payload }) {
   }
 }
 
+function* WorkRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/work/${payload}`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(workRequestSuccess(response.data.response));
+    } else {
+      yield put(workRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(workRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(CREATE_WORK + REQUESTED, CreateWorkRequest),
     takeLatest(WORKS + REQUESTED, WorksRequest),
     takeLatest(ROLES + REQUESTED, RolesRequest),
     takeLatest(SEARCH_USERS + REQUESTED, UsersSearchRequest),
+    takeLatest(WORK + REQUESTED, WorkRequest),
   ]);
 }
