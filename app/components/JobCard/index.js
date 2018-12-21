@@ -13,6 +13,7 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import CheckCircle from '@material-ui/icons/CheckCircleOutline';
 
+import { history } from 'components/ConnectedRouter';
 import Icon from 'components/Icon';
 
 import RoleIcon from 'images/sprite/role.svg';
@@ -32,6 +33,7 @@ const styles = theme => ({
     fontSize: 18,
     fontWeight: 600,
     color: '#474747',
+    cursor: 'pointer',
   },
   date: {
     fontSize: 14,
@@ -122,7 +124,15 @@ class JobCard extends Component<Props> {
     return (
       <Card className={classes.root}>
         <CardContent className={classes.content}>
-          <Typography variant="h6" className={classes.title}>
+          <Typography
+            variant="h6"
+            className={classes.title}
+            onClick={() =>
+              history.push(
+                `/f/${job.getIn(['user', 'slug'])}/e/${job.get('slug')}`
+              )
+            }
+          >
             {job.get('title')}
           </Typography>
           <Typography className={classes.date}>
