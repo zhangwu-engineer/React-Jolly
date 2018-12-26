@@ -42,6 +42,7 @@ const styles = theme => ({
   contentWrapper: {
     padding: 20,
     height: 565,
+    overflowY: 'scroll',
   },
   fileWrapper: {
     width: 174,
