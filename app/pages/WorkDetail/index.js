@@ -76,6 +76,8 @@ type Props = {
   relatedUsers: Object,
   isAddingCoworker: boolean,
   addCoworkerError: string,
+  isVerifyingCoworker: boolean,
+  verifyCoworkerError: string,
   match: Object,
   classes: Object,
   requestWork: Function,
@@ -106,11 +108,20 @@ class WorkDetailPage extends Component<Props> {
       workError,
       isAddingCoworker,
       addCoworkerError,
+      isVerifyingCoworker,
+      verifyCoworkerError,
     } = this.props;
     if (prevProps.isWorkLoading && !isWorkLoading && !workError) {
       this.props.requestWorkRelatedUsers(this.props.work.get('id'));
     }
     if (prevProps.isAddingCoworker && !isAddingCoworker && !addCoworkerError) {
+      this.props.requestWorkRelatedUsers(this.props.work.get('id'));
+    }
+    if (
+      prevProps.isVerifyingCoworker &&
+      !isVerifyingCoworker &&
+      !verifyCoworkerError
+    ) {
       this.props.requestWorkRelatedUsers(this.props.work.get('id'));
     }
   }
