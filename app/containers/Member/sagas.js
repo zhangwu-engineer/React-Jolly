@@ -16,6 +16,7 @@ import { getToken } from 'containers/App/selectors';
 const TALENTS = 'Jolly/Member/TALENTS';
 const MEMBER_PROFILE = 'Jolly/Member/MEMBER_PROFILE';
 const FILES = 'Jolly/Member/FILES';
+const WORKS = 'Jolly/Member/WORKS';
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -69,6 +70,23 @@ const memberFilesRequestError = (error: string) => ({
   type: FILES + ERROR,
   payload: error,
 });
+
+export const requestMemberWorks = (slug: string) => ({
+  type: WORKS + REQUESTED,
+  payload: slug,
+});
+const memberWorksRequestSuccess = (payload: Object) => ({
+  type: WORKS + SUCCEDED,
+  payload,
+});
+const memberWorksRequestFailed = (error: string) => ({
+  type: WORKS + FAILED,
+  payload: error,
+});
+const memberWorksRequestError = (error: string) => ({
+  type: WORKS + ERROR,
+  payload: error,
+});
 // ------------------------------------
 // Reducer
 // ------------------------------------
@@ -82,6 +100,9 @@ const initialState = fromJS({
   files: [],
   isFileLoading: false,
   fileError: '',
+  works: null,
+  isWorksLoading: false,
+  worksError: '',
 });
 
 export const reducer = (
@@ -146,6 +167,27 @@ export const reducer = (
     case FILES + ERROR:
       return state.set('isFileLoading', false).set(
         'fileError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case WORKS + REQUESTED:
+      return state.set('isWorksLoading', true);
+
+    case WORKS + SUCCEDED:
+      return state
+        .set('isWorksLoading', false)
+        .set('works', fromJS(payload.work_list))
+        .set('worksError', '');
+
+    case WORKS + FAILED:
+      return state
+        .set('isWorksLoading', false)
+        .set('worksError', payload.message);
+
+    case WORKS + ERROR:
+      return state.set('isWorksLoading', false).set(
+        'worksError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -216,10 +258,27 @@ function* MemberFilesRequest({ payload }) {
   }
 }
 
+function* MemberWorksRequest({ payload }) {
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/work/user/${payload}`,
+    });
+    if (response.status === 200) {
+      yield put(memberWorksRequestSuccess(response.data.response));
+    } else {
+      yield put(memberWorksRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(memberWorksRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(TALENTS + REQUESTED, MemberTalentsRequest),
     takeLatest(MEMBER_PROFILE + REQUESTED, MemberProfileRequest),
     takeLatest(FILES + REQUESTED, MemberFilesRequest),
+    takeLatest(WORKS + REQUESTED, MemberWorksRequest),
   ]);
 }

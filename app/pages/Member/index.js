@@ -7,6 +7,8 @@ import { matchPath } from 'react-router';
 import { generate } from 'shortid';
 import cx from 'classnames';
 import Waypoint from 'react-waypoint';
+import Lightbox from 'react-image-lightbox';
+import 'react-image-lightbox/style.css';
 
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -17,6 +19,7 @@ import ShareIcon from '@material-ui/icons/Share';
 import MemberProfileInfo from 'components/MemberProfileInfo';
 import Link from 'components/Link';
 import RoleCard from 'components/RoleCard';
+import JobCard from 'components/JobCard';
 import ShareProfileModal from 'components/ShareProfileModal';
 import ContactOptionModal from 'components/ContactOptionModal';
 
@@ -25,6 +28,7 @@ import saga, {
   requestMemberTalents,
   requestMemberProfile,
   requestMemberFiles,
+  requestMemberWorks,
 } from 'containers/Member/sagas';
 import injectSagas from 'utils/injectSagas';
 
@@ -173,17 +177,22 @@ type Props = {
   error: string,
   files: Object,
   talents: Object,
+  works: Object,
   classes: Object,
   match: Object,
   requestMemberProfile: Function,
   requestMemberTalents: Function,
   requestMemberFiles: Function,
+  requestMemberWorks: Function,
 };
 
 type State = {
   isOpen: boolean,
   isContactOpen: boolean,
   fixedTopBanner: boolean,
+  photos: Array<string>,
+  photoIndex: number,
+  isGalleryOpen: boolean,
 };
 
 class Member extends Component<Props, State> {
@@ -191,6 +200,9 @@ class Member extends Component<Props, State> {
     isOpen: false,
     isContactOpen: false,
     fixedTopBanner: false,
+    photos: [],
+    photoIndex: 0,
+    isGalleryOpen: false,
   };
   componentDidMount() {
     const {
@@ -204,6 +216,7 @@ class Member extends Component<Props, State> {
     this.props.requestMemberProfile(slug);
     this.props.requestMemberFiles(slug);
     this.props.requestMemberTalents(slug);
+    this.props.requestMemberWorks(slug);
   }
   onCloseModal = () => {
     this.setState({ isOpen: false });
@@ -213,6 +226,13 @@ class Member extends Component<Props, State> {
   };
   openShareModal = () => {
     this.setState({ isOpen: true });
+  };
+  openGallery = (photos, index) => {
+    this.setState({
+      photos,
+      photoIndex: index,
+      isGalleryOpen: true,
+    });
   };
   positionChange = ({ currentPosition, previousPosition }) => {
     if (currentPosition === 'above' && previousPosition === 'inside') {
@@ -228,10 +248,18 @@ class Member extends Component<Props, State> {
       member,
       files,
       talents,
+      works,
       classes,
       match: { url },
     } = this.props;
-    const { isOpen, isContactOpen, fixedTopBanner } = this.state;
+    const {
+      isOpen,
+      isContactOpen,
+      fixedTopBanner,
+      photos,
+      photoIndex,
+      isGalleryOpen,
+    } = this.state;
     const showContactOptions =
       member.getIn(['profile', 'receiveEmail']) ||
       member.getIn(['profile', 'receiveSMS']) ||
@@ -312,6 +340,24 @@ class Member extends Component<Props, State> {
               )}
             </div>
           </div>
+          <div className={classes.section}>
+            <div className={classes.sectionHeader}>
+              <Typography variant="h6">Experience</Typography>
+            </div>
+            <div className={classes.sectionBody}>
+              {works && works.size ? (
+                works.map(work => (
+                  <JobCard
+                    key={generate()}
+                    job={work}
+                    openGallery={this.openGallery}
+                  />
+                ))
+              ) : (
+                <JobCard />
+              )}
+            </div>
+          </div>
           <div className={classes.shareSection}>
             <div className={classes.shareSectionBody}>
               <Grid container justify="space-between" alignItems="center">
@@ -369,6 +415,24 @@ class Member extends Component<Props, State> {
           onCloseModal={this.onCloseContactModal}
           data={member}
         />
+        {isGalleryOpen && (
+          <Lightbox
+            mainSrc={photos[photoIndex]}
+            nextSrc={photos[(photoIndex + 1) % photos.length]}
+            prevSrc={photos[(photoIndex + photos.length - 1) % photos.length]}
+            onCloseRequest={() => this.setState({ isGalleryOpen: false })}
+            onMovePrevRequest={() =>
+              this.setState({
+                photoIndex: (photoIndex + photos.length - 1) % photos.length,
+              })
+            }
+            onMoveNextRequest={() =>
+              this.setState({
+                photoIndex: (photoIndex + 1) % photos.length,
+              })
+            }
+          />
+        )}
       </Fragment>
     );
   }
@@ -381,12 +445,14 @@ const mapStateToProps = state => ({
   error: state.getIn(['member', 'memberError']),
   talents: state.getIn(['member', 'talents']),
   files: state.getIn(['member', 'files']),
+  works: state.getIn(['member', 'works']),
 });
 
 const mapDispatchToProps = dispatch => ({
   requestMemberProfile: slug => dispatch(requestMemberProfile(slug)),
   requestMemberTalents: slug => dispatch(requestMemberTalents(slug)),
   requestMemberFiles: slug => dispatch(requestMemberFiles(slug)),
+  requestMemberWorks: slug => dispatch(requestMemberWorks(slug)),
 });
 
 export default compose(
