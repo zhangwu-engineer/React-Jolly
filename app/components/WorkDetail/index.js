@@ -331,6 +331,7 @@ type Props = {
   classes: Object,
   searchUsers: Function,
   requestAddCoworker: Function,
+  requestVerifyCoworker: Function,
 };
 
 type State = {
@@ -463,7 +464,7 @@ class WorkDetail extends Component<Props, State> {
                 </Grid>
                 <Grid item className={classes.fullWidth}>
                   <Typography className={classes.label}>
-                    <b>14</b>
+                    <b>{work.get('verifiers').size}</b>
                     &nbsp;Verifications
                   </Typography>
                   <Grid
@@ -471,21 +472,14 @@ class WorkDetail extends Component<Props, State> {
                     className={classes.valueFieldWithNoPadding}
                     spacing={8}
                   >
-                    <Grid item>
-                      <Avatar className={classes.avatar} />
-                    </Grid>
-                    <Grid item>
-                      <Avatar className={classes.avatar} />
-                    </Grid>
-                    <Grid item>
-                      <Avatar className={classes.avatar} />
-                    </Grid>
-                    <Grid item>
-                      <Avatar className={classes.avatar} />
-                    </Grid>
-                    <Grid item>
-                      <Avatar className={classes.avatar} />
-                    </Grid>
+                    {work.get('verifiers').map(verifier => (
+                      <Grid item key={generate()}>
+                        <Avatar
+                          className={classes.avatar}
+                          src={verifier.getIn(['profile', 'avatar'])}
+                        />
+                      </Grid>
+                    ))}
                   </Grid>
                 </Grid>
               </Grid>
@@ -631,9 +625,13 @@ class WorkDetail extends Component<Props, State> {
                               <div
                                 className={classes.verifiable}
                                 onClick={() => {
-                                  this.props.requestAddCoworker(
-                                    work.get('id'),
-                                    user.getIn(['user', 'id'])
+                                  const payload = {
+                                    slug: work.get('slug'),
+                                    coworker: user.getIn(['user', 'id']),
+                                  };
+                                  this.props.requestVerifyCoworker(
+                                    payload,
+                                    work.get('id')
                                   );
                                 }}
                                 role="button"

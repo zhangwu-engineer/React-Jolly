@@ -20,6 +20,7 @@ const WORK = 'Jolly/Work/WORK';
 const SEARCH_USERS = 'Jolly/Work/SEARCH_USERS';
 const RELATED_USERS = 'Jolly/Work/RELATED_USERS';
 const ADD_COWORKER = 'Jolly/Work/ADD_COWORKER';
+const VERIFY_COWORKER = 'Jolly/Work/VERIFY_COWORKER';
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -140,6 +141,24 @@ const coworkerAddRequestError = (error: string) => ({
   type: ADD_COWORKER + ERROR,
   payload: error,
 });
+
+export const requestVerifyCoworker = (payload: Object, eventId: string) => ({
+  type: VERIFY_COWORKER + REQUESTED,
+  payload,
+  meta: eventId,
+});
+const coworkerVerifyRequestSuccess = (payload: Object) => ({
+  type: VERIFY_COWORKER + SUCCEDED,
+  payload,
+});
+const coworkerVerifyRequestFailed = (error: string) => ({
+  type: VERIFY_COWORKER + FAILED,
+  payload: error,
+});
+const coworkerVerifyRequestError = (error: string) => ({
+  type: VERIFY_COWORKER + ERROR,
+  payload: error,
+});
 // ------------------------------------
 // Reducer
 // ------------------------------------
@@ -163,6 +182,8 @@ const initialState = fromJS({
   relatedUsersError: '',
   isAddingCoworker: false,
   addCoworkerError: '',
+  isVerifyingCoworker: false,
+  verifyCoworkerError: '',
 });
 
 export const reducer = (
@@ -305,6 +326,26 @@ export const reducer = (
     case ADD_COWORKER + ERROR:
       return state.set('isAddingCoworker', false).set(
         'addCoworkerError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case VERIFY_COWORKER + REQUESTED:
+      return state.set('isVerifyingCoworker', true);
+
+    case VERIFY_COWORKER + SUCCEDED:
+      return state
+        .set('isVerifyingCoworker', false)
+        .set('verifyCoworkerError', '');
+
+    case VERIFY_COWORKER + FAILED:
+      return state
+        .set('isVerifyingCoworker', false)
+        .set('verifyCoworkerError', payload.message);
+
+    case VERIFY_COWORKER + ERROR:
+      return state.set('isVerifyingCoworker', false).set(
+        'verifyCoworkerError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -455,6 +496,25 @@ function* CoworkerAddRequest({ payload, meta }) {
   }
 }
 
+function* CoworkerVerifyRequest({ payload, meta }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/work/${meta}/verifyCoworker`,
+      data: payload,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(coworkerVerifyRequestSuccess(response.data.response));
+    } else {
+      yield put(coworkerVerifyRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(coworkerVerifyRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(CREATE_WORK + REQUESTED, CreateWorkRequest),
@@ -464,5 +524,6 @@ export default function*(): Saga<void> {
     takeLatest(WORK + REQUESTED, WorkRequest),
     takeLatest(RELATED_USERS + REQUESTED, RelatedUsersRequest),
     takeLatest(ADD_COWORKER + REQUESTED, CoworkerAddRequest),
+    takeLatest(VERIFY_COWORKER + REQUESTED, CoworkerVerifyRequest),
   ]);
 }

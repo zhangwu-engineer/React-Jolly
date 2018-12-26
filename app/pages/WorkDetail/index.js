@@ -26,6 +26,7 @@ import saga, {
   requestSearchUsers,
   requestWorkRelatedUsers,
   requestAddCoworker,
+  requestVerifyCoworker,
 } from 'containers/Work/sagas';
 import injectSagas from 'utils/injectSagas';
 
@@ -81,6 +82,7 @@ type Props = {
   requestSearchUsers: Function,
   requestWorkRelatedUsers: Function,
   requestAddCoworker: Function,
+  requestVerifyCoworker: Function,
 };
 
 class WorkDetailPage extends Component<Props> {
@@ -167,6 +169,7 @@ class WorkDetailPage extends Component<Props> {
             relatedUsers={relatedUsers}
             searchUsers={this.props.requestSearchUsers}
             requestAddCoworker={this.props.requestAddCoworker}
+            requestVerifyCoworker={this.props.requestVerifyCoworker}
           />
         ) : (
           <FormHelperText error>{workError}</FormHelperText>
@@ -187,6 +190,8 @@ const mapStateToProps = state => ({
   relatedUsers: state.getIn(['work', 'relatedUsers']),
   isAddingCoworker: state.getIn(['work', 'isAddingCoworker']),
   addCoworkerError: state.getIn(['work', 'addCoworkerError']),
+  isVerifyingCoworker: state.getIn(['work', 'isVerifyingCoworker']),
+  verifyCoworkerError: state.getIn(['work', 'verifyCoworkerError']),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -196,6 +201,8 @@ const mapDispatchToProps = dispatch => ({
     dispatch(requestWorkRelatedUsers(eventId)),
   requestAddCoworker: (eventId, coworker) =>
     dispatch(requestAddCoworker(eventId, coworker)),
+  requestVerifyCoworker: (payload, eventId) =>
+    dispatch(requestVerifyCoworker(payload, eventId)),
 });
 
 export default compose(
