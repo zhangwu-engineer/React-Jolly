@@ -544,7 +544,7 @@ class WorkForm extends Component<Props, State> {
                 <Grid item className={classes.iconWrapper}>
                   <Icon glyph={AddPhotoIcon} size={18} />
                 </Grid>
-                <Grid item>
+                <Grid item className={classes.fullWidth}>
                   <Grid container>
                     <Grid item>
                       <Dropzone
