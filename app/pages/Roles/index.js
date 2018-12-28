@@ -25,23 +25,15 @@ import saga, {
   requestUpdateUnit,
   requestCreateUnit,
   requestDeleteUnit,
-} from 'containers/Talent/sagas';
+} from 'containers/Role/sagas';
 import injectSagas from 'utils/injectSagas';
 
 const styles = theme => ({
   root: {
-    maxWidth: '989px',
+    maxWidth: '712px',
     margin: '50px auto 300px auto',
-    display: 'flex',
     [theme.breakpoints.down('xs')]: {
       margin: 0,
-    },
-  },
-  leftPanel: {
-    width: 242,
-    marginRight: 35,
-    [theme.breakpoints.down('xs')]: {
-      display: 'none',
     },
   },
   title: {
@@ -185,16 +177,14 @@ type Props = {
 };
 
 type State = {
-  selectedSection: string,
   newTalent: ?Object,
   newUnit: ?Object,
   isOpen: boolean,
   helpText: string,
 };
 
-class TalentPage extends Component<Props, State> {
+class RolesPage extends Component<Props, State> {
   state = {
-    selectedSection: 'talents',
     newTalent: null,
     newUnit: null,
     isOpen: false,
@@ -265,163 +255,123 @@ class TalentPage extends Component<Props, State> {
   };
   render() {
     const { talents, units, classes } = this.props;
-    const {
-      selectedSection,
-      newTalent,
-      newUnit,
-      isOpen,
-      helpText,
-    } = this.state;
+    const { newTalent, newUnit, isOpen, helpText } = this.state;
     const unitValues = units.map(unit => unit.get('name')).toJS();
     return (
       <div className={classes.root}>
-        <div className={classes.leftPanel}>
-          <Typography className={classes.title} variant="h6">
-            Talents &amp; Rate
-          </Typography>
-          <div
-            className={
-              selectedSection === 'talents'
-                ? classes.activeMenuItem
-                : classes.menuItem
-            }
-            role="button"
-            onClick={() => this.setState({ selectedSection: 'talents' })}
-          >
-            {selectedSection === 'talents' && <div className={classes.line} />}
-            Talents and Rate
-          </div>
-          <div
-            className={
-              selectedSection === 'units'
-                ? classes.activeMenuItem
-                : classes.menuItem
-            }
-            role="button"
-            onClick={() => this.setState({ selectedSection: 'units' })}
-          >
-            {selectedSection === 'units' && <div className={classes.line} />}
-            Billing Units
-          </div>
-        </div>
-        <div className={classes.rightPanel}>
-          <div className={classes.section}>
-            <div className={classes.sectionHeader}>
-              <Grid container justify="space-between" alignItems="center">
-                <Grid item>
-                  <Typography variant="h6" className={classes.sectionTitle}>
-                    Talents &amp; Rate
-                  </Typography>
-                </Grid>
-                <Grid item>
-                  <Button
-                    className={classes.helpButton}
-                    variant="text"
-                    color="primary"
-                    onClick={() =>
-                      this.setState({
-                        isOpen: true,
-                        helpText: talentsHelp,
-                      })
-                    }
-                  >
-                    Help?
-                  </Button>
-                </Grid>
+        <div className={classes.section}>
+          <div className={classes.sectionHeader}>
+            <Grid container justify="space-between" alignItems="center">
+              <Grid item>
+                <Typography variant="h6" className={classes.sectionTitle}>
+                  Talents &amp; Rate
+                </Typography>
               </Grid>
-            </div>
-            <div className={classes.sectionBody}>
-              {talents &&
-                talents.map(talent => (
-                  <TalentInput
-                    key={generate()}
-                    mode="read"
-                    data={talent.toJS()}
-                    units={unitValues}
-                    onCancel={this.onCancelEdit}
-                    updateTalent={this.props.updateTalent}
-                    deleteTalent={this.props.deleteTalent}
-                  />
-                ))}
-              {newTalent && (
+              <Grid item>
+                <Button
+                  className={classes.helpButton}
+                  variant="text"
+                  color="primary"
+                  onClick={() =>
+                    this.setState({
+                      isOpen: true,
+                      helpText: talentsHelp,
+                    })
+                  }
+                >
+                  Help?
+                </Button>
+              </Grid>
+            </Grid>
+          </div>
+          <div className={classes.sectionBody}>
+            {talents &&
+              talents.map(talent => (
                 <TalentInput
-                  mode="edit"
-                  data={newTalent}
+                  key={generate()}
+                  mode="read"
+                  data={talent.toJS()}
                   units={unitValues}
                   onCancel={this.onCancelEdit}
-                  addTalent={this.props.addTalent}
+                  updateTalent={this.props.updateTalent}
+                  deleteTalent={this.props.deleteTalent}
                 />
-              )}
-              <Grid container justify="center">
-                <Grid item className={classes.addButtonContainer}>
-                  <Button
-                    className={classes.addButton}
-                    onClick={this.addNewTalent}
-                  >
-                    <AddIcon />
-                    &nbsp;Add New
-                  </Button>
-                </Grid>
+              ))}
+            {newTalent && (
+              <TalentInput
+                mode="edit"
+                data={newTalent}
+                units={unitValues}
+                onCancel={this.onCancelEdit}
+                addTalent={this.props.addTalent}
+              />
+            )}
+            <Grid container justify="center">
+              <Grid item className={classes.addButtonContainer}>
+                <Button
+                  className={classes.addButton}
+                  onClick={this.addNewTalent}
+                >
+                  <AddIcon />
+                  &nbsp;Add New
+                </Button>
               </Grid>
-            </div>
+            </Grid>
           </div>
-          <div className={classes.section}>
-            <div className={classes.sectionHeader}>
-              <Grid container justify="space-between" alignItems="center">
-                <Grid item>
-                  <Typography variant="h6" className={classes.sectionTitle}>
-                    Custom Billing Units
-                  </Typography>
-                </Grid>
-                <Grid item>
-                  <Button
-                    className={classes.helpButton}
-                    variant="text"
-                    color="primary"
-                    onClick={() =>
-                      this.setState({
-                        isOpen: true,
-                        helpText: unitsHelp,
-                      })
-                    }
-                  >
-                    Help?
-                  </Button>
-                </Grid>
+        </div>
+        <div className={classes.section}>
+          <div className={classes.sectionHeader}>
+            <Grid container justify="space-between" alignItems="center">
+              <Grid item>
+                <Typography variant="h6" className={classes.sectionTitle}>
+                  Custom Billing Units
+                </Typography>
               </Grid>
-            </div>
-            <div className={classes.sectionBody}>
-              {units &&
-                units.map(unit => (
-                  <UnitInput
-                    key={generate()}
-                    mode="read"
-                    data={unit.toJS()}
-                    onCancel={this.onCancelUnitEdit}
-                    updateUnit={this.props.updateUnit}
-                    deleteUnit={this.props.deleteUnit}
-                  />
-                ))}
-              {newUnit && (
+              <Grid item>
+                <Button
+                  className={classes.helpButton}
+                  variant="text"
+                  color="primary"
+                  onClick={() =>
+                    this.setState({
+                      isOpen: true,
+                      helpText: unitsHelp,
+                    })
+                  }
+                >
+                  Help?
+                </Button>
+              </Grid>
+            </Grid>
+          </div>
+          <div className={classes.sectionBody}>
+            {units &&
+              units.map(unit => (
                 <UnitInput
-                  mode="edit"
-                  data={newUnit}
+                  key={generate()}
+                  mode="read"
+                  data={unit.toJS()}
                   onCancel={this.onCancelUnitEdit}
-                  addUnit={this.props.addUnit}
+                  updateUnit={this.props.updateUnit}
+                  deleteUnit={this.props.deleteUnit}
                 />
-              )}
-              <Grid container justify="center">
-                <Grid item className={classes.addButtonContainer}>
-                  <Button
-                    className={classes.addButton}
-                    onClick={this.addNewUnit}
-                  >
-                    <AddIcon />
-                    &nbsp;Add New
-                  </Button>
-                </Grid>
+              ))}
+            {newUnit && (
+              <UnitInput
+                mode="edit"
+                data={newUnit}
+                onCancel={this.onCancelUnitEdit}
+                addUnit={this.props.addUnit}
+              />
+            )}
+            <Grid container justify="center">
+              <Grid item className={classes.addButtonContainer}>
+                <Button className={classes.addButton} onClick={this.addNewUnit}>
+                  <AddIcon />
+                  &nbsp;Add New
+                </Button>
               </Grid>
-            </div>
+            </Grid>
           </div>
         </div>
         <BaseModal
@@ -440,20 +390,20 @@ class TalentPage extends Component<Props, State> {
 
 const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
-  talents: state.getIn(['talent', 'talents']),
-  isSaving: state.getIn(['talent', 'isSaving']),
-  saveError: state.getIn(['talent', 'saveError']),
-  isCreating: state.getIn(['talent', 'isCreating']),
-  createError: state.getIn(['talent', 'createError']),
-  isDeleting: state.getIn(['talent', 'isDeleting']),
-  deleteError: state.getIn(['talent', 'deleteError']),
-  units: state.getIn(['talent', 'units']),
-  isUnitSaving: state.getIn(['talent', 'isUnitSaving']),
-  unitSaveError: state.getIn(['talent', 'unitSaveError']),
-  isUnitCreating: state.getIn(['talent', 'isUnitCreating']),
-  unitCreateError: state.getIn(['talent', 'unitCreateError']),
-  isUnitDeleting: state.getIn(['talent', 'isUnitDeleting']),
-  unitDeleteError: state.getIn(['talent', 'unitDeleteError']),
+  talents: state.getIn(['role', 'talents']),
+  isSaving: state.getIn(['role', 'isSaving']),
+  saveError: state.getIn(['role', 'saveError']),
+  isCreating: state.getIn(['role', 'isCreating']),
+  createError: state.getIn(['role', 'createError']),
+  isDeleting: state.getIn(['role', 'isDeleting']),
+  deleteError: state.getIn(['role', 'deleteError']),
+  units: state.getIn(['role', 'units']),
+  isUnitSaving: state.getIn(['role', 'isUnitSaving']),
+  unitSaveError: state.getIn(['role', 'unitSaveError']),
+  isUnitCreating: state.getIn(['role', 'isUnitCreating']),
+  unitCreateError: state.getIn(['role', 'unitCreateError']),
+  isUnitDeleting: state.getIn(['role', 'isUnitDeleting']),
+  unitDeleteError: state.getIn(['role', 'unitDeleteError']),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -468,10 +418,10 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export default compose(
-  injectSagas({ key: 'talent', saga, reducer }),
+  injectSagas({ key: 'role', saga, reducer }),
   connect(
     mapStateToProps,
     mapDispatchToProps
   ),
   withStyles(styles)
-)(TalentPage);
+)(RolesPage);

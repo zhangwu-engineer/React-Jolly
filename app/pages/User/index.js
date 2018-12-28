@@ -15,7 +15,7 @@ const Member = load(() => import('pages/Member'));
 const MemberGallery = load(() => import('pages/MemberGallery'));
 const PersonalInformation = load(() => import('pages/PersonalInformation'));
 const Settings = load(() => import('pages/Settings'));
-const Talent = load(() => import('pages/Talent'));
+const Roles = load(() => import('pages/Roles'));
 const AddWork = load(() => import('pages/AddWork'));
 const WorkDetail = load(() => import('pages/WorkDetail'));
 const Mobile = load(() => import('pages/Mobile'));
@@ -89,7 +89,7 @@ class UserPage extends React.Component<Props> {
         />
         <PrivateRoute
           path={`${url}/work`}
-          render={props => <Talent {...props} />}
+          render={props => <Roles {...props} />}
         />
         <PrivateRoute
           path={`${url}/mobile`}
