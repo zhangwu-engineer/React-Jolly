@@ -11,20 +11,15 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import AddIcon from '@material-ui/icons/Add';
 
-import TalentInput from 'components/TalentInput';
-import UnitInput from 'components/UnitInput';
+import RoleInput from 'components/RoleInput';
 import BaseModal from 'components/BaseModal';
 
 import saga, {
   reducer,
-  requestTalents,
-  requestUpdateTalent,
-  requestCreateTalent,
-  requestDeleteTalent,
-  requestUnits,
-  requestUpdateUnit,
-  requestCreateUnit,
-  requestDeleteUnit,
+  requestRoles,
+  requestUpdateRole,
+  requestCreateRole,
+  requestDeleteRole,
 } from 'containers/Role/sagas';
 import injectSagas from 'utils/injectSagas';
 
@@ -145,54 +140,38 @@ const styles = theme => ({
   },
 });
 
-const talentsHelp =
+const rolesHelp =
   'Enter the different types of work you do at events and, optionally, the rate you charge for those services.';
-const unitsHelp =
-  'If for a particular type of work you charge differently than hourly, daily or per event, you can enter the unit you charge by here.';
 
 type Props = {
-  talents: Object,
+  roles: Object,
   isSaving: boolean,
   saveError: string,
   isCreating: boolean,
   createError: string,
   isDeleting: boolean,
   deleteError: string,
-  units: Object,
-  isUnitSaving: boolean,
-  unitSaveError: string,
-  isUnitCreating: boolean,
-  unitCreateError: string,
-  isUnitDeleting: boolean,
-  unitDeleteError: string,
   classes: Object,
-  requestTalents: Function,
-  updateTalent: Function,
-  addTalent: Function,
-  deleteTalent: Function,
-  requestUnits: Function,
-  updateUnit: Function,
-  addUnit: Function,
-  deleteUnit: Function,
+  requestRoles: Function,
+  updateRole: Function,
+  addRole: Function,
+  deleteRole: Function,
 };
 
 type State = {
-  newTalent: ?Object,
-  newUnit: ?Object,
+  newRole: ?Object,
   isOpen: boolean,
   helpText: string,
 };
 
 class RolesPage extends Component<Props, State> {
   state = {
-    newTalent: null,
-    newUnit: null,
+    newRole: null,
     isOpen: false,
     helpText: '',
   };
   componentDidMount() {
-    this.props.requestTalents();
-    this.props.requestUnits();
+    this.props.requestRoles();
   }
   componentDidUpdate(prevProps: Props) {
     const {
@@ -202,61 +181,35 @@ class RolesPage extends Component<Props, State> {
       createError,
       isDeleting,
       deleteError,
-      isUnitSaving,
-      unitSaveError,
-      isUnitCreating,
-      unitCreateError,
-      isUnitDeleting,
-      unitDeleteError,
     } = this.props;
     if (prevProps.isSaving && !isSaving && !saveError) {
-      this.props.requestTalents();
+      this.props.requestRoles();
     }
     if (prevProps.isDeleting && !isDeleting && !deleteError) {
-      this.props.requestTalents();
+      this.props.requestRoles();
     }
     if (prevProps.isCreating && !isCreating && !createError) {
-      this.props.requestTalents();
-    }
-    if (prevProps.isUnitSaving && !isUnitSaving && !unitSaveError) {
-      this.props.requestUnits();
-    }
-    if (prevProps.isUnitDeleting && !isUnitDeleting && !unitDeleteError) {
-      this.props.requestUnits();
-    }
-    if (prevProps.isUnitCreating && !isUnitCreating && !unitCreateError) {
-      this.props.requestUnits();
+      this.props.requestRoles();
     }
   }
   onCancelEdit = () => {
-    this.setState({ newTalent: null });
-  };
-  onCancelUnitEdit = () => {
-    this.setState({ newUnit: null });
+    this.setState({ newRole: null });
   };
   onCloseModal = () => {
     this.setState({ isOpen: false });
   };
-  addNewTalent = () => {
+  addNewRole = () => {
     this.setState({
-      newTalent: {
+      newRole: {
         name: '',
         rate: '',
         unit: 'hour',
       },
     });
   };
-  addNewUnit = () => {
-    this.setState({
-      newUnit: {
-        name: '',
-      },
-    });
-  };
   render() {
-    const { talents, units, classes } = this.props;
-    const { newTalent, newUnit, isOpen, helpText } = this.state;
-    const unitValues = units.map(unit => unit.get('name')).toJS();
+    const { roles, classes } = this.props;
+    const { newRole, isOpen, helpText } = this.state;
     return (
       <div className={classes.root}>
         <div className={classes.section}>
@@ -264,7 +217,7 @@ class RolesPage extends Component<Props, State> {
             <Grid container justify="space-between" alignItems="center">
               <Grid item>
                 <Typography variant="h6" className={classes.sectionTitle}>
-                  Talents &amp; Rate
+                  Roles &amp; Rate
                 </Typography>
               </Grid>
               <Grid item>
@@ -275,7 +228,7 @@ class RolesPage extends Component<Props, State> {
                   onClick={() =>
                     this.setState({
                       isOpen: true,
-                      helpText: talentsHelp,
+                      helpText: rolesHelp,
                     })
                   }
                 >
@@ -285,88 +238,30 @@ class RolesPage extends Component<Props, State> {
             </Grid>
           </div>
           <div className={classes.sectionBody}>
-            {talents &&
-              talents.map(talent => (
-                <TalentInput
+            {roles &&
+              roles.map(role => (
+                <RoleInput
                   key={generate()}
                   mode="read"
-                  data={talent.toJS()}
-                  units={unitValues}
+                  data={role.toJS()}
+                  units={[]}
                   onCancel={this.onCancelEdit}
-                  updateTalent={this.props.updateTalent}
-                  deleteTalent={this.props.deleteTalent}
+                  updateRole={this.props.updateRole}
+                  deleteRole={this.props.deleteRole}
                 />
               ))}
-            {newTalent && (
-              <TalentInput
+            {newRole && (
+              <RoleInput
                 mode="edit"
-                data={newTalent}
-                units={unitValues}
+                data={newRole}
+                units={[]}
                 onCancel={this.onCancelEdit}
-                addTalent={this.props.addTalent}
+                addRole={this.props.addRole}
               />
             )}
             <Grid container justify="center">
               <Grid item className={classes.addButtonContainer}>
-                <Button
-                  className={classes.addButton}
-                  onClick={this.addNewTalent}
-                >
-                  <AddIcon />
-                  &nbsp;Add New
-                </Button>
-              </Grid>
-            </Grid>
-          </div>
-        </div>
-        <div className={classes.section}>
-          <div className={classes.sectionHeader}>
-            <Grid container justify="space-between" alignItems="center">
-              <Grid item>
-                <Typography variant="h6" className={classes.sectionTitle}>
-                  Custom Billing Units
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Button
-                  className={classes.helpButton}
-                  variant="text"
-                  color="primary"
-                  onClick={() =>
-                    this.setState({
-                      isOpen: true,
-                      helpText: unitsHelp,
-                    })
-                  }
-                >
-                  Help?
-                </Button>
-              </Grid>
-            </Grid>
-          </div>
-          <div className={classes.sectionBody}>
-            {units &&
-              units.map(unit => (
-                <UnitInput
-                  key={generate()}
-                  mode="read"
-                  data={unit.toJS()}
-                  onCancel={this.onCancelUnitEdit}
-                  updateUnit={this.props.updateUnit}
-                  deleteUnit={this.props.deleteUnit}
-                />
-              ))}
-            {newUnit && (
-              <UnitInput
-                mode="edit"
-                data={newUnit}
-                onCancel={this.onCancelUnitEdit}
-                addUnit={this.props.addUnit}
-              />
-            )}
-            <Grid container justify="center">
-              <Grid item className={classes.addButtonContainer}>
-                <Button className={classes.addButton} onClick={this.addNewUnit}>
+                <Button className={classes.addButton} onClick={this.addNewRole}>
                   <AddIcon />
                   &nbsp;Add New
                 </Button>
@@ -390,31 +285,20 @@ class RolesPage extends Component<Props, State> {
 
 const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
-  talents: state.getIn(['role', 'talents']),
+  roles: state.getIn(['role', 'roles']),
   isSaving: state.getIn(['role', 'isSaving']),
   saveError: state.getIn(['role', 'saveError']),
   isCreating: state.getIn(['role', 'isCreating']),
   createError: state.getIn(['role', 'createError']),
   isDeleting: state.getIn(['role', 'isDeleting']),
   deleteError: state.getIn(['role', 'deleteError']),
-  units: state.getIn(['role', 'units']),
-  isUnitSaving: state.getIn(['role', 'isUnitSaving']),
-  unitSaveError: state.getIn(['role', 'unitSaveError']),
-  isUnitCreating: state.getIn(['role', 'isUnitCreating']),
-  unitCreateError: state.getIn(['role', 'unitCreateError']),
-  isUnitDeleting: state.getIn(['role', 'isUnitDeleting']),
-  unitDeleteError: state.getIn(['role', 'unitDeleteError']),
 });
 
 const mapDispatchToProps = dispatch => ({
-  requestTalents: () => dispatch(requestTalents()),
-  updateTalent: (id, payload) => dispatch(requestUpdateTalent(id, payload)),
-  addTalent: payload => dispatch(requestCreateTalent(payload)),
-  deleteTalent: payload => dispatch(requestDeleteTalent(payload)),
-  requestUnits: () => dispatch(requestUnits()),
-  updateUnit: (id, payload) => dispatch(requestUpdateUnit(id, payload)),
-  addUnit: payload => dispatch(requestCreateUnit(payload)),
-  deleteUnit: payload => dispatch(requestDeleteUnit(payload)),
+  requestRoles: () => dispatch(requestRoles()),
+  updateRole: (id, payload) => dispatch(requestUpdateRole(id, payload)),
+  addRole: payload => dispatch(requestCreateRole(payload)),
+  deleteRole: payload => dispatch(requestDeleteRole(payload)),
 });
 
 export default compose(

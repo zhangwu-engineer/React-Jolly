@@ -13,84 +13,84 @@ import { getToken } from 'containers/App/selectors';
 // ------------------------------------
 // Constants
 // ------------------------------------
-const TALENTS = 'Jolly/Talent/TALENTS';
-const UPDATE_TALENT = 'Jolly/Talent/UPDATE_TALENT';
-const CREATE_TALENT = 'Jolly/Talent/CREATE_TALENT';
-const DELETE_TALENT = 'Jolly/Talent/DELETE_TALENT';
-const UNITS = 'Jolly/Talent/UNITS';
-const UPDATE_UNIT = 'Jolly/Talent/UPDATE_UNIT';
-const CREATE_UNIT = 'Jolly/Talent/CREATE_UNIT';
-const DELETE_UNIT = 'Jolly/Talent/DELETE_UNIT';
+const ROLES = 'Jolly/Role/ROLES';
+const UPDATE_ROLE = 'Jolly/Role/UPDATE_ROLE';
+const CREATE_ROLE = 'Jolly/Role/CREATE_ROLE';
+const DELETE_ROLE = 'Jolly/Role/DELETE_ROLE';
+const UNITS = 'Jolly/Role/UNITS';
+const UPDATE_UNIT = 'Jolly/Role/UPDATE_UNIT';
+const CREATE_UNIT = 'Jolly/Role/CREATE_UNIT';
+const DELETE_UNIT = 'Jolly/Role/DELETE_UNIT';
 // ------------------------------------
 // Actions
 // ------------------------------------
-export const requestTalents = () => ({
-  type: TALENTS + REQUESTED,
+export const requestRoles = () => ({
+  type: ROLES + REQUESTED,
 });
-const talentsRequestSuccess = (payload: Object) => ({
-  type: TALENTS + SUCCEDED,
+const rolesRequestSuccess = (payload: Object) => ({
+  type: ROLES + SUCCEDED,
   payload,
 });
-const talentsRequestFailed = (error: string) => ({
-  type: TALENTS + FAILED,
+const rolesRequestFailed = (error: string) => ({
+  type: ROLES + FAILED,
   payload: error,
 });
-const talentsRequestError = (error: string) => ({
-  type: TALENTS + ERROR,
+const rolesRequestError = (error: string) => ({
+  type: ROLES + ERROR,
   payload: error,
 });
 
-export const requestUpdateTalent = (id: string, payload: Object) => ({
-  type: UPDATE_TALENT + REQUESTED,
+export const requestUpdateRole = (id: string, payload: Object) => ({
+  type: UPDATE_ROLE + REQUESTED,
   payload,
   meta: {
     id,
   },
 });
-const talentUpdateRequestSuccess = (payload: Object) => ({
-  type: UPDATE_TALENT + SUCCEDED,
+const roleUpdateRequestSuccess = (payload: Object) => ({
+  type: UPDATE_ROLE + SUCCEDED,
   payload,
 });
-const talentUpdateRequestFailed = (error: string) => ({
-  type: UPDATE_TALENT + FAILED,
+const roleUpdateRequestFailed = (error: string) => ({
+  type: UPDATE_ROLE + FAILED,
   payload: error,
 });
-const talentUpdateRequestError = (error: string) => ({
-  type: UPDATE_TALENT + ERROR,
-  payload: error,
-});
-
-export const requestCreateTalent = (payload: Object) => ({
-  type: CREATE_TALENT + REQUESTED,
-  payload,
-});
-const talentCreateRequestSuccess = (payload: Object) => ({
-  type: CREATE_TALENT + SUCCEDED,
-  payload,
-});
-const talentCreateRequestFailed = (error: string) => ({
-  type: CREATE_TALENT + FAILED,
-  payload: error,
-});
-const talentCreateRequestError = (error: string) => ({
-  type: CREATE_TALENT + ERROR,
+const roleUpdateRequestError = (error: string) => ({
+  type: UPDATE_ROLE + ERROR,
   payload: error,
 });
 
-export const requestDeleteTalent = (payload: Object) => ({
-  type: DELETE_TALENT + REQUESTED,
+export const requestCreateRole = (payload: Object) => ({
+  type: CREATE_ROLE + REQUESTED,
   payload,
 });
-const talentDeleteRequestSuccess = (payload: Object) => ({
-  type: DELETE_TALENT + SUCCEDED,
+const roleCreateRequestSuccess = (payload: Object) => ({
+  type: CREATE_ROLE + SUCCEDED,
   payload,
 });
-const talentDeleteRequestFailed = (error: string) => ({
-  type: DELETE_TALENT + FAILED,
+const roleCreateRequestFailed = (error: string) => ({
+  type: CREATE_ROLE + FAILED,
   payload: error,
 });
-const talentDeleteRequestError = (error: string) => ({
-  type: DELETE_TALENT + ERROR,
+const roleCreateRequestError = (error: string) => ({
+  type: CREATE_ROLE + ERROR,
+  payload: error,
+});
+
+export const requestDeleteRole = (payload: Object) => ({
+  type: DELETE_ROLE + REQUESTED,
+  payload,
+});
+const roleDeleteRequestSuccess = (payload: Object) => ({
+  type: DELETE_ROLE + SUCCEDED,
+  payload,
+});
+const roleDeleteRequestFailed = (error: string) => ({
+  type: DELETE_ROLE + FAILED,
+  payload: error,
+});
+const roleDeleteRequestError = (error: string) => ({
+  type: DELETE_ROLE + ERROR,
   payload: error,
 });
 
@@ -167,7 +167,7 @@ const unitDeleteRequestError = (error: string) => ({
 // Reducer
 // ------------------------------------
 const initialState = fromJS({
-  talents: null,
+  roles: null,
   isLoading: false,
   error: '',
   isSaving: false,
@@ -192,67 +192,67 @@ export const reducer = (
   { type, payload }: Action
 ) => {
   switch (type) {
-    case TALENTS + REQUESTED:
+    case ROLES + REQUESTED:
       return state.set('isLoading', true);
 
-    case TALENTS + SUCCEDED:
+    case ROLES + SUCCEDED:
       return state
         .set('isLoading', false)
-        .set('talents', fromJS(payload.talent_list))
+        .set('roles', fromJS(payload.talent_list))
         .set('error', '');
 
-    case TALENTS + FAILED:
+    case ROLES + FAILED:
       return state.set('isLoading', false).set('error', payload);
 
-    case TALENTS + ERROR:
+    case ROLES + ERROR:
       return state.set('isLoading', false).set(
         'error',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
 
-    case UPDATE_TALENT + REQUESTED:
+    case UPDATE_ROLE + REQUESTED:
       return state.set('isSaving', true);
 
-    case UPDATE_TALENT + SUCCEDED:
+    case UPDATE_ROLE + SUCCEDED:
       return state.set('isSaving', false).set('saveError', '');
 
-    case UPDATE_TALENT + FAILED:
+    case UPDATE_ROLE + FAILED:
       return state.set('isSaving', false).set('saveError', payload);
 
-    case UPDATE_TALENT + ERROR:
+    case UPDATE_ROLE + ERROR:
       return state.set('isSaving', false).set(
         'saveError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
 
-    case CREATE_TALENT + REQUESTED:
+    case CREATE_ROLE + REQUESTED:
       return state.set('isCreating', true);
 
-    case CREATE_TALENT + SUCCEDED:
+    case CREATE_ROLE + SUCCEDED:
       return state.set('isCreating', false).set('createError', '');
 
-    case CREATE_TALENT + FAILED:
+    case CREATE_ROLE + FAILED:
       return state.set('isCreating', false).set('createError', payload);
 
-    case CREATE_TALENT + ERROR:
+    case CREATE_ROLE + ERROR:
       return state.set('isCreating', false).set(
         'createError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
 
-    case DELETE_TALENT + REQUESTED:
+    case DELETE_ROLE + REQUESTED:
       return state.set('isDeleting', true);
 
-    case DELETE_TALENT + SUCCEDED:
+    case DELETE_ROLE + SUCCEDED:
       return state.set('isDeleting', false).set('deleteError', '');
 
-    case DELETE_TALENT + FAILED:
+    case DELETE_ROLE + FAILED:
       return state.set('isDeleting', false).set('deleteError', payload);
 
-    case DELETE_TALENT + ERROR:
+    case DELETE_ROLE + ERROR:
       return state.set('isDeleting', false).set(
         'deleteError',
         `Something went wrong.
@@ -338,7 +338,7 @@ export const reducer = (
 // ------------------------------------
 // Sagas
 // ------------------------------------
-function* TalentsRequest() {
+function* RolesRequest() {
   const token = yield select(getToken);
   try {
     const response = yield call(request, {
@@ -347,16 +347,16 @@ function* TalentsRequest() {
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
-      yield put(talentsRequestSuccess(response.data.response));
+      yield put(rolesRequestSuccess(response.data.response));
     } else {
-      yield put(talentsRequestFailed(response.data.error));
+      yield put(rolesRequestFailed(response.data.error));
     }
   } catch (error) {
-    yield put(talentsRequestError(error));
+    yield put(rolesRequestError(error));
   }
 }
 
-function* UpdateTalentRequest({ payload, meta }) {
+function* UpdateRoleRequest({ payload, meta }) {
   const token = yield select(getToken);
   try {
     const response = yield call(request, {
@@ -366,16 +366,16 @@ function* UpdateTalentRequest({ payload, meta }) {
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
-      yield put(talentUpdateRequestSuccess(response.data.response));
+      yield put(roleUpdateRequestSuccess(response.data.response));
     } else {
-      yield put(talentUpdateRequestFailed(response.data.error));
+      yield put(roleUpdateRequestFailed(response.data.error));
     }
   } catch (error) {
-    yield put(talentUpdateRequestError(error));
+    yield put(roleUpdateRequestError(error));
   }
 }
 
-function* CreateTalentRequest({ payload }) {
+function* CreateRoleRequest({ payload }) {
   const token = yield select(getToken);
   try {
     const response = yield call(request, {
@@ -385,16 +385,16 @@ function* CreateTalentRequest({ payload }) {
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
-      yield put(talentCreateRequestSuccess(response.data.response));
+      yield put(roleCreateRequestSuccess(response.data.response));
     } else {
-      yield put(talentCreateRequestFailed(response.data.error));
+      yield put(roleCreateRequestFailed(response.data.error));
     }
   } catch (error) {
-    yield put(talentCreateRequestError(error));
+    yield put(roleCreateRequestError(error));
   }
 }
 
-function* DeleteTalentRequest({ payload }) {
+function* DeleteRoleRequest({ payload }) {
   const token = yield select(getToken);
   try {
     const response = yield call(request, {
@@ -403,12 +403,12 @@ function* DeleteTalentRequest({ payload }) {
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
-      yield put(talentDeleteRequestSuccess(response.data.response));
+      yield put(roleDeleteRequestSuccess(response.data.response));
     } else {
-      yield put(talentDeleteRequestFailed(response.data.error));
+      yield put(roleDeleteRequestFailed(response.data.error));
     }
   } catch (error) {
-    yield put(talentDeleteRequestError(error));
+    yield put(roleDeleteRequestError(error));
   }
 }
 
@@ -488,10 +488,10 @@ function* DeleteUnitRequest({ payload }) {
 
 export default function*(): Saga<void> {
   yield all([
-    takeLatest(TALENTS + REQUESTED, TalentsRequest),
-    takeLatest(UPDATE_TALENT + REQUESTED, UpdateTalentRequest),
-    takeLatest(CREATE_TALENT + REQUESTED, CreateTalentRequest),
-    takeLatest(DELETE_TALENT + REQUESTED, DeleteTalentRequest),
+    takeLatest(ROLES + REQUESTED, RolesRequest),
+    takeLatest(UPDATE_ROLE + REQUESTED, UpdateRoleRequest),
+    takeLatest(CREATE_ROLE + REQUESTED, CreateRoleRequest),
+    takeLatest(DELETE_ROLE + REQUESTED, DeleteRoleRequest),
     takeLatest(UNITS + REQUESTED, UnitsRequest),
     takeLatest(UPDATE_UNIT + REQUESTED, UpdateUnitRequest),
     takeLatest(CREATE_UNIT + REQUESTED, CreateUnitRequest),

@@ -110,9 +110,9 @@ type Props = {
   editable: boolean,
   classes: Object,
   onCancel: Function,
-  addTalent?: Function,
-  updateTalent?: Function,
-  deleteTalent?: Function,
+  addRole?: Function,
+  updateRole?: Function,
+  deleteRole?: Function,
 };
 
 type State = {
@@ -120,7 +120,7 @@ type State = {
   model: ?Object,
 };
 
-class TalentInput extends Component<Props, State> {
+class RoleInput extends Component<Props, State> {
   static defaultProps = {
     editable: true,
   };
@@ -149,22 +149,22 @@ class TalentInput extends Component<Props, State> {
   // }
   onConfirm = (e: Object) => {
     e.stopPropagation();
-    const { data, addTalent, updateTalent } = this.props;
+    const { data, addRole, updateRole } = this.props;
     const { model } = this.state;
     if (!this.isEmpty() && this.isUpdated()) {
       if (data.id) {
-        if (updateTalent) {
+        if (updateRole) {
           if (model && model.rate) {
             model.rate = parseFloat(model.rate);
           }
-          updateTalent(data.id, model);
+          updateRole(data.id, model);
         }
-      } else if (addTalent) {
+      } else if (addRole) {
         this.props.onCancel();
         if (model && model.rate) {
           model.rate = parseFloat(model.rate);
         }
-        addTalent(model);
+        addRole(model);
       }
     } else if (data.id) {
       this.props.onCancel();
@@ -179,9 +179,9 @@ class TalentInput extends Component<Props, State> {
     }
   };
   onDelete = () => {
-    const { data, deleteTalent } = this.props;
-    if (deleteTalent) {
-      deleteTalent({ id: data.id });
+    const { data, deleteRole } = this.props;
+    if (deleteRole) {
+      deleteRole({ id: data.id });
     }
   };
   isEmpty = () => {
@@ -385,4 +385,4 @@ class TalentInput extends Component<Props, State> {
   }
 }
 
-export default withStyles(styles)(TalentInput);
+export default withStyles(styles)(RoleInput);
