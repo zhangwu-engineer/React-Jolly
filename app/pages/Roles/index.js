@@ -29,6 +29,7 @@ const styles = theme => ({
     margin: '50px auto 300px auto',
     [theme.breakpoints.down('xs')]: {
       margin: 0,
+      padding: 10,
     },
   },
   title: {
@@ -92,8 +93,7 @@ const styles = theme => ({
     paddingRight: 30,
     backgroundColor: '#edeeee',
     [theme.breakpoints.down('sm')]: {
-      backgroundColor: 'transparent',
-      padding: '25px 0px 5px 0px',
+      padding: '10px 15px',
     },
   },
   sectionTitle: {
