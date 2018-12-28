@@ -166,8 +166,10 @@ class RoleInput extends Component<Props, State> {
         }
         addRole(model);
       }
+      document.getElementById('addButton').style.display = 'flex';
     } else if (data.id) {
       this.props.onCancel();
+      document.getElementById('addButton').style.display = 'flex';
     }
   };
   onEdit = () => {
@@ -176,12 +178,14 @@ class RoleInput extends Component<Props, State> {
       this.setState({
         mode: 'edit',
       });
+      document.getElementById('addButton').style.display = 'none';
     }
   };
   onDelete = () => {
     const { data, deleteRole } = this.props;
     if (deleteRole) {
       deleteRole({ id: data.id });
+      document.getElementById('addButton').style.display = 'flex';
     }
   };
   isEmpty = () => {
@@ -289,7 +293,7 @@ class RoleInput extends Component<Props, State> {
                   >
                     <TextField
                       id="name"
-                      label="Name"
+                      label="Type of Work"
                       value={model && model.name}
                       onChange={this.handleChange}
                       className={cx(classes.fieldMargin, classes.textInput)}
@@ -371,7 +375,11 @@ class RoleInput extends Component<Props, State> {
                 ) : (
                   <IconButton
                     className={cx(classes.iconButton, classes.deleteButton)}
-                    onClick={() => this.props.onCancel()}
+                    onClick={() => {
+                      document.getElementById('addButton').style.display =
+                        'flex';
+                      this.props.onCancel();
+                    }}
                   >
                     <ClearIcon />
                   </IconButton>

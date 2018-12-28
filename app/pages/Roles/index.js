@@ -206,6 +206,7 @@ class RolesPage extends Component<Props, State> {
         unit: 'hour',
       },
     });
+    document.getElementById('addButton').style.display = 'none';
   };
   render() {
     const { roles, classes } = this.props;
@@ -259,7 +260,7 @@ class RolesPage extends Component<Props, State> {
                 addRole={this.props.addRole}
               />
             )}
-            <Grid container justify="center">
+            <Grid container justify="center" id="addButton">
               <Grid item className={classes.addButtonContainer}>
                 <Button className={classes.addButton} onClick={this.addNewRole}>
                   <AddIcon />
