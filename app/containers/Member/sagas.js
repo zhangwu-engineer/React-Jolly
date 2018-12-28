@@ -13,7 +13,7 @@ import { getToken } from 'containers/App/selectors';
 // ------------------------------------
 // Constants
 // ------------------------------------
-const TALENTS = 'Jolly/Member/TALENTS';
+const ROLES = 'Jolly/Member/ROLES';
 const MEMBER_PROFILE = 'Jolly/Member/MEMBER_PROFILE';
 const FILES = 'Jolly/Member/FILES';
 const WORKS = 'Jolly/Member/WORKS';
@@ -37,20 +37,20 @@ const memberProfileRequestError = (error: string) => ({
   payload: error,
 });
 
-export const requestMemberTalents = (slug: string) => ({
-  type: TALENTS + REQUESTED,
+export const requestMemberRoles = (slug: string) => ({
+  type: ROLES + REQUESTED,
   payload: slug,
 });
-const memberTalentsRequestSuccess = (payload: Object) => ({
-  type: TALENTS + SUCCEDED,
+const memberRolesRequestSuccess = (payload: Object) => ({
+  type: ROLES + SUCCEDED,
   payload,
 });
-const memberTalentsRequestFailed = (error: string) => ({
-  type: TALENTS + FAILED,
+const memberRolesRequestFailed = (error: string) => ({
+  type: ROLES + FAILED,
   payload: error,
 });
-const memberTalentsRequestError = (error: string) => ({
-  type: TALENTS + ERROR,
+const memberRolesRequestError = (error: string) => ({
+  type: ROLES + ERROR,
   payload: error,
 });
 
@@ -91,7 +91,7 @@ const memberWorksRequestError = (error: string) => ({
 // Reducer
 // ------------------------------------
 const initialState = fromJS({
-  talents: fromJS([]),
+  roles: fromJS([]),
   isLoading: false,
   error: '',
   data: fromJS({}),
@@ -110,19 +110,19 @@ export const reducer = (
   { type, payload }: Action
 ) => {
   switch (type) {
-    case TALENTS + REQUESTED:
+    case ROLES + REQUESTED:
       return state.set('isLoading', true);
 
-    case TALENTS + SUCCEDED:
+    case ROLES + SUCCEDED:
       return state
         .set('isLoading', false)
-        .set('talents', fromJS(payload.talent_list))
+        .set('roles', fromJS(payload.roles))
         .set('error', '');
 
-    case TALENTS + FAILED:
+    case ROLES + FAILED:
       return state.set('isLoading', false).set('error', payload.message);
 
-    case TALENTS + ERROR:
+    case ROLES + ERROR:
       return state.set('isLoading', false).set(
         'error',
         `Something went wrong.
@@ -204,21 +204,21 @@ export const reducer = (
 // ------------------------------------
 // Sagas
 // ------------------------------------
-function* MemberTalentsRequest({ payload }) {
+function* MemberRolesRequest({ payload }) {
   const token = yield select(getToken);
   try {
     const response = yield call(request, {
       method: 'GET',
-      url: `${API_URL}/talent/user/${payload}`,
+      url: `${API_URL}/role/user/${payload}`,
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
-      yield put(memberTalentsRequestSuccess(response.data.response));
+      yield put(memberRolesRequestSuccess(response.data.response));
     } else {
-      yield put(memberTalentsRequestFailed(response.data.error));
+      yield put(memberRolesRequestFailed(response.data.error));
     }
   } catch (error) {
-    yield put(memberTalentsRequestError(error));
+    yield put(memberRolesRequestError(error));
   }
 }
 
@@ -276,7 +276,7 @@ function* MemberWorksRequest({ payload }) {
 
 export default function*(): Saga<void> {
   yield all([
-    takeLatest(TALENTS + REQUESTED, MemberTalentsRequest),
+    takeLatest(ROLES + REQUESTED, MemberRolesRequest),
     takeLatest(MEMBER_PROFILE + REQUESTED, MemberProfileRequest),
     takeLatest(FILES + REQUESTED, MemberFilesRequest),
     takeLatest(WORKS + REQUESTED, MemberWorksRequest),

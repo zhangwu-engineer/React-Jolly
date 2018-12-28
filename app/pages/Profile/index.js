@@ -33,7 +33,7 @@ import {
   requestUserDataUpdate,
   requestWorks,
 } from 'containers/App/sagas';
-import saga, { reducer, requestTalents } from 'containers/Talent/sagas';
+import saga, { reducer, requestRoles } from 'containers/Role/sagas';
 import injectSagas from 'utils/injectSagas';
 
 const styles = theme => ({
@@ -153,7 +153,7 @@ type Props = {
   files: Object,
   isUploading: boolean,
   uploadError: string,
-  talents: Object,
+  roles: Object,
   works: Object,
   classes: Object,
   match: Object,
@@ -161,7 +161,7 @@ type Props = {
   requestUserFiles: Function,
   requestUserPhotoUpload: Function,
   updateUser: Function,
-  requestTalents: Function,
+  requestRoles: Function,
   requestWorks: Function,
 };
 
@@ -186,7 +186,7 @@ class Profile extends Component<Props, State> {
   componentDidMount() {
     this.props.requestUser();
     this.props.requestUserFiles();
-    this.props.requestTalents();
+    this.props.requestRoles();
     this.props.requestWorks();
   }
   componentDidUpdate(prevProps: Props) {
@@ -219,7 +219,7 @@ class Profile extends Component<Props, State> {
     });
   };
   render() {
-    const { user, files, talents, works, classes } = this.props;
+    const { user, files, roles, works, classes } = this.props;
     const {
       isOpen,
       type,
@@ -230,7 +230,7 @@ class Profile extends Component<Props, State> {
     } = this.state;
     let progress = 0;
     let tagged = false;
-    if (talents && works) {
+    if (roles && works) {
       if (user.get('email')) {
         progress += 1;
       }
@@ -252,7 +252,7 @@ class Profile extends Component<Props, State> {
       ) {
         progress += 1;
       }
-      if (talents.size > 0) {
+      if (roles.size > 0) {
         progress += 1;
       }
       if (
@@ -272,12 +272,12 @@ class Profile extends Component<Props, State> {
       }
     }
     const showJobButton = works && works.size === 0;
-    const showRoleButton = talents && talents.size === 0;
+    const showRoleButton = roles && roles.size === 0;
     const showTagButton =
       works &&
       works.size > 0 &&
-      talents &&
-      talents.size > 0 &&
+      roles &&
+      roles.size > 0 &&
       user.getIn(['profile', 'avatar']) &&
       !tagged;
     return (
@@ -299,9 +299,9 @@ class Profile extends Component<Props, State> {
               <Typography variant="h6">Roles</Typography>
             </div>
             <div className={classes.sectionBody}>
-              {talents && talents.size ? (
-                talents.map(talent => (
-                  <RoleCard key={generate()} role={talent.toJS()} />
+              {roles && roles.size ? (
+                roles.map(role => (
+                  <RoleCard key={generate()} role={role.toJS()} />
                 ))
               ) : (
                 <RoleCard />
@@ -440,7 +440,7 @@ class Profile extends Component<Props, State> {
           </div>
         </div>
         {works &&
-          talents &&
+          roles &&
           progress < 10 && (
             <CompletionBanner
               progress={progress}
@@ -498,13 +498,13 @@ const mapStateToProps = state => ({
   fileError: state.getIn(['app', 'fileError']),
   isUploading: state.getIn(['app', 'isUploading']),
   uploadError: state.getIn(['app', 'uploadError']),
-  talents: state.getIn(['talent', 'talents']),
+  roles: state.getIn(['role', 'roles']),
   works: state.getIn(['app', 'works']),
 });
 
 const mapDispatchToProps = dispatch => ({
   requestUser: () => dispatch(requestUser()),
-  requestTalents: () => dispatch(requestTalents()),
+  requestRoles: () => dispatch(requestRoles()),
   requestUserPhotoUpload: (photo, type) =>
     dispatch(requestUserPhotoUpload(photo, type)),
   requestUserFiles: () => dispatch(requestUserFiles()),
@@ -513,7 +513,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export default compose(
-  injectSagas({ key: 'talent', saga, reducer }),
+  injectSagas({ key: 'role', saga, reducer }),
   connect(
     mapStateToProps,
     mapDispatchToProps

@@ -255,7 +255,7 @@ export const reducer = (
     case ROLES + SUCCEDED:
       return state
         .set('isRolesLoading', false)
-        .set('roles', fromJS(payload.talent_list))
+        .set('roles', fromJS(payload.roles))
         .set('rolesError', '');
 
     case ROLES + FAILED:
@@ -404,7 +404,7 @@ function* RolesRequest() {
   try {
     const response = yield call(request, {
       method: 'GET',
-      url: `${API_URL}/talent`,
+      url: `${API_URL}/role`,
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {

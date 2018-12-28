@@ -265,7 +265,7 @@ class Header extends Component<Props, State> {
     } else if (pathname.includes('/personal-information')) {
       title = 'Profile Information';
     } else if (pathname.includes('/work')) {
-      title = 'Talents & Rates';
+      title = 'Roles & Rates';
     }
     return (
       <Grid

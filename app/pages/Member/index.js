@@ -25,7 +25,7 @@ import ContactOptionModal from 'components/ContactOptionModal';
 
 import saga, {
   reducer,
-  requestMemberTalents,
+  requestMemberRoles,
   requestMemberProfile,
   requestMemberFiles,
   requestMemberWorks,
@@ -176,12 +176,12 @@ type Props = {
   isLoading: boolean,
   error: string,
   files: Object,
-  talents: Object,
+  roles: Object,
   works: Object,
   classes: Object,
   match: Object,
   requestMemberProfile: Function,
-  requestMemberTalents: Function,
+  requestMemberRoles: Function,
   requestMemberFiles: Function,
   requestMemberWorks: Function,
 };
@@ -215,7 +215,7 @@ class Member extends Component<Props, State> {
     });
     this.props.requestMemberProfile(slug);
     this.props.requestMemberFiles(slug);
-    this.props.requestMemberTalents(slug);
+    this.props.requestMemberRoles(slug);
     this.props.requestMemberWorks(slug);
   }
   onCloseModal = () => {
@@ -247,7 +247,7 @@ class Member extends Component<Props, State> {
       currentUser,
       member,
       files,
-      talents,
+      roles,
       works,
       classes,
       match: { url },
@@ -331,9 +331,9 @@ class Member extends Component<Props, State> {
               <Typography variant="h6">Roles</Typography>
             </div>
             <div className={classes.sectionBody}>
-              {talents.size ? (
-                talents.map(talent => (
-                  <RoleCard key={generate()} role={talent.toJS()} />
+              {roles.size ? (
+                roles.map(role => (
+                  <RoleCard key={generate()} role={role.toJS()} />
                 ))
               ) : (
                 <RoleCard />
@@ -443,14 +443,14 @@ const mapStateToProps = state => ({
   member: state.getIn(['member', 'data']),
   isLoading: state.getIn(['member', 'isMemberLoading']),
   error: state.getIn(['member', 'memberError']),
-  talents: state.getIn(['member', 'talents']),
+  roles: state.getIn(['member', 'roles']),
   files: state.getIn(['member', 'files']),
   works: state.getIn(['member', 'works']),
 });
 
 const mapDispatchToProps = dispatch => ({
   requestMemberProfile: slug => dispatch(requestMemberProfile(slug)),
-  requestMemberTalents: slug => dispatch(requestMemberTalents(slug)),
+  requestMemberRoles: slug => dispatch(requestMemberRoles(slug)),
   requestMemberFiles: slug => dispatch(requestMemberFiles(slug)),
   requestMemberWorks: slug => dispatch(requestMemberWorks(slug)),
 });

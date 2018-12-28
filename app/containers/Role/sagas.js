@@ -198,7 +198,7 @@ export const reducer = (
     case ROLES + SUCCEDED:
       return state
         .set('isLoading', false)
-        .set('roles', fromJS(payload.talent_list))
+        .set('roles', fromJS(payload.roles))
         .set('error', '');
 
     case ROLES + FAILED:
@@ -343,7 +343,7 @@ function* RolesRequest() {
   try {
     const response = yield call(request, {
       method: 'GET',
-      url: `${API_URL}/talent`,
+      url: `${API_URL}/role`,
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
@@ -361,7 +361,7 @@ function* UpdateRoleRequest({ payload, meta }) {
   try {
     const response = yield call(request, {
       method: 'PUT',
-      url: `${API_URL}/talent/${meta.id}`,
+      url: `${API_URL}/role/${meta.id}`,
       data: payload,
       headers: { 'x-access-token': token },
     });
@@ -380,7 +380,7 @@ function* CreateRoleRequest({ payload }) {
   try {
     const response = yield call(request, {
       method: 'POST',
-      url: `${API_URL}/talent`,
+      url: `${API_URL}/role`,
       data: payload,
       headers: { 'x-access-token': token },
     });
@@ -399,7 +399,7 @@ function* DeleteRoleRequest({ payload }) {
   try {
     const response = yield call(request, {
       method: 'DELETE',
-      url: `${API_URL}/talent/${payload.id}`,
+      url: `${API_URL}/role/${payload.id}`,
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
