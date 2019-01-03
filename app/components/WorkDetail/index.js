@@ -19,11 +19,11 @@ import Input from '@material-ui/core/Input';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Avatar from '@material-ui/core/Avatar';
 import EditIcon from '@material-ui/icons/Edit';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
+import User from 'components/User';
 import Icon from 'components/Icon';
 import PeopleIcon from 'images/sprite/people.svg';
 import CaptionIcon from 'images/sprite/caption.svg';
@@ -181,16 +181,6 @@ const styles = theme => ({
   coworkersList: {
     marginTop: 10,
   },
-  coworkerItem: {
-    paddingLeft: 0,
-    paddingRight: 0,
-  },
-  invited: {
-    fontSize: 12,
-    fontWeight: 600,
-    color: '#a7a7a7',
-    textTransform: 'capitalize',
-  },
   label: {
     fontSize: 14,
     fontWeight: 500,
@@ -242,13 +232,6 @@ const styles = theme => ({
     '&:first-child': {
       display: 'block',
     },
-  },
-  verifiable: {
-    width: 24,
-    height: 24,
-    border: '2px solid #939393',
-    borderRadius: 20,
-    marginRight: 16,
   },
   addCoworkerButton: {
     fontSize: 14,
@@ -328,10 +311,12 @@ type Props = {
   work: Object,
   users: Object,
   relatedUsers: Object,
+  endorsements: Object,
   classes: Object,
   searchUsers: Function,
   requestAddCoworker: Function,
   requestVerifyCoworker: Function,
+  requestEndorseUser: Function,
 };
 
 type State = {
@@ -371,7 +356,7 @@ class WorkDetail extends Component<Props, State> {
     }
   };
   render() {
-    const { work, users, relatedUsers, classes } = this.props;
+    const { work, users, relatedUsers, endorsements, classes } = this.props;
     const { newUser, photoIndex, isGalleryOpen, activeSection } = this.state;
     const photo1 = work.getIn(['photos', 0]);
     const photo2 = work.getIn(['photos', 1]);
@@ -596,57 +581,28 @@ class WorkDetail extends Component<Props, State> {
                   </FormControl>
                   <List className={classes.coworkersList}>
                     {relatedUsers &&
-                      relatedUsers.map(user => (
-                        <ListItem
-                          className={classes.coworkerItem}
-                          key={generate()}
-                        >
-                          <Avatar
-                            alt={`${user.getIn([
-                              'user',
-                              'firstName',
-                            ])} ${user.getIn(['user', 'lastName'])}`}
-                            src={user.getIn(['user', 'profile', 'avatar'])}
-                            className={classes.avatar}
+                      relatedUsers.map(user => {
+                        const isEndorsed = endorsements
+                          .toJS()
+                          .filter(
+                            endorsement =>
+                              endorsement.to === user.getIn(['user', 'id'])
+                          );
+                        return (
+                          <User
+                            key={generate()}
+                            user={user.get('user')}
+                            work={work}
+                            type={user.get('type')}
+                            verifyCoworker={this.props.requestVerifyCoworker}
+                            requestEndorseUser={this.props.requestEndorseUser}
+                            endorsed={isEndorsed.length > 0}
+                            endorsedQuality={
+                              isEndorsed.length > 0 ? isEndorsed[0].quality : ''
+                            }
                           />
-                          <ListItemText
-                            primary={`${user.getIn([
-                              'user',
-                              'firstName',
-                            ])} ${user.getIn(['user', 'lastName'])}`}
-                            secondary={user.getIn(['user', 'email'])}
-                            classes={{
-                              primary: classes.resultText,
-                              secondary: classes.resultDateText,
-                            }}
-                          />
-                          <ListItemSecondaryAction>
-                            {user.get('type') === 'verifiable' ? (
-                              <div
-                                className={classes.verifiable}
-                                onClick={() => {
-                                  const payload = {
-                                    slug: work.get('slug'),
-                                    coworker: user.getIn(['user', 'id']),
-                                  };
-                                  this.props.requestVerifyCoworker(
-                                    payload,
-                                    work.get('id')
-                                  );
-                                }}
-                                role="button"
-                              />
-                            ) : (
-                              <ListItemText
-                                primary={user.get('type')}
-                                classes={{
-                                  primary: classes.invited,
-                                }}
-                              />
-                            )}
-                          </ListItemSecondaryAction>
-                        </ListItem>
-                      ))}
+                        );
+                      })}
                   </List>
                 </Grid>
               </Grid>

@@ -27,6 +27,8 @@ import saga, {
   requestWorkRelatedUsers,
   requestAddCoworker,
   requestVerifyCoworker,
+  requestEndorseUser,
+  requestEndorsements,
 } from 'containers/Work/sagas';
 import injectSagas from 'utils/injectSagas';
 
@@ -78,6 +80,7 @@ type Props = {
   addCoworkerError: string,
   isVerifyingCoworker: boolean,
   verifyCoworkerError: string,
+  endorsements: Object,
   match: Object,
   classes: Object,
   requestWork: Function,
@@ -85,6 +88,8 @@ type Props = {
   requestWorkRelatedUsers: Function,
   requestAddCoworker: Function,
   requestVerifyCoworker: Function,
+  requestEndorseUser: Function,
+  requestEndorsements: Function,
 };
 
 class WorkDetailPage extends Component<Props> {
@@ -113,6 +118,7 @@ class WorkDetailPage extends Component<Props> {
     } = this.props;
     if (prevProps.isWorkLoading && !isWorkLoading && !workError) {
       this.props.requestWorkRelatedUsers(this.props.work.get('id'));
+      this.props.requestEndorsements(this.props.work.get('id'));
     }
     if (prevProps.isAddingCoworker && !isAddingCoworker && !addCoworkerError) {
       this.props.requestWorkRelatedUsers(this.props.work.get('id'));
@@ -133,6 +139,7 @@ class WorkDetailPage extends Component<Props> {
       workError,
       users,
       relatedUsers,
+      endorsements,
       classes,
     } = this.props;
     if (isWorkLoading) {
@@ -178,9 +185,11 @@ class WorkDetailPage extends Component<Props> {
             work={work}
             users={users}
             relatedUsers={relatedUsers}
+            endorsements={endorsements}
             searchUsers={this.props.requestSearchUsers}
             requestAddCoworker={this.props.requestAddCoworker}
             requestVerifyCoworker={this.props.requestVerifyCoworker}
+            requestEndorseUser={this.props.requestEndorseUser}
           />
         ) : (
           <FormHelperText error>{workError}</FormHelperText>
@@ -203,6 +212,11 @@ const mapStateToProps = state => ({
   addCoworkerError: state.getIn(['work', 'addCoworkerError']),
   isVerifyingCoworker: state.getIn(['work', 'isVerifyingCoworker']),
   verifyCoworkerError: state.getIn(['work', 'verifyCoworkerError']),
+  isEndorsing: state.getIn(['work', 'isEndorsing']),
+  endorseError: state.getIn(['work', 'endorseError']),
+  endorsements: state.getIn(['work', 'endorsements']),
+  isEndorsementsLoading: state.getIn(['work', 'isEndorsementsLoading']),
+  endorsementsError: state.getIn(['work', 'endorsementsError']),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -214,6 +228,8 @@ const mapDispatchToProps = dispatch => ({
     dispatch(requestAddCoworker(eventId, coworker)),
   requestVerifyCoworker: (payload, eventId) =>
     dispatch(requestVerifyCoworker(payload, eventId)),
+  requestEndorseUser: payload => dispatch(requestEndorseUser(payload)),
+  requestEndorsements: workId => dispatch(requestEndorsements(workId)),
 });
 
 export default compose(
