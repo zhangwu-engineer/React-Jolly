@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import { format } from 'date-fns';
 import { generate } from 'shortid';
-import { debounce } from 'lodash-es';
+import { debounce, groupBy, toPairs, fromPairs, zip } from 'lodash-es';
 import cx from 'classnames';
 import Lightbox from 'react-image-lightbox';
 import 'react-image-lightbox/style.css';
@@ -312,6 +312,7 @@ type Props = {
   users: Object,
   relatedUsers: Object,
   endorsements: Object,
+  endorsers: Object,
   classes: Object,
   searchUsers: Function,
   requestAddCoworker: Function,
@@ -356,12 +357,32 @@ class WorkDetail extends Component<Props, State> {
     }
   };
   render() {
-    const { work, users, relatedUsers, endorsements, classes } = this.props;
+    const {
+      work,
+      users,
+      relatedUsers,
+      endorsements,
+      endorsers,
+      classes,
+    } = this.props;
     const { newUser, photoIndex, isGalleryOpen, activeSection } = this.state;
     const photo1 = work.getIn(['photos', 0]);
     const photo2 = work.getIn(['photos', 1]);
     const photo3 = work.getIn(['photos', 2]);
     const photos = work.get('photos').toJS();
+    const usedQualities = endorsements
+      .map(endorsement => endorsement.get('quality'))
+      .toJS();
+    const qualityNames = {
+      hardest_worker: 'Hardest Worker',
+      most_helpful: 'Most Helpful',
+      most_friendly: 'Most Friendly',
+      team_player: 'Team Player',
+    };
+    const result = toPairs(groupBy(endorsers.toJS(), 'quality'));
+    const groupedEndorsers = result.map(currentItem =>
+      fromPairs(zip(['quality', 'users'], currentItem))
+    );
     return (
       <div className={classes.root}>
         <div className={classes.banner}>
@@ -474,34 +495,30 @@ class WorkDetail extends Component<Props, State> {
                 </Grid>
                 <Grid item className={classes.fullWidth}>
                   <Typography className={classes.label}>
-                    <b>3</b>
+                    <b>{endorsers.size}</b>
                     &nbsp;Endorsements
                   </Typography>
-                  <Typography className={classes.endorseFactor}>
-                    Hardest Working
-                  </Typography>
-                  <Grid container className={classes.endorseUsers} spacing={8}>
-                    <Grid item>
-                      <Avatar className={classes.avatar} />
-                    </Grid>
-                    <Grid item>
-                      <Avatar className={classes.avatar} />
-                    </Grid>
-                    <Grid item>
-                      <Avatar className={classes.avatar} />
-                    </Grid>
-                  </Grid>
-                  <Typography className={classes.endorseFactor}>
-                    Friendliest
-                  </Typography>
-                  <Grid container className={classes.endorseUsers} spacing={8}>
-                    <Grid item>
-                      <Avatar className={classes.avatar} />
-                    </Grid>
-                    <Grid item>
-                      <Avatar className={classes.avatar} />
-                    </Grid>
-                  </Grid>
+                  {groupedEndorsers.map(group => (
+                    <React.Fragment key={generate()}>
+                      <Typography className={classes.endorseFactor}>
+                        {qualityNames[group.quality]}
+                      </Typography>
+                      <Grid
+                        container
+                        className={classes.endorseUsers}
+                        spacing={8}
+                      >
+                        {group.users.map(user => (
+                          <Grid item key={generate()}>
+                            <Avatar
+                              className={classes.avatar}
+                              src={user.from.profile.avatar}
+                            />
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </React.Fragment>
+                  ))}
                 </Grid>
               </Grid>
             </Grid>
@@ -600,6 +617,7 @@ class WorkDetail extends Component<Props, State> {
                             endorsedQuality={
                               isEndorsed.length > 0 ? isEndorsed[0].quality : ''
                             }
+                            usedQualities={usedQualities}
                           />
                         );
                       })}

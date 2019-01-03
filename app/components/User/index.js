@@ -90,6 +90,9 @@ const styles = theme => ({
   checkboxChecked: {
     color: theme.palette.common.green,
   },
+  checkboxDisabled: {
+    color: 'rgba(107, 210, 88, 0.6) !important',
+  },
   fullWidth: {
     flex: 1,
   },
@@ -123,6 +126,7 @@ type Props = {
   type: string,
   endorsed: boolean,
   endorsedQuality: string,
+  usedQualities: Array<string>,
   classes: Object,
   verifyCoworker: Function,
   requestEndorseUser: Function,
@@ -155,8 +159,22 @@ class User extends Component<Props, State> {
     this.setState({ isModalOpen: false });
   };
   render() {
-    const { classes, user, type, work, endorsed, endorsedQuality } = this.props;
+    const {
+      classes,
+      user,
+      type,
+      work,
+      endorsed,
+      endorsedQuality,
+      usedQualities,
+    } = this.props;
     const { isPanelOpen, isTipOpen, isModalOpen, quality } = this.state;
+    const qualityNames = {
+      hardest_worker: 'Hardest Worker',
+      most_helpful: 'Most Helpful',
+      most_friendly: 'Most Friendly',
+      team_player: 'Team Player',
+    };
     return (
       <div className={classes.root}>
         <ListItem className={classes.coworkerItem}>
@@ -199,7 +217,7 @@ class User extends Component<Props, State> {
         {endorsed &&
           endorsedQuality && (
             <Typography className={classes.endorsedLabel}>
-              {`You endorsed for ${endorsedQuality}`}
+              {`You endorsed for ${qualityNames[endorsedQuality]}`}
             </Typography>
           )}
         {type === 'verified' &&
@@ -251,13 +269,18 @@ class User extends Component<Props, State> {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={quality === 'hardest_worker'}
+                      checked={
+                        quality === 'hardest_worker' ||
+                        usedQualities.includes('hardest_worker')
+                      }
                       onChange={this.handleChange}
                       value="hardest_worker"
                       color="default"
                       classes={{
                         checked: classes.checkboxChecked,
+                        disabled: classes.checkboxDisabled,
                       }}
+                      disabled={usedQualities.includes('hardest_worker')}
                     />
                   }
                   classes={{
@@ -270,13 +293,17 @@ class User extends Component<Props, State> {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={quality === 'most_helpful'}
+                      checked={
+                        quality === 'most_helpful' ||
+                        usedQualities.includes('most_helpful')
+                      }
                       onChange={this.handleChange}
                       value="most_helpful"
                       color="default"
                       classes={{
                         checked: classes.checkboxChecked,
                       }}
+                      disabled={usedQualities.includes('most_helpful')}
                     />
                   }
                   classes={{
@@ -291,13 +318,17 @@ class User extends Component<Props, State> {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={quality === 'most_friendly'}
+                      checked={
+                        quality === 'most_friendly' ||
+                        usedQualities.includes('most_friendly')
+                      }
                       onChange={this.handleChange}
                       value="most_friendly"
                       color="default"
                       classes={{
                         checked: classes.checkboxChecked,
                       }}
+                      disabled={usedQualities.includes('most_friendly')}
                     />
                   }
                   classes={{
@@ -310,13 +341,17 @@ class User extends Component<Props, State> {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={quality === 'team_player'}
+                      checked={
+                        quality === 'team_player' ||
+                        usedQualities.includes('team_player')
+                      }
                       onChange={this.handleChange}
                       value="team_player"
                       color="default"
                       classes={{
                         checked: classes.checkboxChecked,
                       }}
+                      disabled={usedQualities.includes('team_player')}
                     />
                   }
                   classes={{
@@ -356,6 +391,7 @@ class User extends Component<Props, State> {
             const payload = {
               to: user.get('id'),
               work: work.get('id'),
+              work_slug: work.get('slug'),
               quality,
             };
             this.setState({ isPanelOpen: false });

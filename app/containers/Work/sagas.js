@@ -23,6 +23,7 @@ const ADD_COWORKER = 'Jolly/Work/ADD_COWORKER';
 const VERIFY_COWORKER = 'Jolly/Work/VERIFY_COWORKER';
 const ENDORSE_USER = 'Jolly/Work/ENDORSE_USER';
 const ENDORSEMENTS = 'Jolly/Work/ENDORSEMENTS';
+const ENDORSERS = 'Jolly/Work/ENDORSERS';
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -196,6 +197,23 @@ const endorsementsRequestError = (error: string) => ({
   payload: error,
 });
 
+export const requestEndorsers = (workSlug: string) => ({
+  type: ENDORSERS + REQUESTED,
+  payload: workSlug,
+});
+const endorsersRequestSuccess = (payload: Object) => ({
+  type: ENDORSERS + SUCCEDED,
+  payload,
+});
+const endorsersRequestFailed = (error: string) => ({
+  type: ENDORSERS + FAILED,
+  payload: error,
+});
+const endorsersRequestError = (error: string) => ({
+  type: ENDORSERS + ERROR,
+  payload: error,
+});
+
 // ------------------------------------
 // Reducer
 // ------------------------------------
@@ -226,6 +244,9 @@ const initialState = fromJS({
   endorsements: fromJS([]),
   isEndorsementsLoading: false,
   endorsementsError: '',
+  endorsers: fromJS([]),
+  isEndorsersLoading: false,
+  endorsersError: '',
 });
 
 export const reducer = (
@@ -427,6 +448,27 @@ export const reducer = (
     case ENDORSEMENTS + ERROR:
       return state.set('isEndorsementsLoading', false).set(
         'endorsementsError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case ENDORSERS + REQUESTED:
+      return state.set('isEndorsersLoading', true);
+
+    case ENDORSERS + SUCCEDED:
+      return state
+        .set('isEndorsersLoading', false)
+        .set('endorsers', fromJS(payload.endorsers))
+        .set('endorsersError', '');
+
+    case ENDORSERS + FAILED:
+      return state
+        .set('isEndorsersLoading', false)
+        .set('endorsersError', payload.message);
+
+    case ENDORSERS + ERROR:
+      return state.set('isEndorsersLoading', false).set(
+        'endorsersError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -634,6 +676,25 @@ function* EndorsementsRequest({ payload }) {
   }
 }
 
+function* EndorsersRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/endorsement/work/${payload}/endorsers`,
+      data: payload,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(endorsersRequestSuccess(response.data.response));
+    } else {
+      yield put(endorsersRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(endorsersRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(CREATE_WORK + REQUESTED, CreateWorkRequest),
@@ -646,5 +707,6 @@ export default function*(): Saga<void> {
     takeLatest(VERIFY_COWORKER + REQUESTED, CoworkerVerifyRequest),
     takeLatest(ENDORSE_USER + REQUESTED, EndorseUserRequest),
     takeLatest(ENDORSEMENTS + REQUESTED, EndorsementsRequest),
+    takeLatest(ENDORSERS + REQUESTED, EndorsersRequest),
   ]);
 }
