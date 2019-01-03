@@ -334,7 +334,7 @@ class MobileWorkForm extends Component<Props, State> {
         roles: nextProps.roles,
       };
     }
-    if (nextProps.works.size > 0 && prevState.works === undefined) {
+    if (nextProps.works && prevState.works === undefined) {
       return {
         works: nextProps.works.toJS(),
       };
