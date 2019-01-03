@@ -55,13 +55,11 @@ const styles = theme => ({
     fill: '#b3b9bf',
   },
   modalTitle: {
-    marginLeft: 15,
     marginTop: 15,
     marginBottom: 10,
     fontSize: 20,
   },
   modalText: {
-    marginLeft: 15,
     marginBottom: 10,
     marginTop: 30,
   },
