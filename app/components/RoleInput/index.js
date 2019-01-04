@@ -14,6 +14,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
+import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -101,6 +102,17 @@ const styles = theme => ({
     fontSize: 18,
     paddingBottom: 8,
   },
+  bottomMargin: {
+    marginBottom: 20,
+  },
+  rangeButton: {
+    fontSize: 12,
+    paddingLeft: 0,
+    paddingRight: 0,
+    '&:hover': {
+      backgroundColor: 'transparent',
+    },
+  },
 });
 
 type Props = {
@@ -118,6 +130,7 @@ type Props = {
 type State = {
   mode: string,
   model: ?Object,
+  rangeMode: boolean,
 };
 
 class RoleInput extends Component<Props, State> {
@@ -130,7 +143,10 @@ class RoleInput extends Component<Props, State> {
         mode: nextProps.mode,
         model: {
           name: nextProps.data.name,
-          rate: nextProps.data.rate,
+          month: nextProps.data.month,
+          year: nextProps.data.year,
+          minRate: nextProps.data.minRate,
+          maxRate: nextProps.data.maxRate,
           unit: nextProps.data.unit,
         },
       };
@@ -140,6 +156,7 @@ class RoleInput extends Component<Props, State> {
   state = {
     mode: '',
     model: null,
+    rangeMode: false,
   };
   // componentDidMount() {
   //   document.addEventListener('mousedown', this.handleClick, false);
@@ -202,7 +219,10 @@ class RoleInput extends Component<Props, State> {
     if (!model) return false;
     if (
       data.name !== model.name ||
-      data.rate !== model.rate ||
+      data.month !== model.month ||
+      data.year !== model.year ||
+      data.minRate !== model.minRate ||
+      data.maxRate !== model.maxRate ||
       data.unit !== model.unit
     ) {
       return true;
@@ -230,12 +250,17 @@ class RoleInput extends Component<Props, State> {
       }));
     }
   };
-  handleUnitChange = (e: Object) => {
+  handleSelectChange = (e: Object) => {
     this.setState(state => ({
       model: {
         ...state.model,
-        unit: e.target.value,
+        [e.target.name]: e.target.value,
       },
+    }));
+  };
+  toggleRange = () => {
+    this.setState(state => ({
+      rangeMode: !state.rangeMode,
     }));
   };
   // handleClick = (e: Object) => {
@@ -247,7 +272,7 @@ class RoleInput extends Component<Props, State> {
   node: ?HTMLElement;
   render() {
     const { data, units, classes, editable } = this.props;
-    const { mode, model } = this.state;
+    const { mode, model, rangeMode } = this.state;
     return (
       <div
         className={classes.root}
@@ -263,7 +288,12 @@ class RoleInput extends Component<Props, State> {
                   {data.name}
                 </Typography>
                 <Typography variant="body1" className={classes.rate}>
-                  {data.rate && data.unit ? `$${data.rate}/${data.unit}` : ''}
+                  {data.minRate && data.maxRate && data.unit
+                    ? `$${data.minRate} - ${data.maxRate}/${data.unit}`
+                    : ''}
+                  {data.minRate && !data.maxRate && data.unit
+                    ? `$${data.minRate}/${data.unit}`
+                    : ''}
                 </Typography>
               </Grid>
               <Grid item xs={1} lg={1}>
@@ -284,7 +314,7 @@ class RoleInput extends Component<Props, State> {
           <div className={classes.editView}>
             <Grid container>
               <Grid item xs={9} lg={10}>
-                <Grid container>
+                <Grid container className={classes.bottomMargin}>
                   <Grid
                     item
                     xs={12}
@@ -296,7 +326,7 @@ class RoleInput extends Component<Props, State> {
                       label="Type of Work"
                       value={model && model.name}
                       onChange={this.handleChange}
-                      className={cx(classes.fieldMargin, classes.textInput)}
+                      className={classes.textInput}
                       fullWidth
                       autoFocus
                     />
@@ -304,59 +334,146 @@ class RoleInput extends Component<Props, State> {
                   <Grid item xs={12} lg={6}>
                     <Grid container>
                       <Grid item xs={6} className={classes.rateFieldWrapper}>
-                        <FormControl
-                          className={cx(classes.fieldMargin, classes.textInput)}
-                        >
-                          <InputLabel htmlFor="rate">Rate</InputLabel>
-                          <Input
-                            className={classes.textInput}
-                            id="rate"
-                            value={model && model.rate}
-                            onChange={this.handleRateChange}
-                            startAdornment={
-                              <InputAdornment
-                                position="start"
-                                className={classes.adornment}
-                              >
-                                <Typography
-                                  variant="h6"
-                                  className={classes.adornmentText}
-                                >
-                                  $
-                                </Typography>
-                              </InputAdornment>
-                            }
-                          />
+                        <FormControl fullWidth>
+                          <InputLabel htmlFor="month">Date</InputLabel>
+                          <Select
+                            value={model && model.month}
+                            onChange={this.handleSelectChange}
+                            name="month"
+                            inputProps={{
+                              id: 'month',
+                            }}
+                            className={classes.selectInput}
+                          >
+                            <MenuItem value="">Month</MenuItem>
+                            <MenuItem value="1">Jan</MenuItem>
+                            <MenuItem value="2">Feb</MenuItem>
+                            <MenuItem value="3">Mar</MenuItem>
+                            <MenuItem value="4">Apr</MenuItem>
+                            <MenuItem value="5">May</MenuItem>
+                            <MenuItem value="6">Jun</MenuItem>
+                            <MenuItem value="7">Jul</MenuItem>
+                            <MenuItem value="8">Aug</MenuItem>
+                            <MenuItem value="9">Sep</MenuItem>
+                            <MenuItem value="10">Oct</MenuItem>
+                            <MenuItem value="11">Nov</MenuItem>
+                            <MenuItem value="12">Dec</MenuItem>
+                          </Select>
                         </FormControl>
                       </Grid>
                       <Grid item xs={6} className={classes.unitFieldWrapper}>
                         <FormControl fullWidth>
-                          <InputLabel htmlFor="unit">Unit</InputLabel>
+                          <InputLabel htmlFor="year" />
                           <Select
-                            value={model && model.unit}
-                            onChange={this.handleUnitChange}
-                            name="unit"
+                            value={model && model.year}
+                            onChange={this.handleSelectChange}
+                            name="year"
                             inputProps={{
-                              id: 'unit',
+                              id: 'year',
                             }}
                             className={classes.selectInput}
                           >
-                            <MenuItem value="">None</MenuItem>
-                            <MenuItem value="hour">Hour</MenuItem>
-                            <MenuItem value="day">Day</MenuItem>
-                            <MenuItem value="event">Event</MenuItem>
-                            {units &&
-                              units.map(unit => (
-                                <MenuItem key={generate()} value={unit}>
-                                  {unit}
-                                </MenuItem>
-                              ))}
+                            <MenuItem value="">Year</MenuItem>
+                            <MenuItem value="2015">2015</MenuItem>
+                            <MenuItem value="2016">2016</MenuItem>
+                            <MenuItem value="2017">2017</MenuItem>
+                            <MenuItem value="2018">2018</MenuItem>
+                            <MenuItem value="2019">2019</MenuItem>
                           </Select>
                         </FormControl>
                       </Grid>
                     </Grid>
                   </Grid>
                 </Grid>
+                <Grid container>
+                  <Grid item xs={3} lg={3} className={classes.rateFieldWrapper}>
+                    <FormControl className={classes.textInput}>
+                      <InputLabel htmlFor="minRate">Rate</InputLabel>
+                      <Input
+                        className={classes.textInput}
+                        id="minRate"
+                        value={model && model.minRate}
+                        onChange={this.handleRateChange}
+                        startAdornment={
+                          <InputAdornment
+                            position="start"
+                            className={classes.adornment}
+                          >
+                            <Typography
+                              variant="h6"
+                              className={classes.adornmentText}
+                            >
+                              $
+                            </Typography>
+                          </InputAdornment>
+                        }
+                      />
+                    </FormControl>
+                  </Grid>
+                  {rangeMode && (
+                    <Grid
+                      item
+                      xs={3}
+                      lg={3}
+                      className={classes.rateFieldWrapper}
+                    >
+                      <FormControl className={classes.textInput}>
+                        <InputLabel htmlFor="maxRate" />
+                        <Input
+                          className={classes.textInput}
+                          id="maxRate"
+                          value={model && model.maxRate}
+                          onChange={this.handleRateChange}
+                          startAdornment={
+                            <InputAdornment
+                              position="start"
+                              className={classes.adornment}
+                            >
+                              <Typography
+                                variant="h6"
+                                className={classes.adornmentText}
+                              >
+                                $
+                              </Typography>
+                            </InputAdornment>
+                          }
+                        />
+                      </FormControl>
+                    </Grid>
+                  )}
+                  <Grid item xs={6} lg={3} className={classes.unitFieldWrapper}>
+                    <FormControl fullWidth>
+                      <InputLabel htmlFor="unit">Unit</InputLabel>
+                      <Select
+                        value={model && model.unit}
+                        onChange={this.handleSelectChange}
+                        name="unit"
+                        inputProps={{
+                          id: 'unit',
+                        }}
+                        className={classes.selectInput}
+                      >
+                        <MenuItem value="">None</MenuItem>
+                        <MenuItem value="hour">Hour</MenuItem>
+                        <MenuItem value="day">Day</MenuItem>
+                        <MenuItem value="event">Event</MenuItem>
+                        {units &&
+                          units.map(unit => (
+                            <MenuItem key={generate()} value={unit}>
+                              {unit}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                </Grid>
+                <Button
+                  color="primary"
+                  className={classes.rangeButton}
+                  onClick={this.toggleRange}
+                >
+                  {rangeMode ? 'Remove Range' : 'Add Rate Range'}
+                </Button>
               </Grid>
               <Grid item xs={3} lg={2} className={classes.editModeButtons}>
                 <IconButton

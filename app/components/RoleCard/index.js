@@ -61,9 +61,20 @@ class RoleCard extends Component<Props> {
           <Typography variant="h6" className={classes.name}>
             {role.name}
           </Typography>
-          <Typography component="p">
-            {`$${role.rate} / ${role.unit}`}
-          </Typography>
+          {role.minRate &&
+            role.maxRate &&
+            role.unit && (
+              <Typography component="p">
+                {`$${role.minRate} - ${role.maxRate} / ${role.unit}`}
+              </Typography>
+            )}
+          {role.minRate &&
+            !role.maxRate &&
+            role.unit && (
+              <Typography component="p">
+                {`$${role.minRate} / ${role.unit}`}
+              </Typography>
+            )}
         </CardContent>
         <CardActions className={classes.actionBar}>
           <Button>
