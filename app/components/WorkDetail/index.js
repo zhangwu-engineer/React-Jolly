@@ -450,19 +450,23 @@ class WorkDetail extends Component<Props, State> {
         <div className={classes.workDetail}>
           <Grid container>
             <Grid item xs={12} lg={7}>
-              <Grid container>
-                <Grid item className={classes.iconWrapper}>
-                  <Icon glyph={CaptionIcon} size={18} />
-                </Grid>
-                <Grid item className={classes.fullWidth}>
-                  <Typography className={classes.label}>Caption</Typography>
-                </Grid>
-              </Grid>
-              <Grid container className={classes.valueField}>
-                <Grid item xs={12}>
-                  <Typography>{work.get('caption')}</Typography>
-                </Grid>
-              </Grid>
+              {work.get('caption') && (
+                <React.Fragment>
+                  <Grid container>
+                    <Grid item className={classes.iconWrapper}>
+                      <Icon glyph={CaptionIcon} size={18} />
+                    </Grid>
+                    <Grid item className={classes.fullWidth}>
+                      <Typography className={classes.label}>Caption</Typography>
+                    </Grid>
+                  </Grid>
+                  <Grid container className={classes.valueField}>
+                    <Grid item xs={12}>
+                      <Typography>{work.get('caption')}</Typography>
+                    </Grid>
+                  </Grid>
+                </React.Fragment>
+              )}
               <Grid container>
                 <Grid item className={classes.iconWrapper}>
                   <Icon glyph={CaptionIcon} size={18} />
