@@ -383,6 +383,8 @@ class WorkDetail extends Component<Props, State> {
     const groupedEndorsers = result.map(currentItem =>
       fromPairs(zip(['quality', 'users'], currentItem))
     );
+    const from = format(new Date(work.get('from')), 'MMM dd');
+    const to = format(new Date(work.get('to')), 'MMM dd');
     return (
       <div className={classes.root}>
         <div className={classes.banner}>
@@ -433,10 +435,7 @@ class WorkDetail extends Component<Props, State> {
               {work.get('title')}
             </Typography>
             <Typography className={classes.date}>
-              {`from ${format(new Date(work.get('from')), 'MMM yy')} - ${format(
-                new Date(work.get('to')),
-                'MMM yy'
-              )}`}
+              {from === to ? `On ${from}` : `From ${from} - ${to}`}
             </Typography>
           </div>
           <Button className={classes.editButton}>
