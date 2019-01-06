@@ -117,6 +117,7 @@ type Props = {
   user: Object,
   endorsements: Object,
   classes: Object,
+  publicMode?: boolean,
 };
 
 type State = {
@@ -134,7 +135,7 @@ class UserEndorsements extends Component<Props, State> {
     this.setState({ isOpen: true });
   };
   render() {
-    const { user, endorsements, classes } = this.props;
+    const { user, endorsements, publicMode, classes } = this.props;
     const { isOpen } = this.state;
     const qualityNames = {
       hardest_worker: 'Hardest Worker',
@@ -179,19 +180,21 @@ class UserEndorsements extends Component<Props, State> {
                   </Pie>
                 </PieChart>
               </div>
-              <Grid container justify="center">
-                <Grid item>
-                  <Button
-                    color="primary"
-                    classes={{
-                      label: classes.buttonLabel,
-                    }}
-                    onClick={this.openModal}
-                  >
-                    + Get Endorsed
-                  </Button>
+              {!publicMode && (
+                <Grid container justify="center">
+                  <Grid item>
+                    <Button
+                      color="primary"
+                      classes={{
+                        label: classes.buttonLabel,
+                      }}
+                      onClick={this.openModal}
+                    >
+                      + Get Endorsed
+                    </Button>
+                  </Grid>
                 </Grid>
-              </Grid>
+              )}
             </React.Fragment>
           ) : (
             <React.Fragment>

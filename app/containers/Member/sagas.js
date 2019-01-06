@@ -17,6 +17,7 @@ const ROLES = 'Jolly/Member/ROLES';
 const MEMBER_PROFILE = 'Jolly/Member/MEMBER_PROFILE';
 const FILES = 'Jolly/Member/FILES';
 const WORKS = 'Jolly/Member/WORKS';
+const ENDORSEMENTS = 'Jolly/Member/ENDORSEMENTS';
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -87,6 +88,23 @@ const memberWorksRequestError = (error: string) => ({
   type: WORKS + ERROR,
   payload: error,
 });
+
+export const requestMemberEndorsements = (userSlug: string) => ({
+  type: ENDORSEMENTS + REQUESTED,
+  payload: userSlug,
+});
+const memberEndorsementsRequestSuccess = (payload: Object) => ({
+  type: ENDORSEMENTS + SUCCEDED,
+  payload,
+});
+const memberEndorsementsRequestFailed = (error: string) => ({
+  type: ENDORSEMENTS + FAILED,
+  payload: error,
+});
+const memberEndorsementsRequestError = (error: string) => ({
+  type: ENDORSEMENTS + ERROR,
+  payload: error,
+});
 // ------------------------------------
 // Reducer
 // ------------------------------------
@@ -103,6 +121,9 @@ const initialState = fromJS({
   works: null,
   isWorksLoading: false,
   worksError: '',
+  endorsements: fromJS([]),
+  isEndorsementsLoading: false,
+  endorsementsError: '',
 });
 
 export const reducer = (
@@ -192,6 +213,27 @@ export const reducer = (
         Please try again later or contact support and provide the following error information: ${payload}`
       );
 
+    case ENDORSEMENTS + REQUESTED:
+      return state.set('isEndorsementsLoading', true);
+
+    case ENDORSEMENTS + SUCCEDED:
+      return state
+        .set('isEndorsementsLoading', false)
+        .set('endorsements', fromJS(payload.endorsements))
+        .set('endorsementsError', '');
+
+    case ENDORSEMENTS + FAILED:
+      return state
+        .set('isEndorsementsLoading', false)
+        .set('endorsementsError', payload.message);
+
+    case ENDORSEMENTS + ERROR:
+      return state.set('isEndorsementsLoading', false).set(
+        'endorsementsError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
     default:
       return state;
   }
@@ -274,11 +316,28 @@ function* MemberWorksRequest({ payload }) {
   }
 }
 
+function* EndorsementsRequest({ payload }) {
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/endorsement/user/${payload}`,
+    });
+    if (response.status === 200) {
+      yield put(memberEndorsementsRequestSuccess(response.data.response));
+    } else {
+      yield put(memberEndorsementsRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(memberEndorsementsRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(ROLES + REQUESTED, MemberRolesRequest),
     takeLatest(MEMBER_PROFILE + REQUESTED, MemberProfileRequest),
     takeLatest(FILES + REQUESTED, MemberFilesRequest),
     takeLatest(WORKS + REQUESTED, MemberWorksRequest),
+    takeLatest(ENDORSEMENTS + REQUESTED, EndorsementsRequest),
   ]);
 }

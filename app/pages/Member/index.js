@@ -22,6 +22,7 @@ import RoleCard from 'components/RoleCard';
 import JobCard from 'components/JobCard';
 import ShareProfileModal from 'components/ShareProfileModal';
 import ContactOptionModal from 'components/ContactOptionModal';
+import UserEndorsements from 'components/UserEndorsements';
 
 import saga, {
   reducer,
@@ -29,6 +30,7 @@ import saga, {
   requestMemberProfile,
   requestMemberFiles,
   requestMemberWorks,
+  requestMemberEndorsements,
 } from 'containers/Member/sagas';
 import injectSagas from 'utils/injectSagas';
 
@@ -178,12 +180,14 @@ type Props = {
   files: Object,
   roles: Object,
   works: Object,
+  endorsements: Object,
   classes: Object,
   match: Object,
   requestMemberProfile: Function,
   requestMemberRoles: Function,
   requestMemberFiles: Function,
   requestMemberWorks: Function,
+  requestMemberEndorsements: Function,
 };
 
 type State = {
@@ -217,6 +221,7 @@ class Member extends Component<Props, State> {
     this.props.requestMemberFiles(slug);
     this.props.requestMemberRoles(slug);
     this.props.requestMemberWorks(slug);
+    this.props.requestMemberEndorsements(slug);
   }
   onCloseModal = () => {
     this.setState({ isOpen: false });
@@ -249,6 +254,7 @@ class Member extends Component<Props, State> {
       files,
       roles,
       works,
+      endorsements,
       classes,
       match: { url },
     } = this.props;
@@ -340,6 +346,11 @@ class Member extends Component<Props, State> {
               )}
             </div>
           </div>
+          <UserEndorsements
+            user={member}
+            endorsements={endorsements}
+            publicMode
+          />
           <div className={classes.section}>
             <div className={classes.sectionHeader}>
               <Typography variant="h6">Experience</Typography>
@@ -446,6 +457,7 @@ const mapStateToProps = state => ({
   roles: state.getIn(['member', 'roles']),
   files: state.getIn(['member', 'files']),
   works: state.getIn(['member', 'works']),
+  endorsements: state.getIn(['member', 'endorsements']),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -453,6 +465,7 @@ const mapDispatchToProps = dispatch => ({
   requestMemberRoles: slug => dispatch(requestMemberRoles(slug)),
   requestMemberFiles: slug => dispatch(requestMemberFiles(slug)),
   requestMemberWorks: slug => dispatch(requestMemberWorks(slug)),
+  requestMemberEndorsements: slug => dispatch(requestMemberEndorsements(slug)),
 });
 
 export default compose(
