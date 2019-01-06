@@ -166,7 +166,7 @@ class UserEndorsements extends Component<Props, State> {
                     dataKey="value"
                     cx={80}
                     cy={80}
-                    innerRadius={60}
+                    innerRadius={55}
                     outerRadius={80}
                     startAngle={450}
                     endAngle={90}
@@ -205,7 +205,7 @@ class UserEndorsements extends Component<Props, State> {
                     dataKey="value"
                     cx={80}
                     cy={80}
-                    innerRadius={60}
+                    innerRadius={55}
                     outerRadius={80}
                     startAngle={450}
                     endAngle={90}
