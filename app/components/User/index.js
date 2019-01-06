@@ -1,6 +1,7 @@
 // @flow
 
 import React, { Component } from 'react';
+import storage from 'store';
 
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -158,6 +159,18 @@ class User extends Component<Props, State> {
   closeModal = () => {
     this.setState({ isModalOpen: false });
   };
+  save = () => {
+    const { user, work } = this.props;
+    const { quality } = this.state;
+    const payload = {
+      to: user.get('id'),
+      work: work.get('id'),
+      work_slug: work.get('slug'),
+      quality,
+    };
+    this.setState({ isPanelOpen: false });
+    this.props.requestEndorseUser(payload);
+  };
   render() {
     const {
       classes,
@@ -257,6 +270,7 @@ class User extends Component<Props, State> {
                   onClick={() => {
                     this.setState({
                       isPanelOpen: false,
+                      quality: null,
                     });
                   }}
                 >
@@ -363,7 +377,17 @@ class User extends Component<Props, State> {
             </Grid>
             <Grid container justify="flex-end">
               <Grid item>
-                <Button className={classes.skipButton}>Skip</Button>
+                <Button
+                  className={classes.skipButton}
+                  onClick={() => {
+                    this.setState({
+                      isPanelOpen: false,
+                      quality: null,
+                    });
+                  }}
+                >
+                  Skip
+                </Button>
               </Grid>
               <Grid item>
                 <Button
@@ -372,7 +396,11 @@ class User extends Component<Props, State> {
                     disabled: classes.disabledButton,
                   }}
                   onClick={() => {
-                    this.setState({ isModalOpen: true });
+                    if (storage.get('hideEndorsementModal')) {
+                      this.save();
+                    } else {
+                      this.setState({ isModalOpen: true });
+                    }
                   }}
                   disabled={!quality}
                 >
@@ -387,16 +415,7 @@ class User extends Component<Props, State> {
           isOpen={isModalOpen}
           onCloseModal={this.closeModal}
           username={user.get('firstName')}
-          onSave={() => {
-            const payload = {
-              to: user.get('id'),
-              work: work.get('id'),
-              work_slug: work.get('slug'),
-              quality,
-            };
-            this.setState({ isPanelOpen: false });
-            this.props.requestEndorseUser(payload);
-          }}
+          onSave={this.save}
         />
       </div>
     );

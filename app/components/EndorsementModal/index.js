@@ -1,6 +1,7 @@
 // @flow
 
 import React, { Component } from 'react';
+import storage from 'store';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
@@ -142,9 +143,10 @@ class EndorsementModal extends Component<Props, State> {
               size="large"
               onClick={() => {
                 if (agree) {
-                  this.closeModal();
-                  this.props.onSave();
+                  storage.set('hideEndorsementModal', true);
                 }
+                this.closeModal();
+                this.props.onSave();
               }}
               className={classes.endorseButton}
             >
