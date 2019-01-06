@@ -23,6 +23,7 @@ import ShareProfileModal from 'components/ShareProfileModal';
 import RoleCard from 'components/RoleCard';
 import JobCard from 'components/JobCard';
 import PhotoModal from 'components/PhotoModal';
+import UserEndorsements from 'components/UserEndorsements';
 
 import AddPhotoIcon from 'images/sprite/add-photo-blue.svg';
 
@@ -32,6 +33,7 @@ import {
   requestUserFiles,
   requestUserDataUpdate,
   requestWorks,
+  requestEndorsements,
 } from 'containers/App/sagas';
 import saga, { reducer, requestRoles } from 'containers/Role/sagas';
 import injectSagas from 'utils/injectSagas';
@@ -155,6 +157,7 @@ type Props = {
   uploadError: string,
   roles: Object,
   works: Object,
+  endorsements: Object,
   classes: Object,
   match: Object,
   requestUser: Function,
@@ -163,6 +166,7 @@ type Props = {
   updateUser: Function,
   requestRoles: Function,
   requestWorks: Function,
+  requestEndorsements: Function,
 };
 
 type State = {
@@ -188,6 +192,7 @@ class Profile extends Component<Props, State> {
     this.props.requestUserFiles();
     this.props.requestRoles();
     this.props.requestWorks();
+    this.props.requestEndorsements();
   }
   componentDidUpdate(prevProps: Props) {
     const { isUploading, uploadError } = this.props;
@@ -219,7 +224,7 @@ class Profile extends Component<Props, State> {
     });
   };
   render() {
-    const { user, files, roles, works, classes } = this.props;
+    const { user, files, roles, works, endorsements, classes } = this.props;
     const {
       isOpen,
       type,
@@ -323,6 +328,7 @@ class Profile extends Component<Props, State> {
               </Grid>
             </div>
           </div>
+          <UserEndorsements user={user} endorsements={endorsements} />
           <div className={classes.section}>
             <div className={classes.sectionHeader}>
               <Typography variant="h6">Experience</Typography>
@@ -500,6 +506,7 @@ const mapStateToProps = state => ({
   uploadError: state.getIn(['app', 'uploadError']),
   roles: state.getIn(['role', 'roles']),
   works: state.getIn(['app', 'works']),
+  endorsements: state.getIn(['app', 'endorsements']),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -510,6 +517,7 @@ const mapDispatchToProps = dispatch => ({
   requestUserFiles: () => dispatch(requestUserFiles()),
   updateUser: payload => dispatch(requestUserDataUpdate(payload)),
   requestWorks: () => dispatch(requestWorks()),
+  requestEndorsements: () => dispatch(requestEndorsements()),
 });
 
 export default compose(

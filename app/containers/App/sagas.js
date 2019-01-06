@@ -26,7 +26,7 @@ const USER_FILES = 'Jolly/App/USER_FILES';
 const EMAIL_VERIFICATION = 'Jolly/App/EMAIL_VERIFICATION';
 const MEMBER = 'Jolly/App/Member';
 const WORKS = 'Jolly/App/WORKS';
-
+const ENDORSEMENTS = 'Jolly/App/ENDORSEMENTS';
 const OPEN_NAVBAR = 'Jolly/App/OPEN_NAVBAR';
 const CLOSE_NAVBAR = 'Jolly/App/CLOSE_NAVBAR';
 
@@ -212,6 +212,22 @@ const worksRequestError = (error: string) => ({
   payload: error,
 });
 
+export const requestEndorsements = () => ({
+  type: ENDORSEMENTS + REQUESTED,
+});
+const endorsementsRequestSuccess = (payload: Object) => ({
+  type: ENDORSEMENTS + SUCCEDED,
+  payload,
+});
+const endorsementsRequestFailed = (error: string) => ({
+  type: ENDORSEMENTS + FAILED,
+  payload: error,
+});
+const endorsementsRequestError = (error: string) => ({
+  type: ENDORSEMENTS + ERROR,
+  payload: error,
+});
+
 export const openNavbar = () => ({
   type: OPEN_NAVBAR,
 });
@@ -251,6 +267,9 @@ const initialState = fromJS({
   works: null,
   isWorksLoading: false,
   worksError: '',
+  endorsements: fromJS([]),
+  isEndorsementsLoading: false,
+  endorsementsError: '',
 });
 
 export const reducer = (
@@ -440,6 +459,27 @@ export const reducer = (
     case WORKS + ERROR:
       return state.set('isWorksLoading', false).set(
         'worksError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case ENDORSEMENTS + REQUESTED:
+      return state.set('isEndorsementsLoading', true);
+
+    case ENDORSEMENTS + SUCCEDED:
+      return state
+        .set('isEndorsementsLoading', false)
+        .set('endorsements', fromJS(payload.endorsements))
+        .set('endorsementsError', '');
+
+    case ENDORSEMENTS + FAILED:
+      return state
+        .set('isEndorsementsLoading', false)
+        .set('endorsementsError', payload.message);
+
+    case ENDORSEMENTS + ERROR:
+      return state.set('isEndorsementsLoading', false).set(
+        'endorsementsError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -673,6 +713,24 @@ function* WorksRequest() {
   }
 }
 
+function* EndorsementsRequest() {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/endorsement`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(endorsementsRequestSuccess(response.data.response));
+    } else {
+      yield put(endorsementsRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(endorsementsRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(REGISTER + REQUESTED, RegisterRequest),
@@ -685,5 +743,6 @@ export default function*(): Saga<void> {
     takeLatest(EMAIL_VERIFICATION + REQUESTED, UserEmailVerificationRequest),
     takeLatest(MEMBER + REQUESTED, MemberRequest),
     takeLatest(WORKS + REQUESTED, WorksRequest),
+    takeLatest(ENDORSEMENTS + REQUESTED, EndorsementsRequest),
   ]);
 }
