@@ -122,11 +122,20 @@ class WorkDetailPage extends Component<Props> {
       verifyCoworkerError,
       isEndorsing,
       endorseError,
+      match: { url },
+      user,
     } = this.props;
+    const {
+      params: { slug },
+    } = matchPath(url, {
+      path: '/f/:slug/e/:eventID',
+    });
     if (prevProps.isWorkLoading && !isWorkLoading && !workError) {
       this.props.requestWorkRelatedUsers(this.props.work.get('id'));
-      this.props.requestEndorsements(this.props.work.get('id'));
-      this.props.requestEndorsers(this.props.work.get('slug'));
+      this.props.requestEndorsers(this.props.work.get('slug'), slug);
+      if (user && user.get('slug') === slug) {
+        this.props.requestEndorsements(this.props.work.get('id'));
+      }
     }
     if (prevProps.isAddingCoworker && !isAddingCoworker && !addCoworkerError) {
       this.props.requestWorkRelatedUsers(this.props.work.get('id'));
@@ -153,7 +162,13 @@ class WorkDetailPage extends Component<Props> {
       endorsements,
       endorsers,
       classes,
+      match: { url },
     } = this.props;
+    const {
+      params: { slug },
+    } = matchPath(url, {
+      path: '/f/:slug/e/:eventID',
+    });
     if (isWorkLoading) {
       return <Preloader />;
     }
@@ -170,7 +185,14 @@ class WorkDetailPage extends Component<Props> {
               <Button
                 className={classes.button}
                 component={props => (
-                  <Link to={`/f/${user.get('slug')}/edit`} {...props} />
+                  <Link
+                    to={
+                      user && user.get('slug') === slug
+                        ? `/f/${user.get('slug')}/edit`
+                        : `/f/${slug}`
+                    }
+                    {...props}
+                  />
                 )}
               >
                 <ArrowBackIcon />
@@ -203,6 +225,9 @@ class WorkDetailPage extends Component<Props> {
             requestAddCoworker={this.props.requestAddCoworker}
             requestVerifyCoworker={this.props.requestVerifyCoworker}
             requestEndorseUser={this.props.requestEndorseUser}
+            displayMode={
+              user && user.get('slug') === slug ? 'private' : 'public'
+            }
           />
         ) : (
           <FormHelperText error>{workError}</FormHelperText>
@@ -244,7 +269,8 @@ const mapDispatchToProps = dispatch => ({
     dispatch(requestVerifyCoworker(payload, eventId)),
   requestEndorseUser: payload => dispatch(requestEndorseUser(payload)),
   requestEndorsements: workId => dispatch(requestEndorsements(workId)),
-  requestEndorsers: workSlug => dispatch(requestEndorsers(workSlug)),
+  requestEndorsers: (workSlug, userSlug) =>
+    dispatch(requestEndorsers(workSlug, userSlug)),
 });
 
 export default compose(

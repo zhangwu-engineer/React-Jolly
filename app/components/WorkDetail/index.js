@@ -313,6 +313,7 @@ type Props = {
   relatedUsers: Object,
   endorsements: Object,
   endorsers: Object,
+  displayMode: string,
   classes: Object,
   searchUsers: Function,
   requestAddCoworker: Function,
@@ -363,6 +364,7 @@ class WorkDetail extends Component<Props, State> {
       relatedUsers,
       endorsements,
       endorsers,
+      displayMode,
       classes,
     } = this.props;
     const { newUser, photoIndex, isGalleryOpen, activeSection } = this.state;
@@ -438,14 +440,18 @@ class WorkDetail extends Component<Props, State> {
               {from === to ? `On ${from}` : `From ${from} - ${to}`}
             </Typography>
           </div>
-          <Button className={classes.editButton}>
-            <EditIcon className={classes.editIcon} />
-            &nbsp;&nbsp;&nbsp;Edit Job
-          </Button>
-          <IconButton className={classes.smallEditButton}>
-            <EditIcon />
-          </IconButton>
-          <Switch className={classes.pin} color="default" />
+          {displayMode === 'private' && (
+            <React.Fragment>
+              <Button className={classes.editButton}>
+                <EditIcon className={classes.editIcon} />
+                &nbsp;&nbsp;&nbsp;Edit Job
+              </Button>
+              <IconButton className={classes.smallEditButton}>
+                <EditIcon />
+              </IconButton>
+              <Switch className={classes.pin} color="default" />
+            </React.Fragment>
+          )}
         </div>
         <div className={classes.workDetail}>
           <Grid container>
@@ -524,110 +530,144 @@ class WorkDetail extends Component<Props, State> {
                   ))}
                 </Grid>
               </Grid>
-            </Grid>
-            <Grid item xs={12} lg={5}>
-              <Grid container alignItems="center">
+              <Grid container>
                 <Grid item className={classes.iconWrapper}>
                   <Icon glyph={PeopleIcon} size={18} />
                 </Grid>
-                <Grid item>
+                <Grid item className={classes.fullWidth}>
                   <Typography className={classes.label}>
                     <b>{work.get('coworkers').size}</b>
                     &nbsp;coworkers
                   </Typography>
-                </Grid>
-                <Grid
-                  item
-                  className={cx(classes.fullWidth, classes.alignRight)}
-                >
-                  <Button
-                    className={classes.addCoworkerButton}
-                    color="primary"
-                    onClick={() => this.setState({ activeSection: 'coworker' })}
+                  <Grid
+                    container
+                    className={classes.valueFieldWithNoPadding}
+                    spacing={8}
                   >
-                    + Add Coworkers
-                  </Button>
-                </Grid>
-              </Grid>
-              <Grid container className={classes.valueField}>
-                <Grid item xs={12}>
-                  <FormControl fullWidth className={classes.searchBox}>
-                    <Input
-                      id="newUser"
-                      name="newUser"
-                      placeholder="Add Coworkers"
-                      value={newUser}
-                      classes={{
-                        input: classes.formInput,
-                        formControl: classes.formInputWrapper,
-                      }}
-                      disableUnderline
-                      fullWidth
-                      onChange={this.handleChange}
-                    />
-                    {newUser && users.size > 0 ? (
-                      <div className={classes.searchResultList}>
-                        {users.map(u => (
-                          <ListItem
-                            className={classes.userResultItem}
-                            key={generate()}
-                            onClick={() => {
-                              this.props.requestAddCoworker(
-                                work.get('id'),
-                                u.get('id')
-                              );
-                              this.setState({ newUser: '' });
-                            }}
-                          >
-                            <Avatar
-                              alt={`${u.get('firstName')} ${u.get('lastName')}`}
-                              src={u.getIn(['profile', 'avatar'])}
-                              className={classes.avatar}
-                            />
-                            <ListItemText
-                              primary={`${u.get('firstName')} ${u.get(
-                                'lastName'
-                              )}`}
-                              secondary={u.get('email')}
-                              classes={{
-                                primary: classes.resultText,
-                                secondary: classes.resultDateText,
-                              }}
-                            />
-                          </ListItem>
-                        ))}
-                      </div>
-                    ) : null}
-                  </FormControl>
-                  <List className={classes.coworkersList}>
                     {relatedUsers &&
-                      relatedUsers.map(user => {
-                        const isEndorsed = endorsements
-                          .toJS()
-                          .filter(
-                            endorsement =>
-                              endorsement.to === user.getIn(['user', 'id'])
-                          );
-                        return (
-                          <User
-                            key={generate()}
-                            user={user.get('user')}
-                            work={work}
-                            type={user.get('type')}
-                            verifyCoworker={this.props.requestVerifyCoworker}
-                            requestEndorseUser={this.props.requestEndorseUser}
-                            endorsed={isEndorsed.length > 0}
-                            endorsedQuality={
-                              isEndorsed.length > 0 ? isEndorsed[0].quality : ''
-                            }
-                            usedQualities={usedQualities}
+                      relatedUsers.map(user => (
+                        <Grid item key={generate()}>
+                          <Avatar
+                            className={classes.avatar}
+                            src={user.getIn(['user', 'profile', 'avatar'])}
                           />
-                        );
-                      })}
-                  </List>
+                        </Grid>
+                      ))}
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
+            {displayMode === 'private' && (
+              <Grid item xs={12} lg={5}>
+                <Grid container alignItems="center">
+                  <Grid item className={classes.iconWrapper}>
+                    <Icon glyph={PeopleIcon} size={18} />
+                  </Grid>
+                  <Grid item>
+                    <Typography className={classes.label}>
+                      <b>{work.get('coworkers').size}</b>
+                      &nbsp;coworkers
+                    </Typography>
+                  </Grid>
+                  <Grid
+                    item
+                    className={cx(classes.fullWidth, classes.alignRight)}
+                  >
+                    <Button
+                      className={classes.addCoworkerButton}
+                      color="primary"
+                      onClick={() =>
+                        this.setState({ activeSection: 'coworker' })
+                      }
+                    >
+                      + Add Coworkers
+                    </Button>
+                  </Grid>
+                </Grid>
+                <Grid container className={classes.valueField}>
+                  <Grid item xs={12}>
+                    <FormControl fullWidth className={classes.searchBox}>
+                      <Input
+                        id="newUser"
+                        name="newUser"
+                        placeholder="Add Coworkers"
+                        value={newUser}
+                        classes={{
+                          input: classes.formInput,
+                          formControl: classes.formInputWrapper,
+                        }}
+                        disableUnderline
+                        fullWidth
+                        onChange={this.handleChange}
+                      />
+                      {newUser && users.size > 0 ? (
+                        <div className={classes.searchResultList}>
+                          {users.map(u => (
+                            <ListItem
+                              className={classes.userResultItem}
+                              key={generate()}
+                              onClick={() => {
+                                this.props.requestAddCoworker(
+                                  work.get('id'),
+                                  u.get('id')
+                                );
+                                this.setState({ newUser: '' });
+                              }}
+                            >
+                              <Avatar
+                                alt={`${u.get('firstName')} ${u.get(
+                                  'lastName'
+                                )}`}
+                                src={u.getIn(['profile', 'avatar'])}
+                                className={classes.avatar}
+                              />
+                              <ListItemText
+                                primary={`${u.get('firstName')} ${u.get(
+                                  'lastName'
+                                )}`}
+                                secondary={u.get('email')}
+                                classes={{
+                                  primary: classes.resultText,
+                                  secondary: classes.resultDateText,
+                                }}
+                              />
+                            </ListItem>
+                          ))}
+                        </div>
+                      ) : null}
+                    </FormControl>
+                    <List className={classes.coworkersList}>
+                      {relatedUsers &&
+                        relatedUsers.map(user => {
+                          const isEndorsed = endorsements
+                            .toJS()
+                            .filter(
+                              endorsement =>
+                                endorsement.to === user.getIn(['user', 'id'])
+                            );
+                          return (
+                            <User
+                              key={generate()}
+                              user={user.get('user')}
+                              work={work}
+                              type={user.get('type')}
+                              verifyCoworker={this.props.requestVerifyCoworker}
+                              requestEndorseUser={this.props.requestEndorseUser}
+                              endorsed={isEndorsed.length > 0}
+                              endorsedQuality={
+                                isEndorsed.length > 0
+                                  ? isEndorsed[0].quality
+                                  : ''
+                              }
+                              usedQualities={usedQualities}
+                            />
+                          );
+                        })}
+                    </List>
+                  </Grid>
+                </Grid>
+              </Grid>
+            )}
           </Grid>
         </div>
         <div

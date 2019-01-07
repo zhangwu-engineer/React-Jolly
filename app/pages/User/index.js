@@ -99,7 +99,7 @@ class UserPage extends React.Component<Props> {
           path={`${url}/add`}
           render={props => <AddWork {...props} />}
         />
-        <PrivateRoute
+        <Route
           path={`${url}/e/:eventSlug`}
           render={props => <WorkDetail {...props} />}
         />

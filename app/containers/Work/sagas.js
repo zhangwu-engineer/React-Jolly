@@ -197,9 +197,10 @@ const endorsementsRequestError = (error: string) => ({
   payload: error,
 });
 
-export const requestEndorsers = (workSlug: string) => ({
+export const requestEndorsers = (workSlug: string, userSlug: string) => ({
   type: ENDORSERS + REQUESTED,
   payload: workSlug,
+  meta: userSlug,
 });
 const endorsersRequestSuccess = (payload: Object) => ({
   type: ENDORSERS + SUCCEDED,
@@ -676,13 +677,13 @@ function* EndorsementsRequest({ payload }) {
   }
 }
 
-function* EndorsersRequest({ payload }) {
+function* EndorsersRequest({ payload, meta }) {
   const token = yield select(getToken);
   try {
     const response = yield call(request, {
-      method: 'GET',
+      method: 'POST',
       url: `${API_URL}/endorsement/work/${payload}/endorsers`,
-      data: payload,
+      data: { userSlug: meta },
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
