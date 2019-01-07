@@ -273,25 +273,35 @@ class WorkForm extends Component<Props, State> {
   debouncedSearch = debounce((name, value) => {
     switch (name) {
       case 'title': {
-        const filteredWorks = this.props.works
-          .toJS()
-          .filter(
-            w => w.title.toLowerCase().indexOf(value.toLowerCase()) !== -1
-          );
-        this.setState({ filteredWorks });
+        if (value) {
+          const filteredWorks = this.props.works
+            .toJS()
+            .filter(
+              w => w.title.toLowerCase().indexOf(value.toLowerCase()) !== -1
+            );
+          this.setState({ filteredWorks });
+        } else {
+          this.setState({ filteredWorks: [] });
+        }
         break;
       }
       case 'role': {
-        let filteredRoles = this.props.roles
-          .toJS()
-          .filter(r => r.name.toLowerCase().indexOf(value.toLowerCase()) !== -1)
-          .map(r => r.name);
-        if (filteredRoles.length === 0) {
-          filteredRoles = ROLES.filter(
-            r => r.toLowerCase().indexOf(value.toLowerCase()) !== -1
-          );
+        if (value) {
+          let filteredRoles = this.props.roles
+            .toJS()
+            .filter(
+              r => r.name.toLowerCase().indexOf(value.toLowerCase()) !== -1
+            )
+            .map(r => r.name);
+          if (filteredRoles.length === 0) {
+            filteredRoles = ROLES.filter(
+              r => r.toLowerCase().indexOf(value.toLowerCase()) !== -1
+            );
+          }
+          this.setState({ filteredRoles });
+        } else {
+          this.setState({ filteredRoles: [] });
         }
-        this.setState({ filteredRoles });
         break;
       }
       case 'newUser':
@@ -312,6 +322,22 @@ class WorkForm extends Component<Props, State> {
       this.setState({ newUser: value }, () => {
         this.debouncedSearch(name, value);
       });
+    } else if (name === 'title') {
+      const regEx = /^[a-zA-Z0-9 ]+$/;
+      if (value === '' || regEx.test(value)) {
+        this.setState(
+          state => ({
+            ...state,
+            model: {
+              ...state.model,
+              [name]: value,
+            },
+          }),
+          () => {
+            this.debouncedSearch(name, value);
+          }
+        );
+      }
     } else {
       this.setState(
         state => ({

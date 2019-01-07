@@ -418,6 +418,22 @@ class MobileWorkForm extends Component<Props, State> {
       this.setState({ newUser: value }, () => {
         this.debouncedSearch(name, value);
       });
+    } else if (name === 'title') {
+      const regEx = /^[a-zA-Z0-9 ]+$/;
+      if (value === '' || regEx.test(value)) {
+        this.setState(
+          state => ({
+            ...state,
+            model: {
+              ...state.model,
+              [name]: value,
+            },
+          }),
+          () => {
+            this.debouncedSearch(name, value);
+          }
+        );
+      }
     } else {
       this.setState(
         state => ({
@@ -514,21 +530,7 @@ class MobileWorkForm extends Component<Props, State> {
                 classes={{
                   input: classes.titleInput,
                 }}
-                onChange={e => {
-                  e.persist();
-                  this.setState(
-                    state => ({
-                      ...state,
-                      model: {
-                        ...state.model,
-                        title: e.target.value,
-                      },
-                    }),
-                    () => {
-                      this.debouncedSearch(e.target.name, e.target.value);
-                    }
-                  );
-                }}
+                onChange={this.handleChange}
                 autoFocus
                 disableUnderline
                 fullWidth
