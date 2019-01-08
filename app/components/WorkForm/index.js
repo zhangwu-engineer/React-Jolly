@@ -169,10 +169,16 @@ const styles = theme => ({
     display: 'block',
     paddingLeft: 20,
     cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: '#efefef',
+    },
   },
   userResultItem: {
     paddingLeft: 20,
     cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: '#efefef',
+    },
   },
   resultText: {
     fontSize: 16,
@@ -398,6 +404,7 @@ class WorkForm extends Component<Props, State> {
                 }}
                 onChange={this.handleChange}
                 autoFocus
+                autoComplete="off"
               />
               {filteredWorks.length ? (
                 <div className={classes.searchResultList}>
@@ -444,6 +451,7 @@ class WorkForm extends Component<Props, State> {
                 <Grid item className={classes.roleWrapper}>
                   <FormControl fullWidth>
                     <Input
+                      autoComplete="off"
                       id="role"
                       name="role"
                       placeholder="Add Role"
@@ -503,7 +511,7 @@ class WorkForm extends Component<Props, State> {
                           },
                         }))
                       }
-                      format="MMM. dd"
+                      format="MMM dd, yy"
                       leftArrowIcon={<LeftArrowIcon />}
                       rightArrowIcon={<RightArrowIcon />}
                       InputProps={{
@@ -529,7 +537,7 @@ class WorkForm extends Component<Props, State> {
                           },
                         }))
                       }
-                      format="MMM. dd"
+                      format="MMM dd, yy"
                       leftArrowIcon={<LeftArrowIcon />}
                       rightArrowIcon={<RightArrowIcon />}
                       InputProps={{
@@ -674,6 +682,7 @@ class WorkForm extends Component<Props, State> {
                       }}
                       disableUnderline
                       fullWidth
+                      autoComplete="off"
                       onChange={this.handleChange}
                     />
                     {newUser && users.size > 0 ? (
