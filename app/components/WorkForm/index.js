@@ -463,6 +463,16 @@ class WorkForm extends Component<Props, State> {
                       disableUnderline
                       fullWidth
                       onChange={this.handleChange}
+                      onFocus={() => {
+                        if (!model.role) {
+                          const filtered = this.props.roles
+                            .toJS()
+                            .map(r => r.name);
+                          this.setState({
+                            filteredRoles: filtered,
+                          });
+                        }
+                      }}
                     />
                     {filteredRoles.length ? (
                       <div className={classes.searchResultList}>
