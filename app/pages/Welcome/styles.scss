@@ -42,7 +42,7 @@
   &__leftPanelContent {
     max-width: 350px;
     @include breakpoint(small only) {
-      margin: 80px auto;
+      margin: 20px auto;
     }
   }
   &__title {
