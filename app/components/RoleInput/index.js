@@ -3,7 +3,9 @@
 import React, { Component } from 'react';
 import cx from 'classnames';
 import { generate } from 'shortid';
-
+import { debounce } from 'lodash-es';
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider, InlineDatePicker } from 'material-ui-pickers';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -16,11 +18,17 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DoneIcon from '@material-ui/icons/Done';
 import EditIcon from '@material-ui/icons/Edit';
 import ClearIcon from '@material-ui/icons/Clear';
+import LeftArrowIcon from '@material-ui/icons/KeyboardArrowLeft';
+import RightArrowIcon from '@material-ui/icons/KeyboardArrowRight';
+
+import ROLES from 'enum/roles';
 
 const styles = theme => ({
   root: {
@@ -34,6 +42,7 @@ const styles = theme => ({
     marginBottom: 20,
   },
   nameFieldWrapper: {
+    position: 'relative',
     paddingRight: 30,
     [theme.breakpoints.down('xs')]: {
       paddingRight: 0,
@@ -113,6 +122,31 @@ const styles = theme => ({
       backgroundColor: 'transparent',
     },
   },
+  searchResultList: {
+    backgroundColor: theme.palette.common.white,
+    border: '1px solid #e5e5e5',
+    position: 'absolute',
+    width: 'calc(100% - 30px)',
+    maxHeight: 200,
+    top: 49,
+    zIndex: 10,
+    overflowY: 'scroll',
+    '&::-webkit-scrollbar-track': {
+      backgroundColor: '#F5F5F5',
+    },
+    '&::-webkit-scrollbar': {
+      width: 6,
+      backgroundColor: '#F5F5F5',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#a4acb3',
+    },
+  },
+  resultItem: {
+    display: 'block',
+    paddingLeft: 20,
+    cursor: 'pointer',
+  },
 });
 
 type Props = {
@@ -131,6 +165,7 @@ type State = {
   mode: string,
   model: ?Object,
   rangeMode: boolean,
+  filteredRoles: Array<string>,
 };
 
 class RoleInput extends Component<Props, State> {
@@ -143,12 +178,14 @@ class RoleInput extends Component<Props, State> {
         mode: nextProps.mode,
         model: {
           name: nextProps.data.name,
-          month: nextProps.data.month,
-          year: nextProps.data.year,
+          dateStarted: nextProps.data.dateStarted
+            ? new Date(nextProps.data.dateStarted)
+            : new Date(),
           minRate: nextProps.data.minRate,
           maxRate: nextProps.data.maxRate,
           unit: nextProps.data.unit,
         },
+        rangeMode: nextProps.data.minRate && nextProps.data.maxRate,
       };
     }
     return null;
@@ -157,6 +194,7 @@ class RoleInput extends Component<Props, State> {
     mode: '',
     model: null,
     rangeMode: false,
+    filteredRoles: [],
   };
   // componentDidMount() {
   //   document.addEventListener('mousedown', this.handleClick, false);
@@ -219,8 +257,7 @@ class RoleInput extends Component<Props, State> {
     if (!model) return false;
     if (
       data.name !== model.name ||
-      data.month !== model.month ||
-      data.year !== model.year ||
+      data.dateStarted !== model.dateStarted ||
       data.minRate !== model.minRate ||
       data.maxRate !== model.maxRate ||
       data.unit !== model.unit
@@ -229,14 +266,36 @@ class RoleInput extends Component<Props, State> {
     }
     return false;
   };
+  debouncedSearch = debounce((id, value) => {
+    switch (id) {
+      case 'name': {
+        if (value) {
+          const filteredRoles = ROLES.filter(
+            r => r.toLowerCase().indexOf(value.toLowerCase()) !== -1
+          );
+          this.setState({ filteredRoles });
+        } else {
+          this.setState({ filteredRoles: ROLES });
+        }
+        break;
+      }
+      default:
+        break;
+    }
+  }, 500);
   handleChange = (e: Object) => {
     e.persist();
-    this.setState(state => ({
-      model: {
-        ...state.model,
-        [e.target.id]: e.target.value,
-      },
-    }));
+    this.setState(
+      state => ({
+        model: {
+          ...state.model,
+          [e.target.id]: e.target.value,
+        },
+      }),
+      () => {
+        this.debouncedSearch(e.target.id, e.target.value);
+      }
+    );
   };
   handleRateChange = (e: Object) => {
     e.persist();
@@ -261,6 +320,10 @@ class RoleInput extends Component<Props, State> {
   toggleRange = () => {
     this.setState(state => ({
       rangeMode: !state.rangeMode,
+      model: {
+        ...state.model,
+        maxRate: '',
+      },
     }));
   };
   // handleClick = (e: Object) => {
@@ -272,7 +335,7 @@ class RoleInput extends Component<Props, State> {
   node: ?HTMLElement;
   render() {
     const { data, units, classes, editable } = this.props;
-    const { mode, model, rangeMode } = this.state;
+    const { mode, model, rangeMode, filteredRoles } = this.state;
     return (
       <div
         className={classes.root}
@@ -318,71 +381,80 @@ class RoleInput extends Component<Props, State> {
                   <Grid
                     item
                     xs={12}
-                    lg={6}
+                    lg={8}
                     className={classes.nameFieldWrapper}
                   >
                     <TextField
+                      autoComplete="off"
                       id="name"
                       label="Type of Work"
                       value={model && model.name}
                       onChange={this.handleChange}
+                      onBlur={() => {
+                        setTimeout(() => {
+                          this.setState({
+                            filteredRoles: [],
+                          });
+                        }, 500);
+                      }}
+                      onFocus={() => {
+                        if (!model.name) {
+                          this.debouncedSearch('name', model.name);
+                        }
+                      }}
                       className={classes.textInput}
                       fullWidth
                       autoFocus
                     />
+                    {filteredRoles.length ? (
+                      <div className={classes.searchResultList}>
+                        {filteredRoles.map(r => (
+                          <ListItem
+                            className={classes.resultItem}
+                            key={generate()}
+                            onClick={() =>
+                              this.setState(state => ({
+                                model: {
+                                  ...state.model,
+                                  name: r,
+                                },
+                                filteredRoles: [],
+                              }))
+                            }
+                          >
+                            <ListItemText
+                              classes={{ primary: classes.resultText }}
+                              primary={r}
+                            />
+                          </ListItem>
+                        ))}
+                      </div>
+                    ) : null}
                   </Grid>
-                  <Grid item xs={12} lg={6}>
-                    <Grid container>
-                      <Grid item xs={6} className={classes.rateFieldWrapper}>
-                        <FormControl fullWidth>
-                          <InputLabel htmlFor="month">Date</InputLabel>
-                          <Select
-                            value={model && model.month}
-                            onChange={this.handleSelectChange}
-                            name="month"
-                            inputProps={{
-                              id: 'month',
-                            }}
-                            className={classes.selectInput}
-                          >
-                            <MenuItem value="">Month</MenuItem>
-                            <MenuItem value="1">Jan</MenuItem>
-                            <MenuItem value="2">Feb</MenuItem>
-                            <MenuItem value="3">Mar</MenuItem>
-                            <MenuItem value="4">Apr</MenuItem>
-                            <MenuItem value="5">May</MenuItem>
-                            <MenuItem value="6">Jun</MenuItem>
-                            <MenuItem value="7">Jul</MenuItem>
-                            <MenuItem value="8">Aug</MenuItem>
-                            <MenuItem value="9">Sep</MenuItem>
-                            <MenuItem value="10">Oct</MenuItem>
-                            <MenuItem value="11">Nov</MenuItem>
-                            <MenuItem value="12">Dec</MenuItem>
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                      <Grid item xs={6} className={classes.unitFieldWrapper}>
-                        <FormControl fullWidth>
-                          <InputLabel htmlFor="year" />
-                          <Select
-                            value={model && model.year}
-                            onChange={this.handleSelectChange}
-                            name="year"
-                            inputProps={{
-                              id: 'year',
-                            }}
-                            className={classes.selectInput}
-                          >
-                            <MenuItem value="">Year</MenuItem>
-                            <MenuItem value="2015">2015</MenuItem>
-                            <MenuItem value="2016">2016</MenuItem>
-                            <MenuItem value="2017">2017</MenuItem>
-                            <MenuItem value="2018">2018</MenuItem>
-                            <MenuItem value="2019">2019</MenuItem>
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                    </Grid>
+                  <Grid item xs={12} lg={4}>
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                      <InlineDatePicker
+                        label="Date Started"
+                        value={model.dateStarted}
+                        onChange={date =>
+                          this.setState(state => ({
+                            model: {
+                              ...state.model,
+                              dateStarted: date,
+                            },
+                          }))
+                        }
+                        format="MMM dd, yyyy"
+                        leftArrowIcon={<LeftArrowIcon />}
+                        rightArrowIcon={<RightArrowIcon />}
+                        InputProps={{
+                          classes: {
+                            root: classes.textInput,
+                          },
+                        }}
+                        fullWidth
+                      />
+                    </MuiPickersUtilsProvider>
                   </Grid>
                 </Grid>
                 <Grid container>
