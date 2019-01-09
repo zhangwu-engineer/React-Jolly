@@ -73,6 +73,7 @@ const styles = theme => ({
     padding: '15px 10px',
     color: theme.palette.common.white,
     boxSizing: 'border-box',
+    caretColor: '#ffffff',
   },
   formSection: {
     backgroundColor: theme.palette.common.white,
