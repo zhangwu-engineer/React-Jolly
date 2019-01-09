@@ -288,6 +288,9 @@ const styles = theme => ({
     color: '#4e4e4e',
     textTransform: 'none',
   },
+  picker: {
+    marginBottom: 20,
+  },
 });
 
 type Props = {
@@ -643,7 +646,22 @@ class MobileWorkForm extends Component<Props, State> {
                             : { display: 'none' }
                         }
                       >
-                        <div className="picker">
+                        <Grid container justify="flex-end">
+                          <Grid item>
+                            <IconButton
+                              className={classes.iconButton}
+                              onClick={() => {
+                                this.setState({
+                                  isEditingFrom: false,
+                                  isEditingTo: false,
+                                });
+                              }}
+                            >
+                              <ClearIcon />
+                            </IconButton>
+                          </Grid>
+                        </Grid>
+                        <div className={classes.picker}>
                           <Paper style={{ overflow: 'hidden' }}>
                             <Calendar
                               date={date}
