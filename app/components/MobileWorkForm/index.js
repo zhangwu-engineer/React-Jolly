@@ -770,7 +770,13 @@ class MobileWorkForm extends Component<Props, State> {
             <Grid
               container
               className={classes.formFieldGroup}
-              onClick={() => this.setState({ activeSection: 'image' })}
+              onClick={() => {
+                this.setState({ activeSection: 'image' }, () => {
+                  if (model.photos.length === 0 && this.fileInput.current) {
+                    this.fileInput.current.click();
+                  }
+                });
+              }}
             >
               <Grid item className={classes.iconWrapper}>
                 <Icon glyph={AddPhotoIcon} size={18} />
@@ -1112,13 +1118,6 @@ class MobileWorkForm extends Component<Props, State> {
                     </Grid>
                   ))}
                 </div>
-                <input
-                  type="file"
-                  className={classes.fileInput}
-                  ref={this.fileInput}
-                  onChange={this.handleFileUpload}
-                  multiple="multiple"
-                />
                 <Button
                   className={classes.addRoleButton}
                   color="primary"
@@ -1130,6 +1129,13 @@ class MobileWorkForm extends Component<Props, State> {
             )}
           </div>
         </div>
+        <input
+          type="file"
+          className={classes.fileInput}
+          ref={this.fileInput}
+          onChange={this.handleFileUpload}
+          multiple="multiple"
+        />
       </div>
     );
   }
