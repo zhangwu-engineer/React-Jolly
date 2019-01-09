@@ -240,11 +240,12 @@ const styles = theme => ({
     paddingBottom: 0,
   },
   coworkerInput: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 500,
     color: theme.palette.common.white,
     padding: '14px 20px',
     boxSizing: 'border-box',
+    caretColor: '#ffffff',
   },
   searchCoworkerList: {
     backgroundColor: theme.palette.common.white,
