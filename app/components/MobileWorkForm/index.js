@@ -46,7 +46,7 @@ import ROLES from 'enum/roles';
 const styles = theme => ({
   root: {
     display: 'none',
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       display: 'block',
     },
   },
@@ -230,7 +230,7 @@ const styles = theme => ({
     '&:hover': {
       color: theme.palette.primary.main,
     },
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       padding: 6,
     },
   },
@@ -478,10 +478,9 @@ class MobileWorkForm extends Component<Props, State> {
   dropzoneDiv = React.createRef();
   fileInput = React.createRef();
   render() {
-    const { classes, user, isLoading, error, users } = this.props;
+    const { classes, user, isLoading, users } = this.props;
     const {
       model,
-      works,
       filteredWorks,
       roles,
       filteredRoles,
@@ -636,16 +635,7 @@ class MobileWorkForm extends Component<Props, State> {
                     {format(model.to, 'MMMM, dd')}
                   </Typography>
                   <BasePicker value={isEditingFrom ? model.from : model.to}>
-                    {({
-                      date,
-                      handleAccept,
-                      handleChange,
-                      handleClear,
-                      handleDismiss,
-                      handleSetTodayDate,
-                      handleTextFieldChange,
-                      pick12hOr24hFormat,
-                    }) => (
+                    {({ date }) => (
                       <div
                         style={
                           isEditingFrom || isEditingTo

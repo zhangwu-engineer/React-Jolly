@@ -38,7 +38,7 @@ import ROLES from 'enum/roles';
 
 const styles = theme => ({
   root: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       display: 'none',
     },
   },
