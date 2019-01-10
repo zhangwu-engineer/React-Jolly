@@ -49,11 +49,14 @@ class App extends Component<Props> {
       }
     }
   }
-  componentDidUpdate() {
+  componentDidUpdate(prevProps: Props) {
     if (this.props.location.pathname === '/' && !this.props.user) {
       history.push('/sign-in');
     } else if (this.props.location.pathname === '/' && this.props.user) {
       history.push(`/f/${this.props.user.get('slug')}/edit`);
+    }
+    if (prevProps.location.pathname !== this.props.location.pathname) {
+      analytics.page(this.props.location.pathname);
     }
   }
   render() {
