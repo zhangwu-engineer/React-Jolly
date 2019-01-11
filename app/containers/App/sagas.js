@@ -280,12 +280,23 @@ export const reducer = (
     case REGISTER + REQUESTED:
       return state.set('isLoading', true).set('error', null);
 
-    case REGISTER + SUCCEDED:
+    case REGISTER + SUCCEDED: {
       storage.set('token', payload.auth_token);
+      analytics.identify(payload.user.id, {
+        full_name: `${payload.user.firstName} ${payload.user.lastName}`,
+        email: payload.user.email,
+      });
+      analytics.track('Signed Up', {
+        user_id: payload.user.id,
+        full_name: `${payload.user.firstName} ${payload.user.lastName}`,
+        email: payload.user.email,
+        signup_method: 'email',
+      });
       return state
         .set('isLoading', false)
         .set('token', payload.auth_token)
         .set('error', '');
+    }
 
     case REGISTER + FAILED:
       return state.set('isLoading', false).set('error', payload);
@@ -332,12 +343,17 @@ export const reducer = (
     case LOGIN + REQUESTED:
       return state.set('isLoading', true);
 
-    case LOGIN + SUCCEDED:
+    case LOGIN + SUCCEDED: {
       storage.set('token', payload.auth_token);
+      analytics.identify(payload.user.id, {
+        full_name: `${payload.user.firstName} ${payload.user.lastName}`,
+        email: payload.user.email,
+      });
       return state
         .set('isLoading', false)
         .set('token', payload.auth_token)
         .set('error', '');
+    }
 
     case LOGIN + FAILED:
       return state.set('isLoading', false).set('error', payload);
@@ -352,12 +368,25 @@ export const reducer = (
     case SOCIAL_LOGIN + REQUESTED:
       return state.set('isSocialLoading', true);
 
-    case SOCIAL_LOGIN + SUCCEDED:
+    case SOCIAL_LOGIN + SUCCEDED: {
       storage.set('token', payload.auth_token);
+      analytics.identify(payload.user.id, {
+        full_name: `${payload.user.firstName} ${payload.user.lastName}`,
+        email: payload.user.email,
+      });
+      if (payload.action === 'signup') {
+        analytics.track('Signed Up', {
+          user_id: payload.user.id,
+          full_name: `${payload.user.firstName} ${payload.user.lastName}`,
+          email: payload.user.email,
+          signup_method: payload.type,
+        });
+      }
       return state
         .set('isSocialLoading', false)
         .set('token', payload.auth_token)
         .set('socialError', '');
+    }
 
     case SOCIAL_LOGIN + FAILED:
       return state.set('isSocialLoading', false).set('socialError', payload);
