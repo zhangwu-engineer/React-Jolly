@@ -32,6 +32,7 @@ const CLOSE_NAVBAR = 'Jolly/App/CLOSE_NAVBAR';
 
 const SET_META_JSON = 'Jolly/App/SET_META_JSON';
 
+declare var analytics;
 // ------------------------------------
 // Actions
 // ------------------------------------

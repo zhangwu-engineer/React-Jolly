@@ -366,6 +366,20 @@ function* UpdateRoleRequest({ payload, meta }) {
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
+      const properties = {
+        name: response.data.response.role.name,
+        unit: response.data.response.role.unit,
+      };
+      if (response.data.response.role.dateStarted) {
+        properties.date_started = response.data.response.role.dateStarted;
+      }
+      if (response.data.response.role.minRate) {
+        properties.rate_low = response.data.response.role.minRate;
+      }
+      if (response.data.response.role.maxRate) {
+        properties.rate_high = response.data.response.role.maxRate;
+      }
+      analytics.track('Role Updated', properties);
       yield put(roleUpdateRequestSuccess(response.data.response));
     } else {
       yield put(roleUpdateRequestFailed(response.data.error));
@@ -385,6 +399,20 @@ function* CreateRoleRequest({ payload }) {
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
+      const properties = {
+        name: response.data.response.role.name,
+        unit: response.data.response.role.unit,
+      };
+      if (response.data.response.role.dateStarted) {
+        properties.date_started = response.data.response.role.dateStarted;
+      }
+      if (response.data.response.role.minRate) {
+        properties.rate_low = response.data.response.role.minRate;
+      }
+      if (response.data.response.role.maxRate) {
+        properties.rate_high = response.data.response.role.maxRate;
+      }
+      analytics.track('Role Added', properties);
       yield put(roleCreateRequestSuccess(response.data.response));
     } else {
       yield put(roleCreateRequestFailed(response.data.error));
