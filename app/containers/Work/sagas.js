@@ -25,6 +25,8 @@ const ENDORSE_USER = 'Jolly/Work/ENDORSE_USER';
 const ENDORSEMENTS = 'Jolly/Work/ENDORSEMENTS';
 const ENDORSERS = 'Jolly/Work/ENDORSERS';
 const INVITE_INFORMATION = 'Jolly/Work/INVITE_INFORMATION';
+
+declare var analytics;
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -537,6 +539,18 @@ function* CreateWorkRequest({ payload }) {
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
+      const { work } = response.data.response;
+      analytics.track('Job Added', {
+        job_id: work.slug,
+        role: work.role,
+        caption: work.caption,
+        number_of_images: work.photos.length,
+        begin_date: work.from,
+        end_date: work.to,
+        created_at: work.date_created,
+        job_added_method: 'created',
+        is_event_creator: true,
+      });
       yield put(workCreateRequestSuccess(response.data.response));
     } else {
       yield put(workCreateRequestFailed(response.data.error));
