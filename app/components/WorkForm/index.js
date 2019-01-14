@@ -205,7 +205,12 @@ const styles = theme => ({
   photo: {
     height: 100,
   },
+  avatar: {
+    backgroundColor: '#afafaf',
+  },
 });
+
+const emailRegEx = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 type Props = {
   user: Object,
@@ -694,6 +699,18 @@ class WorkForm extends Component<Props, State> {
                       fullWidth
                       autoComplete="off"
                       onChange={this.handleChange}
+                      onKeyDown={e => {
+                        if (e.keyCode === 13 && emailRegEx.test(newUser)) {
+                          this.setState(state => ({
+                            ...state,
+                            model: {
+                              ...state.model,
+                              coworkers: [...state.model.coworkers, newUser],
+                            },
+                            newUser: '',
+                          }));
+                        }
+                      }}
                     />
                     {newUser && users.size > 0 ? (
                       <div className={classes.searchResultList}>
@@ -741,15 +758,20 @@ class WorkForm extends Component<Props, State> {
                         key={generate()}
                       >
                         <Avatar
+                          className={classes.avatar}
                           alt={`${get(c, ['firstName'])} ${get(c, [
                             'lastName',
                           ])}`}
                           src={get(c, ['profile', 'avatar'])}
                         />
                         <ListItemText
-                          primary={`${get(c, ['firstName'])} ${get(c, [
-                            'lastName',
-                          ])}`}
+                          primary={
+                            typeof c === 'string'
+                              ? c
+                              : `${get(c, ['firstName'])} ${get(c, [
+                                  'lastName',
+                                ])}`
+                          }
                           secondary={get(c, ['email'])}
                           classes={{
                             primary: classes.resultText,
@@ -760,7 +782,10 @@ class WorkForm extends Component<Props, State> {
                           <IconButton
                             onClick={() => {
                               const newCoworkers = this.state.model.coworkers.filter(
-                                i => get(i, ['id']) !== get(c, ['id'])
+                                i =>
+                                  get(c, ['id'])
+                                    ? get(i, ['id']) !== get(c, ['id'])
+                                    : typeof c === 'object' || i !== c
                               );
                               this.setState(state => ({
                                 ...state,

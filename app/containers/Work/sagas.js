@@ -24,6 +24,7 @@ const VERIFY_COWORKER = 'Jolly/Work/VERIFY_COWORKER';
 const ENDORSE_USER = 'Jolly/Work/ENDORSE_USER';
 const ENDORSEMENTS = 'Jolly/Work/ENDORSEMENTS';
 const ENDORSERS = 'Jolly/Work/ENDORSERS';
+const INVITE_INFORMATION = 'Jolly/Work/INVITE_INFORMATION';
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -215,6 +216,22 @@ const endorsersRequestError = (error: string) => ({
   payload: error,
 });
 
+export const requestInviteInformation = (token: string) => ({
+  type: INVITE_INFORMATION + REQUESTED,
+  payload: token,
+});
+const inviteInformationRequestSuccess = (payload: Object) => ({
+  type: INVITE_INFORMATION + SUCCEDED,
+  payload,
+});
+const inviteInformationRequestFailed = (error: string) => ({
+  type: INVITE_INFORMATION + FAILED,
+  payload: error,
+});
+const inviteInformationRequestError = (error: string) => ({
+  type: INVITE_INFORMATION + ERROR,
+  payload: error,
+});
 // ------------------------------------
 // Reducer
 // ------------------------------------
@@ -248,6 +265,9 @@ const initialState = fromJS({
   endorsers: fromJS([]),
   isEndorsersLoading: false,
   endorsersError: '',
+  invite: null,
+  isInviteLoading: false,
+  inviteError: '',
 });
 
 export const reducer = (
@@ -474,6 +494,27 @@ export const reducer = (
         Please try again later or contact support and provide the following error information: ${payload}`
       );
 
+    case INVITE_INFORMATION + REQUESTED:
+      return state.set('isInviteLoading', true);
+
+    case INVITE_INFORMATION + SUCCEDED:
+      return state
+        .set('isInviteLoading', false)
+        .set('invite', fromJS(payload))
+        .set('inviteError', '');
+
+    case INVITE_INFORMATION + FAILED:
+      return state
+        .set('isInviteLoading', false)
+        .set('inviteError', payload.message);
+
+    case INVITE_INFORMATION + ERROR:
+      return state.set('isInviteLoading', false).set(
+        'inviteError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
     default:
       return state;
   }
@@ -696,6 +737,25 @@ function* EndorsersRequest({ payload, meta }) {
   }
 }
 
+function* InviteInformationRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/work/invite`,
+      data: { token: payload },
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(inviteInformationRequestSuccess(response.data.response));
+    } else {
+      yield put(inviteInformationRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(inviteInformationRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(CREATE_WORK + REQUESTED, CreateWorkRequest),
@@ -709,5 +769,6 @@ export default function*(): Saga<void> {
     takeLatest(ENDORSE_USER + REQUESTED, EndorseUserRequest),
     takeLatest(ENDORSEMENTS + REQUESTED, EndorsementsRequest),
     takeLatest(ENDORSERS + REQUESTED, EndorsersRequest),
+    takeLatest(INVITE_INFORMATION + REQUESTED, InviteInformationRequest),
   ]);
 }

@@ -197,8 +197,12 @@ class User extends Component<Props, State> {
             className={classes.avatar}
           />
           <ListItemText
-            primary={`${user.get('firstName')} ${user.get('lastName')}`}
-            secondary={user.get('email')}
+            primary={
+              user.get('firstName')
+                ? `${user.get('firstName')} ${user.get('lastName')}`
+                : user.get('email')
+            }
+            secondary={user.get('firstName') && user.get('email')}
             classes={{
               primary: classes.resultText,
               secondary: classes.resultDateText,

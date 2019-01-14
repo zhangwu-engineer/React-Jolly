@@ -6,6 +6,7 @@ import { compose } from 'redux';
 import cx from 'classnames';
 import * as yup from 'yup';
 import { cloneDeep } from 'lodash-es';
+import storage from 'store';
 
 import { withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -162,6 +163,7 @@ class SignUp extends Component<Props, State> {
   componentDidUpdate(prevProps: Props) {
     const { isLoading, error, user } = this.props;
     if (prevProps.isLoading && !isLoading && !error && user) {
+      storage.set('invite', null);
       history.push(`/f/${user.get('slug')}/edit`);
     }
   }
@@ -195,12 +197,15 @@ class SignUp extends Component<Props, State> {
     const { email, fullname, password } = cloneDeep(this.state.model);
     const [firstName, ...rest] = fullname.split(' ');
     this.setState({ isOpen: false }, () => {
-      this.props.requestRegister({
-        email,
-        firstName,
-        lastName: rest.join(' '),
-        password,
-      });
+      this.props.requestRegister(
+        {
+          email,
+          firstName,
+          lastName: rest.join(' '),
+          password,
+        },
+        storage.get('invite')
+      );
     });
   };
   nameInput = React.createRef();
@@ -382,7 +387,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  requestRegister: payload => dispatch(requestRegister(payload)),
+  requestRegister: (payload, invite) =>
+    dispatch(requestRegister(payload, invite)),
 });
 
 export default compose(

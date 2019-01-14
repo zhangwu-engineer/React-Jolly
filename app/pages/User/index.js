@@ -19,6 +19,7 @@ const Roles = load(() => import('pages/Roles'));
 const AddWork = load(() => import('pages/AddWork'));
 const WorkDetail = load(() => import('pages/WorkDetail'));
 const Mobile = load(() => import('pages/Mobile'));
+const Invite = load(() => import('pages/Invite'));
 
 type Props = {
   user: Object,
@@ -98,6 +99,14 @@ class UserPage extends React.Component<Props> {
         <PrivateRoute
           path={`${url}/add`}
           render={props => <AddWork {...props} />}
+        />
+        <Route
+          path={`${url}/e/:eventSlug/work/:token`}
+          render={props => <Invite {...props} />}
+        />
+        <Route
+          path={`${url}/e/:eventSlug/work`}
+          render={props => <Invite {...props} />}
         />
         <Route
           path={`${url}/e/:eventSlug`}

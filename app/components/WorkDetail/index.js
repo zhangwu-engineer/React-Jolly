@@ -307,6 +307,8 @@ const styles = theme => ({
   },
 });
 
+const emailRegEx = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
 type Props = {
   work: Object,
   users: Object,
@@ -599,6 +601,21 @@ class WorkDetail extends Component<Props, State> {
                         disableUnderline
                         fullWidth
                         onChange={this.handleChange}
+                        autoComplete="off"
+                        onKeyDown={e => {
+                          if (e.keyCode === 13 && emailRegEx.test(newUser)) {
+                            const existingEmail = relatedUsers
+                              .toJS()
+                              .filter(u => u.user.email === newUser);
+                            if (existingEmail.length === 0) {
+                              this.props.requestAddCoworker(
+                                work.get('id'),
+                                newUser
+                              );
+                              this.setState({ newUser: '' });
+                            }
+                          }
+                        }}
                       />
                       {newUser && users.size > 0 ? (
                         <div className={classes.searchResultList}>

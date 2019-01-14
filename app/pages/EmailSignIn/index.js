@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import * as yup from 'yup';
 import cx from 'classnames';
+import storage from 'store';
 
 import { withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -156,10 +157,13 @@ class EmailSignIn extends Component<Props, State> {
       .validate(model)
       .then(() => {
         this.setState({ validationError: {} });
-        this.props.requestLogin({
-          email: model.email.toLowerCase(),
-          password: model.password,
-        });
+        this.props.requestLogin(
+          {
+            email: model.email.toLowerCase(),
+            password: model.password,
+          },
+          storage.get('invite')
+        );
       })
       .catch(err => {
         this.setState({ validationError: err });
@@ -284,7 +288,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  requestLogin: payload => dispatch(requestLogin(payload)),
+  requestLogin: (payload, invite) => dispatch(requestLogin(payload, invite)),
 });
 
 export default compose(

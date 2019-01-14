@@ -36,9 +36,10 @@ declare var analytics;
 // ------------------------------------
 // Actions
 // ------------------------------------
-export const requestRegister = (payload: Object) => ({
+export const requestRegister = (payload: Object, invite: ?Object) => ({
   type: REGISTER + REQUESTED,
   payload,
+  meta: invite,
 });
 const registerRequestSuccess = (payload: Object) => ({
   type: REGISTER + SUCCEDED,
@@ -90,9 +91,10 @@ const userPhotoUploadError = error => ({
   payload: error,
 });
 
-export const requestLogin = (payload: Object) => ({
+export const requestLogin = (payload: Object, invite: ?Object) => ({
   type: LOGIN + REQUESTED,
   payload,
+  meta: invite,
 });
 export const loginRequestSuccess = (payload: Object) => ({
   type: LOGIN + SUCCEDED,
@@ -107,11 +109,16 @@ const loginRequestError = (error: string) => ({
   payload: error,
 });
 
-export const requestSocialLogin = (payload: Object, type: string) => ({
+export const requestSocialLogin = (
+  payload: Object,
+  type: string,
+  invite: ?Object
+) => ({
   type: SOCIAL_LOGIN + REQUESTED,
   payload,
   meta: {
     type,
+    invite,
   },
 });
 const socialLoginRequestSuccess = (payload: Object) => ({
@@ -540,12 +547,15 @@ export const reducer = (
 // ------------------------------------
 // Sagas
 // ------------------------------------
-function* RegisterRequest({ payload }) {
+function* RegisterRequest({ payload, meta }) {
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/user/register`,
-      data: payload,
+      data: {
+        ...payload,
+        invite: meta,
+      },
     });
     if (response.status === 200) {
       yield put(registerRequestSuccess(response.data.response));
@@ -558,12 +568,15 @@ function* RegisterRequest({ payload }) {
   }
 }
 
-function* LoginRequest({ payload }) {
+function* LoginRequest({ payload, meta }) {
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/auth/login`,
-      data: payload,
+      data: {
+        ...payload,
+        invite: meta,
+      },
     });
     if (response.status === 200) {
       yield put(loginRequestSuccess(response.data.response));
@@ -576,7 +589,7 @@ function* LoginRequest({ payload }) {
   }
 }
 
-function* SocialLoginRequest({ payload, meta: { type } }) {
+function* SocialLoginRequest({ payload, meta: { type, invite } }) {
   try {
     const response = yield call(request, {
       method: 'POST',
@@ -584,7 +597,10 @@ function* SocialLoginRequest({ payload, meta: { type } }) {
         type === 'facebook'
           ? `${API_URL}/auth/facebook`
           : `${API_URL}/auth/linkedin`,
-      data: payload,
+      data: {
+        ...payload,
+        invite,
+      },
     });
     if (response.status === 200) {
       yield put(socialLoginRequestSuccess(response.data.response));
