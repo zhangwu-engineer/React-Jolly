@@ -185,6 +185,9 @@ const styles = theme => ({
 type Props = {
   user: Object,
   files: Object,
+  numberOfJobs: number,
+  numberOfVerifications: number,
+  numberOfEndorsements: number,
   classes: Object,
   openShareModal: Function,
 };
@@ -204,7 +207,14 @@ class MemberProfileInfo extends Component<Props, State> {
     this.setState({ isOpen: false });
   };
   render() {
-    const { user, files, classes } = this.props;
+    const {
+      user,
+      files,
+      numberOfJobs,
+      numberOfVerifications,
+      numberOfEndorsements,
+      classes,
+    } = this.props;
     const { isOpen } = this.state;
     const avatarImg = user.getIn(['profile', 'avatar']) || EmptyAvatarImg;
     return (
@@ -263,17 +273,23 @@ class MemberProfileInfo extends Component<Props, State> {
           )}
           <Grid container className={classes.aggregateLine}>
             <Grid item xs={4}>
-              <Typography className={classes.aggregateValue}>0</Typography>
+              <Typography className={classes.aggregateValue}>
+                {numberOfJobs}
+              </Typography>
               <Typography className={classes.aggregateLabel}>Jobs</Typography>
             </Grid>
             <Grid item xs={4}>
-              <Typography className={classes.aggregateValue}>0</Typography>
+              <Typography className={classes.aggregateValue}>
+                {numberOfVerifications}
+              </Typography>
               <Typography className={classes.aggregateLabel}>
                 Verifications
               </Typography>
             </Grid>
             <Grid item xs={4}>
-              <Typography className={classes.aggregateValue}>0</Typography>
+              <Typography className={classes.aggregateValue}>
+                {numberOfEndorsements}
+              </Typography>
               <Typography className={classes.aggregateLabel}>
                 Endorsements
               </Typography>

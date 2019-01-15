@@ -285,6 +285,14 @@ class Profile extends Component<Props, State> {
       roles.size > 0 &&
       user.getIn(['profile', 'avatar']) &&
       !tagged;
+    const numberOfJobs = works ? works.size : 0;
+    let numberOfVerifications = 0;
+    if (works) {
+      works.forEach(work => {
+        numberOfVerifications += work.get('verifiers').size;
+      });
+    }
+    const numberOfEndorsements = endorsements ? endorsements.size : 0;
     return (
       <Fragment>
         <div
@@ -295,6 +303,9 @@ class Profile extends Component<Props, State> {
           <div className={classes.profileInfo}>
             <ProfileInfo
               user={user}
+              numberOfJobs={numberOfJobs}
+              numberOfVerifications={numberOfVerifications}
+              numberOfEndorsements={numberOfEndorsements}
               openShareModal={this.openShareModal}
               openPhotoModal={this.openPhotoModal}
             />

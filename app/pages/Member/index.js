@@ -275,6 +275,14 @@ class Member extends Component<Props, State> {
     } = matchPath(url, {
       path: '/f/:slug',
     });
+    const numberOfJobs = works ? works.size : 0;
+    let numberOfVerifications = 0;
+    if (works) {
+      works.forEach(work => {
+        numberOfVerifications += work.get('verifiers').size;
+      });
+    }
+    const numberOfEndorsements = endorsements ? endorsements.size : 0;
     return (
       <Fragment>
         <Waypoint onPositionChange={this.positionChange} />
@@ -329,6 +337,9 @@ class Member extends Component<Props, State> {
             <MemberProfileInfo
               user={member}
               files={files}
+              numberOfJobs={numberOfJobs}
+              numberOfVerifications={numberOfVerifications}
+              numberOfEndorsements={numberOfEndorsements}
               openShareModal={this.openShareModal}
             />
           </div>

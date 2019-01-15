@@ -282,6 +282,9 @@ const styles = theme => ({
 
 type Props = {
   user: Object,
+  numberOfJobs: number,
+  numberOfVerifications: number,
+  numberOfEndorsements: number,
   classes: Object,
   openShareModal: Function,
   openPhotoModal: Function,
@@ -292,7 +295,13 @@ class ProfileInfo extends PureComponent<Props> {
     window.open(url, '_blank');
   };
   render() {
-    const { user, classes } = this.props;
+    const {
+      user,
+      numberOfJobs,
+      numberOfVerifications,
+      numberOfEndorsements,
+      classes,
+    } = this.props;
     const avatarImg = user.getIn(['profile', 'avatar']) || EmptyAvatarImg;
     return (
       <div className={classes.root}>
@@ -419,17 +428,23 @@ class ProfileInfo extends PureComponent<Props> {
           )}
           <Grid container className={classes.aggregateLine}>
             <Grid item xs={4}>
-              <Typography className={classes.aggregateValue}>0</Typography>
+              <Typography className={classes.aggregateValue}>
+                {numberOfJobs}
+              </Typography>
               <Typography className={classes.aggregateLabel}>Jobs</Typography>
             </Grid>
             <Grid item xs={4}>
-              <Typography className={classes.aggregateValue}>0</Typography>
+              <Typography className={classes.aggregateValue}>
+                {numberOfVerifications}
+              </Typography>
               <Typography className={classes.aggregateLabel}>
                 Verifications
               </Typography>
             </Grid>
             <Grid item xs={4}>
-              <Typography className={classes.aggregateValue}>0</Typography>
+              <Typography className={classes.aggregateValue}>
+                {numberOfEndorsements}
+              </Typography>
               <Typography className={classes.aggregateLabel}>
                 Endorsements
               </Typography>
