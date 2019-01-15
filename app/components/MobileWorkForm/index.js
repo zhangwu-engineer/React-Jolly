@@ -988,6 +988,7 @@ class MobileWorkForm extends Component<Props, State> {
                           }}
                           disableUnderline
                           fullWidth
+                          autoComplete="off"
                           onChange={e => {
                             e.persist();
                             this.setState(
