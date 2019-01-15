@@ -532,32 +532,34 @@ class WorkDetail extends Component<Props, State> {
                   ))}
                 </Grid>
               </Grid>
-              <Grid container>
-                <Grid item className={classes.iconWrapper}>
-                  <Icon glyph={PeopleIcon} size={18} />
-                </Grid>
-                <Grid item className={classes.fullWidth}>
-                  <Typography className={classes.label}>
-                    <b>{work.get('coworkers').size}</b>
-                    &nbsp;coworkers
-                  </Typography>
-                  <Grid
-                    container
-                    className={classes.valueFieldWithNoPadding}
-                    spacing={8}
-                  >
-                    {relatedUsers &&
-                      relatedUsers.map(user => (
-                        <Grid item key={generate()}>
-                          <Avatar
-                            className={classes.avatar}
-                            src={user.getIn(['user', 'profile', 'avatar'])}
-                          />
-                        </Grid>
-                      ))}
+              {displayMode === 'public' && (
+                <Grid container>
+                  <Grid item className={classes.iconWrapper}>
+                    <Icon glyph={PeopleIcon} size={18} />
+                  </Grid>
+                  <Grid item className={classes.fullWidth}>
+                    <Typography className={classes.label}>
+                      <b>{work.get('coworkers').size}</b>
+                      &nbsp;coworkers
+                    </Typography>
+                    <Grid
+                      container
+                      className={classes.valueFieldWithNoPadding}
+                      spacing={8}
+                    >
+                      {relatedUsers &&
+                        relatedUsers.map(user => (
+                          <Grid item key={generate()}>
+                            <Avatar
+                              className={classes.avatar}
+                              src={user.getIn(['user', 'profile', 'avatar'])}
+                            />
+                          </Grid>
+                        ))}
+                    </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
+              )}
             </Grid>
             {displayMode === 'private' && (
               <Grid item xs={12} lg={5}>
