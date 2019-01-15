@@ -50,13 +50,30 @@ class App extends Component<Props> {
     }
   }
   componentDidUpdate(prevProps: Props) {
-    if (this.props.location.pathname === '/' && !this.props.user) {
+    const { user, location } = this.props;
+    if (location.pathname === '/' && !user) {
       history.push('/sign-in');
-    } else if (this.props.location.pathname === '/' && this.props.user) {
-      history.push(`/f/${this.props.user.get('slug')}/edit`);
+    } else if (location.pathname === '/' && user) {
+      history.push(`/f/${user.get('slug')}/edit`);
     }
-    if (prevProps.location.pathname !== this.props.location.pathname) {
-      analytics.page(this.props.location.pathname);
+    if (prevProps.location.pathname !== location.pathname) {
+      analytics.page(location.pathname);
+    }
+    if (user) {
+      analytics.identify(user.get('id'), {
+        full_name: `${user.get('firstName')} ${user.get('lastName')}`,
+        email: user.get('email'),
+        distance: user.getIn(['profile', 'distance']),
+        linkedin: user.getIn(['profile', 'linkedin']),
+        twitter: user.getIn(['profile', 'twitter']),
+        location: user.getIn(['profile', 'location']),
+        youtube: user.getIn(['profile', 'youtube']),
+        facebook: user.getIn(['profile', 'facebook']),
+        phone: user.getIn(['profile', 'phone']),
+        bio: user.getIn(['profile', 'bio']),
+        background_picture: user.getIn(['profile', 'backgroundImage']),
+        profile_picture: user.getIn(['profile', 'avatar']),
+      });
     }
   }
   render() {
