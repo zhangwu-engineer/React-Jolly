@@ -78,7 +78,7 @@ const styles = theme => ({
   formSection: {
     backgroundColor: theme.palette.common.white,
     padding: 15,
-    height: 'calc(100vh - 100px)',
+    minHeight: 'calc(100vh - 100px)',
   },
   formFieldGroup: {
     marginBottom: 20,
@@ -1033,7 +1033,9 @@ class MobileWorkForm extends Component<Props, State> {
                         onClick={() => {
                           this.setState(state => ({
                             ...state,
-                            roles: [...state.roles, state.newRole],
+                            roles: state.roles
+                              ? [...state.roles, state.newRole]
+                              : [state.newRole],
                             newRole: '',
                             isEditingRole: false,
                           }));
