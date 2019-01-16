@@ -309,7 +309,20 @@ class InvitePage extends Component<Props, State> {
       isInviteLoading,
       inviteError,
       user,
+      match: { url },
     } = this.props;
+    const {
+      params: { slug, eventSlug },
+    } = matchPath(url, {
+      path: '/f/:slug/e/:eventSlug',
+    });
+    if (
+      prevProps.isInviteLoading &&
+      !isInviteLoading &&
+      inviteError === 'invalid token'
+    ) {
+      history.push(`/f/${slug}/e/${eventSlug}/work`);
+    }
     if (prevProps.isWorkLoading && !isWorkLoading && !workError) {
       this.props.requestWorkRelatedUsers(work.get('id'));
       this.props.requestEndorsers(
@@ -318,6 +331,7 @@ class InvitePage extends Component<Props, State> {
       );
     }
     if (!prevProps.user && user) {
+      storage.set('invite', null);
       history.push(`/f/${user.get('slug')}/edit`);
     }
   }
@@ -362,25 +376,48 @@ class InvitePage extends Component<Props, State> {
     const {
       _token: { accessToken },
     } = user;
-    const { invite } = this.props;
+    const {
+      invite,
+      work,
+      match: {
+        params: { token },
+      },
+    } = this.props;
     const { role } = this.state;
-    const inviteData = {
-      work: {
-        title: invite.getIn(['work', 'title']),
-        role,
-        from: invite.getIn(['work', 'from']),
-        to: invite.getIn(['work', 'to']),
-        caption: invite.getIn(['work', 'caption']),
-        pinToProfile: invite.getIn(['work', 'pinToProfile']),
-        photos: invite.getIn(['work', 'photos']),
-        verifiers: [invite.getIn(['tagger', 'userId'])],
-        verifiedCoworkers: [invite.getIn(['tagger', 'userId'])],
-        slug: invite.getIn(['work', 'slug']),
-      },
-      tagger: {
-        userId: invite.getIn(['tagger', 'userId']),
-      },
-    };
+    let inviteData;
+    if (invite) {
+      inviteData = {
+        work: {
+          title: work.get('title'),
+          role,
+          from: work.get('from'),
+          to: work.get('to'),
+          caption: work.get('caption'),
+          pinToProfile: work.get('pinToProfile'),
+          photos: work.get('photos'),
+          verifiers: [invite.getIn(['tagger', 'userId'])],
+          slug: work.get('slug'),
+        },
+        tagger: {
+          userId: invite.getIn(['tagger', 'userId']),
+        },
+        rootWorkId: invite.get('workId'),
+        token,
+      };
+    } else {
+      inviteData = {
+        work: {
+          title: work.get('title'),
+          role,
+          from: work.get('from'),
+          to: work.get('to'),
+          caption: work.get('caption'),
+          pinToProfile: work.get('pinToProfile'),
+          photos: work.get('photos'),
+          slug: work.get('slug'),
+        },
+      };
+    }
     this.props.requestSocialLogin(
       { access_token: accessToken },
       'facebook',
@@ -395,25 +432,48 @@ class InvitePage extends Component<Props, State> {
     const {
       _token: { accessToken },
     } = user;
-    const { invite } = this.props;
+    const {
+      invite,
+      work,
+      match: {
+        params: { token },
+      },
+    } = this.props;
     const { role } = this.state;
-    const inviteData = {
-      work: {
-        title: invite.getIn(['work', 'title']),
-        role,
-        from: invite.getIn(['work', 'from']),
-        to: invite.getIn(['work', 'to']),
-        caption: invite.getIn(['work', 'caption']),
-        pinToProfile: invite.getIn(['work', 'pinToProfile']),
-        photos: invite.getIn(['work', 'photos']),
-        verifiers: [invite.getIn(['tagger', 'userId'])],
-        verifiedCoworkers: [invite.getIn(['tagger', 'userId'])],
-        slug: invite.getIn(['work', 'slug']),
-      },
-      tagger: {
-        userId: invite.getIn(['tagger', 'userId']),
-      },
-    };
+    let inviteData;
+    if (invite) {
+      inviteData = {
+        work: {
+          title: work.get('title'),
+          role,
+          from: work.get('from'),
+          to: work.get('to'),
+          caption: work.get('caption'),
+          pinToProfile: work.get('pinToProfile'),
+          photos: work.get('photos'),
+          verifiers: [invite.getIn(['tagger', 'userId'])],
+          slug: work.get('slug'),
+        },
+        tagger: {
+          userId: invite.getIn(['tagger', 'userId']),
+        },
+        rootWorkId: invite.get('workId'),
+        token,
+      };
+    } else {
+      inviteData = {
+        work: {
+          title: work.get('title'),
+          role,
+          from: work.get('from'),
+          to: work.get('to'),
+          caption: work.get('caption'),
+          pinToProfile: work.get('pinToProfile'),
+          photos: work.get('photos'),
+          slug: work.get('slug'),
+        },
+      };
+    }
     this.props.requestSocialLogin(
       { access_token: accessToken },
       'linkedin',
@@ -435,6 +495,9 @@ class InvitePage extends Component<Props, State> {
       relatedUsers,
       endorsers,
       classes,
+      match: {
+        params: { token },
+      },
     } = this.props;
     const { isRoleOpen, isSignupOpen, role, filteredRoles } = this.state;
     if (isInviteLoading) {
@@ -597,7 +660,9 @@ class InvitePage extends Component<Props, State> {
             >
               <div className={classes.signupModalContent}>
                 <Typography variant="h6" className={classes.signupTitle}>
-                  Sign up for free now to complete your profile &amp; start
+                  {invite && invite.get('startFrom') === 'signup'
+                    ? 'Sign up to add this job to your free Jolly Profile'
+                    : 'Sign in to add this job to your Jolly Profile'}
                 </Typography>
                 <SocialButton
                   provider="facebook"
@@ -625,20 +690,21 @@ class InvitePage extends Component<Props, State> {
                     onClick={() => {
                       const inviteData = {
                         work: {
-                          title: invite.getIn(['work', 'title']),
+                          title: work.get('title'),
                           role,
-                          from: invite.getIn(['work', 'from']),
-                          to: invite.getIn(['work', 'to']),
-                          caption: invite.getIn(['work', 'caption']),
-                          pinToProfile: invite.getIn(['work', 'pinToProfile']),
-                          photos: invite.getIn(['work', 'photos']),
+                          from: work.get('from'),
+                          to: work.get('to'),
+                          caption: work.get('caption'),
+                          pinToProfile: work.get('pinToProfile'),
+                          photos: work.get('photos'),
                           verifiers: [invite.getIn(['tagger', 'userId'])],
-                          verifiedCoworkers: [invite.getIn(['tagger', 'userId'])],
-                          slug: invite.getIn(['work', 'slug']),
+                          slug: work.get('slug'),
                         },
                         tagger: {
                           userId: invite.getIn(['tagger', 'userId']),
                         },
+                        rootWorkId: invite.get('workId'),
+                        token,
                       };
                       storage.set('invite', inviteData);
                       if (invite.get('startFrom') === 'signup') {
