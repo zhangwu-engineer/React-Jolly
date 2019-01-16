@@ -465,6 +465,13 @@ class WorkForm extends Component<Props, State> {
                           });
                         }
                       }}
+                      onBlur={() => {
+                        setTimeout(() => {
+                          this.setState({
+                            filteredRoles: [],
+                          });
+                        }, 500);
+                      }}
                     />
                     {filteredRoles.length ? (
                       <div className={classes.searchResultList}>
