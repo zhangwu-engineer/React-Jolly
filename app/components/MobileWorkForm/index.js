@@ -870,14 +870,26 @@ class MobileWorkForm extends Component<Props, State> {
                         onChange={this.handleChange}
                         onKeyDown={e => {
                           if (e.keyCode === 13 && emailRegEx.test(newUser)) {
-                            this.setState(state => ({
-                              ...state,
-                              model: {
-                                ...state.model,
-                                coworkers: [...state.model.coworkers, newUser],
-                              },
-                              newUser: '',
-                            }));
+                            const existing = model.coworkers.filter(
+                              u => u.email === newUser
+                            );
+                            if (existing.length === 0) {
+                              this.setState(state => ({
+                                ...state,
+                                model: {
+                                  ...state.model,
+                                  coworkers: [
+                                    ...state.model.coworkers,
+                                    { email: newUser },
+                                  ],
+                                },
+                                newUser: '',
+                              }));
+                            } else {
+                              this.setState({
+                                newUser: '',
+                              });
+                            }
                           }
                         }}
                       />
@@ -890,16 +902,32 @@ class MobileWorkForm extends Component<Props, State> {
                       <ListItem
                         className={classes.userResultItem}
                         key={generate()}
-                        onClick={() =>
-                          this.setState(state => ({
-                            ...state,
-                            model: {
-                              ...state.model,
-                              coworkers: [...state.model.coworkers, u.toJS()],
-                            },
-                            newUser: '',
-                          }))
-                        }
+                        onClick={() => {
+                          const existing = model.coworkers.filter(
+                            i => i.id === u.get('id')
+                          );
+                          if (existing.length === 0) {
+                            this.setState(state => ({
+                              ...state,
+                              model: {
+                                ...state.model,
+                                coworkers: [
+                                  ...state.model.coworkers,
+                                  {
+                                    id: u.get('id'),
+                                    email: u.get('email'),
+                                    firstName: u.get('firstName'),
+                                    lastName: u.get('lastName'),
+                                    avatar: u.getIn(['profile', 'avatar']),
+                                  },
+                                ],
+                              },
+                              newUser: '',
+                            }));
+                          } else {
+                            this.setState({ newUser: '' });
+                          }
+                        }}
                       >
                         <Avatar
                           alt={`${u.get('firstName')} ${u.get('lastName')}`}
@@ -1078,13 +1106,13 @@ class MobileWorkForm extends Component<Props, State> {
                       <Avatar
                         className={classes.avatar}
                         alt={`${get(c, ['firstName'])} ${get(c, ['lastName'])}`}
-                        src={get(c, ['profile', 'avatar'])}
+                        src={get(c, ['avatar'])}
                       />
                       <ListItemText
                         primary={
-                          typeof c === 'string'
-                            ? c
-                            : `${get(c, ['firstName'])} ${get(c, ['lastName'])}`
+                          get(c, ['firstName']) && get(c, ['lastName'])
+                            ? `${get(c, ['firstName'])} ${get(c, ['lastName'])}`
+                            : ''
                         }
                         secondary={get(c, ['email'])}
                         classes={{
@@ -1096,10 +1124,7 @@ class MobileWorkForm extends Component<Props, State> {
                         <IconButton
                           onClick={() => {
                             const newCoworkers = this.state.model.coworkers.filter(
-                              i =>
-                                get(c, ['id'])
-                                  ? get(i, ['id']) !== get(c, ['id'])
-                                  : typeof c === 'object' || i !== c
+                              i => get(i, ['email']) !== get(c, ['email'])
                             );
                             this.setState(state => ({
                               ...state,
