@@ -429,22 +429,6 @@ class MobileWorkForm extends Component<Props, State> {
       this.setState({ newUser: value }, () => {
         this.debouncedSearch(name, value);
       });
-    } else if (name === 'title') {
-      const regEx = /^[a-zA-Z0-9 ]+$/;
-      if (value === '' || regEx.test(value)) {
-        this.setState(
-          state => ({
-            ...state,
-            model: {
-              ...state.model,
-              [name]: value,
-            },
-          }),
-          () => {
-            this.debouncedSearch(name, value);
-          }
-        );
-      }
     } else {
       this.setState(
         state => ({
