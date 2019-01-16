@@ -248,6 +248,8 @@ class RoleInput extends Component<Props, State> {
     if (!model) return true;
     if (!model.name) {
       return true;
+    } else if (ROLES.indexOf(model.name) === -1) {
+      return true;
     }
     return false;
   };
