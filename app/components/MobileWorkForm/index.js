@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import DateFnsUtils from '@date-io/date-fns';
-import { format } from 'date-fns';
+import { format, compareAsc } from 'date-fns';
 import {
   MuiPickersUtilsProvider,
   BasePicker,
@@ -40,6 +40,7 @@ import RoleIcon from 'images/sprite/role.svg';
 import CaptionIcon from 'images/sprite/caption.svg';
 import AddPhotoIcon from 'images/sprite/add-photo.svg';
 import PeopleIcon from 'images/sprite/people.svg';
+import CalendarIcon from 'images/sprite/calendar.svg';
 
 import ROLES from 'enum/roles';
 
@@ -470,7 +471,9 @@ class MobileWorkForm extends Component<Props, State> {
   };
   registerWorkExperience = () => {
     const { model } = this.state;
-    this.props.requestCreateWork(model);
+    if (model.title && ROLES.indexOf(model.role) !== -1) {
+      this.props.requestCreateWork(model);
+    }
   };
   handleFileUpload = async ({ target }: Event) => {
     const files = [...target.files];
@@ -620,7 +623,7 @@ class MobileWorkForm extends Component<Props, State> {
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <Grid container>
                 <Grid item className={classes.iconWrapper}>
-                  <Icon glyph={RoleIcon} size={18} />
+                  <Icon glyph={CalendarIcon} size={18} />
                 </Grid>
                 <Grid item className={classes.fullWidth}>
                   <Typography
@@ -673,12 +676,28 @@ class MobileWorkForm extends Component<Props, State> {
                           <Paper style={{ overflow: 'hidden' }}>
                             <Calendar
                               date={date}
+                              maxDate={isEditingFrom ? model.to : null}
                               onChange={d => {
                                 if (isEditingFrom) {
                                   this.setState(state => ({
                                     model: {
                                       ...state.model,
                                       from: d,
+                                    },
+                                    isEditingFrom: false,
+                                    isEditingTo: false,
+                                  }));
+                                } else if (
+                                  compareAsc(
+                                    new Date(model.from),
+                                    new Date(d)
+                                  ) === 1
+                                ) {
+                                  this.setState(state => ({
+                                    model: {
+                                      ...state.model,
+                                      from: d,
+                                      to: d,
                                     },
                                     isEditingFrom: false,
                                     isEditingTo: false,
@@ -794,7 +813,7 @@ class MobileWorkForm extends Component<Props, State> {
                 </Typography>
               </Grid>
             </Grid>
-            <Grid container className={classes.formFieldGroup}>
+            {/* <Grid container className={classes.formFieldGroup}>
               <Grid item className={classes.iconWrapper}>
                 <Icon glyph={RoleIcon} size={18} />
               </Grid>
@@ -814,7 +833,7 @@ class MobileWorkForm extends Component<Props, State> {
                   onChange={this.handleCheckChange}
                 />
               </Grid>
-            </Grid>
+            </Grid> */}
           </div>
         </div>
         <div

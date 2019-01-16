@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, InlineDatePicker } from 'material-ui-pickers';
 import { debounce, get } from 'lodash-es';
-import { format } from 'date-fns';
+import { format, compareAsc } from 'date-fns';
 import { generate } from 'shortid';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -33,6 +33,7 @@ import RoleIcon from 'images/sprite/role.svg';
 import CaptionIcon from 'images/sprite/caption.svg';
 import AddPhotoIcon from 'images/sprite/add-photo.svg';
 import PeopleIcon from 'images/sprite/people.svg';
+import CalendarIcon from 'images/sprite/calendar.svg';
 
 import ROLES from 'enum/roles';
 
@@ -375,7 +376,9 @@ class WorkForm extends Component<Props, State> {
   };
   registerWorkExperience = () => {
     const { model } = this.state;
-    this.props.requestCreateWork(model);
+    if (model.title && ROLES.indexOf(model.role) !== -1) {
+      this.props.requestCreateWork(model);
+    }
   };
   dropzoneRef = React.createRef();
   dropzoneDiv = React.createRef();
@@ -513,7 +516,7 @@ class WorkForm extends Component<Props, State> {
                   className={classes.formFieldGroup}
                 >
                   <Grid item className={classes.iconWrapper}>
-                    <Icon glyph={RoleIcon} size={18} />
+                    <Icon glyph={CalendarIcon} size={18} />
                   </Grid>
                   <Grid item>
                     <InlineDatePicker
@@ -527,6 +530,7 @@ class WorkForm extends Component<Props, State> {
                         }))
                       }
                       format="MMM dd, yy"
+                      maxDate={model.to}
                       leftArrowIcon={<LeftArrowIcon />}
                       rightArrowIcon={<RightArrowIcon />}
                       InputProps={{
@@ -544,14 +548,26 @@ class WorkForm extends Component<Props, State> {
                   <Grid item>
                     <InlineDatePicker
                       value={model.to}
-                      onChange={date =>
-                        this.setState(state => ({
-                          model: {
-                            ...state.model,
-                            to: date,
-                          },
-                        }))
-                      }
+                      onChange={date => {
+                        if (
+                          compareAsc(new Date(model.from), new Date(date)) === 1
+                        ) {
+                          this.setState(state => ({
+                            model: {
+                              ...state.model,
+                              from: date,
+                              to: date,
+                            },
+                          }));
+                        } else {
+                          this.setState(state => ({
+                            model: {
+                              ...state.model,
+                              to: date,
+                            },
+                          }));
+                        }
+                      }}
                       format="MMM dd, yy"
                       leftArrowIcon={<LeftArrowIcon />}
                       rightArrowIcon={<RightArrowIcon />}
@@ -636,7 +652,7 @@ class WorkForm extends Component<Props, State> {
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid container className={classes.formFieldGroup}>
+              {/* <Grid container className={classes.formFieldGroup}>
                 <Grid item className={classes.iconWrapper}>
                   <Icon glyph={RoleIcon} size={18} />
                 </Grid>
@@ -656,7 +672,7 @@ class WorkForm extends Component<Props, State> {
                     onChange={this.handleCheckChange}
                   />
                 </Grid>
-              </Grid>
+              </Grid> */}
               <Grid container className={classes.formFieldGroup}>
                 <Grid item className={classes.iconWrapper}>
                   <div style={{ width: 18 }} />
