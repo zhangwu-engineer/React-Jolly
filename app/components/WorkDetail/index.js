@@ -262,6 +262,7 @@ const styles = theme => ({
     transform: 'translate(0)',
   },
   roleSection: {
+    padding: 20,
     height: 'calc(100vh - 40px)',
     backgroundColor: theme.palette.common.white,
   },
@@ -719,6 +720,20 @@ class WorkDetail extends Component<Props, State> {
                     disableUnderline
                     fullWidth
                     onChange={this.handleChange}
+                    onKeyDown={e => {
+                      if (e.keyCode === 13 && emailRegEx.test(newUser)) {
+                        const existingEmail = relatedUsers
+                          .toJS()
+                          .filter(u => u.user.email === newUser);
+                        if (existingEmail.length === 0) {
+                          this.props.requestAddCoworker(
+                            work.get('id'),
+                            newUser
+                          );
+                          this.setState({ newUser: '' });
+                        }
+                      }
+                    }}
                   />
                 </FormControl>
               </Grid>
@@ -767,7 +782,34 @@ class WorkDetail extends Component<Props, State> {
               </div>
             ) : null}
           </div>
-          <div className={classes.roleSection} />
+          <div className={classes.roleSection}>
+            <List className={classes.coworkersList}>
+              {relatedUsers &&
+                relatedUsers.map(user => {
+                  const isEndorsed = endorsements
+                    .toJS()
+                    .filter(
+                      endorsement =>
+                        endorsement.to === user.getIn(['user', 'id'])
+                    );
+                  return (
+                    <User
+                      key={generate()}
+                      user={user.get('user')}
+                      work={work}
+                      type={user.get('type')}
+                      verifyCoworker={this.props.requestVerifyCoworker}
+                      requestEndorseUser={this.props.requestEndorseUser}
+                      endorsed={isEndorsed.length > 0}
+                      endorsedQuality={
+                        isEndorsed.length > 0 ? isEndorsed[0].quality : ''
+                      }
+                      usedQualities={usedQualities}
+                    />
+                  );
+                })}
+            </List>
+          </div>
         </div>
         {isGalleryOpen && (
           <Lightbox
