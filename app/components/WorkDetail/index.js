@@ -390,6 +390,9 @@ class WorkDetail extends Component<Props, State> {
     );
     const from = format(new Date(work.get('from')), 'MMM dd');
     const to = format(new Date(work.get('to')), 'MMM dd');
+    const numberOfCoworkers = relatedUsers.filter(
+      i => i.get('type') !== 'invited'
+    ).size;
     return (
       <div className={classes.root}>
         <div className={classes.banner}>
@@ -570,7 +573,7 @@ class WorkDetail extends Component<Props, State> {
                   </Grid>
                   <Grid item>
                     <Typography className={classes.label}>
-                      <b>{work.get('coworkers').size}</b>
+                      <b>{numberOfCoworkers}</b>
                       &nbsp;coworkers
                     </Typography>
                   </Grid>
