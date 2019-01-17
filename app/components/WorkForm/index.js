@@ -537,16 +537,27 @@ class WorkForm extends Component<Props, State> {
                   <Grid item>
                     <InlineDatePicker
                       value={model.from}
-                      onChange={date =>
-                        this.setState(state => ({
-                          model: {
-                            ...state.model,
-                            from: date,
-                          },
-                        }))
-                      }
+                      onChange={date => {
+                        if (
+                          compareAsc(new Date(date), new Date(model.to)) === -1
+                        ) {
+                          this.setState(state => ({
+                            model: {
+                              ...state.model,
+                              from: date,
+                            },
+                          }));
+                        } else {
+                          this.setState(state => ({
+                            model: {
+                              ...state.model,
+                              from: date,
+                              to: date,
+                            },
+                          }));
+                        }
+                      }}
                       format="MMM dd, yy"
-                      maxDate={model.to}
                       leftArrowIcon={<LeftArrowIcon />}
                       rightArrowIcon={<RightArrowIcon />}
                       InputProps={{

@@ -509,6 +509,50 @@ class MobileWorkForm extends Component<Props, State> {
       }
     }
   };
+  handleDateChange = (date: string) => {
+    const { isEditingFrom, model } = this.state;
+    if (isEditingFrom) {
+      if (compareAsc(new Date(date), new Date(model.to)) === -1) {
+        this.setState(state => ({
+          model: {
+            ...state.model,
+            from: date,
+          },
+          isEditingFrom: false,
+          isEditingTo: false,
+        }));
+      } else {
+        this.setState(state => ({
+          model: {
+            ...state.model,
+            from: date,
+            to: date,
+          },
+          isEditingFrom: false,
+          isEditingTo: false,
+        }));
+      }
+    } else if (compareAsc(new Date(model.from), new Date(date)) === 1) {
+      this.setState(state => ({
+        model: {
+          ...state.model,
+          from: date,
+          to: date,
+        },
+        isEditingFrom: false,
+        isEditingTo: false,
+      }));
+    } else {
+      this.setState(state => ({
+        model: {
+          ...state.model,
+          to: date,
+        },
+        isEditingFrom: false,
+        isEditingTo: false,
+      }));
+    }
+  };
   dropzoneRef = React.createRef();
   dropzoneDiv = React.createRef();
   fileInput = React.createRef();
@@ -704,43 +748,7 @@ class MobileWorkForm extends Component<Props, State> {
                           <Paper style={{ overflow: 'hidden' }}>
                             <Calendar
                               date={date}
-                              maxDate={isEditingFrom ? model.to : null}
-                              onChange={d => {
-                                if (isEditingFrom) {
-                                  this.setState(state => ({
-                                    model: {
-                                      ...state.model,
-                                      from: d,
-                                    },
-                                    isEditingFrom: false,
-                                    isEditingTo: false,
-                                  }));
-                                } else if (
-                                  compareAsc(
-                                    new Date(model.from),
-                                    new Date(d)
-                                  ) === 1
-                                ) {
-                                  this.setState(state => ({
-                                    model: {
-                                      ...state.model,
-                                      from: d,
-                                      to: d,
-                                    },
-                                    isEditingFrom: false,
-                                    isEditingTo: false,
-                                  }));
-                                } else {
-                                  this.setState(state => ({
-                                    model: {
-                                      ...state.model,
-                                      to: d,
-                                    },
-                                    isEditingFrom: false,
-                                    isEditingTo: false,
-                                  }));
-                                }
-                              }}
+                              onChange={this.handleDateChange}
                               leftArrowIcon={<LeftArrowIcon />}
                               rightArrowIcon={<RightArrowIcon />}
                             />
