@@ -297,6 +297,9 @@ const styles = theme => ({
   avatar: {
     backgroundColor: '#afafaf',
   },
+  addCoworkerSmallButton: {
+    color: theme.palette.common.white,
+  },
 });
 
 const emailRegEx = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -470,6 +473,26 @@ class MobileWorkForm extends Component<Props, State> {
         photos: [...state.model.photos, ...data],
       },
     }));
+  };
+  addEmail = () => {
+    const { model, newUser } = this.state;
+    if (emailRegEx.test(newUser)) {
+      const existing = model.coworkers.filter(u => u.email === newUser);
+      if (existing.length === 0) {
+        this.setState(state => ({
+          ...state,
+          model: {
+            ...state.model,
+            coworkers: [...state.model.coworkers, { email: newUser }],
+          },
+          newUser: '',
+        }));
+      } else {
+        this.setState({
+          newUser: '',
+        });
+      }
+    }
   };
   dropzoneRef = React.createRef();
   dropzoneDiv = React.createRef();
@@ -857,7 +880,7 @@ class MobileWorkForm extends Component<Props, State> {
                       <ArrowBackIcon />
                     </Button>
                   </Grid>
-                  <Grid item xs={10}>
+                  <Grid item xs={8}>
                     <FormControl fullWidth>
                       <Input
                         id="newUser"
@@ -872,31 +895,20 @@ class MobileWorkForm extends Component<Props, State> {
                         autoComplete="off"
                         onChange={this.handleChange}
                         onKeyDown={e => {
-                          if (e.keyCode === 13 && emailRegEx.test(newUser)) {
-                            const existing = model.coworkers.filter(
-                              u => u.email === newUser
-                            );
-                            if (existing.length === 0) {
-                              this.setState(state => ({
-                                ...state,
-                                model: {
-                                  ...state.model,
-                                  coworkers: [
-                                    ...state.model.coworkers,
-                                    { email: newUser },
-                                  ],
-                                },
-                                newUser: '',
-                              }));
-                            } else {
-                              this.setState({
-                                newUser: '',
-                              });
-                            }
+                          if (e.keyCode === 13) {
+                            this.addEmail();
                           }
                         }}
                       />
                     </FormControl>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Button
+                      className={classes.addCoworkerSmallButton}
+                      onClick={this.addEmail}
+                    >
+                      Add
+                    </Button>
                   </Grid>
                 </Grid>
                 {newUser && users.size > 0 ? (

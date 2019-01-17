@@ -306,6 +306,9 @@ const styles = theme => ({
     textAlign: 'center',
     marginTop: 40,
   },
+  addCoworkerSmallButton: {
+    color: theme.palette.common.white,
+  },
 });
 
 const emailRegEx = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -358,6 +361,19 @@ class WorkDetail extends Component<Props, State> {
       this.setState({ newUser: value }, () => {
         this.debouncedSearch(name, value);
       });
+    }
+  };
+  addEmail = () => {
+    const { work, relatedUsers } = this.props;
+    const { newUser } = this.state;
+    if (emailRegEx.test(newUser)) {
+      const existingEmail = relatedUsers
+        .toJS()
+        .filter(u => u.user.email === newUser);
+      if (existingEmail.length === 0) {
+        this.props.requestAddCoworker(work.get('id'), newUser);
+        this.setState({ newUser: '' });
+      }
     }
   };
   render() {
@@ -609,17 +625,8 @@ class WorkDetail extends Component<Props, State> {
                         onChange={this.handleChange}
                         autoComplete="off"
                         onKeyDown={e => {
-                          if (e.keyCode === 13 && emailRegEx.test(newUser)) {
-                            const existingEmail = relatedUsers
-                              .toJS()
-                              .filter(u => u.user.email === newUser);
-                            if (existingEmail.length === 0) {
-                              this.props.requestAddCoworker(
-                                work.get('id'),
-                                newUser
-                              );
-                              this.setState({ newUser: '' });
-                            }
+                          if (e.keyCode === 13) {
+                            this.addEmail();
                           }
                         }}
                       />
@@ -715,7 +722,7 @@ class WorkDetail extends Component<Props, State> {
                   <ArrowBackIcon />
                 </Button>
               </Grid>
-              <Grid item xs={10}>
+              <Grid item xs={8}>
                 <FormControl fullWidth>
                   <Input
                     id="newUser"
@@ -729,22 +736,21 @@ class WorkDetail extends Component<Props, State> {
                     fullWidth
                     onChange={this.handleChange}
                     onKeyDown={e => {
-                      if (e.keyCode === 13 && emailRegEx.test(newUser)) {
-                        const existingEmail = relatedUsers
-                          .toJS()
-                          .filter(u => u.user.email === newUser);
-                        if (existingEmail.length === 0) {
-                          this.props.requestAddCoworker(
-                            work.get('id'),
-                            newUser
-                          );
-                          this.setState({ newUser: '' });
-                        }
+                      if (e.keyCode === 13) {
+                        this.addEmail();
                       }
                     }}
                     autoComplete="off"
                   />
                 </FormControl>
+              </Grid>
+              <Grid item xs={2}>
+                <Button
+                  className={classes.addCoworkerSmallButton}
+                  onClick={this.addEmail}
+                >
+                  Add
+                </Button>
               </Grid>
             </Grid>
             {newUser && users.size > 0 ? (
