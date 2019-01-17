@@ -11,13 +11,13 @@ import CardActions from '@material-ui/core/CardActions';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import CheckCircle from '@material-ui/icons/CheckCircleOutline';
 
 import { history } from 'components/ConnectedRouter';
 import Icon from 'components/Icon';
 
 import RoleIcon from 'images/sprite/role.svg';
 import PeopleIcon from 'images/sprite/people.svg';
+import VerifiedCoworkersIcon from 'images/sprite/verified_coworkers.svg';
 
 const styles = theme => ({
   root: {
@@ -211,7 +211,7 @@ class JobCard extends Component<Props> {
             disabled
             classes={{ disabled: classes.disabled }}
           >
-            <CheckCircle className={classes.icon} />
+            <Icon glyph={VerifiedCoworkersIcon} />
             &nbsp;&nbsp;
             {job.get('verifiers').size}
           </Button>
