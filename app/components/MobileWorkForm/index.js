@@ -19,7 +19,8 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Checkbox from '@material-ui/core/Checkbox';
+// import Checkbox from '@material-ui/core/Checkbox';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -32,6 +33,7 @@ import RightArrowIcon from '@material-ui/icons/KeyboardArrowRight';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import DoneIcon from '@material-ui/icons/Done';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Red from '@material-ui/core/colors/red';
 
 import Link from 'components/Link';
 import Icon from 'components/Icon';
@@ -300,6 +302,9 @@ const styles = theme => ({
   addCoworkerSmallButton: {
     color: theme.palette.common.white,
   },
+  error: {
+    color: Red[500],
+  },
 });
 
 const emailRegEx = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -339,6 +344,7 @@ type State = {
   isEditingTo: boolean,
   isEditingCaption: boolean,
   newUser: string,
+  roleError: string,
 };
 
 class MobileWorkForm extends Component<Props, State> {
@@ -377,6 +383,7 @@ class MobileWorkForm extends Component<Props, State> {
     isEditingTo: false,
     isEditingCaption: false,
     newUser: '',
+    roleError: '',
   };
   onAddClick = (e: Event) => {
     e.preventDefault();
@@ -459,7 +466,15 @@ class MobileWorkForm extends Component<Props, State> {
   registerWorkExperience = () => {
     const { model } = this.state;
     if (model.title && ROLES.indexOf(model.role) !== -1) {
-      this.props.requestCreateWork(model);
+      this.setState({ roleError: '' }, () => {
+        this.props.requestCreateWork(model);
+      });
+    } else if (model.role === '') {
+      this.setState({ roleError: 'Required field' });
+    } else if (ROLES.indexOf(model.role) === -1) {
+      this.setState({ roleError: 'Invalid role' });
+    } else if (ROLES.indexOf(model.role) !== -1) {
+      this.setState({ roleError: '' });
     }
   };
   handleFileUpload = async ({ target }: Event) => {
@@ -511,6 +526,7 @@ class MobileWorkForm extends Component<Props, State> {
       isEditingTo,
       isEditingCaption,
       newUser,
+      roleError,
     } = this.state;
     return (
       <div className={classes.root}>
@@ -609,6 +625,11 @@ class MobileWorkForm extends Component<Props, State> {
                 <Typography className={classes.formText}>
                   {model.role ? model.role : 'Role worked'}
                 </Typography>
+                {roleError && (
+                  <FormHelperText className={classes.error}>
+                    {roleError}
+                  </FormHelperText>
+                )}
               </Grid>
             </Grid>
             <Grid

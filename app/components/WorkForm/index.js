@@ -14,7 +14,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Checkbox from '@material-ui/core/Checkbox';
+// import Checkbox from '@material-ui/core/Checkbox';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -239,6 +239,7 @@ type State = {
   newUser: string,
   filteredWorks: Array<Object>,
   filteredRoles: Array<string>,
+  roleError: string,
 };
 
 class WorkForm extends Component<Props, State> {
@@ -256,6 +257,7 @@ class WorkForm extends Component<Props, State> {
     newUser: '',
     filteredWorks: [],
     filteredRoles: [],
+    roleError: '',
   };
   onDrop = async (accepted: Array<Object>) => {
     const promises = accepted.map(this.setupReader);
@@ -361,14 +363,28 @@ class WorkForm extends Component<Props, State> {
   registerWorkExperience = () => {
     const { model } = this.state;
     if (model.title && ROLES.indexOf(model.role) !== -1) {
-      this.props.requestCreateWork(model);
+      this.setState({ roleError: '' }, () => {
+        this.props.requestCreateWork(model);
+      });
+    } else if (model.role === '') {
+      this.setState({ roleError: 'Required field' });
+    } else if (ROLES.indexOf(model.role) === -1) {
+      this.setState({ roleError: 'Invalid role' });
+    } else if (ROLES.indexOf(model.role) !== -1) {
+      this.setState({ roleError: '' });
     }
   };
   dropzoneRef = React.createRef();
   dropzoneDiv = React.createRef();
   render() {
     const { classes, user, isLoading, error, users } = this.props;
-    const { model, newUser, filteredWorks, filteredRoles } = this.state;
+    const {
+      model,
+      newUser,
+      filteredWorks,
+      filteredRoles,
+      roleError,
+    } = this.state;
     return (
       <div className={classes.root}>
         <div className={classes.topline}>
@@ -441,7 +457,11 @@ class WorkForm extends Component<Props, State> {
                   <Icon glyph={RoleIcon} size={18} />
                 </Grid>
                 <Grid item className={classes.roleWrapper}>
-                  <FormControl fullWidth>
+                  <FormControl
+                    fullWidth
+                    aria-describedby="role-helper-text"
+                    error={roleError !== ''}
+                  >
                     <Input
                       autoComplete="off"
                       id="role"
@@ -473,6 +493,11 @@ class WorkForm extends Component<Props, State> {
                         }, 500);
                       }}
                     />
+                    {roleError && (
+                      <FormHelperText id="role-helper-text">
+                        {roleError}
+                      </FormHelperText>
+                    )}
                     {filteredRoles.length ? (
                       <div className={classes.searchResultList}>
                         {filteredRoles.map(r => (
