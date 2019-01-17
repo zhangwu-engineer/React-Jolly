@@ -204,7 +204,7 @@ class JobCard extends Component<Props> {
           >
             <Icon glyph={PeopleIcon} />
             &nbsp;&nbsp;
-            {job.get('coworkers').size}
+            {job.get('numberOfCoworkers')}
           </Button>
           <Button
             className={classes.button}
@@ -212,7 +212,8 @@ class JobCard extends Component<Props> {
             classes={{ disabled: classes.disabled }}
           >
             <CheckCircle className={classes.icon} />
-            &nbsp;&nbsp;0
+            &nbsp;&nbsp;
+            {job.get('verifiers').size}
           </Button>
         </CardActions>
       </Card>
