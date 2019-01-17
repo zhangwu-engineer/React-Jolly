@@ -630,10 +630,15 @@ class WorkDetail extends Component<Props, State> {
                               className={classes.userResultItem}
                               key={generate()}
                               onClick={() => {
-                                this.props.requestAddCoworker(
-                                  work.get('id'),
-                                  u.get('id')
-                                );
+                                const existing = relatedUsers.filter(
+                                  i => i.getIn(['user', 'id']) === u.get('id')
+                                ).size;
+                                if (existing === 0) {
+                                  this.props.requestAddCoworker(
+                                    work.get('id'),
+                                    u.get('id')
+                                  );
+                                }
                                 this.setState({ newUser: '' });
                               }}
                             >
@@ -737,6 +742,7 @@ class WorkDetail extends Component<Props, State> {
                         }
                       }
                     }}
+                    autoComplete="off"
                   />
                 </FormControl>
               </Grid>
@@ -748,13 +754,17 @@ class WorkDetail extends Component<Props, State> {
                     className={classes.userResultItem}
                     key={generate()}
                     onClick={() => {
-                      this.props.requestAddCoworker(
-                        work.get('id'),
-                        u.get('id')
-                      );
+                      const existing = relatedUsers.filter(
+                        i => i.getIn(['user', 'id']) === u.get('id')
+                      ).size;
+                      if (existing === 0) {
+                        this.props.requestAddCoworker(
+                          work.get('id'),
+                          u.get('id')
+                        );
+                      }
                       this.setState({
                         newUser: '',
-                        activeSection: 'main',
                       });
                     }}
                   >
