@@ -345,7 +345,7 @@ class MemberProfileInfo extends Component<Props, State> {
                       className={classes.iconButton}
                       onClick={() =>
                         this.openUrl(
-                          `https://www.linkedin.com/${user.getIn([
+                          `https://www.linkedin.com/in/${user.getIn([
                             'profile',
                             'linkedin',
                           ])}`
