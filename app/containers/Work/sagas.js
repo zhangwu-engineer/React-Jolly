@@ -25,6 +25,7 @@ const ENDORSE_USER = 'Jolly/Work/ENDORSE_USER';
 const ENDORSEMENTS = 'Jolly/Work/ENDORSEMENTS';
 const ENDORSERS = 'Jolly/Work/ENDORSERS';
 const INVITE_INFORMATION = 'Jolly/Work/INVITE_INFORMATION';
+const ACCEPT_INVITE = 'Jolly/Work/ACCEPT_INVITE';
 
 declare var analytics;
 // ------------------------------------
@@ -234,6 +235,23 @@ const inviteInformationRequestError = (error: string) => ({
   type: INVITE_INFORMATION + ERROR,
   payload: error,
 });
+
+export const requestAcceptInvite = (payload: Object) => ({
+  type: ACCEPT_INVITE + REQUESTED,
+  payload,
+});
+const inviteAcceptRequestSuccess = (payload: Object) => ({
+  type: ACCEPT_INVITE + SUCCEDED,
+  payload,
+});
+const inviteAcceptRequestFailed = (error: string) => ({
+  type: ACCEPT_INVITE + FAILED,
+  payload: error,
+});
+const inviteAcceptRequestError = (error: string) => ({
+  type: ACCEPT_INVITE + ERROR,
+  payload: error,
+});
 // ------------------------------------
 // Reducer
 // ------------------------------------
@@ -270,6 +288,8 @@ const initialState = fromJS({
   invite: null,
   isInviteLoading: false,
   inviteError: '',
+  isAcceptInviteLoading: false,
+  acceptInviteError: '',
 });
 
 export const reducer = (
@@ -513,6 +533,26 @@ export const reducer = (
     case INVITE_INFORMATION + ERROR:
       return state.set('isInviteLoading', false).set(
         'inviteError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case ACCEPT_INVITE + REQUESTED:
+      return state.set('isAcceptInviteLoading', true);
+
+    case ACCEPT_INVITE + SUCCEDED:
+      return state
+        .set('isAcceptInviteLoading', false)
+        .set('acceptInviteError', '');
+
+    case ACCEPT_INVITE + FAILED:
+      return state
+        .set('isAcceptInviteLoading', false)
+        .set('acceptInviteError', payload.message);
+
+    case ACCEPT_INVITE + ERROR:
+      return state.set('isAcceptInviteLoading', false).set(
+        'acceptInviteError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -770,6 +810,25 @@ function* InviteInformationRequest({ payload }) {
   }
 }
 
+function* InviteAcceptRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/work/invite/accept`,
+      data: payload,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(inviteAcceptRequestSuccess(response.data.response));
+    } else {
+      yield put(inviteAcceptRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(inviteAcceptRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(CREATE_WORK + REQUESTED, CreateWorkRequest),
@@ -784,5 +843,6 @@ export default function*(): Saga<void> {
     takeLatest(ENDORSEMENTS + REQUESTED, EndorsementsRequest),
     takeLatest(ENDORSERS + REQUESTED, EndorsersRequest),
     takeLatest(INVITE_INFORMATION + REQUESTED, InviteInformationRequest),
+    takeLatest(ACCEPT_INVITE + REQUESTED, InviteAcceptRequest),
   ]);
 }

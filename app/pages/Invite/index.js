@@ -43,6 +43,7 @@ import saga, {
   requestEndorsements,
   requestEndorsers,
   requestInviteInformation,
+  requestAcceptInvite,
 } from 'containers/Work/sagas';
 import injectSagas from 'utils/injectSagas';
 
@@ -257,6 +258,8 @@ type Props = {
   invite: Object,
   isInviteLoading: boolean,
   inviteError: string,
+  isAcceptInviteLoading: boolean,
+  acceptInviteError: string,
   relatedUsers: Object,
   endorsers: Object,
   match: Object,
@@ -267,6 +270,7 @@ type Props = {
   requestInviteInformation: Function,
   requestSocialLogin: Function,
   requestWork: Function,
+  requestAcceptInvite: Function,
 };
 
 type State = {
@@ -305,9 +309,10 @@ class InvitePage extends Component<Props, State> {
       work,
       isWorkLoading,
       workError,
-      invite,
       isInviteLoading,
       inviteError,
+      isAcceptInviteLoading,
+      acceptInviteError,
       user,
       match: { url },
     } = this.props;
@@ -329,6 +334,13 @@ class InvitePage extends Component<Props, State> {
         work.getIn(['work', 'slug']),
         work.getIn(['user', 'slug'])
       );
+    }
+    if (
+      prevProps.isAcceptInviteLoading &&
+      !isAcceptInviteLoading &&
+      !acceptInviteError
+    ) {
+      history.push(`/f/${user.get('slug')}/edit`);
     }
     if (!prevProps.user && user) {
       storage.set('invite', null);
@@ -483,6 +495,52 @@ class InvitePage extends Component<Props, State> {
 
   handleLinkedInLoginFailure = (err: any) => {
     console.log(err); // eslint-disable-line
+  };
+  save = () => {
+    const {
+      invite,
+      work,
+      match: {
+        params: { token },
+      },
+    } = this.props;
+    const { role } = this.state;
+    let inviteData = null;
+    if (invite) {
+      inviteData = {
+        work: {
+          title: work.get('title'),
+          role,
+          from: work.get('from'),
+          to: work.get('to'),
+          caption: work.get('caption'),
+          pinToProfile: work.get('pinToProfile'),
+          photos: work.get('photos'),
+          verifiers: [invite.getIn(['tagger', 'userId'])],
+          slug: work.get('slug'),
+        },
+        tagger: {
+          userId: invite.getIn(['tagger', 'userId']),
+        },
+        rootWorkId: invite.get('workId'),
+        token,
+      };
+    } else {
+      inviteData = {
+        work: {
+          title: work.get('title'),
+          role,
+          from: work.get('from'),
+          to: work.get('to'),
+          caption: work.get('caption'),
+          pinToProfile: work.get('pinToProfile'),
+          photos: work.get('photos'),
+          slug: work.get('slug'),
+        },
+        tagger: null,
+      };
+    }
+    this.props.requestAcceptInvite(inviteData);
   };
   render() {
     const {
@@ -642,10 +700,21 @@ class InvitePage extends Component<Props, State> {
                     className={classes.saveRoleButton}
                     disabled={!role}
                     onClick={() => {
-                      this.setState({
-                        isRoleOpen: false,
-                        isSignupOpen: true,
-                      });
+                      if (user) {
+                        this.setState(
+                          {
+                            isRoleOpen: false,
+                          },
+                          () => {
+                            this.save();
+                          }
+                        );
+                      } else {
+                        this.setState({
+                          isRoleOpen: false,
+                          isSignupOpen: true,
+                        });
+                      }
                     }}
                   >
                     Save
@@ -763,6 +832,8 @@ const mapStateToProps = state => ({
   invite: state.getIn(['work', 'invite']),
   isInviteLoading: state.getIn(['work', 'isInviteLoading']),
   inviteError: state.getIn(['work', 'inviteError']),
+  isAcceptInviteLoading: state.getIn(['work', 'isAcceptInviteLoading']),
+  acceptInviteError: state.getIn(['work', 'acceptInviteError']),
   relatedUsers: state.getIn(['work', 'relatedUsers']),
   endorsements: state.getIn(['work', 'endorsements']),
   endorsers: state.getIn(['work', 'endorsers']),
@@ -778,6 +849,7 @@ const mapDispatchToProps = dispatch => ({
   requestInviteInformation: token => dispatch(requestInviteInformation(token)),
   requestSocialLogin: (payload, type, invite) =>
     dispatch(requestSocialLogin(payload, type, invite)),
+  requestAcceptInvite: payload => dispatch(requestAcceptInvite(payload)),
 });
 
 export default compose(
