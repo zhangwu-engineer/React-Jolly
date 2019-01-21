@@ -128,6 +128,7 @@ const styles = theme => ({
     color: '#434343',
     padding: '14px 20px',
     boxSizing: 'border-box',
+    caretColor: '#ffffff',
   },
   iconWrapper: {
     padding: 15,
@@ -383,6 +384,7 @@ class WorkDetail extends Component<Props, State> {
       }
     }
   };
+  coworkerInput = React.createRef();
   render() {
     const {
       work,
@@ -608,7 +610,11 @@ class WorkDetail extends Component<Props, State> {
                       className={classes.addCoworkerButton}
                       color="primary"
                       onClick={() =>
-                        this.setState({ activeSection: 'coworker' })
+                        this.setState({ activeSection: 'coworker' }, () => {
+                          if (this.coworkerInput.current) {
+                            this.coworkerInput.current.focus();
+                          }
+                        })
                       }
                     >
                       + Add Coworkers
@@ -748,6 +754,7 @@ class WorkDetail extends Component<Props, State> {
                       }
                     }}
                     autoComplete="off"
+                    inputRef={this.coworkerInput}
                   />
                 </FormControl>
               </Grid>

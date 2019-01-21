@@ -556,6 +556,7 @@ class MobileWorkForm extends Component<Props, State> {
   dropzoneRef = React.createRef();
   dropzoneDiv = React.createRef();
   fileInput = React.createRef();
+  coworkerInput = React.createRef();
   render() {
     const { classes, user, isLoading, users } = this.props;
     const {
@@ -679,7 +680,15 @@ class MobileWorkForm extends Component<Props, State> {
             <Grid
               container
               className={classes.formFieldGroup}
-              onClick={() => this.setState({ activeSection: 'coworker' })}
+              onClick={() =>
+                this.setState({ activeSection: 'coworker' }, () => {
+                  setTimeout(() => {
+                    if (this.coworkerInput.current) {
+                      this.coworkerInput.current.focus();
+                    }
+                  }, 500);
+                })
+              }
             >
               <Grid item className={classes.iconWrapper}>
                 <Icon glyph={PeopleIcon} size={18} />
@@ -928,6 +937,7 @@ class MobileWorkForm extends Component<Props, State> {
                             this.addEmail();
                           }
                         }}
+                        inputRef={this.coworkerInput}
                       />
                     </FormControl>
                   </Grid>
