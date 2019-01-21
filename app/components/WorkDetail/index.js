@@ -113,6 +113,7 @@ const styles = theme => ({
     minHeight: 'calc(100vh - 215px)',
     [theme.breakpoints.down('xs')]: {
       padding: 20,
+      marginBottom: 150,
     },
   },
   formFieldGroup: {
