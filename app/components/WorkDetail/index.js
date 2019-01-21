@@ -178,6 +178,12 @@ const styles = theme => ({
     fontWeight: 500,
     color: '#9b9b9b',
   },
+  coworkersListHeading: {
+    fontSize: 12,
+    fontWeight: 500,
+    letterSpacing: '0.5px',
+    color: '#848484',
+  },
   coworkersList: {
     marginTop: 10,
   },
@@ -802,6 +808,9 @@ class WorkDetail extends Component<Props, State> {
             ) : null}
           </div>
           <div className={classes.roleSection}>
+            <Typography className={classes.coworkersListHeading}>
+              ADDED COWORKERS
+            </Typography>
             <List className={classes.coworkersList}>
               {relatedUsers &&
                 relatedUsers.map(user => {
