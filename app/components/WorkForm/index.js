@@ -797,6 +797,7 @@ class WorkForm extends Component<Props, State> {
                             }}
                           >
                             <Avatar
+                              className={classes.avatar}
                               alt={`${u.get('firstName')} ${u.get('lastName')}`}
                               src={u.getIn(['profile', 'avatar'])}
                             />
@@ -804,7 +805,10 @@ class WorkForm extends Component<Props, State> {
                               primary={`${u.get('firstName')} ${u.get(
                                 'lastName'
                               )}`}
-                              secondary={u.get('email')}
+                              secondary={
+                                u.getIn(['profile', 'location']) ||
+                                u.get('email')
+                              }
                               classes={{
                                 primary: classes.resultText,
                                 secondary: classes.resultDateText,

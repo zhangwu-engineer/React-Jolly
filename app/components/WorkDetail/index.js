@@ -673,7 +673,10 @@ class WorkDetail extends Component<Props, State> {
                                 primary={`${u.get('firstName')} ${u.get(
                                   'lastName'
                                 )}`}
-                                secondary={u.get('email')}
+                                secondary={
+                                  u.getIn(['profile', 'location']) ||
+                                  u.get('email')
+                                }
                                 classes={{
                                   primary: classes.resultText,
                                   secondary: classes.resultDateText,
@@ -795,7 +798,9 @@ class WorkDetail extends Component<Props, State> {
                     />
                     <ListItemText
                       primary={`${u.get('firstName')} ${u.get('lastName')}`}
-                      secondary={u.get('email')}
+                      secondary={
+                        u.getIn(['profile', 'location']) || u.get('email')
+                      }
                       classes={{
                         primary: classes.resultText,
                         secondary: classes.resultDateText,
