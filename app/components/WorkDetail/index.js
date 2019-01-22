@@ -312,7 +312,7 @@ const styles = theme => ({
     fontWeight: 500,
     color: '#494949',
     textAlign: 'center',
-    marginTop: 40,
+    marginBottom: 20,
   },
   addCoworkerSmallButton: {
     color: theme.palette.common.white,
@@ -805,17 +805,13 @@ class WorkDetail extends Component<Props, State> {
                 ))}
               </div>
             ) : null}
-            {newUser && users.size === 0 ? (
-              <div className={classes.mobileSearchResultList}>
-                <Typography className={classes.emptyResultText}>
-                  Don’t see who you’re looking for?
-                  <br />
-                  Enter their email address &amp; invite them to join jolly
-                </Typography>
-              </div>
-            ) : null}
           </div>
           <div className={classes.roleSection}>
+            <Typography className={classes.emptyResultText}>
+              Don’t see who you’re looking for?
+              <br />
+              Enter their email address &amp; invite them to join jolly
+            </Typography>
             <Typography className={classes.coworkersListHeading}>
               ADDED COWORKERS
             </Typography>

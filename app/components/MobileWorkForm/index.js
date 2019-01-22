@@ -275,7 +275,7 @@ const styles = theme => ({
     fontWeight: 500,
     color: '#494949',
     textAlign: 'center',
-    marginTop: 40,
+    paddingTop: 20,
   },
   fileInput: {
     display: 'none',
@@ -999,15 +999,6 @@ class MobileWorkForm extends Component<Props, State> {
                     ))}
                   </div>
                 ) : null}
-                {newUser && users.size === 0 ? (
-                  <div className={classes.searchCoworkerList}>
-                    <Typography className={classes.emptyResultText}>
-                      Don’t see who you’re looking for?
-                      <br />
-                      Enter their email address &amp; invite them to join jolly
-                    </Typography>
-                  </div>
-                ) : null}
               </React.Fragment>
             )}
             {activeSection === 'image' && (
@@ -1158,6 +1149,11 @@ class MobileWorkForm extends Component<Props, State> {
             )}
             {activeSection === 'coworker' && (
               <React.Fragment>
+                <Typography className={classes.emptyResultText}>
+                  Don’t see who you’re looking for?
+                  <br />
+                  Enter their email address &amp; invite them to join jolly
+                </Typography>
                 <Typography className={classes.roleLabel}>
                   ADDED COWORKERS
                 </Typography>
