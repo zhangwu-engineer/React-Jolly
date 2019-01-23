@@ -409,6 +409,7 @@ class InvitePage extends Component<Props, State> {
           photos: work.get('photos'),
           verifiers: [invite.getIn(['tagger', 'userId'])],
           slug: work.get('slug'),
+          addMethod: work.get('addMethod'),
         },
         tagger: {
           userId: invite.getIn(['tagger', 'userId']),
@@ -427,6 +428,7 @@ class InvitePage extends Component<Props, State> {
           pinToProfile: work.get('pinToProfile'),
           photos: work.get('photos'),
           slug: work.get('slug'),
+          addMethod: work.get('addMethod'),
         },
       };
     }
@@ -465,6 +467,7 @@ class InvitePage extends Component<Props, State> {
           photos: work.get('photos'),
           verifiers: [invite.getIn(['tagger', 'userId'])],
           slug: work.get('slug'),
+          addMethod: work.get('addMethod'),
         },
         tagger: {
           userId: invite.getIn(['tagger', 'userId']),
@@ -483,6 +486,7 @@ class InvitePage extends Component<Props, State> {
           pinToProfile: work.get('pinToProfile'),
           photos: work.get('photos'),
           slug: work.get('slug'),
+          addMethod: work.get('addMethod'),
         },
       };
     }
@@ -518,6 +522,7 @@ class InvitePage extends Component<Props, State> {
           photos: work.get('photos'),
           verifiers: [invite.getIn(['tagger', 'userId'])],
           slug: work.get('slug'),
+          addMethod: work.get('addMethod'),
         },
         tagger: {
           userId: invite.getIn(['tagger', 'userId']),
@@ -536,6 +541,7 @@ class InvitePage extends Component<Props, State> {
           pinToProfile: work.get('pinToProfile'),
           photos: work.get('photos'),
           slug: work.get('slug'),
+          addMethod: work.get('addMethod'),
         },
         tagger: null,
       };
@@ -768,6 +774,7 @@ class InvitePage extends Component<Props, State> {
                           photos: work.get('photos'),
                           verifiers: [invite.getIn(['tagger', 'userId'])],
                           slug: work.get('slug'),
+                          addMethod: work.get('addMethod'),
                         },
                         tagger: {
                           userId: invite.getIn(['tagger', 'userId']),
@@ -803,6 +810,7 @@ class InvitePage extends Component<Props, State> {
                           pinToProfile: work.get('pinToProfile'),
                           photos: work.get('photos'),
                           slug: work.get('slug'),
+                          addMethod: work.get('addMethod'),
                         },
                         tagger: null,
                       };
