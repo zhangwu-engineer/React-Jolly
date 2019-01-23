@@ -18,6 +18,7 @@ import Avatar from '@material-ui/core/Avatar';
 import Drawer from '@material-ui/core/Drawer';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import MenuIcon from '@material-ui/icons/Menu';
+import ContactIcon from '@material-ui/icons/ContactSupportOutlined';
 
 import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
@@ -235,6 +236,21 @@ class Header extends Component<Props, State> {
             <ListItemText
               classes={{ primary: classes.menuItemText }}
               primary="Settings"
+            />
+          </MenuItem>
+          <MenuItem
+            className={classes.menuItem}
+            onClick={e => {
+              this.handleClose(e);
+              window.open('https://www.joinjolly.com/contact', '_blank');
+            }}
+          >
+            <ListItemIcon className={classes.menuItemIcon}>
+              <ContactIcon />
+            </ListItemIcon>
+            <ListItemText
+              classes={{ primary: classes.menuItemText }}
+              primary="Contact"
             />
           </MenuItem>
           <MenuItem className={classes.menuItem} onClick={this.handleLogout}>
