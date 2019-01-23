@@ -24,6 +24,7 @@ const styles = theme => ({
     marginBottom: 20,
     padding: '20px 30px',
     boxShadow: '0 10px 20px 0 rgba(187, 187, 187, 0.5)',
+    cursor: 'pointer',
   },
   content: {
     padding: 0,
@@ -102,6 +103,10 @@ type Props = {
 };
 
 class JobCard extends Component<Props> {
+  goToDetail = () => {
+    const { job } = this.props;
+    history.push(`/f/${job.getIn(['user', 'slug'])}/e/${job.get('slug')}`);
+  };
   render() {
     const { job, classes } = this.props;
     const photo1 = job && job.getIn(['photos', 0]);
@@ -122,17 +127,9 @@ class JobCard extends Component<Props> {
       );
     }
     return (
-      <Card className={classes.root}>
+      <Card className={classes.root} onClick={this.goToDetail}>
         <CardContent className={classes.content}>
-          <Typography
-            variant="h6"
-            className={classes.title}
-            onClick={() =>
-              history.push(
-                `/f/${job.getIn(['user', 'slug'])}/e/${job.get('slug')}`
-              )
-            }
-          >
+          <Typography variant="h6" className={classes.title}>
             {job.get('title')}
           </Typography>
           <Typography className={classes.date}>
