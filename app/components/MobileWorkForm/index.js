@@ -1120,6 +1120,11 @@ class MobileWorkForm extends Component<Props, State> {
                               : [state.newRole],
                             newRole: '',
                             isEditingRole: false,
+                            model: {
+                              ...state.model,
+                              role: state.newRole,
+                            },
+                            activeSection: 'main',
                           }));
                         }}
                       >
