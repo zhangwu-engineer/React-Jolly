@@ -990,9 +990,7 @@ class MobileWorkForm extends Component<Props, State> {
                         />
                         <ListItemText
                           primary={`${u.get('firstName')} ${u.get('lastName')}`}
-                          secondary={
-                            u.getIn(['profile', 'location']) || u.get('email')
-                          }
+                          secondary={u.getIn(['profile', 'location']) || ''}
                           classes={{
                             primary: classes.resultText,
                             secondary: classes.resultDateText,
