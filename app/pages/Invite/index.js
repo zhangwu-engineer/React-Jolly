@@ -430,6 +430,9 @@ class InvitePage extends Component<Props, State> {
           slug: work.get('slug'),
           addMethod: work.get('addMethod'),
         },
+        tagger: {
+          userId: work.getIn(['user', 'id']),
+        },
       };
     }
     this.props.requestSocialLogin(
@@ -488,6 +491,9 @@ class InvitePage extends Component<Props, State> {
           slug: work.get('slug'),
           addMethod: work.get('addMethod'),
         },
+        tagger: {
+          userId: work.getIn(['user', 'id']),
+        },
       };
     }
     this.props.requestSocialLogin(
@@ -543,7 +549,9 @@ class InvitePage extends Component<Props, State> {
           slug: work.get('slug'),
           addMethod: work.get('addMethod'),
         },
-        tagger: null,
+        tagger: {
+          userId: work.getIn(['user', 'id']),
+        },
       };
     }
     this.props.requestAcceptInvite(inviteData);
@@ -812,7 +820,9 @@ class InvitePage extends Component<Props, State> {
                           slug: work.get('slug'),
                           addMethod: work.get('addMethod'),
                         },
-                        tagger: null,
+                        tagger: {
+                          userId: work.getIn(['user', 'id']),
+                        },
                       };
                       storage.set('invite', inviteData);
                       history.push('/email-sign-in');
