@@ -558,7 +558,7 @@ class MobileWorkForm extends Component<Props, State> {
   fileInput = React.createRef();
   coworkerInput = React.createRef();
   render() {
-    const { classes, user, isLoading, users } = this.props;
+    const { classes, isLoading, users } = this.props;
     const {
       model,
       filteredWorks,
@@ -582,9 +582,7 @@ class MobileWorkForm extends Component<Props, State> {
                 <IconButton
                   className={classes.clearButton}
                   color="inherit"
-                  component={props => (
-                    <Link to={`/f/${user.get('slug')}/edit`} {...props} />
-                  )}
+                  component={props => <Link to="/edit" {...props} />}
                 >
                   <ClearIcon />
                 </IconButton>

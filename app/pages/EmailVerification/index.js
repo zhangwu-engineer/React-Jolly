@@ -30,7 +30,7 @@ class EmailVerificationPage extends Component<Props> {
     const { user, isLoading, error } = this.props;
     if (prevProps.isLoading && !isLoading && !error) {
       if (user) {
-        history.push(`/f/${user.get('slug')}/edit`);
+        history.push('/edit');
       } else {
         history.push('/sign-in');
       }

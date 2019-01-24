@@ -9,14 +9,12 @@ import { history } from 'components/ConnectedRouter';
 import { Route, PrivateRoute } from 'components/Routes';
 import { requestMember } from 'containers/App/sagas';
 
-const Profile = load(() => import('pages/Profile'));
 const ProfileGallery = load(() => import('pages/ProfileGallery'));
 const Member = load(() => import('pages/Member'));
 const MemberGallery = load(() => import('pages/MemberGallery'));
 const PersonalInformation = load(() => import('pages/PersonalInformation'));
 const Settings = load(() => import('pages/Settings'));
 const Roles = load(() => import('pages/Roles'));
-const AddWork = load(() => import('pages/AddWork'));
 const WorkDetail = load(() => import('pages/WorkDetail'));
 const Mobile = load(() => import('pages/Mobile'));
 const Invite = load(() => import('pages/Invite'));
@@ -69,11 +67,6 @@ class UserPage extends React.Component<Props> {
         <Route exact path={url} render={props => <Member {...props} />} />
         <PrivateRoute
           exact
-          path={`${url}/edit`}
-          render={props => <Profile {...props} />}
-        />
-        <PrivateRoute
-          exact
           path={`${url}/edit/personal-information`}
           render={props => <PersonalInformation {...props} />}
         />
@@ -98,10 +91,6 @@ class UserPage extends React.Component<Props> {
         <PrivateRoute
           path={`${url}/mobile`}
           render={props => <Mobile {...props} />}
-        />
-        <PrivateRoute
-          path={`${url}/add`}
-          render={props => <AddWork {...props} />}
         />
         <Route
           path={`${url}/e/:eventSlug/work/:token`}

@@ -43,7 +43,7 @@ class App extends Component<Props> {
     }
     if (this.props.location.pathname === '/') {
       if (user) {
-        history.push(`/f/${user.get('slug')}/edit`);
+        history.push('/edit');
       } else {
         history.push('/freelancer-signup');
       }
@@ -54,7 +54,7 @@ class App extends Component<Props> {
     if (location.pathname === '/' && !user) {
       history.push('/sign-in');
     } else if (location.pathname === '/' && user) {
-      history.push(`/f/${user.get('slug')}/edit`);
+      history.push('/edit');
     }
     if (prevProps.location.pathname !== location.pathname) {
       analytics.page(location.pathname);
@@ -98,7 +98,7 @@ class App extends Component<Props> {
           <Route path="/f/:slug/edit/avatar" />
           <Route path="/f/:slug/edit/background-image" />
           <Route path="/f/:slug/gallery" />
-          <Route path="/f/:slug/add" />
+          <Route path="/add" />
           <Route path="/f/:slug/e/:eventSlug" />
           <Route
             path="/"

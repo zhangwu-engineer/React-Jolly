@@ -5,7 +5,7 @@ import { Switch } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import load from 'utils/load';
 
-import { Route } from 'components/Routes';
+import { Route, PrivateRoute } from 'components/Routes';
 
 const Home = load(() => import('pages/Home'));
 const Welcome = load(() => import('pages/Welcome'));
@@ -16,6 +16,8 @@ const EmailVerification = load(() => import('pages/EmailVerification'));
 const ForgotPassword = load(() => import('pages/ForgotPassword'));
 const ResetPassword = load(() => import('pages/ResetPassword'));
 const Privacy = load(() => import('pages/Privacy'));
+const Profile = load(() => import('pages/Profile'));
+const AddWork = load(() => import('pages/AddWork'));
 const User = load(() => import('pages/User'));
 const FourOfour = load(() => import('pages/404'));
 
@@ -54,6 +56,12 @@ class Routes extends Component<{}> {
           render={props => <Privacy {...props} />}
         />
         <Route path="/f/:slug" render={props => <User {...props} />} />
+        <PrivateRoute
+          exact
+          path="/edit"
+          render={props => <Profile {...props} />}
+        />
+        <PrivateRoute path="/add" render={props => <AddWork {...props} />} />
         <Route render={props => <FourOfour {...props} />} />
       </Switch>
     );

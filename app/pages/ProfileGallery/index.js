@@ -133,9 +133,7 @@ class ProfileGallery extends Component<Props> {
           <Grid item>
             <Button
               className={classes.backButton}
-              component={props => (
-                <Link to={`/f/${user.get('slug')}/edit`} {...props} />
-              )}
+              component={props => <Link to="/edit" {...props} />}
             >
               <ArrowBackIcon />
               &nbsp;Profile Images &amp; Videos

@@ -340,7 +340,7 @@ class SettingsPage extends Component<Props, State> {
                   <IconButton
                     className={classes.iconButton}
                     onClick={() => {
-                      history.push(`/f/${user.get('slug')}/edit`);
+                      history.push('/edit');
                     }}
                   >
                     <OpenInNewIcon />

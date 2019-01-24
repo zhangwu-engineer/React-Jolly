@@ -187,9 +187,7 @@ class WorkDetailPage extends Component<Props> {
                 component={props => (
                   <Link
                     to={
-                      user && user.get('slug') === slug
-                        ? `/f/${user.get('slug')}/edit`
-                        : `/f/${slug}`
+                      user && user.get('slug') === slug ? '/edit' : `/f/${slug}`
                     }
                     {...props}
                   />

@@ -377,7 +377,7 @@ class WorkForm extends Component<Props, State> {
   dropzoneRef = React.createRef();
   dropzoneDiv = React.createRef();
   render() {
-    const { classes, user, isLoading, error, users } = this.props;
+    const { classes, isLoading, error, users } = this.props;
     const {
       model,
       newUser,
@@ -392,9 +392,7 @@ class WorkForm extends Component<Props, State> {
             <div className={classes.clearButtonWrapper}>
               <IconButton
                 color="inherit"
-                component={props => (
-                  <Link to={`/f/${user.get('slug')}/edit`} {...props} />
-                )}
+                component={props => <Link to="/edit" {...props} />}
               >
                 <ClearIcon />
               </IconButton>

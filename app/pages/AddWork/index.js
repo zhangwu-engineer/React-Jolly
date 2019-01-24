@@ -38,9 +38,9 @@ class AddWorkPage extends Component<Props> {
     this.props.requestWorks();
   }
   componentDidUpdate(prevProps: Props) {
-    const { user, isLoading, error } = this.props;
+    const { isLoading, error } = this.props;
     if (prevProps.isLoading && !isLoading && !error) {
-      history.push(`/f/${user.get('slug')}/edit`);
+      history.push('/edit');
     }
   }
   render() {

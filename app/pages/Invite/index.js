@@ -340,11 +340,11 @@ class InvitePage extends Component<Props, State> {
       !isAcceptInviteLoading &&
       !acceptInviteError
     ) {
-      history.push(`/f/${user.get('slug')}/edit`);
+      history.push('/edit');
     }
     if (!prevProps.user && user) {
       storage.set('invite', null);
-      history.push(`/f/${user.get('slug')}/edit`);
+      history.push('/edit');
     }
   }
   closeRoleModal = () => {

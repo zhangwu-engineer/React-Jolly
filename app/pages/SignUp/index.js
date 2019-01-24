@@ -164,7 +164,7 @@ class SignUp extends Component<Props, State> {
     const { isLoading, error, user } = this.props;
     if (prevProps.isLoading && !isLoading && !error && user) {
       storage.set('invite', null);
-      history.push(`/f/${user.get('slug')}/edit`);
+      history.push('/edit');
     }
   }
   onCloseModal = () => {

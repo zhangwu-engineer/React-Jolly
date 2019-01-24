@@ -316,12 +316,7 @@ class Member extends Component<Props, State> {
               >
                 <Button
                   className={classes.backButton}
-                  component={props => (
-                    <Link
-                      to={`/f/${currentUser.get('slug')}/edit`}
-                      {...props}
-                    />
-                  )}
+                  component={props => <Link to="/edit" {...props} />}
                   color="primary"
                 >
                   Back

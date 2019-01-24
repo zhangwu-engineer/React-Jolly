@@ -212,7 +212,7 @@ class Header extends Component<Props, State> {
             className={classes.menuItem}
             onClick={e => {
               this.handleClose(e);
-              history.push(`/f/${user.get('slug')}/edit`);
+              history.push('/edit');
             }}
           >
             <ListItemIcon className={classes.menuItemIcon}>
@@ -337,9 +337,7 @@ class Header extends Component<Props, State> {
               className={cx(classes.backButton, {
                 [classes.shownOnSmallDevice]: hideTopRightButtons,
               })}
-              component={props => (
-                <Link to={`/f/${user.get('slug')}/edit`} {...props} />
-              )}
+              component={props => <Link to="/edit" {...props} />}
             >
               <ArrowBackIcon />
               &nbsp;&nbsp;&nbsp;
@@ -355,7 +353,7 @@ class Header extends Component<Props, State> {
                   [classes.hiddenOnSmallDevice]: hideTopRightButtons,
                 })}
                 onClick={() => {
-                  history.push(`/f/${user.get('slug')}/edit`);
+                  history.push('/edit');
                 }}
               >
                 <Avatar className={classes.avatar}>
