@@ -9,10 +9,10 @@ import { withStyles } from '@material-ui/core/styles';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
+// import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import MoreIcon from '@material-ui/icons/MoreVert';
+// import MoreIcon from '@material-ui/icons/MoreVert';
 
 import WorkDetail from 'components/WorkDetail';
 import Preloader from 'components/Preloader';
@@ -38,7 +38,7 @@ const styles = theme => ({
     backgroundColor: theme.palette.primary.main,
   },
   headerInner: {
-    height: 103,
+    height: 70,
     maxWidth: 1063,
     margin: '0 auto',
     [theme.breakpoints.down('xs')]: {
@@ -62,8 +62,8 @@ const styles = theme => ({
     },
   },
   logo: {
-    width: 75,
-    height: 50,
+    width: 70,
+    height: 45,
     [theme.breakpoints.down('xs')]: {
       display: 'none',
     },
@@ -205,10 +205,10 @@ class WorkDetailPage extends Component<Props> {
                 <img className={classes.logo} src={LogoWhite} alt="logo" />
               </Link>
             </Grid>
-            <Grid item>
-              <IconButton className={classes.button}>
+            <Grid item style={{ width: 68 }}>
+              {/* <IconButton className={classes.button}>
                 <MoreIcon />
-              </IconButton>
+              </IconButton> */}
             </Grid>
           </Grid>
         </div>

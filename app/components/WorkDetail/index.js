@@ -12,7 +12,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 // import IconButton from '@material-ui/core/IconButton';
-import Switch from '@material-ui/core/Switch';
+// import Switch from '@material-ui/core/Switch';
 import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
@@ -471,18 +471,18 @@ class WorkDetail extends Component<Props, State> {
               {from === to ? `On ${from}` : `From ${from} - ${to}`}
             </Typography>
           </div>
-          {displayMode === 'private' && (
+          {/* {displayMode === 'private' && (
             <React.Fragment>
-              {/* <Button className={classes.editButton}>
+              <Button className={classes.editButton}>
                 <EditIcon className={classes.editIcon} />
                 &nbsp;&nbsp;&nbsp;Edit Job
               </Button>
               <IconButton className={classes.smallEditButton}>
                 <EditIcon />
-              </IconButton> */}
+              </IconButton>
               <Switch className={classes.pin} color="default" />
             </React.Fragment>
-          )}
+          )} */}
         </div>
         <div className={classes.workDetail}>
           <Grid container>
