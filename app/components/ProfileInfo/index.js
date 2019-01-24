@@ -331,7 +331,7 @@ class ProfileInfo extends PureComponent<Props> {
           <Button
             className={classes.smallAddCoverButton}
             onClick={() => {
-              history.push(`/f/${user.get('slug')}/edit/background-image`);
+              history.push('/background-picture');
             }}
           >
             <CameraIcon />
@@ -373,7 +373,7 @@ class ProfileInfo extends PureComponent<Props> {
             <IconButton
               className={classes.smallEditAvatarButton}
               onClick={() => {
-                history.push(`/f/${user.get('slug')}/edit/avatar`);
+                history.push('/profile-picture');
               }}
             >
               <EditIcon fontSize="small" />

@@ -227,7 +227,7 @@ class Header extends Component<Props, State> {
             className={classes.menuItem}
             onClick={e => {
               this.handleClose(e);
-              history.push(`/f/${user.get('slug')}/settings`);
+              history.push('/settings');
             }}
           >
             <ListItemIcon className={classes.menuItemIcon}>

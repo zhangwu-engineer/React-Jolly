@@ -143,10 +143,7 @@ class CompletionBanner extends Component<Props> {
                     className={classes.button}
                     color="primary"
                     component={props => (
-                      <Link
-                        to={`/f/${user.get('slug')}/edit/avatar`}
-                        {...props}
-                      />
+                      <Link to="/profile-picture" {...props} />
                     )}
                   >
                     +&nbsp;Picture
@@ -156,9 +153,7 @@ class CompletionBanner extends Component<Props> {
                   <Button
                     className={classes.button}
                     color="primary"
-                    component={props => (
-                      <Link to={`/f/${user.get('slug')}/work`} {...props} />
-                    )}
+                    component={props => <Link to="/types-of-work" {...props} />}
                   >
                     +&nbsp;Role
                   </Button>

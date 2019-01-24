@@ -9,12 +9,9 @@ import { history } from 'components/ConnectedRouter';
 import { Route, PrivateRoute } from 'components/Routes';
 import { requestMember } from 'containers/App/sagas';
 
-const ProfileGallery = load(() => import('pages/ProfileGallery'));
 const Member = load(() => import('pages/Member'));
 const MemberGallery = load(() => import('pages/MemberGallery'));
 const PersonalInformation = load(() => import('pages/PersonalInformation'));
-const Settings = load(() => import('pages/Settings'));
-const Roles = load(() => import('pages/Roles'));
 const WorkDetail = load(() => import('pages/WorkDetail'));
 const Mobile = load(() => import('pages/Mobile'));
 const Invite = load(() => import('pages/Invite'));
@@ -69,24 +66,6 @@ class UserPage extends React.Component<Props> {
           exact
           path={`${url}/edit/personal-information`}
           render={props => <PersonalInformation {...props} />}
-        />
-        <PrivateRoute
-          exact
-          path={`${url}/edit/avatar`}
-          render={props => <ProfileGallery {...props} />}
-        />
-        <PrivateRoute
-          exact
-          path={`${url}/edit/background-image`}
-          render={props => <ProfileGallery {...props} />}
-        />
-        <PrivateRoute
-          path={`${url}/settings`}
-          render={props => <Settings {...props} />}
-        />
-        <PrivateRoute
-          path={`${url}/work`}
-          render={props => <Roles {...props} />}
         />
         <PrivateRoute
           path={`${url}/mobile`}

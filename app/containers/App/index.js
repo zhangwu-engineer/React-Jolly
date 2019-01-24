@@ -95,8 +95,8 @@ class App extends Component<Props> {
         <Switch>
           <Route path="/freelancer-signup" />
           <Route path="/sign-in" />
-          <Route path="/f/:slug/edit/avatar" />
-          <Route path="/f/:slug/edit/background-image" />
+          <Route path="/profile-picture" />
+          <Route path="/background-picture" />
           <Route path="/f/:slug/gallery" />
           <Route path="/add" />
           <Route path="/f/:slug/e/:eventSlug" />

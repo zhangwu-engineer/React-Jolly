@@ -19,6 +19,9 @@ const Privacy = load(() => import('pages/Privacy'));
 const Profile = load(() => import('pages/Profile'));
 const AddWork = load(() => import('pages/AddWork'));
 const User = load(() => import('pages/User'));
+const ProfileGallery = load(() => import('pages/ProfileGallery'));
+const Settings = load(() => import('pages/Settings'));
+const Roles = load(() => import('pages/Roles'));
 const FourOfour = load(() => import('pages/404'));
 
 class Routes extends Component<{}> {
@@ -62,6 +65,24 @@ class Routes extends Component<{}> {
           render={props => <Profile {...props} />}
         />
         <PrivateRoute path="/add" render={props => <AddWork {...props} />} />
+        <PrivateRoute
+          exact
+          path="/profile-picture"
+          render={props => <ProfileGallery {...props} />}
+        />
+        <PrivateRoute
+          exact
+          path="/background-picture"
+          render={props => <ProfileGallery {...props} />}
+        />
+        <PrivateRoute
+          path="/settings"
+          render={props => <Settings {...props} />}
+        />
+        <PrivateRoute
+          path="/types-of-work"
+          render={props => <Roles {...props} />}
+        />
         <Route render={props => <FourOfour {...props} />} />
       </Switch>
     );

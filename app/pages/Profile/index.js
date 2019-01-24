@@ -325,9 +325,7 @@ class Profile extends Component<Props, State> {
               <Grid container justify="center">
                 <Grid item>
                   <Button
-                    component={props => (
-                      <Link to={`/f/${user.get('slug')}/work`} {...props} />
-                    )}
+                    component={props => <Link to="/types-of-work" {...props} />}
                     classes={{
                       root: classes.addRoleButton,
                       label: classes.addRoleLabel,
@@ -359,9 +357,7 @@ class Profile extends Component<Props, State> {
               <Grid container justify="center">
                 <Grid item>
                   <Button
-                    component={props => (
-                      <Link to={`/f/${user.get('slug')}/add`} {...props} />
-                    )}
+                    component={props => <Link to="/add" {...props} />}
                     classes={{
                       root: classes.addRoleButton,
                       label: classes.addRoleLabel,
@@ -445,7 +441,7 @@ class Profile extends Component<Props, State> {
                       classes.smallAddPictureButton
                     )}
                     onClick={() => {
-                      history.push(`/f/${user.get('slug')}/edit/avatar`);
+                      history.push('/profile-picture');
                     }}
                   >
                     <Icon glyph={AddPhotoIcon} size={20} />

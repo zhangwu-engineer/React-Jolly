@@ -84,7 +84,7 @@ class ProfileGallery extends Component<Props> {
   handleFileUpload = ({ target }: Event) => {
     const reader = new FileReader();
     let type = 'avatar';
-    if (location.pathname.indexOf('background-image') > -1) {
+    if (location.pathname.indexOf('background-picture') > -1) {
       type = 'backgroundImage';
     }
     reader.onload = e => {
@@ -104,7 +104,7 @@ class ProfileGallery extends Component<Props> {
   updateSelection = path => {
     const { location } = this.props;
     let type = 'avatar';
-    if (location.pathname.indexOf('background-image') > -1) {
+    if (location.pathname.indexOf('background-picture') > -1) {
       type = 'backgroundImage';
     }
     this.props.updateUser({
@@ -117,7 +117,7 @@ class ProfileGallery extends Component<Props> {
   render() {
     const { classes, user, files, location } = this.props;
     let selectedFile = '';
-    if (location.pathname.indexOf('avatar') > -1) {
+    if (location.pathname.indexOf('profile-picture') > -1) {
       selectedFile = user.getIn(['profile', 'avatar']);
     } else {
       selectedFile = user.getIn(['profile', 'backgroundImage']);
