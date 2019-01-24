@@ -161,9 +161,7 @@ class CompletionBanner extends Component<Props> {
                 {showJobButton && (
                   <Button
                     className={classes.button}
-                    component={props => (
-                      <Link to={`/f/${user.get('slug')}/add`} {...props} />
-                    )}
+                    component={props => <Link to="/add" {...props} />}
                     color="primary"
                   >
                     +&nbsp;Job
@@ -173,9 +171,7 @@ class CompletionBanner extends Component<Props> {
                   <Button
                     className={classes.button}
                     color="primary"
-                    component={props => (
-                      <Link to={`/f/${user.get('slug')}/add`} {...props} />
-                    )}
+                    component={props => <Link to="/add" {...props} />}
                   >
                     Tag a Coworker
                   </Button>
@@ -200,9 +196,7 @@ class CompletionBanner extends Component<Props> {
             <Button
               className={classes.button}
               color="primary"
-              component={props => (
-                <Link to={`/f/${user.get('slug')}/work`} {...props} />
-              )}
+              component={props => <Link to="/types-of-work" {...props} />}
             >
               +&nbsp;Role
             </Button>
@@ -210,9 +204,7 @@ class CompletionBanner extends Component<Props> {
           {showJobButton && (
             <Button
               className={classes.button}
-              component={props => (
-                <Link to={`/f/${user.get('slug')}/add`} {...props} />
-              )}
+              component={props => <Link to="/add" {...props} />}
               color="primary"
             >
               +&nbsp;Job
@@ -222,9 +214,7 @@ class CompletionBanner extends Component<Props> {
             <Button
               className={classes.button}
               color="primary"
-              component={props => (
-                <Link to={`/f/${user.get('slug')}/add`} {...props} />
-              )}
+              component={props => <Link to="/add" {...props} />}
             >
               Tag a Coworker
             </Button>
