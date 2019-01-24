@@ -21,7 +21,7 @@ import Input from '@material-ui/core/Input';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import MoreIcon from '@material-ui/icons/MoreVert';
+// import MoreIcon from '@material-ui/icons/MoreVert';
 import ClearIcon from '@material-ui/icons/Clear';
 
 import { history } from 'components/ConnectedRouter';
@@ -52,7 +52,7 @@ const styles = theme => ({
     backgroundColor: theme.palette.primary.main,
   },
   headerInner: {
-    height: 103,
+    height: 70,
     maxWidth: 1063,
     margin: '0 auto',
     [theme.breakpoints.down('xs')]: {
@@ -76,8 +76,8 @@ const styles = theme => ({
     },
   },
   logo: {
-    width: 75,
-    height: 50,
+    width: 70,
+    height: 45,
     [theme.breakpoints.down('xs')]: {
       display: 'none',
     },
@@ -217,6 +217,7 @@ const styles = theme => ({
   signupButton: {
     textTransform: 'none',
     width: '100%',
+    marginBottom: 15,
   },
   signupTitle: {
     fontSize: 18,
@@ -247,6 +248,16 @@ const styles = theme => ({
     '&:hover': {
       backgroundColor: '#0077b5',
     },
+  },
+  linkText: {
+    fontSize: 16,
+    fontWeight: 500,
+    color: '#3c3e43',
+  },
+  link: {
+    fontSize: 16,
+    fontWeight: 500,
+    textDecoration: 'none',
   },
 });
 
@@ -598,10 +609,10 @@ class InvitePage extends Component<Props, State> {
                 <img className={classes.logo} src={LogoWhite} alt="logo" />
               </Link>
             </Grid>
-            <Grid item>
-              <IconButton className={classes.button}>
+            <Grid item style={{ width: 68 }}>
+              {/* <IconButton className={classes.button}>
                 <MoreIcon />
-              </IconButton>
+              </IconButton> */}
             </Grid>
           </Grid>
         </div>
@@ -766,70 +777,142 @@ class InvitePage extends Component<Props, State> {
                   Continue with linkedin
                 </SocialButton>
                 {invite ? (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    className={classes.signupButton}
-                    onClick={() => {
-                      const inviteData = {
-                        work: {
-                          title: work.get('title'),
-                          role,
-                          from: work.get('from'),
-                          to: work.get('to'),
-                          caption: work.get('caption'),
-                          pinToProfile: work.get('pinToProfile'),
-                          photos: work.get('photos'),
-                          verifiers: [invite.getIn(['tagger', 'userId'])],
-                          slug: work.get('slug'),
-                          addMethod: work.get('addMethod'),
-                        },
-                        tagger: {
-                          userId: invite.getIn(['tagger', 'userId']),
-                        },
-                        rootWorkId: invite.get('workId'),
-                        token,
-                      };
-                      storage.set('invite', inviteData);
-                      if (invite.get('startFrom') === 'signup') {
-                        history.push('/freelancer-signup-2');
-                      } else {
-                        history.push('/email-sign-in');
-                      }
-                    }}
-                  >
-                    {invite.get('startFrom') === 'signup'
-                      ? 'Sign up with Email'
-                      : 'Log in with Email'}
-                  </Button>
+                  <React.Fragment>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      className={classes.signupButton}
+                      onClick={() => {
+                        const inviteData = {
+                          work: {
+                            title: work.get('title'),
+                            role,
+                            from: work.get('from'),
+                            to: work.get('to'),
+                            caption: work.get('caption'),
+                            pinToProfile: work.get('pinToProfile'),
+                            photos: work.get('photos'),
+                            verifiers: [invite.getIn(['tagger', 'userId'])],
+                            slug: work.get('slug'),
+                            addMethod: work.get('addMethod'),
+                          },
+                          tagger: {
+                            userId: invite.getIn(['tagger', 'userId']),
+                          },
+                          rootWorkId: invite.get('workId'),
+                          token,
+                        };
+                        storage.set('invite', inviteData);
+                        if (invite.get('startFrom') === 'signup') {
+                          history.push('/freelancer-signup-2');
+                        } else {
+                          history.push('/email-sign-in');
+                        }
+                      }}
+                    >
+                      {invite.get('startFrom') === 'signup'
+                        ? 'Sign up with Email'
+                        : 'Log in with Email'}
+                    </Button>
+                    <Typography className={classes.linkText}>
+                      {invite.get('startFrom') === 'signup'
+                        ? 'Have an Account?'
+                        : 'No Account?'}
+                      &nbsp;
+                      <Link
+                        className={classes.link}
+                        onClick={() => {
+                          const inviteData = {
+                            work: {
+                              title: work.get('title'),
+                              role,
+                              from: work.get('from'),
+                              to: work.get('to'),
+                              caption: work.get('caption'),
+                              pinToProfile: work.get('pinToProfile'),
+                              photos: work.get('photos'),
+                              verifiers: [invite.getIn(['tagger', 'userId'])],
+                              slug: work.get('slug'),
+                              addMethod: work.get('addMethod'),
+                            },
+                            tagger: {
+                              userId: invite.getIn(['tagger', 'userId']),
+                            },
+                            rootWorkId: invite.get('workId'),
+                            token,
+                          };
+                          storage.set('invite', inviteData);
+                          if (invite.get('startFrom') === 'signup') {
+                            history.push('/sign-in');
+                          } else {
+                            history.push('/freelancer-signup');
+                          }
+                        }}
+                      >
+                        {invite.get('startFrom') === 'signup'
+                          ? 'Sign in'
+                          : 'Sign up'}
+                      </Link>
+                    </Typography>
+                  </React.Fragment>
                 ) : (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    className={classes.signupButton}
-                    onClick={() => {
-                      const inviteData = {
-                        work: {
-                          title: work.get('title'),
-                          role,
-                          from: work.get('from'),
-                          to: work.get('to'),
-                          caption: work.get('caption'),
-                          pinToProfile: work.get('pinToProfile'),
-                          photos: work.get('photos'),
-                          slug: work.get('slug'),
-                          addMethod: work.get('addMethod'),
-                        },
-                        tagger: {
-                          userId: work.getIn(['user', 'id']),
-                        },
-                      };
-                      storage.set('invite', inviteData);
-                      history.push('/email-sign-in');
-                    }}
-                  >
-                    Log in with Email
-                  </Button>
+                  <React.Fragment>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      className={classes.signupButton}
+                      onClick={() => {
+                        const inviteData = {
+                          work: {
+                            title: work.get('title'),
+                            role,
+                            from: work.get('from'),
+                            to: work.get('to'),
+                            caption: work.get('caption'),
+                            pinToProfile: work.get('pinToProfile'),
+                            photos: work.get('photos'),
+                            slug: work.get('slug'),
+                            addMethod: work.get('addMethod'),
+                          },
+                          tagger: {
+                            userId: work.getIn(['user', 'id']),
+                          },
+                        };
+                        storage.set('invite', inviteData);
+                        history.push('/email-sign-in');
+                      }}
+                    >
+                      Log in with Email
+                    </Button>
+                    <Typography className={classes.linkText}>
+                      No Account?&nbsp;
+                      <Link
+                        className={classes.link}
+                        onClick={() => {
+                          const inviteData = {
+                            work: {
+                              title: work.get('title'),
+                              role,
+                              from: work.get('from'),
+                              to: work.get('to'),
+                              caption: work.get('caption'),
+                              pinToProfile: work.get('pinToProfile'),
+                              photos: work.get('photos'),
+                              slug: work.get('slug'),
+                              addMethod: work.get('addMethod'),
+                            },
+                            tagger: {
+                              userId: work.getIn(['user', 'id']),
+                            },
+                          };
+                          storage.set('invite', inviteData);
+                          history.push('/freelancer-signup');
+                        }}
+                      >
+                        Sign up
+                      </Link>
+                    </Typography>
+                  </React.Fragment>
                 )}
               </div>
             </BaseModal>

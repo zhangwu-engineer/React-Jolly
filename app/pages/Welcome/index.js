@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import storage from 'store';
 
 import CONFIG from 'conf';
 
@@ -26,6 +27,7 @@ class Welcome extends Component<Props> {
   componentDidUpdate(prevProps: Props) {
     const { user } = this.props;
     if (!prevProps.user && user) {
+      storage.set('invite', null);
       history.push('/edit');
     }
   }
@@ -33,7 +35,11 @@ class Welcome extends Component<Props> {
     const {
       _token: { accessToken },
     } = user;
-    this.props.requestSocialLogin({ access_token: accessToken }, 'facebook');
+    this.props.requestSocialLogin(
+      { access_token: accessToken },
+      'facebook',
+      storage.get('invite')
+    );
   };
 
   handleFBLoginFailure = (err: any) => {
@@ -43,7 +49,11 @@ class Welcome extends Component<Props> {
     const {
       _token: { accessToken },
     } = user;
-    this.props.requestSocialLogin({ access_token: accessToken }, 'linkedin');
+    this.props.requestSocialLogin(
+      { access_token: accessToken },
+      'linkedin',
+      storage.get('invite')
+    );
   };
 
   handleLinkedInLoginFailure = (err: any) => {
@@ -121,8 +131,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  requestSocialLogin: (payload, type) =>
-    dispatch(requestSocialLogin(payload, type)),
+  requestSocialLogin: (payload, type, invite) =>
+    dispatch(requestSocialLogin(payload, type, invite)),
 });
 
 export default connect(
