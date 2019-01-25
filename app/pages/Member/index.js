@@ -321,7 +321,12 @@ class Member extends Component<Props, State> {
                 >
                   Back
                 </Button>
-                <Button className={classes.topBannerButton} onClick={() => {}}>
+                <Button
+                  className={classes.topBannerButton}
+                  onClick={() => {
+                    this.setState({ isOpen: true });
+                  }}
+                >
                   Copy Link
                 </Button>
               </Grid>
