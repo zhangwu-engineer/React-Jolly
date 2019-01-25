@@ -511,7 +511,10 @@ class WorkDetail extends Component<Props, State> {
                 <Grid item className={classes.fullWidth}>
                   <Typography className={classes.label}>
                     <b>{work.get('verifiers').size}</b>
-                    &nbsp;Verifications
+                    &nbsp;
+                    {displayMode === 'private'
+                      ? 'Verified You'
+                      : 'Verifications'}
                   </Typography>
                   <Grid
                     container
@@ -536,7 +539,10 @@ class WorkDetail extends Component<Props, State> {
                 <Grid item className={classes.fullWidth}>
                   <Typography className={classes.label}>
                     <b>{endorsers.size}</b>
-                    &nbsp;Endorsements
+                    &nbsp;
+                    {displayMode === 'private'
+                      ? 'Endorsed You'
+                      : 'Endorsements'}
                   </Typography>
                   {groupedEndorsers.map(group => (
                     <React.Fragment key={generate()}>
