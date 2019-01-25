@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { matchPath } from 'react-router';
+import { capitalize } from 'lodash-es';
 
 import { withStyles } from '@material-ui/core/styles';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -169,6 +170,8 @@ class WorkDetailPage extends Component<Props> {
     } = matchPath(url, {
       path: '/f/:slug/e/:eventID',
     });
+    const displayMode =
+      user && user.get('slug') === slug ? 'private' : 'public';
     if (isWorkLoading) {
       return <Preloader />;
     }
@@ -196,7 +199,9 @@ class WorkDetailPage extends Component<Props> {
                 <ArrowBackIcon />
                 &nbsp;&nbsp;&nbsp;
                 <Typography className={classes.backButtonText}>
-                  Job Details
+                  {displayMode === 'private'
+                    ? 'Job Details'
+                    : capitalize(work.getIn(['user', 'firstName']))}
                 </Typography>
               </Button>
             </Grid>
@@ -223,9 +228,7 @@ class WorkDetailPage extends Component<Props> {
             requestAddCoworker={this.props.requestAddCoworker}
             requestVerifyCoworker={this.props.requestVerifyCoworker}
             requestEndorseUser={this.props.requestEndorseUser}
-            displayMode={
-              user && user.get('slug') === slug ? 'private' : 'public'
-            }
+            displayMode={displayMode}
           />
         ) : (
           <FormHelperText error>{workError}</FormHelperText>
