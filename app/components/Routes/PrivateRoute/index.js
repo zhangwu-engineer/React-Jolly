@@ -11,16 +11,7 @@ type Props = {
   location?: Object,
 };
 
-const userPrivateRoute = [
-  '/edit/personal-information',
-  '/edit/avatar',
-  '/edit/background-image',
-  '/edit',
-  '/settings',
-  '/work',
-  '/mobile',
-  '/add',
-];
+const userPrivateRoute = ['/edit/personal-information', '/mobile'];
 
 class PrivateRoute extends Component<Props> {
   render() {
