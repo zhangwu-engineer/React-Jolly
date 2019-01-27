@@ -429,7 +429,7 @@ class User extends Component<Props, State> {
           isOpen={isModalOpen}
           onCloseModal={this.closeModal}
           username={user.get('firstName')}
-          quality={qualityNames[quality]}
+          quality={quality && qualityNames[quality]}
           onSave={this.save}
         />
       </div>
