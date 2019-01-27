@@ -125,7 +125,7 @@ class ContactOptionModal extends Component<Props> {
           {`${data.get('firstName')} ${data.get('lastName')}`}
         </Typography>
         <Grid container justify="center" spacing={8}>
-          {!showSMS && (
+          {showSMS && (
             <Grid item>
               <Button className={classes.button}>
                 <TextSMSIcon />
