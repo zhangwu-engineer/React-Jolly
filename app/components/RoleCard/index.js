@@ -79,11 +79,13 @@ class RoleCard extends Component<Props> {
         <CardActions className={classes.actionBar}>
           <Button>
             <CheckCircle className={classes.icon} />
-            &nbsp;&nbsp;0
+            &nbsp;&nbsp;
+            {role.verifiedJobs}
           </Button>
           <Button>
             <Icon glyph={EndorsementIcon} />
-            &nbsp;&nbsp;0
+            &nbsp;&nbsp;
+            {role.endorsements}
           </Button>
         </CardActions>
       </Card>
