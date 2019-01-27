@@ -97,9 +97,17 @@ class ContactOptionModal extends Component<Props> {
   closeModal = () => {
     this.props.onCloseModal();
   };
+  sendSMS = () => {
+    const { data } = this.props;
+    window.location.href = `sms:${data.getIn(['profile', 'phone'])}`;
+  };
   sendEmail = () => {
     const { data } = this.props;
     window.location.href = `mailto:${data.get('email')}`;
+  };
+  call = () => {
+    const { data } = this.props;
+    window.location.href = `tel:${data.getIn(['profile', 'phone'])}`;
   };
   render() {
     const { data, classes, isOpen } = this.props;
@@ -125,14 +133,15 @@ class ContactOptionModal extends Component<Props> {
           {`${data.get('firstName')} ${data.get('lastName')}`}
         </Typography>
         <Grid container justify="center" spacing={8}>
-          {showSMS && (
-            <Grid item>
-              <Button className={classes.button}>
-                <TextSMSIcon />
-                &nbsp;Text
-              </Button>
-            </Grid>
-          )}
+          {showSMS &&
+            data.getIn(['profile', 'phone']) && (
+              <Grid item>
+                <Button className={classes.button} onClick={this.sendSMS}>
+                  <TextSMSIcon />
+                  &nbsp;Text
+                </Button>
+              </Grid>
+            )}
           {showEmail && (
             <Grid item>
               <Button className={classes.button} onClick={this.sendEmail}>
@@ -141,14 +150,15 @@ class ContactOptionModal extends Component<Props> {
               </Button>
             </Grid>
           )}
-          {showCall && (
-            <Grid item>
-              <Button className={classes.button}>
-                <PhoneIcon />
-                &nbsp;Call
-              </Button>
-            </Grid>
-          )}
+          {showCall &&
+            data.getIn(['profile', 'phone']) && (
+              <Grid item>
+                <Button className={classes.button} onClick={this.call}>
+                  <PhoneIcon />
+                  &nbsp;Call
+                </Button>
+              </Grid>
+            )}
         </Grid>
       </BaseModal>
     );
