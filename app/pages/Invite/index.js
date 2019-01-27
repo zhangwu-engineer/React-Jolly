@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { fromJS } from 'immutable';
-import { debounce } from 'lodash-es';
+import { debounce, capitalize } from 'lodash-es';
 import { generate } from 'shortid';
 import storage from 'store';
 import CONFIG from 'conf';
@@ -579,10 +579,16 @@ class InvitePage extends Component<Props, State> {
       endorsers,
       classes,
       match: {
+        url,
         params: { token },
       },
     } = this.props;
     const { isRoleOpen, isSignupOpen, role, filteredRoles } = this.state;
+    const {
+      params: { slug },
+    } = matchPath(url, {
+      path: '/f/:slug/e/:eventSlug',
+    });
     if (isInviteLoading) {
       return <Preloader />;
     }
@@ -598,10 +604,13 @@ class InvitePage extends Component<Props, State> {
             <Grid item>
               <Button
                 className={classes.button}
-                component={props => <Link to="/signup" {...props} />}
+                component={props => <Link to={`/f/${slug}`} {...props} />}
               >
                 <ArrowBackIcon />
                 &nbsp;&nbsp;&nbsp;
+                <Typography className={classes.backButtonText}>
+                  {capitalize(work.getIn(['user', 'firstName']))}
+                </Typography>
               </Button>
             </Grid>
             <Grid item>
