@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 import storage from 'store';
+import { capitalize } from 'lodash-es';
 
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -125,6 +126,7 @@ type Props = {
   user: Object,
   work: Object,
   type: string,
+  role: ?string,
   endorsed: boolean,
   endorsedQuality: string,
   usedQualities: Array<string>,
@@ -176,6 +178,7 @@ class User extends Component<Props, State> {
       classes,
       user,
       type,
+      role,
       work,
       endorsed,
       endorsedQuality,
@@ -199,10 +202,12 @@ class User extends Component<Props, State> {
           <ListItemText
             primary={
               user.get('firstName')
-                ? `${user.get('firstName')} ${user.get('lastName')}`
+                ? `${capitalize(user.get('firstName'))} ${capitalize(
+                    user.get('lastName')
+                  )}`
                 : user.get('email')
             }
-            secondary={user.get('firstName') && user.get('email')}
+            secondary={role}
             classes={{
               primary: classes.resultText,
               secondary: classes.resultDateText,

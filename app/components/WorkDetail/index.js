@@ -3,7 +3,14 @@
 import React, { Component } from 'react';
 import { format } from 'date-fns';
 import { generate } from 'shortid';
-import { debounce, groupBy, toPairs, fromPairs, zip } from 'lodash-es';
+import {
+  debounce,
+  groupBy,
+  toPairs,
+  fromPairs,
+  zip,
+  capitalize,
+} from 'lodash-es';
 import cx from 'classnames';
 import Lightbox from 'react-image-lightbox';
 import 'react-image-lightbox/style.css';
@@ -676,9 +683,9 @@ class WorkDetail extends Component<Props, State> {
                                 className={classes.avatar}
                               />
                               <ListItemText
-                                primary={`${u.get('firstName')} ${u.get(
-                                  'lastName'
-                                )}`}
+                                primary={`${capitalize(
+                                  u.get('firstName')
+                                )} ${capitalize(u.get('lastName'))}`}
                                 secondary={
                                   u.getIn(['profile', 'location']) || ''
                                 }
@@ -707,6 +714,7 @@ class WorkDetail extends Component<Props, State> {
                               user={user.get('user')}
                               work={work}
                               type={user.get('type')}
+                              role={user.get('role')}
                               verifyCoworker={this.props.requestVerifyCoworker}
                               requestEndorseUser={this.props.requestEndorseUser}
                               endorsed={isEndorsed.length > 0}
@@ -802,7 +810,9 @@ class WorkDetail extends Component<Props, State> {
                       className={classes.avatar}
                     />
                     <ListItemText
-                      primary={`${u.get('firstName')} ${u.get('lastName')}`}
+                      primary={`${capitalize(u.get('firstName'))} ${capitalize(
+                        u.get('lastName')
+                      )}`}
                       secondary={u.getIn(['profile', 'location']) || ''}
                       classes={{
                         primary: classes.resultText,
@@ -838,6 +848,7 @@ class WorkDetail extends Component<Props, State> {
                       user={user.get('user')}
                       work={work}
                       type={user.get('type')}
+                      role={user.get('role')}
                       verifyCoworker={this.props.requestVerifyCoworker}
                       requestEndorseUser={this.props.requestEndorseUser}
                       endorsed={isEndorsed.length > 0}
