@@ -61,6 +61,7 @@ type Props = {
   classes: Object,
   username: string,
   isOpen: boolean,
+  quality: string,
   onCloseModal: Function,
   onSave: Function,
 };
@@ -87,7 +88,7 @@ class EndorsementModal extends Component<Props, State> {
     this.setState({ agree: event.target.checked });
   };
   render() {
-    const { classes, username, isOpen } = this.props;
+    const { quality, classes, username, isOpen } = this.props;
     const { agree } = this.state;
     return (
       <BaseModal
@@ -102,7 +103,7 @@ class EndorsementModal extends Component<Props, State> {
           <span>
             {`You can only endorse one coworker on this job for each quality.`}
           </span>
-          {` Make sure this is the coworker you want to endorse as Most Skilled.`}
+          {` Make sure this is the coworker you want to endorse as ${quality}.`}
         </Typography>
         <Typography component="p" className={classes.modalText}>
           {`Also, once you’ve endorsed someone, `}

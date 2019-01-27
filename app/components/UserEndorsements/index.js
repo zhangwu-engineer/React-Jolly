@@ -139,8 +139,8 @@ class UserEndorsements extends Component<Props, State> {
     const { isOpen } = this.state;
     const qualityNames = {
       hardest_worker: 'Hardest Worker',
-      most_helpful: 'Most Helpful',
-      most_friendly: 'Most Friendly',
+      most_professional: 'Most Professional',
+      best_attitude: 'Best Attitude',
       team_player: 'Team Player',
     };
     const result = toPairs(groupBy(endorsements.toJS(), 'quality'));

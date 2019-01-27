@@ -150,7 +150,12 @@ class User extends Component<Props, State> {
     quality: null,
   };
   handleChange = event => {
-    this.setState({ quality: event.target.value });
+    const { quality } = this.state;
+    if (quality === event.target.value) {
+      this.setState({ quality: null });
+    } else {
+      this.setState({ quality: event.target.value });
+    }
   };
   openTipModal = () => {
     this.setState({ isTipOpen: true });
@@ -187,8 +192,8 @@ class User extends Component<Props, State> {
     const { isPanelOpen, isTipOpen, isModalOpen, quality } = this.state;
     const qualityNames = {
       hardest_worker: 'Hardest Worker',
-      most_helpful: 'Most Helpful',
-      most_friendly: 'Most Friendly',
+      most_professional: 'Most Professional',
+      best_attitude: 'Best Attitude',
       team_player: 'Team Player',
     };
     return (
@@ -317,22 +322,22 @@ class User extends Component<Props, State> {
                   control={
                     <Checkbox
                       checked={
-                        quality === 'most_helpful' ||
-                        usedQualities.includes('most_helpful')
+                        quality === 'most_professional' ||
+                        usedQualities.includes('most_professional')
                       }
                       onChange={this.handleChange}
-                      value="most_helpful"
+                      value="most_professional"
                       color="default"
                       classes={{
                         checked: classes.checkboxChecked,
                       }}
-                      disabled={usedQualities.includes('most_helpful')}
+                      disabled={usedQualities.includes('most_professional')}
                     />
                   }
                   classes={{
                     label: classes.checkLabel,
                   }}
-                  label="Most Helpful"
+                  label="Most Professional"
                 />
               </Grid>
             </Grid>
@@ -342,22 +347,22 @@ class User extends Component<Props, State> {
                   control={
                     <Checkbox
                       checked={
-                        quality === 'most_friendly' ||
-                        usedQualities.includes('most_friendly')
+                        quality === 'best_attitude' ||
+                        usedQualities.includes('best_attitude')
                       }
                       onChange={this.handleChange}
-                      value="most_friendly"
+                      value="best_attitude"
                       color="default"
                       classes={{
                         checked: classes.checkboxChecked,
                       }}
-                      disabled={usedQualities.includes('most_friendly')}
+                      disabled={usedQualities.includes('best_attitude')}
                     />
                   }
                   classes={{
                     label: classes.checkLabel,
                   }}
-                  label="Most Friendly"
+                  label="Best Attitude"
                 />
               </Grid>
               <Grid item xs={6}>
@@ -424,6 +429,7 @@ class User extends Component<Props, State> {
           isOpen={isModalOpen}
           onCloseModal={this.closeModal}
           username={user.get('firstName')}
+          quality={qualityNames[quality]}
           onSave={this.save}
         />
       </div>
