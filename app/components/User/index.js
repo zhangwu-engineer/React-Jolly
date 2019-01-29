@@ -108,6 +108,8 @@ const styles = theme => ({
     color: '#4a4a4a',
   },
   saveButton: {
+    fontSize: 14,
+    fontWeight: 600,
     backgroundColor: '#00dcaa',
     color: theme.palette.common.white,
     '&:hover': {
