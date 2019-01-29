@@ -116,7 +116,7 @@ class JobCard extends Component<Props> {
       return (
         <Card className={classes.root}>
           <CardContent className={classes.content}>
-            <Typography variant="h6" className={classes.name}>
+            <Typography variant="h6" className={classes.title}>
               No Jobs added yet
             </Typography>
             <Typography className={classes.date}>

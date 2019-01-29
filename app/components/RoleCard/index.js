@@ -17,8 +17,12 @@ import EndorsementIcon from 'images/sprite/endorsement.svg';
 const styles = () => ({
   root: {
     marginBottom: 20,
-    padding: '10px 15px',
+    padding: '20px 30px',
     boxShadow: '0 10px 20px 0 rgba(187, 187, 187, 0.5)',
+  },
+  content: {
+    padding: 0,
+    paddingBottom: 20,
   },
   name: {
     fontSize: 18,
@@ -28,10 +32,16 @@ const styles = () => ({
   actionBar: {
     display: 'flex',
     justifyContent: 'flex-end',
+    padding: 0,
   },
   icon: {
     fontSize: 17,
     color: '#9B9B9B',
+  },
+  desc: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#a1a1a1',
   },
 });
 
@@ -46,18 +56,20 @@ class RoleCard extends Component<Props> {
     if (!role) {
       return (
         <Card className={classes.root}>
-          <CardContent>
+          <CardContent className={classes.content}>
             <Typography variant="h6" className={classes.name}>
               No Roles added yet
             </Typography>
-            <Typography component="p">Add your first Role now</Typography>
+            <Typography className={classes.desc}>
+              Add your first Role now
+            </Typography>
           </CardContent>
         </Card>
       );
     }
     return (
       <Card className={classes.root}>
-        <CardContent>
+        <CardContent className={classes.content}>
           <Typography variant="h6" className={classes.name}>
             {role.name}
           </Typography>
