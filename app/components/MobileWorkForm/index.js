@@ -49,6 +49,7 @@ import ROLES from 'enum/roles';
 const styles = theme => ({
   root: {
     display: 'none',
+    position: 'relative',
     [theme.breakpoints.down('sm')]: {
       display: 'block',
     },
@@ -135,10 +136,9 @@ const styles = theme => ({
   },
   searchWorkList: {
     backgroundColor: theme.palette.common.white,
-    border: '1px solid #e5e5e5',
     position: 'absolute',
     width: '100%',
-    height: 'calc(100vh - 100px)',
+    height: 'calc(100vh - 98px)',
     top: 50,
     zIndex: 10,
     overflowY: 'scroll',
@@ -333,9 +333,7 @@ type State = {
     coworkers: Array,
     photos: Array,
   },
-  works?: Array<Object>,
   filteredWorks: Array<Object>,
-  roles?: Array<string>,
   filteredRoles: Array<string>,
   activeSection: string,
   newRole: string,
@@ -348,19 +346,6 @@ type State = {
 };
 
 class MobileWorkForm extends Component<Props, State> {
-  static getDerivedStateFromProps(nextProps: Props, prevState: State) {
-    if (nextProps.roles.length && prevState.roles === undefined) {
-      return {
-        roles: nextProps.roles,
-      };
-    }
-    if (nextProps.works && prevState.works === undefined) {
-      return {
-        works: nextProps.works.toJS(),
-      };
-    }
-    return null;
-  }
   state = {
     model: {
       title: '',
@@ -372,9 +357,7 @@ class MobileWorkForm extends Component<Props, State> {
       pinToProfile: true,
       photos: [],
     },
-    works: undefined,
     filteredWorks: [],
-    roles: undefined,
     filteredRoles: [],
     activeSection: 'main',
     newRole: '',
@@ -406,12 +389,16 @@ class MobileWorkForm extends Component<Props, State> {
   debouncedSearch = debounce((name, value) => {
     switch (name) {
       case 'title': {
-        const filteredWorks =
-          this.state.works &&
-          this.state.works.filter(
-            w => w.title.toLowerCase().indexOf(value.toLowerCase()) !== -1
-          );
-        this.setState({ filteredWorks });
+        if (value) {
+          const filteredWorks = this.props.works
+            .toJS()
+            .filter(
+              w => w.title.toLowerCase().indexOf(value.toLowerCase()) !== -1
+            );
+          this.setState({ filteredWorks });
+        } else {
+          this.setState({ filteredWorks: [] });
+        }
         break;
       }
       case 'newRole': {
@@ -644,13 +631,13 @@ class MobileWorkForm extends Component<Props, State> {
                       </Typography>
                     </ListItem>
                   ))}
-                  <Button
+                  {/* <Button
                     className={classes.addEventButton}
                     color="primary"
                     onClick={() => this.setState({ isEditingRole: true })}
                   >
                     + Add a new event name
-                  </Button>
+                  </Button> */}
                 </div>
               ) : null}
             </FormControl>
