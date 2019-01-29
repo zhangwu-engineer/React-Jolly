@@ -1,7 +1,7 @@
 // @flow
 
 import React, { Component, Fragment } from 'react';
-
+import { capitalize } from 'lodash-es';
 import { withStyles } from '@material-ui/core/styles';
 
 import Grid from '@material-ui/core/Grid';
@@ -300,8 +300,8 @@ class MemberProfileInfo extends Component<Props, State> {
               <Typography className={classes.bio}>
                 {user.getIn(['profile', 'bio'])
                   ? user.getIn(['profile', 'bio'])
-                  : `Hey, I am ${user.get('firstName')} ${user.get(
-                      'lastName'
+                  : `Hi, I'm ${capitalize(user.get('firstName'))} ${capitalize(
+                      user.get('lastName')
                     )}...`}
               </Typography>
               <Grid container className={classes.socialButtons}>
