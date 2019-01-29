@@ -201,7 +201,9 @@ class WorkDetailPage extends Component<Props> {
                 <Typography className={classes.backButtonText}>
                   {displayMode === 'private'
                     ? 'Job Details'
-                    : capitalize(work.getIn(['user', 'firstName']))}
+                    : `${capitalize(
+                        work.getIn(['user', 'firstName'])
+                      )} ${capitalize(work.getIn(['user', 'lastName']))}`}
                 </Typography>
               </Button>
             </Grid>

@@ -609,7 +609,9 @@ class InvitePage extends Component<Props, State> {
                 <ArrowBackIcon />
                 &nbsp;&nbsp;&nbsp;
                 <Typography className={classes.backButtonText}>
-                  {capitalize(work.getIn(['user', 'firstName']))}
+                  {`${capitalize(
+                    work.getIn(['user', 'firstName'])
+                  )} ${capitalize(work.getIn(['user', 'lastName']))}`}
                 </Typography>
               </Button>
             </Grid>
