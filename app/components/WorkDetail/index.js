@@ -58,9 +58,11 @@ const styles = theme => ({
     position: 'absolute',
     left: 45,
     bottom: 35,
+    right: 45,
     [theme.breakpoints.down('xs')]: {
       left: 30,
       bottom: 30,
+      right: 30,
     },
   },
   role: {
@@ -72,6 +74,9 @@ const styles = theme => ({
     fontSize: 38,
     fontWeight: 'bold',
     color: theme.palette.common.white,
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 25,
+    },
   },
   date: {
     fontSize: 14,
