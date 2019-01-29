@@ -321,6 +321,13 @@ const styles = theme => ({
     textAlign: 'center',
     marginBottom: 20,
   },
+  descText: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#494949',
+    textAlign: 'center',
+    paddingTop: 10,
+  },
   addCoworkerSmallButton: {
     color: theme.palette.common.white,
   },
@@ -699,6 +706,11 @@ class WorkDetail extends Component<Props, State> {
                         </div>
                       ) : null}
                     </FormControl>
+                    <Typography className={classes.descText}>
+                      Don’t see who you’re looking for?
+                      <br />
+                      Enter their email address &amp; invite them to join jolly
+                    </Typography>
                     <List className={classes.coworkersList}>
                       {relatedUsers &&
                         relatedUsers.map(user => {

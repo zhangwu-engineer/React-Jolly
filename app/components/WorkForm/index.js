@@ -193,9 +193,6 @@ const styles = theme => ({
     fontWeight: 500,
     color: '#9b9b9b',
   },
-  coworkersList: {
-    marginTop: 10,
-  },
   coworkerItem: {
     paddingLeft: 0,
     paddingRight: 0,
@@ -208,6 +205,16 @@ const styles = theme => ({
   },
   avatar: {
     backgroundColor: '#afafaf',
+  },
+  emptyResultText: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#494949',
+    textAlign: 'center',
+    paddingTop: 10,
+  },
+  removeButton: {
+    padding: 5,
   },
 });
 
@@ -725,7 +732,11 @@ class WorkForm extends Component<Props, State> {
                 <Grid item className={classes.iconWrapper}>
                   <Icon glyph={PeopleIcon} size={18} />
                 </Grid>
-                <Grid item className={classes.fullWidth}>
+                <Grid
+                  item
+                  className={classes.fullWidth}
+                  style={{ overflow: 'hidden' }}
+                >
                   <FormControl fullWidth>
                     <Input
                       id="newUser"
@@ -814,7 +825,12 @@ class WorkForm extends Component<Props, State> {
                       </div>
                     ) : null}
                   </FormControl>
-                  <List className={classes.coworkersList}>
+                  <Typography className={classes.emptyResultText}>
+                    Don’t see who you’re looking for?
+                    <br />
+                    Enter their email address &amp; invite them to join jolly
+                  </Typography>
+                  <List>
                     {model.coworkers.map(c => (
                       <ListItem
                         className={classes.coworkerItem}
@@ -843,6 +859,7 @@ class WorkForm extends Component<Props, State> {
                         />
                         <ListItemSecondaryAction>
                           <IconButton
+                            className={classes.removeButton}
                             onClick={() => {
                               const newCoworkers = this.state.model.coworkers.filter(
                                 i => get(i, ['email']) !== get(c, ['email'])
