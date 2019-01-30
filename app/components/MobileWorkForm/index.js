@@ -681,7 +681,7 @@ class MobileWorkForm extends Component<Props, State> {
                     if (this.coworkerInput.current) {
                       this.coworkerInput.current.focus();
                     }
-                  }, 500);
+                  }, 1000);
                 })
               }
             >
