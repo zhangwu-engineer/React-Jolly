@@ -103,15 +103,44 @@ const styles = theme => ({
     color: '#0d0d0d',
     fontWeight: 600,
   },
+  emptyText: {
+    fontSize: 14,
+    fontWeight: 600,
+    color: '#0d0d0d',
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
+    textAlign: 'center',
+  },
+  roleCount: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#989898',
+  },
+  roleName: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#989898',
+  },
+  roleDot: {
+    width: 4,
+    height: 4,
+    backgroundColor: '#989898',
+    borderRadius: 4,
+    display: 'inline-block',
+    marginLeft: 5,
+    marginRight: 5,
+  },
 });
 
 const emptyData = [
-  { name: 'Group A', value: 1 },
+  { name: 'Group A', value: 2 },
   { name: 'Group B', value: 1 },
   { name: 'Group C', value: 1 },
-  { name: 'Group D', value: 1 },
 ];
 const COLORS = ['#1575D9', '#033D78', '#7CC6FE', '#4AA8F7'];
+const EMPTY_COLORS = ['#D3E7F9', '#DFF0FE', '#ECF5FF'];
 
 type Props = {
   user: Object,
@@ -151,6 +180,25 @@ class UserEndorsements extends Component<Props, State> {
       name: group.quality,
       value: group.users.length,
     }));
+    const roles = groupedEndorsers.map(group => {
+      const roleGroup = {
+        name: group.quality,
+        roles: [],
+      };
+      const roleCounts = group.users.map(u => u.role).reduce((p, c) => {
+        const newP = p;
+        if (!newP[c]) {
+          newP[c] = 0;
+        }
+        newP[c] += 1;
+        return newP;
+      }, {});
+      roleGroup.roles = Object.keys(roleCounts).map(k => ({
+        name: k,
+        count: roleCounts[k],
+      }));
+      return roleGroup;
+    });
     return (
       <div>
         <div className={classes.header}>
@@ -174,11 +222,15 @@ class UserEndorsements extends Component<Props, State> {
                     {emptyData.map((entry, index) => (
                       <Cell
                         key={generate()}
-                        fill={COLORS[index % COLORS.length]}
+                        fill={EMPTY_COLORS[index % EMPTY_COLORS.length]}
                       />
                     ))}
                   </Pie>
                 </PieChart>
+                <Typography className={classes.emptyText}>
+                  0<br />
+                  Total
+                </Typography>
               </div>
               {!publicMode && (
                 <Grid container justify="center">
@@ -234,6 +286,23 @@ class UserEndorsements extends Component<Props, State> {
                     <Typography className={classes.endorseQuality}>
                       {qualityNames[group.quality]}
                     </Typography>
+                    <div>
+                      {roles[index] &&
+                        roles[index].roles.map((role, i) => (
+                          <span key={generate()}>
+                            <span className={classes.roleCount}>
+                              {role.count}
+                              &nbsp;
+                            </span>
+                            <span className={classes.roleName}>
+                              {role.name}
+                            </span>
+                            {i < roles[index].roles.length - 1 && (
+                              <div className={classes.roleDot} />
+                            )}
+                          </span>
+                        ))}
+                    </div>
                     <Grid
                       container
                       className={classes.endorseUsers}
