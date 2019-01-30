@@ -677,11 +677,9 @@ class MobileWorkForm extends Component<Props, State> {
               className={classes.formFieldGroup}
               onClick={() =>
                 this.setState({ activeSection: 'coworker' }, () => {
-                  setTimeout(() => {
-                    if (this.coworkerInput.current) {
-                      this.coworkerInput.current.focus();
-                    }
-                  }, 1000);
+                  if (this.coworkerInput.current) {
+                    this.coworkerInput.current.focus();
+                  }
                 })
               }
             >
