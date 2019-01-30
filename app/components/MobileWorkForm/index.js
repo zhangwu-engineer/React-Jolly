@@ -1079,6 +1079,7 @@ class MobileWorkForm extends Component<Props, State> {
                               });
                             }, 500);
                           }}
+                          autoFocus
                         />
                         {filteredRoles.length ? (
                           <div className={classes.searchResultList}>
