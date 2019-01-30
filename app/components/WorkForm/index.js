@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, InlineDatePicker } from 'material-ui-pickers';
-import { debounce, get } from 'lodash-es';
+import { debounce, get, capitalize } from 'lodash-es';
 import { format, compareAsc } from 'date-fns';
 import { generate } from 'shortid';
 import cx from 'classnames';
@@ -818,9 +818,9 @@ class WorkForm extends Component<Props, State> {
                               src={u.getIn(['profile', 'avatar'])}
                             />
                             <ListItemText
-                              primary={`${u.get('firstName')} ${u.get(
-                                'lastName'
-                              )}`}
+                              primary={`${capitalize(
+                                u.get('firstName')
+                              )} ${capitalize(u.get('lastName'))}`}
                               secondary={u.getIn(['profile', 'location']) || ''}
                               classes={{
                                 primary: classes.resultText,
@@ -853,9 +853,9 @@ class WorkForm extends Component<Props, State> {
                         <ListItemText
                           primary={
                             get(c, ['firstName']) && get(c, ['lastName'])
-                              ? `${get(c, ['firstName'])} ${get(c, [
-                                  'lastName',
-                                ])}`
+                              ? `${capitalize(
+                                  get(c, ['firstName'])
+                                )} ${capitalize(get(c, ['lastName']))}`
                               : ''
                           }
                           secondary={get(c, ['email'])}
