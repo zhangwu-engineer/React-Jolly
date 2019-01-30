@@ -334,6 +334,7 @@ type State = {
     photos: Array,
   },
   filteredWorks: Array<Object>,
+  roles?: Array<string>,
   filteredRoles: Array<string>,
   activeSection: string,
   newRole: string,
@@ -346,6 +347,14 @@ type State = {
 };
 
 class MobileWorkForm extends Component<Props, State> {
+  static getDerivedStateFromProps(nextProps: Props, prevState: State) {
+    if (nextProps.roles.length && prevState.roles === undefined) {
+      return {
+        roles: nextProps.roles,
+      };
+    }
+    return null;
+  }
   state = {
     model: {
       title: '',
@@ -358,6 +367,7 @@ class MobileWorkForm extends Component<Props, State> {
       photos: [],
     },
     filteredWorks: [],
+    roles: undefined,
     filteredRoles: [],
     activeSection: 'main',
     newRole: '',
@@ -1034,7 +1044,7 @@ class MobileWorkForm extends Component<Props, State> {
                 ) : null}
                 {isEditingRole && (
                   <Grid container>
-                    <Grid item xs={9}>
+                    <Grid item xs={10}>
                       <FormControl fullWidth>
                         <Input
                           id="newRole"
@@ -1079,7 +1089,16 @@ class MobileWorkForm extends Component<Props, State> {
                                 onClick={() =>
                                   this.setState(state => ({
                                     ...state,
-                                    newRole: r,
+                                    roles: state.roles
+                                      ? [...state.roles, r]
+                                      : [r],
+                                    newRole: '',
+                                    isEditingRole: false,
+                                    model: {
+                                      ...state.model,
+                                      role: r,
+                                    },
+                                    activeSection: 'main',
                                     filteredRoles: [],
                                   }))
                                 }
@@ -1094,27 +1113,7 @@ class MobileWorkForm extends Component<Props, State> {
                         ) : null}
                       </FormControl>
                     </Grid>
-                    <Grid item xs={3}>
-                      <IconButton
-                        className={classes.iconButton}
-                        onClick={() => {
-                          this.setState(state => ({
-                            ...state,
-                            roles: state.roles
-                              ? [...state.roles, state.newRole]
-                              : [state.newRole],
-                            newRole: '',
-                            isEditingRole: false,
-                            model: {
-                              ...state.model,
-                              role: state.newRole,
-                            },
-                            activeSection: 'main',
-                          }));
-                        }}
-                      >
-                        <DoneIcon />
-                      </IconButton>
+                    <Grid item xs={2}>
                       <IconButton
                         className={classes.iconButton}
                         onClick={() => {
