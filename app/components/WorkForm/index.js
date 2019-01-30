@@ -6,6 +6,7 @@ import { MuiPickersUtilsProvider, InlineDatePicker } from 'material-ui-pickers';
 import { debounce, get } from 'lodash-es';
 import { format, compareAsc } from 'date-fns';
 import { generate } from 'shortid';
+import cx from 'classnames';
 
 import { withStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
@@ -215,6 +216,9 @@ const styles = theme => ({
   },
   removeButton: {
     padding: 5,
+  },
+  fullHeight: {
+    height: '100%',
   },
 });
 
@@ -728,7 +732,10 @@ class WorkForm extends Component<Props, State> {
               </Grid>
             </Grid>
             <Grid item xs={4}>
-              <Grid container className={classes.formFieldGroup}>
+              <Grid
+                container
+                className={cx(classes.formFieldGroup, classes.fullHeight)}
+              >
                 <Grid item className={classes.iconWrapper}>
                   <Icon glyph={PeopleIcon} size={18} />
                 </Grid>
