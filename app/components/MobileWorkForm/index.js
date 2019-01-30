@@ -887,7 +887,11 @@ class MobileWorkForm extends Component<Props, State> {
                 <Button
                   className={classes.backButton}
                   onClick={() => {
-                    this.setState({ activeSection: 'main' });
+                    this.setState({
+                      activeSection: 'main',
+                      newRole: '',
+                      isEditingRole: false,
+                    });
                   }}
                 >
                   <ArrowBackIcon />
@@ -912,6 +916,8 @@ class MobileWorkForm extends Component<Props, State> {
                         },
                         filteredRoles: [],
                         activeSection: 'main',
+                        newRole: '',
+                        isEditingRole: false,
                       }))
                     }
                   >
