@@ -676,10 +676,11 @@ class MobileWorkForm extends Component<Props, State> {
               container
               className={classes.formFieldGroup}
               onClick={() => {
-                // if (this.coworkerInput.current) {
-                //   this.coworkerInput.current.focus();
-                // }
-                this.setState({ activeSection: 'coworker' });
+                this.setState({ activeSection: 'coworker' }, () => {
+                  if (this.coworkerInput.current) {
+                    this.coworkerInput.current.focus();
+                  }
+                });
               }}
             >
               <Grid item className={classes.iconWrapper}>
