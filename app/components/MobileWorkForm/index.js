@@ -203,14 +203,13 @@ const styles = theme => ({
   },
   roleRoot: {
     position: 'absolute',
-    left: 0,
+    left: '100%',
     top: 0,
     width: '100%',
-    transform: 'translate(100%)',
-    transition: 'all .3s ease-in-out',
+    transition: 'left .3s ease-in-out',
   },
   activeRoleRoot: {
-    transform: 'translate(0)',
+    left: '0%',
   },
   roleSection: {
     height: 'calc(100vh - 40px)',
@@ -677,9 +676,11 @@ class MobileWorkForm extends Component<Props, State> {
               className={classes.formFieldGroup}
               onClick={() => {
                 this.setState({ activeSection: 'coworker' }, () => {
-                  // if (this.coworkerInput.current) {
-                  //   this.coworkerInput.current.focus();
-                  // }
+                  setTimeout(() => {
+                    if (this.coworkerInput.current) {
+                      this.coworkerInput.current.focus();
+                    }
+                  }, 500);
                 });
               }}
             >
