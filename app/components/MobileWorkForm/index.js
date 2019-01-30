@@ -8,7 +8,7 @@ import {
   BasePicker,
   Calendar,
 } from 'material-ui-pickers';
-import { debounce, get } from 'lodash-es';
+import { debounce, get, capitalize } from 'lodash-es';
 import { generate } from 'shortid';
 import cx from 'classnames';
 
@@ -675,13 +675,12 @@ class MobileWorkForm extends Component<Props, State> {
             <Grid
               container
               className={classes.formFieldGroup}
-              onClick={() =>
-                this.setState({ activeSection: 'coworker' }, () => {
-                  if (this.coworkerInput.current) {
-                    this.coworkerInput.current.focus();
-                  }
-                })
-              }
+              onClick={() => {
+                if (this.coworkerInput.current) {
+                  this.coworkerInput.current.focus();
+                }
+                this.setState({ activeSection: 'coworker' });
+              }}
             >
               <Grid item className={classes.iconWrapper}>
                 <Icon glyph={PeopleIcon} size={18} />
@@ -1106,7 +1105,9 @@ class MobileWorkForm extends Component<Props, State> {
                       src={u.getIn(['profile', 'avatar'])}
                     />
                     <ListItemText
-                      primary={`${u.get('firstName')} ${u.get('lastName')}`}
+                      primary={`${capitalize(u.get('firstName'))} ${capitalize(
+                        u.get('lastName')
+                      )}`}
                       secondary={u.getIn(['profile', 'location']) || ''}
                       classes={{
                         primary: classes.resultText,
@@ -1138,7 +1139,9 @@ class MobileWorkForm extends Component<Props, State> {
                   <ListItemText
                     primary={
                       get(c, ['firstName']) && get(c, ['lastName'])
-                        ? `${get(c, ['firstName'])} ${get(c, ['lastName'])}`
+                        ? `${capitalize(get(c, ['firstName']))} ${capitalize(
+                            get(c, ['lastName'])
+                          )}`
                         : ''
                     }
                     secondary={get(c, ['email'])}
