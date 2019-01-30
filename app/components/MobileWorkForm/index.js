@@ -681,7 +681,7 @@ class MobileWorkForm extends Component<Props, State> {
                     if (this.coworkerInput.current) {
                       this.coworkerInput.current.focus();
                     }
-                  }, 1000);
+                  }, 500);
                 })
               }
             >
@@ -878,354 +878,342 @@ class MobileWorkForm extends Component<Props, State> {
         </div>
         <div
           className={cx(classes.roleRoot, {
-            [classes.activeRoleRoot]:
-              activeSection === 'role' ||
-              activeSection === 'coworker' ||
-              activeSection === 'image',
+            [classes.activeRoleRoot]: activeSection === 'role',
           })}
         >
           <div className={classes.topline}>
-            {activeSection === 'role' && (
-              <Grid container justify="space-between" alignItems="center">
-                <Grid item>
-                  <Button
-                    className={classes.backButton}
-                    onClick={() => {
-                      this.setState({ activeSection: 'main' });
-                    }}
-                  >
-                    <ArrowBackIcon />
-                    &nbsp;&nbsp;&nbsp;&nbsp;Role
-                  </Button>
-                </Grid>
+            <Grid container justify="space-between" alignItems="center">
+              <Grid item>
+                <Button
+                  className={classes.backButton}
+                  onClick={() => {
+                    this.setState({ activeSection: 'main' });
+                  }}
+                >
+                  <ArrowBackIcon />
+                  &nbsp;&nbsp;&nbsp;&nbsp;Role
+                </Button>
               </Grid>
-            )}
-            {activeSection === 'coworker' && (
-              <React.Fragment>
-                <Grid container justify="space-between" alignItems="center">
-                  <Grid item xs={2}>
-                    <Button
-                      className={classes.backButton}
-                      onClick={() => {
-                        this.setState({ activeSection: 'main' });
-                      }}
-                    >
-                      <ArrowBackIcon />
-                    </Button>
-                  </Grid>
-                  <Grid item xs={8}>
-                    <FormControl fullWidth>
-                      <Input
-                        id="newUser"
-                        name="newUser"
-                        placeholder="Add Coworkers"
-                        value={newUser}
-                        classes={{
-                          input: classes.coworkerInput,
-                        }}
-                        disableUnderline
-                        fullWidth
-                        autoComplete="off"
-                        onChange={this.handleChange}
-                        onKeyDown={e => {
-                          if (e.keyCode === 13) {
-                            this.addEmail();
-                          }
-                        }}
-                        inputRef={this.coworkerInput}
-                      />
-                    </FormControl>
-                  </Grid>
-                  <Grid item xs={2}>
-                    <Button
-                      className={classes.addCoworkerSmallButton}
-                      onClick={this.addEmail}
-                    >
-                      Add
-                    </Button>
-                  </Grid>
-                </Grid>
-                {newUser && users.size > 0 ? (
-                  <div className={classes.searchCoworkerList}>
-                    {users.map(u => (
-                      <ListItem
-                        className={classes.userResultItem}
-                        key={generate()}
-                        onClick={() => {
-                          const existing = model.coworkers.filter(
-                            i => i.id === u.get('id')
-                          );
-                          if (existing.length === 0) {
-                            this.setState(state => ({
-                              ...state,
-                              model: {
-                                ...state.model,
-                                coworkers: [
-                                  ...state.model.coworkers,
-                                  {
-                                    id: u.get('id'),
-                                    email: u.get('email'),
-                                    firstName: u.get('firstName'),
-                                    lastName: u.get('lastName'),
-                                    avatar: u.getIn(['profile', 'avatar']),
-                                  },
-                                ],
-                              },
-                              newUser: '',
-                            }));
-                          } else {
-                            this.setState({ newUser: '' });
-                          }
-                        }}
-                      >
-                        <Avatar
-                          className={classes.avatar}
-                          alt={`${u.get('firstName')} ${u.get('lastName')}`}
-                          src={u.getIn(['profile', 'avatar'])}
-                        />
-                        <ListItemText
-                          primary={`${u.get('firstName')} ${u.get('lastName')}`}
-                          secondary={u.getIn(['profile', 'location']) || ''}
-                          classes={{
-                            primary: classes.resultText,
-                            secondary: classes.resultDateText,
-                          }}
-                        />
-                      </ListItem>
-                    ))}
-                  </div>
-                ) : null}
-              </React.Fragment>
-            )}
-            {activeSection === 'image' && (
-              <Grid container justify="space-between" alignItems="center">
-                <Grid item>
-                  <Button
-                    className={classes.backButton}
-                    onClick={() => {
-                      this.setState({ activeSection: 'main' });
-                    }}
-                  >
-                    <ArrowBackIcon />
-                    &nbsp;&nbsp;&nbsp;&nbsp;Images
-                  </Button>
-                </Grid>
-              </Grid>
-            )}
+            </Grid>
           </div>
           <div className={classes.roleSection}>
-            {activeSection === 'role' && (
+            <Typography className={classes.roleLabel}>MY ROLES</Typography>
+            {roles && roles.length ? (
               <React.Fragment>
-                <Typography className={classes.roleLabel}>MY ROLES</Typography>
-                {roles && roles.length ? (
-                  <React.Fragment>
-                    {roles.map(r => (
-                      <ListItem
-                        className={classes.resultItem}
-                        key={generate()}
-                        onClick={() =>
-                          this.setState(state => ({
-                            model: {
-                              ...state.model,
-                              role: r,
-                            },
-                            filteredRoles: [],
-                            activeSection: 'main',
-                          }))
-                        }
-                      >
-                        <ListItemText
-                          classes={{ primary: classes.resultText }}
-                          primary={r}
-                        />
-                      </ListItem>
-                    ))}
-                  </React.Fragment>
-                ) : null}
-                {isEditingRole && (
-                  <Grid container>
-                    <Grid item xs={10}>
-                      <FormControl fullWidth>
-                        <Input
-                          id="newRole"
-                          name="newRole"
-                          placeholder="New Role"
-                          value={newRole}
-                          classes={{
-                            input: classes.formInput,
-                            formControl: classes.formInputWrapper,
-                          }}
-                          disableUnderline
-                          fullWidth
-                          autoComplete="off"
-                          onChange={e => {
-                            e.persist();
-                            this.setState(
-                              {
-                                newRole: e.target.value,
-                              },
-                              () => {
-                                this.debouncedSearch(
-                                  e.target.name,
-                                  e.target.value
-                                );
-                              }
-                            );
-                          }}
-                          onBlur={() => {
-                            setTimeout(() => {
-                              this.setState({
-                                filteredRoles: [],
-                              });
-                            }, 500);
-                          }}
-                          autoFocus
-                        />
-                        {filteredRoles.length ? (
-                          <div className={classes.searchResultList}>
-                            {filteredRoles.map(r => (
-                              <ListItem
-                                className={classes.resultItem}
-                                key={generate()}
-                                onClick={() =>
-                                  this.setState(state => ({
-                                    ...state,
-                                    roles: state.roles
-                                      ? [...state.roles, r]
-                                      : [r],
-                                    newRole: '',
-                                    isEditingRole: false,
-                                    model: {
-                                      ...state.model,
-                                      role: r,
-                                    },
-                                    activeSection: 'main',
-                                    filteredRoles: [],
-                                  }))
-                                }
-                              >
-                                <ListItemText
-                                  classes={{ primary: classes.resultText }}
-                                  primary={r}
-                                />
-                              </ListItem>
-                            ))}
-                          </div>
-                        ) : null}
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={2}>
-                      <IconButton
-                        className={classes.iconButton}
-                        onClick={() => {
+                {roles.map(r => (
+                  <ListItem
+                    className={classes.resultItem}
+                    key={generate()}
+                    onClick={() =>
+                      this.setState(state => ({
+                        model: {
+                          ...state.model,
+                          role: r,
+                        },
+                        filteredRoles: [],
+                        activeSection: 'main',
+                      }))
+                    }
+                  >
+                    <ListItemText
+                      classes={{ primary: classes.resultText }}
+                      primary={r}
+                    />
+                  </ListItem>
+                ))}
+              </React.Fragment>
+            ) : null}
+            {isEditingRole && (
+              <Grid container>
+                <Grid item xs={10}>
+                  <FormControl fullWidth>
+                    <Input
+                      id="newRole"
+                      name="newRole"
+                      placeholder="New Role"
+                      value={newRole}
+                      classes={{
+                        input: classes.formInput,
+                        formControl: classes.formInputWrapper,
+                      }}
+                      disableUnderline
+                      fullWidth
+                      autoComplete="off"
+                      onChange={e => {
+                        e.persist();
+                        this.setState(
+                          {
+                            newRole: e.target.value,
+                          },
+                          () => {
+                            this.debouncedSearch(e.target.name, e.target.value);
+                          }
+                        );
+                      }}
+                      onBlur={() => {
+                        setTimeout(() => {
                           this.setState({
-                            newRole: '',
-                            isEditingRole: false,
+                            filteredRoles: [],
                           });
-                        }}
-                      >
-                        <ClearIcon />
-                      </IconButton>
-                    </Grid>
-                  </Grid>
-                )}
-                <Button
-                  className={classes.addRoleButton}
-                  color="primary"
-                  onClick={() => this.setState({ isEditingRole: true })}
-                >
-                  + Add new role
-                </Button>
-              </React.Fragment>
+                        }, 500);
+                      }}
+                      autoFocus
+                    />
+                    {filteredRoles.length ? (
+                      <div className={classes.searchResultList}>
+                        {filteredRoles.map(r => (
+                          <ListItem
+                            className={classes.resultItem}
+                            key={generate()}
+                            onClick={() =>
+                              this.setState(state => ({
+                                ...state,
+                                roles: state.roles ? [...state.roles, r] : [r],
+                                newRole: '',
+                                isEditingRole: false,
+                                model: {
+                                  ...state.model,
+                                  role: r,
+                                },
+                                activeSection: 'main',
+                                filteredRoles: [],
+                              }))
+                            }
+                          >
+                            <ListItemText
+                              classes={{ primary: classes.resultText }}
+                              primary={r}
+                            />
+                          </ListItem>
+                        ))}
+                      </div>
+                    ) : null}
+                  </FormControl>
+                </Grid>
+                <Grid item xs={2}>
+                  <IconButton
+                    className={classes.iconButton}
+                    onClick={() => {
+                      this.setState({
+                        newRole: '',
+                        isEditingRole: false,
+                      });
+                    }}
+                  >
+                    <ClearIcon />
+                  </IconButton>
+                </Grid>
+              </Grid>
             )}
-            {activeSection === 'coworker' && (
-              <React.Fragment>
-                <Typography className={classes.emptyResultText}>
-                  Don’t see who you’re looking for?
-                  <br />
-                  Enter their email address &amp; invite them to join jolly
-                </Typography>
-                <Typography className={classes.roleLabel}>
-                  ADDED COWORKERS
-                </Typography>
-                <List className={classes.coworkersList}>
-                  {model.coworkers.map(c => (
-                    <ListItem className={classes.coworkerItem} key={generate()}>
-                      <Avatar
-                        className={classes.avatar}
-                        alt={`${get(c, ['firstName'])} ${get(c, ['lastName'])}`}
-                        src={get(c, ['avatar'])}
-                      />
-                      <ListItemText
-                        primary={
-                          get(c, ['firstName']) && get(c, ['lastName'])
-                            ? `${get(c, ['firstName'])} ${get(c, ['lastName'])}`
-                            : ''
-                        }
-                        secondary={get(c, ['email'])}
-                        classes={{
-                          primary: classes.resultText,
-                          secondary: classes.resultDateText,
-                        }}
-                      />
-                      <ListItemSecondaryAction>
-                        <IconButton
-                          onClick={() => {
-                            const newCoworkers = this.state.model.coworkers.filter(
-                              i => get(i, ['email']) !== get(c, ['email'])
-                            );
-                            this.setState(state => ({
-                              ...state,
-                              model: {
-                                ...state.model,
-                                coworkers: newCoworkers,
+            <Button
+              className={classes.addRoleButton}
+              color="primary"
+              onClick={() => this.setState({ isEditingRole: true })}
+            >
+              + Add new role
+            </Button>
+          </div>
+        </div>
+        <div
+          className={cx(classes.roleRoot, {
+            [classes.activeRoleRoot]: activeSection === 'coworker',
+          })}
+        >
+          <div className={classes.topline}>
+            <Grid container justify="space-between" alignItems="center">
+              <Grid item xs={2}>
+                <Button
+                  className={classes.backButton}
+                  onClick={() => {
+                    this.setState({ activeSection: 'main' });
+                  }}
+                >
+                  <ArrowBackIcon />
+                </Button>
+              </Grid>
+              <Grid item xs={8}>
+                <FormControl fullWidth>
+                  <Input
+                    id="newUser"
+                    name="newUser"
+                    placeholder="Add Coworkers"
+                    value={newUser}
+                    classes={{
+                      input: classes.coworkerInput,
+                    }}
+                    disableUnderline
+                    fullWidth
+                    autoComplete="off"
+                    onChange={this.handleChange}
+                    onKeyDown={e => {
+                      if (e.keyCode === 13) {
+                        this.addEmail();
+                      }
+                    }}
+                    inputRef={this.coworkerInput}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={2}>
+                <Button
+                  className={classes.addCoworkerSmallButton}
+                  onClick={this.addEmail}
+                >
+                  Add
+                </Button>
+              </Grid>
+            </Grid>
+            {newUser && users.size > 0 ? (
+              <div className={classes.searchCoworkerList}>
+                {users.map(u => (
+                  <ListItem
+                    className={classes.userResultItem}
+                    key={generate()}
+                    onClick={() => {
+                      const existing = model.coworkers.filter(
+                        i => i.id === u.get('id')
+                      );
+                      if (existing.length === 0) {
+                        this.setState(state => ({
+                          ...state,
+                          model: {
+                            ...state.model,
+                            coworkers: [
+                              ...state.model.coworkers,
+                              {
+                                id: u.get('id'),
+                                email: u.get('email'),
+                                firstName: u.get('firstName'),
+                                lastName: u.get('lastName'),
+                                avatar: u.getIn(['profile', 'avatar']),
                               },
-                            }));
-                          }}
-                        >
-                          <ClearIcon />
-                        </IconButton>
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                  ))}
-                </List>
-              </React.Fragment>
-            )}
-            {activeSection === 'image' && (
-              <React.Fragment>
-                <div className={classes.photoList}>
-                  {model.photos.map((photo, index) => (
-                    <Grid
-                      container
-                      spacing={8}
-                      key={generate()}
-                      alignItems="center"
+                            ],
+                          },
+                          newUser: '',
+                        }));
+                      } else {
+                        this.setState({ newUser: '' });
+                      }
+                    }}
+                  >
+                    <Avatar
+                      className={classes.avatar}
+                      alt={`${u.get('firstName')} ${u.get('lastName')}`}
+                      src={u.getIn(['profile', 'avatar'])}
+                    />
+                    <ListItemText
+                      primary={`${u.get('firstName')} ${u.get('lastName')}`}
+                      secondary={u.getIn(['profile', 'location']) || ''}
+                      classes={{
+                        primary: classes.resultText,
+                        secondary: classes.resultDateText,
+                      }}
+                    />
+                  </ListItem>
+                ))}
+              </div>
+            ) : null}
+          </div>
+          <div className={classes.roleSection}>
+            <Typography className={classes.emptyResultText}>
+              Don’t see who you’re looking for?
+              <br />
+              Enter their email address &amp; invite them to join jolly
+            </Typography>
+            <Typography className={classes.roleLabel}>
+              ADDED COWORKERS
+            </Typography>
+            <List className={classes.coworkersList}>
+              {model.coworkers.map(c => (
+                <ListItem className={classes.coworkerItem} key={generate()}>
+                  <Avatar
+                    className={classes.avatar}
+                    alt={`${get(c, ['firstName'])} ${get(c, ['lastName'])}`}
+                    src={get(c, ['avatar'])}
+                  />
+                  <ListItemText
+                    primary={
+                      get(c, ['firstName']) && get(c, ['lastName'])
+                        ? `${get(c, ['firstName'])} ${get(c, ['lastName'])}`
+                        : ''
+                    }
+                    secondary={get(c, ['email'])}
+                    classes={{
+                      primary: classes.resultText,
+                      secondary: classes.resultDateText,
+                    }}
+                  />
+                  <ListItemSecondaryAction>
+                    <IconButton
+                      onClick={() => {
+                        const newCoworkers = this.state.model.coworkers.filter(
+                          i => get(i, ['email']) !== get(c, ['email'])
+                        );
+                        this.setState(state => ({
+                          ...state,
+                          model: {
+                            ...state.model,
+                            coworkers: newCoworkers,
+                          },
+                        }));
+                      }}
                     >
-                      <Grid item>
-                        <img
-                          src={photo}
-                          alt={index}
-                          className={classes.photo}
-                        />
-                      </Grid>
-                      <Grid item>
-                        <Button className={classes.removeImageButton}>
-                          <DeleteIcon />
-                          Remove Image
-                        </Button>
-                      </Grid>
-                    </Grid>
-                  ))}
-                </div>
+                      <ClearIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              ))}
+            </List>
+          </div>
+        </div>
+        <div
+          className={cx(classes.roleRoot, {
+            [classes.activeRoleRoot]: activeSection === 'image',
+          })}
+        >
+          <div className={classes.topline}>
+            <Grid container justify="space-between" alignItems="center">
+              <Grid item>
                 <Button
-                  className={classes.addRoleButton}
-                  color="primary"
-                  onClick={this.onAddClick}
+                  className={classes.backButton}
+                  onClick={() => {
+                    this.setState({ activeSection: 'main' });
+                  }}
                 >
-                  + Add another image
+                  <ArrowBackIcon />
+                  &nbsp;&nbsp;&nbsp;&nbsp;Images
                 </Button>
-              </React.Fragment>
-            )}
+              </Grid>
+            </Grid>
+          </div>
+          <div className={classes.roleSection}>
+            <div className={classes.photoList}>
+              {model.photos.map((photo, index) => (
+                <Grid
+                  container
+                  spacing={8}
+                  key={generate()}
+                  alignItems="center"
+                >
+                  <Grid item>
+                    <img src={photo} alt={index} className={classes.photo} />
+                  </Grid>
+                  <Grid item>
+                    <Button className={classes.removeImageButton}>
+                      <DeleteIcon />
+                      Remove Image
+                    </Button>
+                  </Grid>
+                </Grid>
+              ))}
+            </div>
+            <Button
+              className={classes.addRoleButton}
+              color="primary"
+              onClick={this.onAddClick}
+            >
+              + Add another image
+            </Button>
           </div>
         </div>
         <input
