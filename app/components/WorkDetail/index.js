@@ -140,7 +140,6 @@ const styles = theme => ({
     color: '#434343',
     padding: '14px 20px',
     boxSizing: 'border-box',
-    caretColor: '#ffffff',
   },
   iconWrapper: {
     padding: 15,
@@ -318,6 +317,7 @@ const styles = theme => ({
     color: theme.palette.common.white,
     padding: '14px 20px',
     boxSizing: 'border-box',
+    caretColor: '#ffffff',
   },
   emptyResultText: {
     fontSize: 14,
