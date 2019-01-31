@@ -35,7 +35,7 @@ import Icon from 'components/Icon';
 import PeopleIcon from 'images/sprite/people.svg';
 import CaptionIcon from 'images/sprite/caption.svg';
 
-import Bg from './bg.png';
+// import Bg from './bg.png';
 
 const styles = theme => ({
   root: {
@@ -49,7 +49,8 @@ const styles = theme => ({
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
-    backgroundImage: `url(${Bg})`,
+    // backgroundImage: `url(${Bg})`,
+    backgroundColor: '#083f76',
     [theme.breakpoints.down('xs')]: {
       height: 170,
     },
