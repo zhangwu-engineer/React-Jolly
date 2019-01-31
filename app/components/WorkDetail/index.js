@@ -533,7 +533,9 @@ class WorkDetail extends Component<Props, State> {
                     &nbsp;
                     {displayMode === 'private'
                       ? 'Verified You'
-                      : 'Verifications'}
+                      : `Verified ${capitalize(
+                          work.getIn(['user', 'firstName'])
+                        )}`}
                   </Typography>
                   <Grid
                     container
@@ -561,7 +563,9 @@ class WorkDetail extends Component<Props, State> {
                     &nbsp;
                     {displayMode === 'private'
                       ? 'Endorsed You'
-                      : 'Endorsements'}
+                      : `Endorsed ${capitalize(
+                          work.getIn(['user', 'firstName'])
+                        )}`}
                   </Typography>
                   {groupedEndorsers.map(group => (
                     <React.Fragment key={generate()}>
@@ -593,7 +597,7 @@ class WorkDetail extends Component<Props, State> {
                   </Grid>
                   <Grid item className={classes.fullWidth}>
                     <Typography className={classes.label}>
-                      <b>{work.get('coworkers').size}</b>
+                      <b>{numberOfCoworkers}</b>
                       &nbsp;coworkers
                     </Typography>
                     <Grid
@@ -602,14 +606,19 @@ class WorkDetail extends Component<Props, State> {
                       spacing={8}
                     >
                       {relatedUsers &&
-                        relatedUsers.map(user => (
-                          <Grid item key={generate()}>
-                            <Avatar
-                              className={classes.avatar}
-                              src={user.getIn(['user', 'profile', 'avatar'])}
-                            />
-                          </Grid>
-                        ))}
+                        relatedUsers.map(user => {
+                          if (user.get('type') === 'invited') {
+                            return null;
+                          }
+                          return (
+                            <Grid item key={generate()}>
+                              <Avatar
+                                className={classes.avatar}
+                                src={user.getIn(['user', 'profile', 'avatar'])}
+                              />
+                            </Grid>
+                          );
+                        })}
                     </Grid>
                   </Grid>
                 </Grid>
