@@ -356,7 +356,7 @@ class ProfileInfo extends PureComponent<Props> {
           </IconButton>
           <IconButton
             className={classes.shareButton}
-            onClick={this.props.openShareModal}
+            onClick={() => this.props.openShareModal('Top Profile')}
           >
             <ShareIcon />
           </IconButton>

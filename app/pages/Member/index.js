@@ -229,8 +229,14 @@ class Member extends Component<Props, State> {
   onCloseContactModal = () => {
     this.setState({ isContactOpen: false });
   };
-  openShareModal = () => {
-    this.setState({ isOpen: true });
+  openShareModal = location => {
+    const { member } = this.props;
+    this.setState({ isOpen: true }, () => {
+      analytics.track('Share Button Clicked', {
+        userID: member.get('id'),
+        location,
+      });
+    });
   };
   openGallery = (photos, index) => {
     this.setState({
@@ -391,9 +397,7 @@ class Member extends Component<Props, State> {
                 <Grid item>
                   <Button
                     className={classes.shareProfileButton}
-                    onClick={() => {
-                      this.setState({ isOpen: true });
-                    }}
+                    onClick={() => this.openShareModal('Bottom Profile')}
                   >
                     <ShareIcon />
                     &nbsp;Share this profile

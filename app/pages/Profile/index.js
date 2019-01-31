@@ -203,8 +203,14 @@ class Profile extends Component<Props, State> {
   onCloseModal = () => {
     this.setState({ isOpen: false });
   };
-  openShareModal = () => {
-    this.setState({ isOpen: true });
+  openShareModal = location => {
+    const { user } = this.props;
+    this.setState({ isOpen: true }, () => {
+      analytics.track('Share Button Clicked', {
+        userID: user.get('id'),
+        location,
+      });
+    });
   };
   seePublicProfile = () => {
     const { user } = this.props;
@@ -398,7 +404,7 @@ class Profile extends Component<Props, State> {
                   <Button
                     color="primary"
                     className={classes.bannerButton}
-                    onClick={this.openShareModal}
+                    onClick={() => this.openShareModal('Bottom Profile')}
                   >
                     <ShareIcon />
                     &nbsp;&nbsp;Share my profile
