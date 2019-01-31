@@ -50,7 +50,7 @@ class UserPage extends React.Component<Props> {
       } else if (member.size > 0 && user && user.get('slug') !== slug) {
         if (
           !window.location.pathname.includes('gallery') &&
-          !/e\/.*\/work/.test(window.location.pathname)
+          !/e\/.*/.test(window.location.pathname)
         ) {
           history.push(`/f/${slug}`);
         }
