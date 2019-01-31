@@ -210,6 +210,7 @@ class Member extends Component<Props, State> {
   };
   componentDidMount() {
     const {
+      currentUser,
       match: { url },
     } = this.props;
     const {
@@ -217,6 +218,11 @@ class Member extends Component<Props, State> {
     } = matchPath(url, {
       path: '/f/:slug',
     });
+    if (currentUser && currentUser.get('slug') === slug) {
+      analytics.track('Public Profile Viewed', {
+        userID: currentUser.get('id'),
+      });
+    }
     this.props.requestMemberProfile(slug);
     this.props.requestMemberFiles(slug);
     this.props.requestMemberRoles(slug);
