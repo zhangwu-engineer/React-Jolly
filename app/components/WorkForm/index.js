@@ -448,8 +448,8 @@ class WorkForm extends Component<Props, State> {
                       <Typography className={classes.resultDateText}>
                         {`from ${format(
                           new Date(w.from),
-                          'MM/dd/yy'
-                        )} to ${format(new Date(w.to), 'MM/dd/yy')}`}
+                          'MMM Do, yyyy'
+                        )} to ${format(new Date(w.to), 'MMM Do, yyyy')}`}
                       </Typography>
                     </ListItem>
                   ))}
@@ -566,7 +566,7 @@ class WorkForm extends Component<Props, State> {
                           }));
                         }
                       }}
-                      format="MMM dd, yy"
+                      format="MMM Do, yyyy"
                       leftArrowIcon={<LeftArrowIcon />}
                       rightArrowIcon={<RightArrowIcon />}
                       InputProps={{
@@ -604,7 +604,7 @@ class WorkForm extends Component<Props, State> {
                           }));
                         }
                       }}
-                      format="MMM dd, yy"
+                      format="MMM Do, yyyy"
                       leftArrowIcon={<LeftArrowIcon />}
                       rightArrowIcon={<RightArrowIcon />}
                       InputProps={{
