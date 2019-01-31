@@ -16,7 +16,6 @@ import ShareIcon from '@material-ui/icons/ShareOutlined';
 
 import { history } from 'components/ConnectedRouter';
 import ProfileInfo from 'components/ProfileInfo';
-import CompletionBanner from 'components/CompletionBanner';
 import Link from 'components/Link';
 import Icon from 'components/Icon';
 import ShareProfileModal from 'components/ShareProfileModal';
@@ -239,58 +238,6 @@ class Profile extends Component<Props, State> {
       photoIndex,
       isGalleryOpen,
     } = this.state;
-    let progress = 0;
-    let tagged = false;
-    if (roles && works) {
-      if (user.get('email')) {
-        progress += 1;
-      }
-      if (user.getIn(['profile', 'avatar'])) {
-        progress += 1;
-      }
-      if (user.getIn(['profile', 'backgroundImage'])) {
-        progress += 1;
-      }
-      if (user.getIn(['profile', 'phone'])) {
-        progress += 1;
-      }
-      if (user.getIn(['profile', 'bio'])) {
-        progress += 1;
-      }
-      if (
-        user.getIn(['profile', 'location']) ||
-        user.getIn(['profile', 'distance'])
-      ) {
-        progress += 1;
-      }
-      if (roles.size > 0) {
-        progress += 1;
-      }
-      if (
-        user.getIn(['profile', 'facebook']) ||
-        user.getIn(['profile', 'twitter']) ||
-        user.getIn(['profile', 'linkedin']) ||
-        user.getIn(['profile', 'youtube'])
-      ) {
-        progress += 1;
-      }
-      if (works.size > 0) {
-        progress += 1;
-        tagged = works.toJS().some(w => w.coworkers.length > 0);
-        if (tagged) {
-          progress += 1;
-        }
-      }
-    }
-    const showJobButton = works && works.size === 0;
-    const showRoleButton = roles && roles.size === 0;
-    const showTagButton =
-      works &&
-      works.size > 0 &&
-      roles &&
-      roles.size > 0 &&
-      user.getIn(['profile', 'avatar']) &&
-      !tagged;
     const numberOfJobs = works ? works.size : 0;
     let numberOfVerifications = 0;
     if (works) {
@@ -301,11 +248,7 @@ class Profile extends Component<Props, State> {
     const numberOfEndorsements = endorsements ? endorsements.size : 0;
     return (
       <Fragment>
-        <div
-          className={cx(classes.root, {
-            [classes.rootExtraSpace]: progress < 8,
-          })}
-        >
+        <div className={classes.root}>
           <div className={classes.profileInfo}>
             <ProfileInfo
               user={user}
@@ -458,19 +401,6 @@ class Profile extends Component<Props, State> {
             )}
           </div>
         </div>
-        {works &&
-          roles &&
-          progress < 10 && (
-            <CompletionBanner
-              progress={progress}
-              user={user}
-              showJobButton={showJobButton}
-              showRoleButton={showRoleButton}
-              showTagButton={showTagButton}
-              updateUser={this.props.updateUser}
-              openPhotoModal={this.openPhotoModal}
-            />
-          )}
         <ShareProfileModal
           isOpen={isOpen}
           onCloseModal={this.onCloseModal}
