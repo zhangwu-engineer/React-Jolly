@@ -143,7 +143,6 @@ const COLORS = ['#1575D9', '#033D78', '#7CC6FE', '#4AA8F7'];
 const EMPTY_COLORS = ['#D3E7F9', '#DFF0FE', '#ECF5FF'];
 
 type Props = {
-  user: Object,
   endorsements: Object,
   classes: Object,
   publicMode?: boolean,
@@ -164,7 +163,7 @@ class UserEndorsements extends Component<Props, State> {
     this.setState({ isOpen: true });
   };
   render() {
-    const { user, endorsements, publicMode, classes } = this.props;
+    const { endorsements, publicMode, classes } = this.props;
     const { isOpen } = this.state;
     const qualityNames = {
       hardest_worker: 'Hardest Worker',
@@ -356,7 +355,7 @@ class UserEndorsements extends Component<Props, State> {
               <Button
                 onClick={() => {
                   this.setState({ isOpen: false }, () => {
-                    history.push(`/f/${user.get('slug')}/add`);
+                    history.push('/add');
                   });
                 }}
               >
