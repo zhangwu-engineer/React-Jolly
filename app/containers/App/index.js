@@ -73,6 +73,7 @@ class App extends Component<Props> {
         bio: user.getIn(['profile', 'bio']),
         background_picture: user.getIn(['profile', 'backgroundImage']),
         profile_picture: user.getIn(['profile', 'avatar']),
+        source: user.get('source'),
       });
     }
   }
