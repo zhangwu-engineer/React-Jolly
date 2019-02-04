@@ -635,8 +635,8 @@ class MobileWorkForm extends Component<Props, State> {
                       <Typography className={classes.resultDateText}>
                         {`from ${format(
                           new Date(w.from),
-                          'MMM Do, yyyy'
-                        )} to ${format(new Date(w.to), 'MMM Do, yyyy')}`}
+                          'MMM do, yyyy'
+                        )} to ${format(new Date(w.to), 'MMM do, yyyy')}`}
                       </Typography>
                     </ListItem>
                   ))}
@@ -710,7 +710,7 @@ class MobileWorkForm extends Component<Props, State> {
                       });
                     }}
                   >
-                    {format(model.from, 'MMM Do, yyyy')}
+                    {format(model.from, 'MMM do, yyyy')}
                   </Typography>
                   <Typography
                     className={cx(classes.formText, classes.formFieldGroup)}
@@ -721,7 +721,7 @@ class MobileWorkForm extends Component<Props, State> {
                       });
                     }}
                   >
-                    {format(model.to, 'MMM Do, yyyy')}
+                    {format(model.to, 'MMM do, yyyy')}
                   </Typography>
                   <BasePicker value={isEditingFrom ? model.from : model.to}>
                     {({ date }) => (
