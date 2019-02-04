@@ -230,9 +230,23 @@ const styles = theme => ({
     fontWeight: 500,
     color: '#afafaf',
     paddingBottom: 10,
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: -33,
+      position: 'relative',
+    },
   },
   endorseUsers: {
     marginBottom: 20,
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: -37,
+      position: 'relative',
+    },
+  },
+  mobileAvatarLeftAlign: {
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: -37,
+      position: 'relative',
+    },
   },
   photoContainer: {
     flex: 1,
@@ -540,7 +554,10 @@ class WorkDetail extends Component<Props, State> {
                   </Typography>
                   <Grid
                     container
-                    className={classes.valueFieldWithNoPadding}
+                    className={cx(
+                      classes.valueFieldWithNoPadding,
+                      classes.mobileAvatarLeftAlign
+                    )}
                     spacing={8}
                   >
                     {work.get('verifiers').map(verifier => (
@@ -603,7 +620,10 @@ class WorkDetail extends Component<Props, State> {
                     </Typography>
                     <Grid
                       container
-                      className={classes.valueFieldWithNoPadding}
+                      className={cx(
+                        classes.valueFieldWithNoPadding,
+                        classes.mobileAvatarLeftAlign
+                      )}
                       spacing={8}
                     >
                       {relatedUsers &&
