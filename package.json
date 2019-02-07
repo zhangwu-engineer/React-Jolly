@@ -122,6 +122,7 @@
     "react-router-hash-link": "^1.2.0",
     "react-router-redux": "5.0.0-alpha.6",
     "react-router-scroll-memory": "^1.0.1",
+    "react-select": "^2.3.0",
     "react-share": "^1.19.1",
     "react-social-login": "^3.4.2",
     "react-waypoint": "^8.1.0",

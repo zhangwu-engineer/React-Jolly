@@ -29,6 +29,7 @@ import RightArrowIcon from '@material-ui/icons/KeyboardArrowRight';
 import Link from 'components/Link';
 import Icon from 'components/Icon';
 import Dropzone from 'components/Dropzone';
+import CustomSelect from 'components/CustomSelect';
 
 import RoleIcon from 'images/sprite/role.svg';
 import CaptionIcon from 'images/sprite/caption.svg';
@@ -37,6 +38,8 @@ import PeopleIcon from 'images/sprite/people.svg';
 import CalendarIcon from 'images/sprite/calendar.svg';
 
 import ROLES from 'enum/roles';
+
+const roles = ROLES.sort().map(role => ({ value: role, label: role }));
 
 const styles = theme => ({
   root: {
@@ -249,7 +252,6 @@ type State = {
   },
   newUser: string,
   filteredWorks: Array<Object>,
-  filteredRoles: Array<string>,
   roleError: string,
 };
 
@@ -267,7 +269,6 @@ class WorkForm extends Component<Props, State> {
     },
     newUser: '',
     filteredWorks: [],
-    filteredRoles: [],
     roleError: '',
   };
   onDrop = async (accepted: Array<Object>) => {
@@ -307,25 +308,6 @@ class WorkForm extends Component<Props, State> {
           this.setState({ filteredWorks });
         } else {
           this.setState({ filteredWorks: [] });
-        }
-        break;
-      }
-      case 'role': {
-        if (value) {
-          let filteredRoles = this.props.roles
-            .toJS()
-            .filter(
-              r => r.name.toLowerCase().indexOf(value.toLowerCase()) !== -1
-            )
-            .map(r => r.name);
-          if (filteredRoles.length === 0) {
-            filteredRoles = ROLES.filter(
-              r => r.toLowerCase().indexOf(value.toLowerCase()) !== -1
-            );
-          }
-          this.setState({ filteredRoles });
-        } else {
-          this.setState({ filteredRoles: [] });
         }
         break;
       }
@@ -389,13 +371,7 @@ class WorkForm extends Component<Props, State> {
   dropzoneDiv = React.createRef();
   render() {
     const { classes, isLoading, error, users } = this.props;
-    const {
-      model,
-      newUser,
-      filteredWorks,
-      filteredRoles,
-      roleError,
-    } = this.state;
+    const { model, newUser, filteredWorks, roleError } = this.state;
     return (
       <div className={classes.root}>
         <div className={classes.topline}>
@@ -466,72 +442,39 @@ class WorkForm extends Component<Props, State> {
                   <Icon glyph={RoleIcon} size={18} />
                 </Grid>
                 <Grid item className={classes.roleWrapper}>
-                  <FormControl
-                    fullWidth
-                    aria-describedby="role-helper-text"
-                    error={roleError !== ''}
-                  >
-                    <Input
-                      autoComplete="off"
-                      id="role"
-                      name="role"
-                      placeholder="Add Role"
-                      value={model.role}
-                      classes={{
-                        input: classes.formInput,
-                        formControl: classes.formInputWrapper,
-                      }}
-                      disableUnderline
-                      fullWidth
-                      onChange={this.handleChange}
-                      onFocus={() => {
-                        if (!model.role) {
-                          const filtered = this.props.roles
-                            .toJS()
-                            .map(r => r.name);
-                          this.setState({
-                            filteredRoles: filtered,
-                          });
-                        }
-                      }}
-                      onBlur={() => {
-                        setTimeout(() => {
-                          this.setState({
-                            filteredRoles: [],
-                          });
-                        }, 500);
-                      }}
-                    />
-                    {roleError && (
-                      <FormHelperText id="role-helper-text">
-                        {roleError}
-                      </FormHelperText>
-                    )}
-                    {filteredRoles.length ? (
-                      <div className={classes.searchResultList}>
-                        {filteredRoles.map(r => (
-                          <ListItem
-                            className={classes.resultItem}
-                            key={generate()}
-                            onClick={() =>
-                              this.setState(state => ({
-                                model: {
-                                  ...state.model,
-                                  role: r,
-                                },
-                                filteredRoles: [],
-                              }))
-                            }
-                          >
-                            <ListItemText
-                              classes={{ primary: classes.resultText }}
-                              primary={r}
-                            />
-                          </ListItem>
-                        ))}
-                      </div>
-                    ) : null}
-                  </FormControl>
+                  <CustomSelect
+                    placeholder="Add Role"
+                    options={roles}
+                    value={
+                      model.role
+                        ? { value: model.role, label: model.role }
+                        : null
+                    }
+                    onChange={value => {
+                      if (value && value.value) {
+                        this.setState(state => ({
+                          model: {
+                            ...state.model,
+                            role: value.value,
+                          },
+                        }));
+                      } else {
+                        this.setState(state => ({
+                          model: {
+                            ...state.model,
+                            role: '',
+                          },
+                        }));
+                      }
+                    }}
+                    isMulti={false}
+                    isClearable={false}
+                  />
+                  {roleError && (
+                    <FormHelperText error={!!roleError}>
+                      {roleError}
+                    </FormHelperText>
+                  )}
                 </Grid>
               </Grid>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>

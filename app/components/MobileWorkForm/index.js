@@ -37,6 +37,7 @@ import Red from '@material-ui/core/colors/red';
 
 import Link from 'components/Link';
 import Icon from 'components/Icon';
+import CustomSelect from 'components/CustomSelect';
 
 import RoleIcon from 'images/sprite/role.svg';
 import CaptionIcon from 'images/sprite/caption.svg';
@@ -45,6 +46,8 @@ import PeopleIcon from 'images/sprite/people.svg';
 import CalendarIcon from 'images/sprite/calendar.svg';
 
 import ROLES from 'enum/roles';
+
+const roleOptions = ROLES.sort().map(role => ({ value: role, label: role }));
 
 const styles = theme => ({
   root: {
@@ -334,9 +337,7 @@ type State = {
   },
   filteredWorks: Array<Object>,
   roles?: Array<string>,
-  filteredRoles: Array<string>,
   activeSection: string,
-  newRole: string,
   isEditingRole: boolean,
   isEditingFrom: boolean,
   isEditingTo: boolean,
@@ -367,9 +368,7 @@ class MobileWorkForm extends Component<Props, State> {
     },
     filteredWorks: [],
     roles: undefined,
-    filteredRoles: [],
     activeSection: 'main',
-    newRole: '',
     isEditingRole: false,
     isEditingFrom: false,
     isEditingTo: false,
@@ -408,13 +407,6 @@ class MobileWorkForm extends Component<Props, State> {
         } else {
           this.setState({ filteredWorks: [] });
         }
-        break;
-      }
-      case 'newRole': {
-        const filteredRoles = ROLES.filter(
-          r => r.toLowerCase().indexOf(value.toLowerCase()) !== -1
-        );
-        this.setState({ filteredRoles });
         break;
       }
       case 'newUser':
@@ -559,9 +551,7 @@ class MobileWorkForm extends Component<Props, State> {
       model,
       filteredWorks,
       roles,
-      filteredRoles,
       activeSection,
-      newRole,
       isEditingRole,
       isEditingFrom,
       isEditingTo,
@@ -888,7 +878,6 @@ class MobileWorkForm extends Component<Props, State> {
                   onClick={() => {
                     this.setState({
                       activeSection: 'main',
-                      newRole: '',
                       isEditingRole: false,
                     });
                   }}
@@ -913,9 +902,7 @@ class MobileWorkForm extends Component<Props, State> {
                           ...state.model,
                           role: r,
                         },
-                        filteredRoles: [],
                         activeSection: 'main',
-                        newRole: '',
                         isEditingRole: false,
                       }))
                     }
@@ -931,76 +918,36 @@ class MobileWorkForm extends Component<Props, State> {
             {isEditingRole && (
               <Grid container>
                 <Grid item xs={10}>
-                  <FormControl fullWidth>
-                    <Input
-                      id="newRole"
-                      name="newRole"
-                      placeholder="New Role"
-                      value={newRole}
-                      classes={{
-                        input: classes.formInput,
-                        formControl: classes.formInputWrapper,
-                      }}
-                      disableUnderline
-                      fullWidth
-                      autoComplete="off"
-                      onChange={e => {
-                        e.persist();
-                        this.setState(
-                          {
-                            newRole: e.target.value,
+                  <CustomSelect
+                    placeholder="New Role"
+                    options={roleOptions}
+                    value={null}
+                    onChange={value => {
+                      if (value && value.value) {
+                        this.setState(state => ({
+                          ...state,
+                          roles: state.roles
+                            ? [...state.roles, value.value]
+                            : [value.value],
+                          isEditingRole: false,
+                          model: {
+                            ...state.model,
+                            role: value.value,
                           },
-                          () => {
-                            this.debouncedSearch(e.target.name, e.target.value);
-                          }
-                        );
-                      }}
-                      onBlur={() => {
-                        setTimeout(() => {
-                          this.setState({
-                            filteredRoles: [],
-                          });
-                        }, 500);
-                      }}
-                      autoFocus
-                    />
-                    {filteredRoles.length ? (
-                      <div className={classes.searchResultList}>
-                        {filteredRoles.map(r => (
-                          <ListItem
-                            className={classes.resultItem}
-                            key={generate()}
-                            onClick={() =>
-                              this.setState(state => ({
-                                ...state,
-                                roles: state.roles ? [...state.roles, r] : [r],
-                                newRole: '',
-                                isEditingRole: false,
-                                model: {
-                                  ...state.model,
-                                  role: r,
-                                },
-                                activeSection: 'main',
-                                filteredRoles: [],
-                              }))
-                            }
-                          >
-                            <ListItemText
-                              classes={{ primary: classes.resultText }}
-                              primary={r}
-                            />
-                          </ListItem>
-                        ))}
-                      </div>
-                    ) : null}
-                  </FormControl>
+                          activeSection: 'main',
+                        }));
+                      }
+                    }}
+                    isMulti={false}
+                    isClearable={false}
+                    autoFocus
+                  />
                 </Grid>
                 <Grid item xs={2}>
                   <IconButton
                     className={classes.iconButton}
                     onClick={() => {
                       this.setState({
-                        newRole: '',
                         isEditingRole: false,
                       });
                     }}
