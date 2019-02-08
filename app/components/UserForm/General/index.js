@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 import { Formik } from 'formik';
+import { capitalize } from 'lodash-es';
 
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -26,8 +27,7 @@ type Props = {
 };
 
 class UserGeneralForm extends Component<Props> {
-  handleSave = (values, { setSubmitting }) => {
-    console.log(values);
+  handleSave = values => {
     const { name, email } = values;
     if (name.split(' ').length >= 2) {
       const [firstName, ...rest] = name.split(' ');
@@ -42,7 +42,9 @@ class UserGeneralForm extends Component<Props> {
   render() {
     const { user, classes } = this.props;
     const userData = {
-      name: `${user.get('firstName')} ${user.get('lastName')}`,
+      name: `${capitalize(user.get('firstName'))} ${capitalize(
+        user.get('lastName')
+      )}`,
       email: user.get('email'),
     };
     return (
@@ -50,12 +52,12 @@ class UserGeneralForm extends Component<Props> {
         {({
           values,
           dirty,
-          errors,
-          touched,
+          // errors,
+          // touched,
           handleChange,
           handleBlur,
           handleSubmit,
-          isSubmitting,
+          // isSubmitting,
           /* and other goodies */
         }) => (
           <React.Fragment>
@@ -64,12 +66,14 @@ class UserGeneralForm extends Component<Props> {
               id="name"
               value={values.name}
               onChange={handleChange}
+              onBlur={handleBlur}
             />
             <EditableInput
               label="Email"
               id="email"
               value={values.email}
               onChange={handleChange}
+              onBlur={handleBlur}
             />
             <EditableInput
               label={
