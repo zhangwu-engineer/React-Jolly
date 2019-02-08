@@ -10,56 +10,31 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import DoneIcon from '@material-ui/icons/Done';
-import EditIcon from '@material-ui/icons/Edit';
-import ClearIcon from '@material-ui/icons/Clear';
 
 import { history } from 'components/ConnectedRouter';
+import Link from 'components/Link';
 
 const styles = theme => ({
   root: {
+    backgroundColor: '#f1f1f1',
     marginBottom: 15,
-  },
-  nameFieldWrapper: {
-    paddingRight: 30,
-    [theme.breakpoints.down('xs')]: {
-      paddingRight: 0,
-    },
-  },
-  iconButton: {
-    color: '#a4acb3',
-    '&:hover': {
-      color: theme.palette.primary.main,
-    },
-    [theme.breakpoints.down('xs')]: {
-      padding: 6,
-    },
   },
   labelField: {
-    fontSize: 16,
-    letterSpacing: '0.5px',
-    color: '#a0a0a0',
-    fontWeight: 500,
-  },
-  valueField: {
-    fontSize: 18,
-    letterSpacing: '0.5px',
-    color: '#4a4a4a',
-    marginBottom: 15,
-    [theme.breakpoints.down('xs')]: {
-      marginBottom: 10,
-    },
-  },
-  nameField: {
-    textTransform: 'capitalize',
+    fontSize: 14,
+    color: '#212121',
+    fontWeight: 600,
+    paddingLeft: 20,
   },
   textInput: {
+    paddingLeft: 18,
+    marginTop: 20,
+    '&:before': {
+      borderBottom: '2px solid #f1f1f1',
+    },
     '& input': {
-      paddingTop: 10,
+      paddingTop: 5,
       [theme.breakpoints.down('xs')]: {
         paddingBottom: 10,
       },
@@ -70,14 +45,9 @@ const styles = theme => ({
   },
   adornmentText: {
     color: theme.palette.text.main,
-    fontSize: 18,
+    fontSize: 14,
     paddingBottom: 5,
     lineHeight: '21px',
-  },
-  editModeButtons: {
-    [theme.breakpoints.down('xs')]: {
-      textAlign: 'right',
-    },
   },
   placesList: {
     backgroundColor: theme.palette.common.white,
@@ -100,8 +70,18 @@ const styles = theme => ({
     },
   },
   shrink: {
-    transform: 'translate(0, 1.5px)',
+    transform: 'translate(0px, 10px) scale(0.85)',
     transformOrigin: 'top left',
+  },
+  link: {
+    fontSize: 14,
+    fontWeight: 600,
+    textTransform: 'none',
+    textDecoration: 'none',
+    color: '#3a81e0',
+    position: 'relative',
+    top: -8,
+    right: 20,
   },
 });
 
@@ -118,7 +98,6 @@ type Props = {
 
 type State = {
   value: ?string,
-  isEditing: boolean,
 };
 
 class EditableInput extends Component<Props, State> {
@@ -146,26 +125,20 @@ class EditableInput extends Component<Props, State> {
   }
   state = {
     value: undefined,
-    isEditing: false,
   };
   onClear = () => {
     this.setState({
       value: undefined,
-      isEditing: false,
     });
   };
   onConfirm = () => {
-    this.setState({ isEditing: false }, () => {
-      this.props.onChange(this.props.id, this.state.value);
-    });
+    this.props.onChange(this.props.id, this.state.value);
   };
   onEdit = () => {
     const { id, slug } = this.props;
     if (id === 'phone' && slug) {
       window.localStorage.setItem('mobilePrevPath', window.location.pathname);
       history.push(`/f/${slug}/mobile`);
-    } else {
-      this.setState({ isEditing: true });
     }
   };
   handleChange = (e: Object) => {
@@ -187,184 +160,131 @@ class EditableInput extends Component<Props, State> {
     this.setState({ value: address });
   };
   textInput = React.createRef();
-  render() {
-    const { label, id, classes, multiline, startWith } = this.props;
-    const { isEditing } = this.state;
-    return (
-      <div className={classes.root}>
-        {isEditing ? (
-          <Grid container>
-            <Grid item xs={9} lg={10} className={classes.nameFieldWrapper}>
-              <FormControl className={classes.fieldMargin} fullWidth>
-                <InputLabel
-                  htmlFor={id}
-                  classes={{
-                    root: classes.labelField,
-                    shrink: classes.shrink,
-                  }}
-                >
-                  {label}
-                </InputLabel>
-                {id === 'location' ? (
-                  <PlacesAutocomplete
-                    value={this.state.value}
-                    onChange={this.handleLocationChange}
-                    // onSelect={this.handleSelect}
-                  >
-                    {({
-                      getInputProps,
-                      suggestions,
-                      getSuggestionItemProps,
-                      loading,
-                    }) => (
-                      <Fragment>
-                        <Input
-                          className={classes.textInput}
-                          id={id}
-                          {...getInputProps({
-                            placeholder: 'Search Places ...',
-                          })}
-                          autoFocus
-                        />
-                        {suggestions.length || loading ? (
-                          <div className={classes.placesList}>
-                            {loading && (
-                              <ListItem>
-                                <ListItemText primary="Loading..." />
-                              </ListItem>
-                            )}
-                            {suggestions.map(suggestion => {
-                              const className = suggestion.active
-                                ? 'suggestion-item--active'
-                                : 'suggestion-item';
-                              // inline style for demonstration purpose
-                              const style = suggestion.active
-                                ? {
-                                    backgroundColor: '#fafafa',
-                                    cursor: 'pointer',
-                                  }
-                                : {
-                                    backgroundColor: '#ffffff',
-                                    cursor: 'pointer',
-                                  };
-                              return (
-                                <ListItem
-                                  {...getSuggestionItemProps(suggestion, {
-                                    className,
-                                    style,
-                                  })}
-                                  key={generate()}
-                                >
-                                  <ListItemText
-                                    primary={suggestion.description}
-                                  />
-                                </ListItem>
-                              );
-                            })}
-                          </div>
-                        ) : null}
-                      </Fragment>
-                    )}
-                  </PlacesAutocomplete>
-                ) : (
-                  <Input
-                    key="editMode"
-                    className={classes.textInput}
-                    id={id}
-                    value={this.state.value}
-                    onChange={this.handleChange}
-                    multiline={multiline}
-                    inputRef={this.textInput}
-                    onKeyDown={e => {
-                      if (e.keyCode === 13) {
-                        if (this.textInput.current) {
-                          this.textInput.current.blur();
+  renderInput = () => {
+    const { id, classes, multiline, startWith } = this.props;
+    if (id === 'location') {
+      return (
+        <PlacesAutocomplete
+          value={this.state.value}
+          onChange={this.handleLocationChange}
+          // onSelect={this.handleSelect}
+        >
+          {({
+            getInputProps,
+            suggestions,
+            getSuggestionItemProps,
+            loading,
+          }) => (
+            <Fragment>
+              <Input
+                className={classes.textInput}
+                id={id}
+                {...getInputProps({
+                  placeholder: 'Search Places ...',
+                })}
+              />
+              {suggestions.length || loading ? (
+                <div className={classes.placesList}>
+                  {loading && (
+                    <ListItem>
+                      <ListItemText primary="Loading..." />
+                    </ListItem>
+                  )}
+                  {suggestions.map(suggestion => {
+                    const className = suggestion.active
+                      ? 'suggestion-item--active'
+                      : 'suggestion-item';
+                    // inline style for demonstration purpose
+                    const style = suggestion.active
+                      ? {
+                          backgroundColor: '#fafafa',
+                          cursor: 'pointer',
                         }
-                        this.onConfirm();
-                      }
-                    }}
-                    startAdornment={
-                      startWith ? (
-                        <InputAdornment
-                          position="start"
-                          className={classes.adornment}
-                        >
-                          <Typography
-                            variant="h6"
-                            className={classes.adornmentText}
-                          >
-                            {startWith}
-                          </Typography>
-                        </InputAdornment>
-                      ) : null
-                    }
-                    autoFocus
-                  />
-                )}
-              </FormControl>
-            </Grid>
-            <Grid item xs={3} lg={2} className={classes.editModeButtons}>
-              <IconButton
-                className={classes.iconButton}
-                onClick={this.onConfirm}
-              >
-                <DoneIcon />
-              </IconButton>
-              <IconButton className={classes.iconButton} onClick={this.onClear}>
-                <ClearIcon />
-              </IconButton>
-            </Grid>
-          </Grid>
-        ) : (
-          <Grid container alignItems="center">
-            <Grid item xs={11} lg={11}>
-              <FormControl
-                className={classes.fieldMargin}
-                style={{ pointerEvents: 'none' }}
-                fullWidth
-              >
-                <InputLabel
-                  htmlFor={id}
-                  classes={{
-                    root: classes.labelField,
-                    shrink: classes.shrink,
-                  }}
-                >
-                  {label}
-                </InputLabel>
-                <Input
-                  key="viewMode"
-                  className={classes.textInput}
-                  id={id}
-                  value={this.state.value}
-                  onChange={this.handleChange}
-                  multiline={multiline}
-                  startAdornment={
-                    startWith ? (
-                      <InputAdornment
-                        position="start"
-                        className={classes.adornment}
+                      : {
+                          backgroundColor: '#ffffff',
+                          cursor: 'pointer',
+                        };
+                    return (
+                      <ListItem
+                        {...getSuggestionItemProps(suggestion, {
+                          className,
+                          style,
+                        })}
+                        key={generate()}
                       >
-                        <Typography
-                          variant="h6"
-                          className={classes.adornmentText}
-                        >
-                          {startWith}
-                        </Typography>
-                      </InputAdornment>
-                    ) : null
-                  }
-                />
-              </FormControl>
-            </Grid>
-            <Grid item xs={1} lg={1}>
-              <IconButton className={classes.iconButton} onClick={this.onEdit}>
-                <EditIcon />
-              </IconButton>
-            </Grid>
-          </Grid>
-        )}
-      </div>
+                        <ListItemText primary={suggestion.description} />
+                      </ListItem>
+                    );
+                  })}
+                </div>
+              ) : null}
+            </Fragment>
+          )}
+        </PlacesAutocomplete>
+      );
+    }
+    if (id === 'phone') {
+      return (
+        <Input
+          className={classes.textInput}
+          id={id}
+          value={this.state.value}
+          inputRef={this.textInput}
+          endAdornment={
+            <InputAdornment position="end">
+              <Link to="/mobile" className={classes.link}>
+                Edit
+              </Link>
+            </InputAdornment>
+          }
+          autoComplete="off"
+        />
+      );
+    }
+    return (
+      <Input
+        className={classes.textInput}
+        id={id}
+        value={this.state.value}
+        onChange={this.handleChange}
+        multiline={multiline}
+        inputRef={this.textInput}
+        onKeyDown={e => {
+          if (e.keyCode === 13) {
+            if (this.textInput.current) {
+              this.textInput.current.blur();
+            }
+            this.onConfirm();
+          }
+        }}
+        startAdornment={
+          startWith ? (
+            <InputAdornment position="start" className={classes.adornment}>
+              <Typography variant="h6" className={classes.adornmentText}>
+                {startWith}
+              </Typography>
+            </InputAdornment>
+          ) : null
+        }
+        autoComplete="off"
+      />
+    );
+  };
+  render() {
+    const { label, id, classes } = this.props;
+    return (
+      <FormControl classes={{ root: classes.root }} fullWidth>
+        <InputLabel
+          htmlFor={id}
+          classes={{
+            root: classes.labelField,
+            shrink: classes.shrink,
+          }}
+        >
+          {label}
+        </InputLabel>
+        {this.renderInput()}
+      </FormControl>
     );
   }
 }

@@ -389,12 +389,7 @@ class ProfileInfo extends PureComponent<Props> {
             <Grid item>
               <Button
                 className={classes.editButton}
-                component={props => (
-                  <Link
-                    to={`/f/${user.get('slug')}/edit/personal-information`}
-                    {...props}
-                  />
-                )}
+                component={props => <Link to="/settings" {...props} />}
               >
                 <EditIcon />
                 &nbsp;Edit Personal Information

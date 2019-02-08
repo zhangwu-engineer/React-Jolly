@@ -4,42 +4,62 @@ import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import update from 'immutability-helper';
+import { capitalize } from 'lodash-es';
+import cx from 'classnames';
 
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import Avatar from '@material-ui/core/Avatar';
 import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import OpenInNewIcon from '@material-ui/icons/OpenInNewOutlined';
+import Button from '@material-ui/core/Button';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 
-import { history } from 'components/ConnectedRouter';
-import Option from 'components/Option';
+import Link from 'components/Link';
 import EditableInput from 'components/EditableInput';
 
 import { requestUserDataUpdate, requestUser } from 'containers/App/sagas';
 
 const styles = theme => ({
   root: {
-    maxWidth: '989px',
-    margin: '50px auto 300px auto',
+    maxWidth: '860px',
+    margin: '10px auto 300px auto',
     display: 'flex',
     [theme.breakpoints.down('xs')]: {
       margin: 0,
     },
   },
   leftPanel: {
-    width: 242,
+    width: 265,
     marginRight: 35,
+    paddingTop: 35,
     [theme.breakpoints.down('xs')]: {
       display: 'none',
     },
   },
-  title: {
-    fontSize: 24,
-    marginLeft: 20,
+  profileInfo: {
     marginBottom: 30,
+    paddingLeft: 12,
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    marginRight: 20,
+  },
+  greetings: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#373737',
+  },
+  link: {
+    fontSize: 14,
+    fontWeight: 600,
+    letterSpacing: '0.3px',
+    textTransform: 'none',
+    textDecoration: 'none',
   },
   menuItem: {
-    color: '#5a5d64',
+    color: '#5b5b5b',
     paddingTop: 15,
     paddingLeft: 20,
     paddingBottom: 15,
@@ -53,18 +73,16 @@ const styles = theme => ({
     paddingLeft: 20,
     paddingBottom: 15,
     fontWeight: 500,
-    backgroundColor: '#e4e6e6',
-    color: theme.palette.primary.main,
+    color: '#5b5b5b',
+    backgroundColor: theme.palette.common.white,
     cursor: 'pointer',
-    borderRadius: 3,
     position: 'relative',
     overflow: 'hidden',
   },
   line: {
     position: 'absolute',
     display: 'block',
-    content: '',
-    width: 3,
+    width: 4,
     height: '100%',
     backgroundColor: theme.palette.primary.main,
     top: 0,
@@ -77,55 +95,55 @@ const styles = theme => ({
     },
   },
   section: {
-    boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
+    backgroundColor: theme.palette.common.white,
+    padding: 30,
     marginBottom: 20,
     [theme.breakpoints.down('xs')]: {
-      boxShadow: 'none',
+      padding: '10px 15px',
       marginBottom: 0,
     },
   },
-  sectionHeader: {
-    paddingLeft: 30,
-    paddingTop: 20,
-    paddingBottom: 20,
-    paddingRight: 30,
-    backgroundColor: '#edeeee',
-    [theme.breakpoints.down('xs')]: {
-      backgroundColor: 'transparent',
-      padding: '25px 0px 15px 0px',
-    },
-  },
-  sectionTitle: {
+  title: {
+    fontSize: 24,
+    fontWeight: 600,
+    letterSpacing: '0.2px',
+    color: '#2e2e2e',
+    marginBottom: 40,
     [theme.breakpoints.down('xs')]: {
       fontSize: 18,
     },
   },
-  sectionBody: {
-    backgroundColor: theme.palette.common.white,
-    padding: 30,
-    [theme.breakpoints.down('xs')]: {
-      boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
-      borderRadius: 3,
-      padding: '10px 15px',
-    },
+  marginBottom: {
+    marginBottom: '20px !important',
   },
-  iconButton: {
-    color: '#a4acb3',
-    '&:hover': {
-      color: theme.palette.primary.main,
-    },
-    [theme.breakpoints.down('xs')]: {
-      padding: 6,
-    },
+  contactOptionsTitle: {
+    fontSize: 14,
+    fontWeight: 600,
+    color: '#090909',
   },
-  valueField: {
-    fontSize: 18,
-    letterSpacing: '0.5px',
-    color: '#4a4a4a',
+  contactOptionsDesc: {
+    fontSize: 14,
+    fontWeight: 600,
+    color: '#6b6464',
+    marginBottom: 10,
   },
-  divider: {
-    marginTop: 15,
-    marginBottom: 15,
+  saveButton: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    textTransform: 'none',
+    padding: '13px 34px',
+    borderRadius: 0,
+  },
+  switchGroup: {
+    marginBottom: 30,
+  },
+  switchRoot: {
+    margin: 0,
+  },
+  switchLabel: {
+    fontSize: 14,
+    fontWeight: 600,
+    color: '#262626',
   },
 });
 
@@ -159,6 +177,12 @@ class SettingsPage extends Component<Props, State> {
             receiveEmail: profile.get('receiveEmail'),
             receiveSMS: profile.get('receiveSMS'),
             receiveCall: profile.get('receiveCall'),
+            location: profile.get('location') || '',
+            distance: profile.get('distance') || '',
+            facebook: profile.get('facebook') || '',
+            twitter: profile.get('twitter') || '',
+            linkedin: profile.get('linkedin') || '',
+            youtube: profile.get('youtube') || '',
             showImageLibrary: profile.get('showImageLibrary'),
           },
         },
@@ -190,19 +214,11 @@ class SettingsPage extends Component<Props, State> {
     return null;
   }
   state = {
-    selectedSection: 'personal',
+    selectedSection: 'general',
     model: null,
   };
   componentDidMount() {
     this.props.requestUser();
-  }
-  componentDidUpdate(prevProps: Props) {
-    const { user } = this.props;
-    if (prevProps.user.get('slug') !== user.get('slug')) {
-      window.location.href = `${window.location.origin}/f/${user.get(
-        'slug'
-      )}/settings`;
-    }
   }
   onChange = (id, value) => {
     if (id === 'name') {
@@ -254,150 +270,246 @@ class SettingsPage extends Component<Props, State> {
       );
     }
   };
+  handleSwitchChange = name => event => {
+    this.onChange(name, event.target.checked);
+  };
   render() {
     const { user, classes } = this.props;
     const { selectedSection, model } = this.state;
     return (
       <div className={classes.root}>
         <div className={classes.leftPanel}>
-          <Typography className={classes.title} variant="h6">
-            Settings
-          </Typography>
+          <Grid
+            container
+            alignItems="center"
+            classes={{
+              container: classes.profileInfo,
+            }}
+          >
+            <Grid item>
+              <Avatar
+                className={classes.avatar}
+                src={user.getIn(['profile', 'avatar'])}
+              />
+            </Grid>
+            <Grid item>
+              <Typography variant="h6" className={classes.greetings}>
+                {`Hi, ${capitalize(user.get('firstName'))}!`}
+              </Typography>
+              <Link to="/edit" className={classes.link}>
+                View Profile
+              </Link>
+            </Grid>
+          </Grid>
+
           <div
             className={
-              selectedSection === 'personal'
+              selectedSection === 'general'
                 ? classes.activeMenuItem
                 : classes.menuItem
             }
             role="button"
-            onClick={() => this.setState({ selectedSection: 'personal' })}
+            onClick={() => this.setState({ selectedSection: 'general' })}
           >
-            {selectedSection === 'personal' && <div className={classes.line} />}
-            Personal information
+            {selectedSection === 'general' && <div className={classes.line} />}
+            General
           </div>
           <div
             className={
-              selectedSection === 'public'
+              selectedSection === 'profile'
                 ? classes.activeMenuItem
                 : classes.menuItem
             }
             role="button"
-            onClick={() => this.setState({ selectedSection: 'public' })}
+            onClick={() => this.setState({ selectedSection: 'profile' })}
           >
-            {selectedSection === 'public' && <div className={classes.line} />}
-            Profile Contact Actions
-          </div>
-          <div
-            className={
-              selectedSection === 'privacy'
-                ? classes.activeMenuItem
-                : classes.menuItem
-            }
-            role="button"
-            onClick={() => this.setState({ selectedSection: 'privacy' })}
-          >
-            {selectedSection === 'privacy' && <div className={classes.line} />}
-            Privacy
+            {selectedSection === 'profile' && <div className={classes.line} />}
+            Profile
           </div>
         </div>
         <div className={classes.rightPanel}>
           <div className={classes.section}>
-            <div className={classes.sectionHeader}>
-              <Typography variant="h6" className={classes.sectionTitle}>
-                Personal information
-              </Typography>
-            </div>
-            <div className={classes.sectionBody}>
-              <EditableInput
-                label="Name"
-                id="name"
-                value={model && model.name}
-                onChange={this.onChange}
-              />
-              <EditableInput
-                label="Email"
-                id="email"
-                value={model && model.email}
-                onChange={this.onChange}
-              />
-              <EditableInput
-                label={
-                  user.getIn(['profile', 'verifiedPhone'])
-                    ? 'Phone (verified)'
-                    : 'Phone (not verified)'
-                }
-                id="phone"
-                value={model && model.profile.phone}
-                slug={user.get('slug')}
-              />
-              <Grid container alignItems="center">
-                <Grid item xs={11} lg={11}>
-                  <Typography variant="h6" className={classes.valueField}>
-                    Edit profile details
-                  </Typography>
-                </Grid>
-                <Grid item xs={1} lg={1}>
-                  <IconButton
-                    className={classes.iconButton}
-                    onClick={() => {
-                      history.push('/edit');
-                    }}
-                  >
-                    <OpenInNewIcon />
-                  </IconButton>
-                </Grid>
+            <Typography variant="h6" className={classes.title}>
+              General Account Settings
+            </Typography>
+            <EditableInput
+              label="Name"
+              id="name"
+              value={model && model.name}
+              onChange={this.onChange}
+            />
+            <EditableInput
+              label="Email"
+              id="email"
+              value={model && model.email}
+              onChange={this.onChange}
+            />
+            <EditableInput
+              label={
+                user.getIn(['profile', 'verifiedPhone'])
+                  ? 'Phone (verified)'
+                  : 'Phone (not verified)'
+              }
+              id="phone"
+              value={model && model.profile.phone}
+              slug={user.get('slug')}
+            />
+            <Grid container justify="flex-end">
+              <Grid item>
+                <Button
+                  className={classes.saveButton}
+                  color="primary"
+                  variant="contained"
+                >
+                  Save Changes
+                </Button>
               </Grid>
-            </div>
+            </Grid>
           </div>
           <div className={classes.section}>
-            <div className={classes.sectionHeader}>
-              <Typography variant="h6" className={classes.sectionTitle}>
-                Profile Contact Actions
-              </Typography>
-            </div>
-            <div className={classes.sectionBody}>
-              <Option
-                label="Email"
-                id="receiveEmail"
-                value={model && model.profile.receiveEmail}
-                modalTitle="Email Button on Profile"
-                modalContent="When enabled, visitors to your public profile will see a button to send an email message"
-                onChange={this.onChange}
-              />
-              <Option
-                label="SMS"
-                id="receiveSMS"
-                value={model && model.profile.receiveSMS}
-                modalTitle="SMS Button on Profile"
-                modalContent="When enabled, visitors to your public profile will see a button to send you a text (SMS) message"
-                onChange={this.onChange}
-              />
-              <Option
-                label="Call"
-                id="receiveCall"
-                value={model && model.profile.receiveCall}
-                modalTitle="Call Button on Profile"
-                modalContent="When enabled, visitors to your public profile will see a button to call you"
-                onChange={this.onChange}
-              />
-            </div>
-          </div>
-          <div className={classes.section}>
-            <div className={classes.sectionHeader}>
-              <Typography variant="h6" className={classes.sectionTitle}>
-                Privacy
-              </Typography>
-            </div>
-            <div className={classes.sectionBody}>
-              <Option
-                label="Image library on public profile"
-                id="showImageLibrary"
-                value={model && model.profile.showImageLibrary}
-                modalTitle="Email Button on Profile"
-                modalContent="When enabled, visitors to your public profile will see a button to send an email message"
-                onChange={this.onChange}
-              />
-            </div>
+            <Typography
+              variant="h6"
+              className={cx(classes.title, classes.marginBottom)}
+            >
+              Edit Profile
+            </Typography>
+            <Typography className={classes.contactOptionsTitle}>
+              Contact Options
+            </Typography>
+            <Typography className={classes.contactOptionsDesc}>
+              Select how you’d like clients to contact you. Your phone number
+              will never be displayed on your profile.
+            </Typography>
+            <Grid
+              className={classes.switchGroup}
+              container
+              justify="space-between"
+            >
+              <Grid item>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={model && model.profile.receiveEmail}
+                      onChange={this.handleSwitchChange('receiveEmail')}
+                      color="primary"
+                    />
+                  }
+                  label="Email"
+                  labelPlacement="start"
+                  classes={{
+                    root: classes.switchRoot,
+                    label: classes.switchLabel,
+                  }}
+                />
+              </Grid>
+              <Grid item>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={model && model.profile.receiveSMS}
+                      onChange={this.handleSwitchChange('receiveSMS')}
+                      color="primary"
+                    />
+                  }
+                  label="SMS"
+                  labelPlacement="start"
+                  classes={{
+                    root: classes.switchRoot,
+                    label: classes.switchLabel,
+                  }}
+                />
+              </Grid>
+              <Grid item>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={model && model.profile.receiveCall}
+                      onChange={this.handleSwitchChange('receiveCall')}
+                      color="primary"
+                    />
+                  }
+                  label="Call"
+                  labelPlacement="start"
+                  classes={{
+                    root: classes.switchRoot,
+                    label: classes.switchLabel,
+                  }}
+                />
+              </Grid>
+            </Grid>
+            <EditableInput
+              label="Bio"
+              id="bio"
+              value={model && model.profile.bio}
+              multiline
+              onChange={this.onChange}
+            />
+            <EditableInput
+              label="Location"
+              id="location"
+              value={model && model.profile.location}
+              onChange={this.onChange}
+            />
+            <EditableInput
+              label="Miles you'll travel for work"
+              id="distance"
+              value={model && model.profile.distance}
+              onChange={this.onChange}
+            />
+            <EditableInput
+              label="Facebook"
+              id="facebook"
+              value={model && model.profile.facebook}
+              startWith="/"
+              onChange={this.onChange}
+            />
+            <EditableInput
+              label="Twitter"
+              id="twitter"
+              value={model && model.profile.twitter}
+              startWith="@"
+              onChange={this.onChange}
+            />
+            <EditableInput
+              label="Linkedin"
+              id="linkedin"
+              value={model && model.profile.linkedin}
+              startWith="/in/"
+              onChange={this.onChange}
+            />
+            <EditableInput
+              label="Youtube"
+              id="youtube"
+              value={model && model.profile.youtube}
+              startWith="/"
+              onChange={this.onChange}
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={model && model.profile.showImageLibrary}
+                  onChange={this.handleSwitchChange('showImageLibrary')}
+                  color="primary"
+                />
+              }
+              label="Show image library on public profile"
+              labelPlacement="start"
+              classes={{
+                root: cx(classes.switchRoot, classes.marginBottom),
+                label: classes.switchLabel,
+              }}
+            />
+            <Grid container justify="flex-end">
+              <Grid item>
+                <Button
+                  className={classes.saveButton}
+                  color="primary"
+                  variant="contained"
+                >
+                  Save Changes
+                </Button>
+              </Grid>
+            </Grid>
           </div>
         </div>
       </div>

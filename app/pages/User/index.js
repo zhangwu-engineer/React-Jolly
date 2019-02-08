@@ -6,14 +6,12 @@ import { connect } from 'react-redux';
 import load from 'utils/load';
 
 import { history } from 'components/ConnectedRouter';
-import { Route, PrivateRoute } from 'components/Routes';
+import { Route } from 'components/Routes';
 import { requestMember } from 'containers/App/sagas';
 
 const Member = load(() => import('pages/Member'));
 const MemberGallery = load(() => import('pages/MemberGallery'));
-const PersonalInformation = load(() => import('pages/PersonalInformation'));
 const WorkDetail = load(() => import('pages/WorkDetail'));
-const Mobile = load(() => import('pages/Mobile'));
 const Invite = load(() => import('pages/Invite'));
 
 type Props = {
@@ -62,15 +60,6 @@ class UserPage extends React.Component<Props> {
     return (
       <Switch>
         <Route exact path={url} render={props => <Member {...props} />} />
-        <PrivateRoute
-          exact
-          path={`${url}/edit/personal-information`}
-          render={props => <PersonalInformation {...props} />}
-        />
-        <PrivateRoute
-          path={`${url}/mobile`}
-          render={props => <Mobile {...props} />}
-        />
         <Route
           path={`${url}/e/:eventSlug/work/:token`}
           render={props => <Invite {...props} />}

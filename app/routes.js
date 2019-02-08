@@ -21,6 +21,7 @@ const AddWork = load(() => import('pages/AddWork'));
 const User = load(() => import('pages/User'));
 const ProfileGallery = load(() => import('pages/ProfileGallery'));
 const Settings = load(() => import('pages/Settings'));
+const Mobile = load(() => import('pages/Mobile'));
 const Roles = load(() => import('pages/Roles'));
 const FourOfour = load(() => import('pages/404'));
 
@@ -76,9 +77,11 @@ class Routes extends Component<{}> {
           render={props => <ProfileGallery {...props} />}
         />
         <PrivateRoute
+          exact
           path="/settings"
           render={props => <Settings {...props} />}
         />
+        <PrivateRoute path="/mobile" render={props => <Mobile {...props} />} />
         <PrivateRoute
           path="/types-of-work"
           render={props => <Roles {...props} />}

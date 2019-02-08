@@ -39,8 +39,9 @@ const theme = createMuiTheme({
     },
     MuiInputBase: {
       input: {
-        fontSize: 18,
-        paddingBottom: 15,
+        fontSize: 14,
+        fontWeight: 600,
+        paddingBottom: 10,
       },
     },
     MuiDivider: {
