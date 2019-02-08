@@ -13,7 +13,6 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
 
 const styles = theme => ({
@@ -134,13 +133,6 @@ class EditableInput extends Component<Props, State> {
   onConfirm = () => {
     this.props.onChange(this.props.id, this.state.value);
   };
-  onEdit = () => {
-    const { id, slug } = this.props;
-    if (id === 'phone' && slug) {
-      window.localStorage.setItem('mobilePrevPath', window.location.pathname);
-      history.push(`/f/${slug}/mobile`);
-    }
-  };
   handleChange = (e: Object) => {
     e.persist();
     if (e.target.id === 'distance') {
@@ -257,6 +249,7 @@ class EditableInput extends Component<Props, State> {
             this.onConfirm();
           }
         }}
+        onBlur={this.onConfirm}
         startAdornment={
           startWith ? (
             <InputAdornment position="start" className={classes.adornment}>

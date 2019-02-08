@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 import update from 'immutability-helper';
+import { isEqual } from 'lodash-es';
 
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -32,7 +33,6 @@ type State = {
 class UserGeneralForm extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State) {
     if (nextProps.user && !prevState.model) {
-      const profile = nextProps.user.get('profile');
       const name = `${nextProps.user.get('firstName')} ${nextProps.user.get(
         'lastName'
       )}`;
@@ -41,34 +41,8 @@ class UserGeneralForm extends Component<Props, State> {
         model: {
           name,
           email: nextProps.user.get('email'),
-          profile: {
-            phone: profile.get('phone') || '',
-          },
         },
       };
-    }
-    if (prevState.model && prevState.model.profile) {
-      const {
-        model: {
-          name,
-          email,
-          profile: { phone },
-        },
-      } = prevState;
-      if (nextProps.user.getIn(['profile', 'phone']) !== phone) {
-        const prevProfile = prevState.model ? prevState.model.profile : {};
-        return {
-          ...prevState,
-          model: {
-            name,
-            email,
-            profile: {
-              ...prevProfile,
-              phone: nextProps.user.getIn(['profile', 'phone']),
-            },
-          },
-        };
-      }
     }
     return null;
   }
@@ -76,58 +50,41 @@ class UserGeneralForm extends Component<Props, State> {
     model: null,
   };
   onChange = (id, value) => {
-    if (id === 'name') {
+    if (id !== 'phone') {
       this.setState(
         update(this.state, {
           model: {
-            name: { $set: value },
+            [id]: { $set: value },
           },
-        }),
-        () => {
-          if (value.split(' ').length >= 2) {
-            const [firstName, ...rest] = value.split(' ');
-            this.props.updateUser({
-              firstName,
-              lastName: rest.join(' '),
-            });
-          }
-        }
+        })
       );
-    } else if (id === 'email') {
-      this.setState(
-        update(this.state, {
-          model: {
-            email: { $set: value },
-          },
-        }),
-        () => {
-          this.props.updateUser({
-            email: value,
-          });
-        }
-      );
-    } else {
-      this.setState(
-        update(this.state, {
-          model: {
-            profile: {
-              [id]: { $set: value },
-            },
-          },
-        }),
-        () => {
-          this.props.updateUser({
-            profile: {
-              [id]: value,
-            },
-          });
-        }
-      );
+    }
+  };
+  handleSave = () => {
+    const { user } = this.props;
+    const { model } = this.state;
+    if (model) {
+      const { name, email } = model;
+      const payload = {
+        email,
+        firstName: user.get('firstName'),
+        lastName: user.get('lastName'),
+      };
+      if (name.split(' ').length >= 2) {
+        const [firstName, ...rest] = name.split(' ');
+        payload.firstName = firstName;
+        payload.lastName = rest.join(' ');
+      }
+      this.props.updateUser(payload);
     }
   };
   render() {
     const { user, classes } = this.props;
     const { model } = this.state;
+    const userData = {
+      name: `${user.get('firstName')} ${user.get('lastName')}`,
+      email: user.get('email'),
+    };
     return (
       <React.Fragment>
         <EditableInput
@@ -149,7 +106,7 @@ class UserGeneralForm extends Component<Props, State> {
               : 'Phone (not verified)'
           }
           id="phone"
-          value={model && model.profile.phone}
+          value={user.getIn(['profile', 'phone'])}
           slug={user.get('slug')}
         />
         <Grid container justify="flex-end">
@@ -158,6 +115,8 @@ class UserGeneralForm extends Component<Props, State> {
               className={classes.saveButton}
               color="primary"
               variant="contained"
+              disabled={isEqual(userData, model)}
+              onClick={this.handleSave}
             >
               Save Changes
             </Button>
