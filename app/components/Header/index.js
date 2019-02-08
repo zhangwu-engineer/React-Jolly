@@ -143,8 +143,9 @@ const styles = theme => ({
     margin: 0,
   },
   menuItemText: {
-    fontSize: 16,
-    color: '#424242',
+    fontSize: 14,
+    fontWeight: 600,
+    color: '#343434',
   },
 });
 
@@ -235,7 +236,7 @@ class Header extends Component<Props, State> {
             </ListItemIcon>
             <ListItemText
               classes={{ primary: classes.menuItemText }}
-              primary="Settings"
+              primary="Edit Profile &amp; Settings"
             />
           </MenuItem>
           <MenuItem
