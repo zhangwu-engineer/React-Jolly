@@ -106,9 +106,11 @@ class EditableInput extends Component<Props> {
         <PlacesAutocomplete
           value={value}
           onChange={address => {
-            console.log(address);
-            // this.props.onChange(address);
+            this.props.onChange({
+              target: { value: address, id: 'location', name: 'location' },
+            });
           }}
+          searchOptions={{ types: ['(cities)'] }}
         >
           {({
             getInputProps,
@@ -119,7 +121,6 @@ class EditableInput extends Component<Props> {
             <Fragment>
               <Input
                 className={classes.textInput}
-                id={id}
                 {...getInputProps({
                   placeholder: 'Search Places ...',
                 })}
