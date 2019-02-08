@@ -3,7 +3,6 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import update from 'immutability-helper';
 import { capitalize } from 'lodash-es';
 import cx from 'classnames';
 
@@ -11,12 +10,10 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
 
+import UserGeneralForm from 'components/UserForm/General';
+import UserProfileForm from 'components/UserForm/Profile';
 import Link from 'components/Link';
-import EditableInput from 'components/EditableInput';
 
 import { requestUserDataUpdate, requestUser } from 'containers/App/sagas';
 
@@ -113,37 +110,8 @@ const styles = theme => ({
       fontSize: 18,
     },
   },
-  marginBottom: {
-    marginBottom: '20px !important',
-  },
-  contactOptionsTitle: {
-    fontSize: 14,
-    fontWeight: 600,
-    color: '#090909',
-  },
-  contactOptionsDesc: {
-    fontSize: 14,
-    fontWeight: 600,
-    color: '#6b6464',
-    marginBottom: 10,
-  },
-  saveButton: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    textTransform: 'none',
-    padding: '13px 34px',
-    borderRadius: 0,
-  },
-  switchGroup: {
-    marginBottom: 30,
-  },
-  switchRoot: {
-    margin: 0,
-  },
-  switchLabel: {
-    fontSize: 14,
-    fontWeight: 600,
-    color: '#262626',
+  editProfile: {
+    marginBottom: 20,
   },
 });
 
@@ -156,126 +124,18 @@ type Props = {
 
 type State = {
   selectedSection: string,
-  model: ?Object,
 };
 
 class SettingsPage extends Component<Props, State> {
-  static getDerivedStateFromProps(nextProps: Props, prevState: State) {
-    if (nextProps.user && !prevState.model) {
-      const profile = nextProps.user.get('profile');
-      const name = `${nextProps.user.get('firstName')} ${nextProps.user.get(
-        'lastName'
-      )}`;
-      return {
-        ...prevState,
-        model: {
-          name,
-          email: nextProps.user.get('email'),
-          profile: {
-            phone: profile.get('phone') || '',
-            bio: profile.get('bio') || '',
-            receiveEmail: profile.get('receiveEmail'),
-            receiveSMS: profile.get('receiveSMS'),
-            receiveCall: profile.get('receiveCall'),
-            location: profile.get('location') || '',
-            distance: profile.get('distance') || '',
-            facebook: profile.get('facebook') || '',
-            twitter: profile.get('twitter') || '',
-            linkedin: profile.get('linkedin') || '',
-            youtube: profile.get('youtube') || '',
-            showImageLibrary: profile.get('showImageLibrary'),
-          },
-        },
-      };
-    }
-    if (prevState.model && prevState.model.profile) {
-      const {
-        model: {
-          name,
-          email,
-          profile: { phone },
-        },
-      } = prevState;
-      if (nextProps.user.getIn(['profile', 'phone']) !== phone) {
-        const prevProfile = prevState.model ? prevState.model.profile : {};
-        return {
-          ...prevState,
-          model: {
-            name,
-            email,
-            profile: {
-              ...prevProfile,
-              phone: nextProps.user.getIn(['profile', 'phone']),
-            },
-          },
-        };
-      }
-    }
-    return null;
-  }
   state = {
     selectedSection: 'general',
-    model: null,
   };
   componentDidMount() {
     this.props.requestUser();
   }
-  onChange = (id, value) => {
-    if (id === 'name') {
-      this.setState(
-        update(this.state, {
-          model: {
-            name: { $set: value },
-          },
-        }),
-        () => {
-          if (value.split(' ').length >= 2) {
-            const [firstName, ...rest] = value.split(' ');
-            this.props.updateUser({
-              firstName,
-              lastName: rest.join(' '),
-            });
-          }
-        }
-      );
-    } else if (id === 'email') {
-      this.setState(
-        update(this.state, {
-          model: {
-            email: { $set: value },
-          },
-        }),
-        () => {
-          this.props.updateUser({
-            email: value,
-          });
-        }
-      );
-    } else {
-      this.setState(
-        update(this.state, {
-          model: {
-            profile: {
-              [id]: { $set: value },
-            },
-          },
-        }),
-        () => {
-          this.props.updateUser({
-            profile: {
-              [id]: value,
-            },
-          });
-        }
-      );
-    }
-  };
-  handleSwitchChange = name => event => {
-    this.onChange(name, event.target.checked);
-  };
   render() {
     const { user, classes } = this.props;
-    const { selectedSection, model } = this.state;
+    const { selectedSection } = this.state;
     return (
       <div className={classes.root}>
         <div className={classes.leftPanel}>
@@ -301,7 +161,6 @@ class SettingsPage extends Component<Props, State> {
               </Link>
             </Grid>
           </Grid>
-
           <div
             className={
               selectedSection === 'general'
@@ -332,184 +191,16 @@ class SettingsPage extends Component<Props, State> {
             <Typography variant="h6" className={classes.title}>
               General Account Settings
             </Typography>
-            <EditableInput
-              label="Name"
-              id="name"
-              value={model && model.name}
-              onChange={this.onChange}
-            />
-            <EditableInput
-              label="Email"
-              id="email"
-              value={model && model.email}
-              onChange={this.onChange}
-            />
-            <EditableInput
-              label={
-                user.getIn(['profile', 'verifiedPhone'])
-                  ? 'Phone (verified)'
-                  : 'Phone (not verified)'
-              }
-              id="phone"
-              value={model && model.profile.phone}
-              slug={user.get('slug')}
-            />
-            <Grid container justify="flex-end">
-              <Grid item>
-                <Button
-                  className={classes.saveButton}
-                  color="primary"
-                  variant="contained"
-                >
-                  Save Changes
-                </Button>
-              </Grid>
-            </Grid>
+            <UserGeneralForm user={user} updateUser={this.props.updateUser} />
           </div>
           <div className={classes.section}>
             <Typography
               variant="h6"
-              className={cx(classes.title, classes.marginBottom)}
+              className={cx(classes.title, classes.editProfile)}
             >
               Edit Profile
             </Typography>
-            <Typography className={classes.contactOptionsTitle}>
-              Contact Options
-            </Typography>
-            <Typography className={classes.contactOptionsDesc}>
-              Select how you’d like clients to contact you. Your phone number
-              will never be displayed on your profile.
-            </Typography>
-            <Grid
-              className={classes.switchGroup}
-              container
-              justify="space-between"
-            >
-              <Grid item>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={model && model.profile.receiveEmail}
-                      onChange={this.handleSwitchChange('receiveEmail')}
-                      color="primary"
-                    />
-                  }
-                  label="Email"
-                  labelPlacement="start"
-                  classes={{
-                    root: classes.switchRoot,
-                    label: classes.switchLabel,
-                  }}
-                />
-              </Grid>
-              <Grid item>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={model && model.profile.receiveSMS}
-                      onChange={this.handleSwitchChange('receiveSMS')}
-                      color="primary"
-                    />
-                  }
-                  label="SMS"
-                  labelPlacement="start"
-                  classes={{
-                    root: classes.switchRoot,
-                    label: classes.switchLabel,
-                  }}
-                />
-              </Grid>
-              <Grid item>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={model && model.profile.receiveCall}
-                      onChange={this.handleSwitchChange('receiveCall')}
-                      color="primary"
-                    />
-                  }
-                  label="Call"
-                  labelPlacement="start"
-                  classes={{
-                    root: classes.switchRoot,
-                    label: classes.switchLabel,
-                  }}
-                />
-              </Grid>
-            </Grid>
-            <EditableInput
-              label="Bio"
-              id="bio"
-              value={model && model.profile.bio}
-              multiline
-              onChange={this.onChange}
-            />
-            <EditableInput
-              label="Location"
-              id="location"
-              value={model && model.profile.location}
-              onChange={this.onChange}
-            />
-            <EditableInput
-              label="Miles you'll travel for work"
-              id="distance"
-              value={model && model.profile.distance}
-              onChange={this.onChange}
-            />
-            <EditableInput
-              label="Facebook"
-              id="facebook"
-              value={model && model.profile.facebook}
-              startWith="/"
-              onChange={this.onChange}
-            />
-            <EditableInput
-              label="Twitter"
-              id="twitter"
-              value={model && model.profile.twitter}
-              startWith="@"
-              onChange={this.onChange}
-            />
-            <EditableInput
-              label="Linkedin"
-              id="linkedin"
-              value={model && model.profile.linkedin}
-              startWith="/in/"
-              onChange={this.onChange}
-            />
-            <EditableInput
-              label="Youtube"
-              id="youtube"
-              value={model && model.profile.youtube}
-              startWith="/"
-              onChange={this.onChange}
-            />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={model && model.profile.showImageLibrary}
-                  onChange={this.handleSwitchChange('showImageLibrary')}
-                  color="primary"
-                />
-              }
-              label="Show image library on public profile"
-              labelPlacement="start"
-              classes={{
-                root: cx(classes.switchRoot, classes.marginBottom),
-                label: classes.switchLabel,
-              }}
-            />
-            <Grid container justify="flex-end">
-              <Grid item>
-                <Button
-                  className={classes.saveButton}
-                  color="primary"
-                  variant="contained"
-                >
-                  Save Changes
-                </Button>
-              </Grid>
-            </Grid>
+            <UserProfileForm user={user} updateUser={this.props.updateUser} />
           </div>
         </div>
       </div>
