@@ -2,7 +2,6 @@
 
 import React, { Component, Fragment } from 'react';
 import { generate } from 'shortid';
-import { capitalize } from 'lodash-es';
 import PlacesAutocomplete from 'react-places-autocomplete';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -88,78 +87,28 @@ type Props = {
   label: string,
   value: string,
   id: string,
-  slug?: string,
+  name: string,
   classes: Object,
   multiline: boolean,
   startWith?: string,
   onChange: Function,
+  onBlur: Function,
 };
 
-type State = {
-  value: ?string,
-};
-
-class EditableInput extends Component<Props, State> {
+class EditableInput extends Component<Props> {
   static defaultProps = {
     multiline: false,
   };
-  static getDerivedStateFromProps(nextProps: Props, prevState: State) {
-    if (prevState.value === undefined) {
-      return {
-        value:
-          nextProps.id === 'name'
-            ? nextProps.value
-                .split(' ')
-                .map(s => capitalize(s))
-                .join(' ')
-            : nextProps.value,
-      };
-    }
-    if (nextProps.id === 'phone' && prevState.value !== nextProps.value) {
-      return {
-        value: nextProps.value || '',
-      };
-    }
-    return null;
-  }
-  state = {
-    value: undefined,
-  };
-  onClear = () => {
-    this.setState({
-      value: undefined,
-    });
-  };
-  onConfirm = () => {
-    this.props.onChange(this.props.id, this.state.value);
-  };
-  handleChange = (e: Object) => {
-    e.persist();
-    if (e.target.id === 'distance') {
-      const regEx = /^\d+(\.)?(\d)?$/;
-      if (e.target.value === '' || regEx.test(e.target.value)) {
-        this.setState({
-          value: e.target.value,
-        });
-      }
-    } else {
-      this.setState({
-        value: e.target.value,
-      });
-    }
-  };
-  handleLocationChange = address => {
-    this.setState({ value: address });
-  };
-  textInput = React.createRef();
   renderInput = () => {
-    const { id, classes, multiline, startWith } = this.props;
+    const { value, id, name, classes, multiline, startWith } = this.props;
     if (id === 'location') {
       return (
         <PlacesAutocomplete
-          value={this.state.value}
-          onChange={this.handleLocationChange}
-          // onSelect={this.handleSelect}
+          value={value}
+          onChange={address => {
+            console.log(address);
+            // this.props.onChange(address);
+          }}
         >
           {({
             getInputProps,
@@ -220,8 +169,8 @@ class EditableInput extends Component<Props, State> {
         <Input
           className={classes.textInput}
           id={id}
-          value={this.state.value}
-          inputRef={this.textInput}
+          name={name}
+          value={value}
           endAdornment={
             <InputAdornment position="end">
               <Link to="/mobile" className={classes.link}>
@@ -237,19 +186,11 @@ class EditableInput extends Component<Props, State> {
       <Input
         className={classes.textInput}
         id={id}
-        value={this.state.value}
-        onChange={this.handleChange}
+        name={name}
+        value={value}
+        onChange={this.props.onChange}
         multiline={multiline}
-        inputRef={this.textInput}
-        onKeyDown={e => {
-          if (e.keyCode === 13) {
-            if (this.textInput.current) {
-              this.textInput.current.blur();
-            }
-            this.onConfirm();
-          }
-        }}
-        onBlur={this.onConfirm}
+        onBlur={this.props.onBlur}
         startAdornment={
           startWith ? (
             <InputAdornment position="start" className={classes.adornment}>
