@@ -73,6 +73,8 @@ const styles = theme => ({
     color: theme.palette.common.white,
     textTransform: 'none',
     display: 'none',
+    fontSize: 14,
+    fontWeight: 600,
     '&:hover': {
       color: theme.palette.common.white,
     },
@@ -271,17 +273,22 @@ class Header extends Component<Props, State> {
   render() {
     const { user, classes, pathname } = this.props;
     const { open, side } = this.state;
-    const hideLogo = pathname.includes('/f/');
+    const hideLogo =
+      pathname.includes('/f/') ||
+      pathname.includes('/settings/general') ||
+      pathname.includes('/settings/profile');
     const hideTopRightButtons =
       pathname.includes('/settings') ||
       pathname.includes('/personal-information') ||
-      pathname.includes('/work');
+      pathname.includes('/types-of-work');
     let title = '';
-    if (pathname.includes('/settings')) {
+    if (pathname.includes('/settings/general')) {
+      title = 'General Account Settings';
+    } else if (pathname.includes('/settings/profile')) {
+      title = 'Edit Profile';
+    } else if (pathname.includes('/settings')) {
       title = 'Settings';
-    } else if (pathname.includes('/personal-information')) {
-      title = 'Profile Information';
-    } else if (pathname.includes('/work')) {
+    } else if (pathname.includes('/types-of-work')) {
       title = 'Roles & Rates';
     }
     return (
@@ -338,7 +345,16 @@ class Header extends Component<Props, State> {
               className={cx(classes.backButton, {
                 [classes.shownOnSmallDevice]: hideTopRightButtons,
               })}
-              component={props => <Link to="/edit" {...props} />}
+              onClick={() => {
+                if (
+                  pathname.includes('/settings/general') ||
+                  pathname.includes('/settings/profile')
+                ) {
+                  history.push('/settings');
+                } else {
+                  history.push('/edit');
+                }
+              }}
             >
               <ArrowBackIcon />
               &nbsp;&nbsp;&nbsp;
