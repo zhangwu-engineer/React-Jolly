@@ -21,6 +21,8 @@ const AddWork = load(() => import('pages/AddWork'));
 const User = load(() => import('pages/User'));
 const ProfileGallery = load(() => import('pages/ProfileGallery'));
 const Settings = load(() => import('pages/Settings'));
+const GeneralSettings = load(() => import('pages/Settings/General'));
+const ProfileSettings = load(() => import('pages/Settings/Profile'));
 const Mobile = load(() => import('pages/Mobile'));
 const Roles = load(() => import('pages/Roles'));
 const FourOfour = load(() => import('pages/404'));
@@ -75,6 +77,16 @@ class Routes extends Component<{}> {
           exact
           path="/background-picture"
           render={props => <ProfileGallery {...props} />}
+        />
+        <PrivateRoute
+          exact
+          path="/settings/general"
+          render={props => <GeneralSettings {...props} />}
+        />
+        <PrivateRoute
+          exact
+          path="/settings/profile"
+          render={props => <ProfileSettings {...props} />}
         />
         <PrivateRoute
           exact

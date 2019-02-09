@@ -389,7 +389,7 @@ class ProfileInfo extends PureComponent<Props> {
             <Grid item>
               <Button
                 className={classes.editButton}
-                component={props => <Link to="/settings" {...props} />}
+                component={props => <Link to="/settings#general" {...props} />}
               >
                 <EditIcon />
                 &nbsp;Edit Personal Information

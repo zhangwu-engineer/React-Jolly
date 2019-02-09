@@ -26,13 +26,36 @@ const styles = theme => ({
       margin: 0,
     },
   },
+  mobileMenu: {
+    width: '100%',
+    height: 'calc(100vh - 48px)',
+    background: theme.palette.common.white,
+    padding: 20,
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+    },
+  },
+  mobileMenuItem: {
+    fontSize: 18,
+    fontWeight: 600,
+    letterSpacing: '0.3px',
+    color: '#2e2e2e',
+    textTransform: 'none',
+    textDecoration: 'none',
+    display: 'block',
+    padding: '15px 0px',
+  },
   leftPanel: {
     width: 265,
     marginRight: 35,
-    paddingTop: 35,
     [theme.breakpoints.down('xs')]: {
       display: 'none',
     },
+  },
+  leftMenu: {
+    position: 'fixed',
+    paddingTop: 35,
   },
   profileInfo: {
     marginBottom: 30,
@@ -64,17 +87,13 @@ const styles = theme => ({
     cursor: 'pointer',
     position: 'relative',
     overflow: 'hidden',
+    display: 'block',
+    fontSize: 16,
+    textTransform: 'none',
+    textDecoration: 'none',
   },
   activeMenuItem: {
-    paddingTop: 15,
-    paddingLeft: 20,
-    paddingBottom: 15,
-    fontWeight: 500,
-    color: '#5b5b5b',
     backgroundColor: theme.palette.common.white,
-    cursor: 'pointer',
-    position: 'relative',
-    overflow: 'hidden',
   },
   line: {
     position: 'absolute',
@@ -89,6 +108,7 @@ const styles = theme => ({
     flex: 1,
     [theme.breakpoints.down('xs')]: {
       margin: 10,
+      display: 'none',
     },
   },
   section: {
@@ -117,73 +137,93 @@ const styles = theme => ({
 
 type Props = {
   user: Object,
+  location: Object,
   classes: Object,
   updateUser: Function,
   requestUser: Function,
 };
 
-type State = {
-  selectedSection: string,
-};
-
-class SettingsPage extends Component<Props, State> {
-  state = {
-    selectedSection: 'general',
-  };
+class SettingsPage extends Component<Props> {
   componentDidMount() {
     this.props.requestUser();
   }
+  componentDidUpdate() {
+    const {
+      location: { hash },
+    } = this.props;
+    if (hash === '#general' || hash === '') {
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 50);
+    } else if (hash === '#profile') {
+      setTimeout(() => {
+        if (this.profileForm.current) {
+          window.scrollTo(0, this.profileForm.current.offsetTop);
+        }
+      }, 50);
+    }
+  }
+  profileForm = React.createRef();
   render() {
-    const { user, classes } = this.props;
-    const { selectedSection } = this.state;
+    const {
+      user,
+      location: { hash },
+      classes,
+    } = this.props;
     return (
       <div className={classes.root}>
+        <div className={classes.mobileMenu}>
+          <Link to="/settings/general" className={classes.mobileMenuItem}>
+            General Account Settings
+          </Link>
+          <Link to="/settings/profile" className={classes.mobileMenuItem}>
+            Edit Profile
+          </Link>
+        </div>
         <div className={classes.leftPanel}>
-          <Grid
-            container
-            alignItems="center"
-            classes={{
-              container: classes.profileInfo,
-            }}
-          >
-            <Grid item>
-              <Avatar
-                className={classes.avatar}
-                src={user.getIn(['profile', 'avatar'])}
-              />
+          <div className={classes.leftMenu}>
+            <Grid
+              container
+              alignItems="center"
+              classes={{
+                container: classes.profileInfo,
+              }}
+            >
+              <Grid item>
+                <Avatar
+                  className={classes.avatar}
+                  src={user.getIn(['profile', 'avatar'])}
+                />
+              </Grid>
+              <Grid item>
+                <Typography variant="h6" className={classes.greetings}>
+                  {`Hi, ${capitalize(user.get('firstName'))}!`}
+                </Typography>
+                <Link to="/edit" className={classes.link}>
+                  View Profile
+                </Link>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Typography variant="h6" className={classes.greetings}>
-                {`Hi, ${capitalize(user.get('firstName'))}!`}
-              </Typography>
-              <Link to="/edit" className={classes.link}>
-                View Profile
-              </Link>
-            </Grid>
-          </Grid>
-          <div
-            className={
-              selectedSection === 'general'
-                ? classes.activeMenuItem
-                : classes.menuItem
-            }
-            role="button"
-            onClick={() => this.setState({ selectedSection: 'general' })}
-          >
-            {selectedSection === 'general' && <div className={classes.line} />}
-            General
-          </div>
-          <div
-            className={
-              selectedSection === 'profile'
-                ? classes.activeMenuItem
-                : classes.menuItem
-            }
-            role="button"
-            onClick={() => this.setState({ selectedSection: 'profile' })}
-          >
-            {selectedSection === 'profile' && <div className={classes.line} />}
-            Profile
+            <Link
+              className={cx(classes.menuItem, {
+                [classes.activeMenuItem]: hash === '#general' || hash === '',
+              })}
+              to="/settings#general"
+            >
+              {(hash === '#general' || hash === '') && (
+                <div className={classes.line} />
+              )}
+              General
+            </Link>
+            <Link
+              className={cx(classes.menuItem, {
+                [classes.activeMenuItem]: hash === '#profile',
+              })}
+              to="/settings#profile"
+            >
+              {hash === '#profile' && <div className={classes.line} />}
+              Profile
+            </Link>
           </div>
         </div>
         <div className={classes.rightPanel}>
@@ -193,7 +233,7 @@ class SettingsPage extends Component<Props, State> {
             </Typography>
             <UserGeneralForm user={user} updateUser={this.props.updateUser} />
           </div>
-          <div className={classes.section}>
+          <div className={classes.section} ref={this.profileForm}>
             <Typography
               variant="h6"
               className={cx(classes.title, classes.editProfile)}
