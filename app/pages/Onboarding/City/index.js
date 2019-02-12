@@ -23,6 +23,9 @@ const styles = theme => ({
   root: {
     maxWidth: 660,
     margin: '50px auto 0px auto',
+    [theme.breakpoints.down('xs')]: {
+      padding: 10,
+    },
   },
   icon: {
     margin: '0 auto',
@@ -57,9 +60,6 @@ const styles = theme => ({
     '& input': {
       paddingTop: 5,
       paddingBottom: 20,
-      [theme.breakpoints.down('xs')]: {
-        paddingBottom: 10,
-      },
     },
   },
   placesList: {
