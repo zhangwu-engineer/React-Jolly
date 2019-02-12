@@ -27,7 +27,7 @@ type Props = {
 };
 
 class UserGeneralForm extends Component<Props> {
-  handleSave = values => {
+  handleSave = (values, { resetForm }) => {
     const { name, email } = values;
     if (name.split(' ').length >= 2) {
       const [firstName, ...rest] = name.split(' ');
@@ -37,6 +37,7 @@ class UserGeneralForm extends Component<Props> {
         lastName,
         email,
       });
+      resetForm(values);
     }
   };
   render() {

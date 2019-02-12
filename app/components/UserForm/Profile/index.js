@@ -76,10 +76,11 @@ class UserProfileForm extends Component<Props, State> {
       })
     );
   };
-  handleSave = (values, { setSubmitting }) => {
+  handleSave = (values, { resetForm }) => {
     this.props.updateUser({
       profile: values,
     });
+    resetForm(values);
   };
   render() {
     const { user, classes } = this.props;
@@ -101,12 +102,12 @@ class UserProfileForm extends Component<Props, State> {
         {({
           values,
           dirty,
-          errors,
-          touched,
+          // errors,
+          // touched,
           handleChange,
-          handleBlur,
+          // handleBlur,
           handleSubmit,
-          isSubmitting,
+          // isSubmitting,
           /* and other goodies */
         }) => (
           <React.Fragment>
