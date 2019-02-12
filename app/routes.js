@@ -25,6 +25,7 @@ const GeneralSettings = load(() => import('pages/Settings/General'));
 const ProfileSettings = load(() => import('pages/Settings/Profile'));
 const Mobile = load(() => import('pages/Mobile'));
 const Roles = load(() => import('pages/Roles'));
+const OnboardingCity = load(() => import('pages/Onboarding/City'));
 const FourOfour = load(() => import('pages/404'));
 
 class Routes extends Component<{}> {
@@ -62,6 +63,11 @@ class Routes extends Component<{}> {
           render={props => <Privacy {...props} />}
         />
         <Route path="/f/:slug" render={props => <User {...props} />} />
+        <PrivateRoute
+          exact
+          path="/ob/1"
+          render={props => <OnboardingCity {...props} />}
+        />
         <PrivateRoute
           exact
           path="/edit"

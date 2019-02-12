@@ -27,7 +27,11 @@ class SignIn extends Component<Props> {
     const { user } = this.props;
     if (!prevProps.user && user) {
       storage.set('invite', null);
-      history.push('/edit');
+      if (user.getIn(['profile', 'location'])) {
+        history.push('/edit');
+      } else {
+        history.push('/ob/1');
+      }
     }
   }
   handleFBLogin = (user: Object) => {

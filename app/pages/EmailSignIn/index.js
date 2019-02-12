@@ -137,7 +137,11 @@ class EmailSignIn extends Component<Props, State> {
     const { isLoading, error, user } = this.props;
     if (prevProps.isLoading && !isLoading && !error && user) {
       storage.set('invite', null);
-      history.push('/edit');
+      if (user.getIn(['profile', 'location'])) {
+        history.push('/edit');
+      } else {
+        history.push('/ob/1');
+      }
     }
   }
   handleChange = (e: Object) => {
