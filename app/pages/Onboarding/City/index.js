@@ -90,8 +90,8 @@ const styles = theme => ({
 
 type Props = {
   user: Object,
-  isLoading: boolean,
-  error: string,
+  isUpdating: boolean,
+  updateError: string,
   classes: Object,
   updateUser: Function,
 };
@@ -111,8 +111,8 @@ class OnboardingCityPage extends Component<Props, State> {
     }
   }
   componentDidUpdate(prevProps: Props) {
-    const { isLoading, error } = this.props;
-    if (prevProps.isLoading && !isLoading && !error) {
+    const { isUpdating, updateError } = this.props;
+    if (prevProps.isUpdating && !isUpdating && !updateError) {
       history.push('/edit');
     }
   }
@@ -213,8 +213,8 @@ class OnboardingCityPage extends Component<Props, State> {
 
 const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
-  isLoading: state.getIn(['app', 'isLoading']),
-  error: state.getIn(['app', 'error']),
+  isUpdating: state.getIn(['app', 'isUpdating']),
+  updateError: state.getIn(['app', 'updateError']),
 });
 
 const mapDispatchToProps = dispatch => ({

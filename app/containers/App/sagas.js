@@ -260,6 +260,8 @@ const initialState = fromJS({
   token: storage.get('token'),
   isLoading: false,
   error: '',
+  isUpdating: false,
+  updateError: '',
   isUploading: false,
   uploadError: '',
   navbarOpen: false,
@@ -317,17 +319,17 @@ export const reducer = (
       );
 
     case USER_DATA_UPDATE + REQUESTED:
-      return state.set('isLoading', true).set('error', null);
+      return state.set('isUpdating', true).set('updateError', null);
 
     case USER_DATA_UPDATE + SUCCEDED:
-      return state.set('isLoading', false).set('error', '');
+      return state.set('isUpdating', false).set('updateError', '');
 
     case USER_DATA_UPDATE + FAILED:
-      return state.set('isLoading', false).set('error', payload);
+      return state.set('isUpdating', false).set('updateError', payload);
 
     case USER_DATA_UPDATE + ERROR:
-      return state.set('isLoading', false).set(
-        'error',
+      return state.set('isUpdating', false).set(
+        'updateError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
