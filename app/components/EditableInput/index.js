@@ -11,6 +11,8 @@ import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import Link from 'components/Link';
 
@@ -163,6 +165,38 @@ class EditableInput extends Component<Props> {
             </Fragment>
           )}
         </PlacesAutocomplete>
+      );
+    }
+    if (id === 'distance') {
+      return (
+        <Select
+          value={value}
+          name={name}
+          inputProps={{
+            id,
+          }}
+          onChange={this.props.onChange}
+          onBlur={this.props.onBlur}
+          className={classes.textInput}
+        >
+          <MenuItem value="">Don&apos;t Indicate</MenuItem>
+          <MenuItem value="less than 5">&lt; 5</MenuItem>
+          <MenuItem value="5">5</MenuItem>
+          <MenuItem value="10">10</MenuItem>
+          <MenuItem value="15">15</MenuItem>
+          <MenuItem value="20">20</MenuItem>
+          <MenuItem value="25">25</MenuItem>
+          <MenuItem value="30">30</MenuItem>
+          <MenuItem value="35">35</MenuItem>
+          <MenuItem value="40">40</MenuItem>
+          <MenuItem value="45">45</MenuItem>
+          <MenuItem value="50">50</MenuItem>
+          <MenuItem value="60">60</MenuItem>
+          <MenuItem value="70">70</MenuItem>
+          <MenuItem value="80">80</MenuItem>
+          <MenuItem value="90">90</MenuItem>
+          <MenuItem value="more than 100">100 +</MenuItem>
+        </Select>
       );
     }
     if (id === 'phone') {
