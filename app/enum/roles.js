@@ -26,6 +26,7 @@ const ROLES = [
   'Bartender',
   'Busser',
   'Cake Artist',
+  'Caricaturist',
   'Caterer',
   'Catering Crew',
   'Chef',
