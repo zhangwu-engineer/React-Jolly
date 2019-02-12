@@ -35,7 +35,7 @@ import DoneIcon from '@material-ui/icons/Done';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Red from '@material-ui/core/colors/red';
 
-import Link from 'components/Link';
+import { history } from 'components/ConnectedRouter';
 import Icon from 'components/Icon';
 import CustomSelect from 'components/CustomSelect';
 
@@ -452,8 +452,12 @@ class MobileWorkForm extends Component<Props, State> {
     }));
   };
   registerWorkExperience = () => {
-    const { model } = this.state;
-    if (model.title && ROLES.indexOf(model.role) !== -1) {
+    const { model, filteredWorks } = this.state;
+    if (filteredWorks.length) {
+      this.setState({
+        filteredWorks: [],
+      });
+    } else if (model.title && ROLES.indexOf(model.role) !== -1) {
       this.setState({ roleError: '' }, () => {
         this.props.requestCreateWork(model);
       });
@@ -568,7 +572,15 @@ class MobileWorkForm extends Component<Props, State> {
                 <IconButton
                   className={classes.clearButton}
                   color="inherit"
-                  component={props => <Link to="/edit" {...props} />}
+                  onClick={() => {
+                    if (filteredWorks.length) {
+                      this.setState({
+                        filteredWorks: [],
+                      });
+                    } else {
+                      history.push('/edit');
+                    }
+                  }}
                 >
                   <ClearIcon />
                 </IconButton>
@@ -599,6 +611,13 @@ class MobileWorkForm extends Component<Props, State> {
                 disableUnderline
                 fullWidth
                 autoComplete="off"
+                onKeyDown={e => {
+                  if (e.keyCode === 13 && filteredWorks.length) {
+                    this.setState({
+                      filteredWorks: [],
+                    });
+                  }
+                }}
               />
               {filteredWorks.length ? (
                 <div className={classes.searchWorkList}>
