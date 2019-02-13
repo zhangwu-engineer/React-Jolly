@@ -2,6 +2,7 @@
 
 import React, { Component, Fragment } from 'react';
 import { generate } from 'shortid';
+import storage from 'store';
 import PlacesAutocomplete from 'react-places-autocomplete';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -14,6 +15,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
+import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
 
 const styles = theme => ({
@@ -51,6 +53,7 @@ const styles = theme => ({
   adornmentText: {
     color: theme.palette.text.main,
     fontSize: 14,
+    fontWeight: 600,
     paddingBottom: 5,
     lineHeight: '21px',
   },
@@ -96,6 +99,7 @@ type Props = {
   value: string,
   id: string,
   name: string,
+  backURL: string,
   classes: Object,
   multiline: boolean,
   disabled?: boolean,
@@ -107,6 +111,11 @@ type Props = {
 class EditableInput extends Component<Props> {
   static defaultProps = {
     multiline: false,
+  };
+  handleEditPhone = () => {
+    const { backURL } = this.props;
+    storage.set('mobilePrevPath', backURL);
+    history.push('/mobile');
   };
   renderInput = () => {
     const {
@@ -234,7 +243,7 @@ class EditableInput extends Component<Props> {
         endAdornment={
           id === 'phone' ? (
             <InputAdornment position="end">
-              <Link to="/mobile" className={classes.link}>
+              <Link className={classes.link} onClick={this.handleEditPhone}>
                 Edit
               </Link>
             </InputAdornment>

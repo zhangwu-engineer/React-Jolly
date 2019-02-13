@@ -3,6 +3,7 @@
 import React, { Component, Fragment } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import storage from 'store';
 import 'react-phone-number-input/style.css';
 import PhoneInput from 'react-phone-number-input';
 
@@ -174,9 +175,9 @@ class Mobile extends Component<Props, State> {
     }
   };
   render() {
-    const { step, user, classes, phoneError, tokenError } = this.props;
+    const { step, classes, phoneError, tokenError } = this.props;
     const { phone, token } = this.state;
-    const prevPath = window.localStorage.getItem('mobilePrevPath');
+    const prevPath = storage.get('mobilePrevPath');
     const title =
       prevPath && prevPath.includes('/personal-information')
         ? 'Personal Information'
@@ -274,10 +275,7 @@ class Mobile extends Component<Props, State> {
                       className={classes.backButton}
                       color="primary"
                       component={props => (
-                        <Link
-                          to={prevPath || `/f/${user.get('slug')}/settings`}
-                          {...props}
-                        />
+                        <Link to={prevPath || '/settings#general'} {...props} />
                       )}
                     >
                       Back to {title}

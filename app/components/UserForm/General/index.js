@@ -22,6 +22,7 @@ const styles = () => ({
 
 type Props = {
   user: Object,
+  backURL: string,
   classes: Object,
   updateUser: Function,
 };
@@ -41,7 +42,7 @@ class UserGeneralForm extends Component<Props> {
     }
   };
   render() {
-    const { user, classes } = this.props;
+    const { user, backURL, classes } = this.props;
     const userData = {
       name: `${capitalize(user.get('firstName'))} ${capitalize(
         user.get('lastName')
@@ -86,6 +87,7 @@ class UserGeneralForm extends Component<Props> {
               id="phone"
               value={user.getIn(['profile', 'phone'])}
               disabled
+              backURL={backURL}
             />
             <Grid container justify="flex-end">
               <Grid item>

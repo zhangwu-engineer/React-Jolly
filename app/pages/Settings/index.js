@@ -231,7 +231,11 @@ class SettingsPage extends Component<Props> {
             <Typography variant="h6" className={classes.title}>
               General Account Settings
             </Typography>
-            <UserGeneralForm user={user} updateUser={this.props.updateUser} />
+            <UserGeneralForm
+              user={user}
+              updateUser={this.props.updateUser}
+              backURL="/settings#general"
+            />
           </div>
           <div className={classes.section} ref={this.profileForm}>
             <Typography

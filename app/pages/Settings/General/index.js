@@ -32,7 +32,11 @@ class GeneralSettingsPage extends Component<Props> {
     const { user, classes } = this.props;
     return (
       <div className={classes.root}>
-        <UserGeneralForm user={user} updateUser={this.props.updateUser} />
+        <UserGeneralForm
+          user={user}
+          updateUser={this.props.updateUser}
+          backURL="/settings/general"
+        />
       </div>
     );
   }
