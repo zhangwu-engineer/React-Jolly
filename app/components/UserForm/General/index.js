@@ -75,6 +75,7 @@ class UserGeneralForm extends Component<Props> {
               value={values.email}
               onChange={handleChange}
               onBlur={handleBlur}
+              disabled
             />
             <EditableInput
               label={
@@ -84,7 +85,7 @@ class UserGeneralForm extends Component<Props> {
               }
               id="phone"
               value={user.getIn(['profile', 'phone'])}
-              slug={user.get('slug')}
+              disabled
             />
             <Grid container justify="flex-end">
               <Grid item>
