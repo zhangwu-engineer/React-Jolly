@@ -207,11 +207,12 @@ class UserProfileForm extends Component<Props, State> {
               </Grid>
               <Grid item lg={6} xs={12} className={classes.distanceField}>
                 <EditableInput
-                  label="Travel Radius"
+                  label="Travel Radius(miles)"
                   id="distance"
                   name="distance"
                   value={values.distance}
                   onChange={handleChange}
+                  disabled={!values.location}
                 />
               </Grid>
             </Grid>

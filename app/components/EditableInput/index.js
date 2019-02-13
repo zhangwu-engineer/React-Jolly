@@ -202,6 +202,7 @@ class EditableInput extends Component<Props> {
           onChange={this.props.onChange}
           onBlur={this.props.onBlur}
           className={classes.textInput}
+          disabled={disabled}
         >
           <MenuItem value="">Don&apos;t Indicate</MenuItem>
           <MenuItem value="less than 5">&lt; 5</MenuItem>
