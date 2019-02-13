@@ -616,7 +616,8 @@ class WorkDetail extends Component<Props, State> {
                   <Grid item className={classes.fullWidth}>
                     <Typography className={classes.label}>
                       <b>{numberOfCoworkers}</b>
-                      &nbsp;coworkers
+                      &nbsp;
+                      {numberOfCoworkers > 1 ? 'Coworkers' : 'Coworker'}
                     </Typography>
                     <Grid
                       container
@@ -654,7 +655,8 @@ class WorkDetail extends Component<Props, State> {
                   <Grid item>
                     <Typography className={classes.label}>
                       <b>{numberOfCoworkers}</b>
-                      &nbsp;coworkers
+                      &nbsp;
+                      {numberOfCoworkers > 1 ? 'Coworkers' : 'Coworker'}
                     </Typography>
                   </Grid>
                   <Grid
