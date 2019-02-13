@@ -29,7 +29,7 @@ const styles = theme => ({
   },
   textInput: {
     paddingLeft: 18,
-    marginTop: 20,
+    marginTop: '23px !important',
     '&:before': {
       borderBottom: '2px solid #f1f1f1',
     },
@@ -38,6 +38,11 @@ const styles = theme => ({
       [theme.breakpoints.down('xs')]: {
         paddingBottom: 10,
       },
+    },
+  },
+  disabledTextInput: {
+    '&:before': {
+      borderBottom: 'none !important',
     },
   },
   adornment: {
@@ -72,6 +77,7 @@ const styles = theme => ({
   shrink: {
     transform: 'translate(0px, 10px) scale(0.85)',
     transformOrigin: 'top left',
+    color: '#9b9b9b',
   },
   link: {
     fontSize: 14,
@@ -80,7 +86,7 @@ const styles = theme => ({
     textDecoration: 'none',
     color: '#3a81e0',
     position: 'relative',
-    top: -8,
+    top: -9,
     right: 20,
   },
 });
@@ -92,6 +98,7 @@ type Props = {
   name: string,
   classes: Object,
   multiline: boolean,
+  disabled?: boolean,
   startWith?: string,
   onChange: Function,
   onBlur: Function,
@@ -102,7 +109,15 @@ class EditableInput extends Component<Props> {
     multiline: false,
   };
   renderInput = () => {
-    const { value, id, name, classes, multiline, startWith } = this.props;
+    const {
+      value,
+      id,
+      name,
+      disabled,
+      classes,
+      multiline,
+      startWith,
+    } = this.props;
     if (id === 'location') {
       return (
         <PlacesAutocomplete
@@ -199,27 +214,8 @@ class EditableInput extends Component<Props> {
         </Select>
       );
     }
-    if (id === 'phone') {
-      return (
-        <Input
-          className={classes.textInput}
-          id={id}
-          name={name}
-          value={value}
-          endAdornment={
-            <InputAdornment position="end">
-              <Link to="/mobile" className={classes.link}>
-                Edit
-              </Link>
-            </InputAdornment>
-          }
-          autoComplete="off"
-        />
-      );
-    }
     return (
       <Input
-        className={classes.textInput}
         id={id}
         name={name}
         value={value}
@@ -235,7 +231,21 @@ class EditableInput extends Component<Props> {
             </InputAdornment>
           ) : null
         }
+        endAdornment={
+          id === 'phone' ? (
+            <InputAdornment position="end">
+              <Link to="/mobile" className={classes.link}>
+                Edit
+              </Link>
+            </InputAdornment>
+          ) : null
+        }
         autoComplete="off"
+        disabled={disabled}
+        classes={{
+          root: classes.textInput,
+          disabled: classes.disabledTextInput,
+        }}
       />
     );
   };
