@@ -39,7 +39,7 @@ const styles = theme => ({
   skip: {
     fontSize: 14,
     fontWeight: 600,
-    letterSpacing: '0.5px',
+    letterSpacing: 0.5,
     color: theme.palette.common.white,
     textTransform: 'none',
     textDecoration: 'none',
@@ -56,6 +56,16 @@ const styles = theme => ({
   leftPanel: {
     width: 254,
     marginRight: 27,
+    paddingTop: 100,
+  },
+  coworkers: {
+    backgroundColor: theme.palette.common.white,
+    padding: 25,
+  },
+  coworkersTitle: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#4a4a4a',
   },
   rightPanel: {
     flex: 1,
@@ -131,7 +141,13 @@ class OnboardingCoworkerPage extends Component<Props, State> {
           </Link>
         </div>
         <div className={classes.content}>
-          <div className={classes.leftPanel} />
+          <div className={classes.leftPanel}>
+            <div className={classes.coworkers}>
+              <Typography className={classes.coworkersTitle}>
+                Coworkers
+              </Typography>
+            </div>
+          </div>
           <div className={classes.rightPanel}>
             <Typography className={classes.title}>
               Find coworkers near{' '}
