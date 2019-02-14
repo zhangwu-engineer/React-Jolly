@@ -10,21 +10,30 @@ type Props = {
   children: React.Node,
   className?: string,
   isOpen: boolean,
+  shouldCloseOnOverlayClick?: boolean,
   onCloseModal: Function,
 };
 
 class BaseModal extends Component<Props, {}> {
+  static defaultProps = {
+    shouldCloseOnOverlayClick: true,
+  };
   componentWillMount() {
     Modal.setAppElement('#app');
   }
   render() {
-    const { children, isOpen, className } = this.props;
+    const {
+      children,
+      isOpen,
+      shouldCloseOnOverlayClick,
+      className,
+    } = this.props;
     return (
       <Modal
         overlayClassName="baseModal__layout"
         className={cx('baseModal__content', className)}
         isOpen={isOpen}
-        shouldCloseOnOverlayClick
+        shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
         onRequestClose={() => {
           this.props.onCloseModal();
         }}
