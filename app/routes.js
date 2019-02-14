@@ -26,6 +26,7 @@ const ProfileSettings = load(() => import('pages/Settings/Profile'));
 const Mobile = load(() => import('pages/Mobile'));
 const Roles = load(() => import('pages/Roles'));
 const OnboardingCity = load(() => import('pages/Onboarding/City'));
+const OnboardingCoworker = load(() => import('pages/Onboarding/Coworker'));
 const FourOfour = load(() => import('pages/404'));
 
 class Routes extends Component<{}> {
@@ -67,6 +68,11 @@ class Routes extends Component<{}> {
           exact
           path="/ob/1"
           render={props => <OnboardingCity {...props} />}
+        />
+        <PrivateRoute
+          exact
+          path="/ob/2"
+          render={props => <OnboardingCoworker {...props} />}
         />
         <PrivateRoute
           exact

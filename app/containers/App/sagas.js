@@ -3,7 +3,7 @@
 // Rules on how to organize this file: https://github.com/erikras/ducks-modular-redux
 
 import storage from 'store';
-import { fromJS } from 'immutable';
+import { fromJS, List } from 'immutable';
 import { call, put, select, takeLatest, all } from 'redux-saga/effects';
 import request from 'utils/request';
 import { API_URL, REQUESTED, SUCCEDED, FAILED, ERROR } from 'enum/constants';
@@ -24,6 +24,7 @@ const USER_DATA_UPDATE = 'Jolly/App/UPDATE_USER_DATA';
 const USER_PHOTO_UPLOAD = 'Jolly/App/UPLOAD_USER_PHOTO';
 const USER_FILES = 'Jolly/App/USER_FILES';
 const EMAIL_VERIFICATION = 'Jolly/App/EMAIL_VERIFICATION';
+const CITY_USERS = 'Jolly/App/CITY_USERS';
 const MEMBER = 'Jolly/App/Member';
 const WORKS = 'Jolly/App/WORKS';
 const ENDORSEMENTS = 'Jolly/App/ENDORSEMENTS';
@@ -187,6 +188,31 @@ const userEmailVerificationRequestError = (error: string) => ({
   payload: error,
 });
 
+export const requestCityUsers = (
+  city: string,
+  page: Number,
+  perPage: Number
+) => ({
+  type: CITY_USERS + REQUESTED,
+  payload: city,
+  meta: {
+    page,
+    perPage,
+  },
+});
+const cityUsersRequestSuccess = (payload: Object) => ({
+  type: CITY_USERS + SUCCEDED,
+  payload,
+});
+const cityUsersRequestFailed = (error: string) => ({
+  type: CITY_USERS + FAILED,
+  payload: error,
+});
+const cityUsersRequestError = (error: string) => ({
+  type: CITY_USERS + ERROR,
+  payload: error,
+});
+
 export const requestMember = (slug: string) => ({
   type: MEMBER + REQUESTED,
   payload: slug,
@@ -280,6 +306,13 @@ const initialState = fromJS({
   endorsements: fromJS([]),
   isEndorsementsLoading: false,
   endorsementsError: '',
+  cityUsers: fromJS({
+    total: null,
+    page: null,
+    users: [],
+  }),
+  isCityUsersLoading: false,
+  cityUsersError: '',
 });
 
 export const reducer = (
@@ -456,6 +489,32 @@ export const reducer = (
     case EMAIL_VERIFICATION + ERROR:
       return state.set('isLoading', false).set(
         'error',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case CITY_USERS + REQUESTED:
+      return state.set('isCityUsersLoading', true);
+
+    case CITY_USERS + SUCCEDED: {
+      const existingUsers: List = state.getIn(['cityUsers', 'users']);
+      const newUsers = existingUsers.concat(fromJS(payload.users));
+      return state
+        .set('isCityUsersLoading', false)
+        .setIn(['cityUsers', 'total'], payload.total)
+        .setIn(['cityUsers', 'page'], payload.page)
+        .setIn(['cityUsers', 'users'], newUsers)
+        .set('cityUsersError', '');
+    }
+
+    case CITY_USERS + FAILED:
+      return state
+        .set('isCityUsersLoading', false)
+        .set('cityUsersError', payload.message);
+
+    case CITY_USERS + ERROR:
+      return state.set('isCityUsersLoading', false).set(
+        'cityUsersError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -779,6 +838,29 @@ function* EndorsementsRequest() {
   }
 }
 
+function* CityUsersRequest({ payload, meta }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/user/city`,
+      data: {
+        city: payload,
+        page: meta.page,
+        perPage: meta.perPage,
+      },
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(cityUsersRequestSuccess(response.data.response));
+    } else {
+      yield put(cityUsersRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(cityUsersRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(REGISTER + REQUESTED, RegisterRequest),
@@ -792,5 +874,6 @@ export default function*(): Saga<void> {
     takeLatest(MEMBER + REQUESTED, MemberRequest),
     takeLatest(WORKS + REQUESTED, WorksRequest),
     takeLatest(ENDORSEMENTS + REQUESTED, EndorsementsRequest),
+    takeLatest(CITY_USERS + REQUESTED, CityUsersRequest),
   ]);
 }
