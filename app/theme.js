@@ -43,6 +43,16 @@ const theme = createMuiTheme({
         },
       },
     },
+    MuiFilledInput: {
+      root: {
+        borderRadius: '0px !important',
+      },
+      underline: {
+        '&:before': {
+          borderBottom: 'none',
+        },
+      },
+    },
     MuiInputBase: {
       input: {
         fontSize: 14,
