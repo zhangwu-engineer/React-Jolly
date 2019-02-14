@@ -7,6 +7,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
 
 import Link from 'components/Link';
 import UserCard from 'components/UserCard';
@@ -58,14 +59,38 @@ const styles = theme => ({
     marginRight: 27,
     paddingTop: 100,
   },
-  coworkers: {
+  coworkersBox: {
     backgroundColor: theme.palette.common.white,
     padding: 25,
+    marginBottom: 12,
   },
   coworkersTitle: {
     fontSize: 14,
     fontWeight: 500,
     color: '#4a4a4a',
+  },
+  inviteBox: {
+    backgroundColor: theme.palette.common.white,
+    padding: '23px 16px 13px 16px',
+  },
+  inviteBoxTitle: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#4a4a4a',
+    marginBottom: 20,
+  },
+  emailInputLabel: {
+    fontSize: 14,
+    fontWeight: 600,
+    color: '#8c8c8c',
+  },
+  inviteButton: {
+    fontSize: 14,
+    fontWeight: 600,
+    paddingTop: 14,
+    paddingBottom: 13,
+    borderRadius: 0,
+    marginTop: 8,
   },
   rightPanel: {
     flex: 1,
@@ -153,10 +178,36 @@ class OnboardingCoworkerPage extends Component<Props, State> {
         </div>
         <div className={classes.content}>
           <div className={classes.leftPanel}>
-            <div className={classes.coworkers}>
+            <div className={classes.coworkersBox}>
               <Typography className={classes.coworkersTitle}>
                 Coworkers
               </Typography>
+            </div>
+            <div className={classes.inviteBox}>
+              <Typography className={classes.inviteBoxTitle} align="center">
+                Don&apos;t see any coworkers? Invite them to Jolly
+              </Typography>
+              <TextField
+                variant="filled"
+                fullWidth
+                label="Enter email"
+                InputLabelProps={{
+                  classes: {
+                    root: classes.emailInputLabel,
+                  },
+                }}
+                InputProps={{
+                  disableUnderline: true,
+                }}
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                className={classes.inviteButton}
+              >
+                Send Invite
+              </Button>
             </div>
           </div>
           <div className={classes.rightPanel}>
