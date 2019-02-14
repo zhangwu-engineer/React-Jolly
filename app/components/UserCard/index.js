@@ -13,6 +13,8 @@ const styles = theme => ({
   },
   avatar: {
     backgroundColor: '#afafaf',
+    width: 50,
+    height: 50,
   },
   location: {
     fontSize: 12,
