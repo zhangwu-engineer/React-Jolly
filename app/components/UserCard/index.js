@@ -10,6 +10,7 @@ const styles = theme => ({
   root: {
     backgroundColor: theme.palette.common.white,
     padding: 18,
+    cursor: 'pointer',
   },
   avatar: {
     backgroundColor: '#afafaf',
