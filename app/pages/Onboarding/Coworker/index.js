@@ -88,6 +88,17 @@ const styles = theme => ({
     paddingTop: 20,
     paddingBottom: 20,
   },
+  nextButtonWrapper: {
+    textAlign: 'right',
+  },
+  nextButton: {
+    textTransform: 'none',
+    borderRadius: 0,
+    fontSize: 14,
+    fontWeight: 600,
+    padding: '14px 70px',
+    marginTop: 12,
+  },
 });
 
 type Props = {
@@ -180,6 +191,15 @@ class OnboardingCoworkerPage extends Component<Props, State> {
                   </Button>
                 </Grid>
               )}
+              <Grid item xs={12} lg={12} className={classes.nextButtonWrapper}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.nextButton}
+                >
+                  Next
+                </Button>
+              </Grid>
             </Grid>
           </div>
         </div>
