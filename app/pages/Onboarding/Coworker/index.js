@@ -12,6 +12,7 @@ import TextField from '@material-ui/core/TextField';
 import Link from 'components/Link';
 import UserCard from 'components/UserCard';
 import OnboardingSkipModal from 'components/OnboardingSkipModal';
+import OnboardingJobFormModal from 'components/OnboardingJobFormModal';
 
 import { requestCityUsers } from 'containers/App/sagas';
 
@@ -137,11 +138,21 @@ type Props = {
 
 type State = {
   isSkipOpen: boolean,
+  isFormOpen: boolean,
+  selectedUser: ?Object,
+  initialValues: Object,
 };
 
 class OnboardingCoworkerPage extends Component<Props, State> {
   state = {
     isSkipOpen: false,
+    isFormOpen: false,
+    selectedUser: null,
+    initialValues: {
+      title: '',
+      from: new Date(),
+      role: '',
+    },
   };
   componentDidMount() {
     const { user, page } = this.props;
@@ -157,10 +168,15 @@ class OnboardingCoworkerPage extends Component<Props, State> {
   closeSkipModal = () => {
     this.setState({ isSkipOpen: false });
   };
-  handleUserSelection = () => {};
+  closeFormModal = () => {
+    this.setState({ isFormOpen: false });
+  };
+  openFormModal = user => {
+    this.setState({ selectedUser: user, isFormOpen: true });
+  };
   render() {
     const { user, cityUsers, page, total, classes } = this.props;
-    const { isSkipOpen } = this.state;
+    const { isSkipOpen, isFormOpen, selectedUser, initialValues } = this.state;
     const loadMore = total > page * perPage;
     return (
       <React.Fragment>
@@ -196,9 +212,6 @@ class OnboardingCoworkerPage extends Component<Props, State> {
                     root: classes.emailInputLabel,
                   },
                 }}
-                InputProps={{
-                  disableUnderline: true,
-                }}
               />
               <Button
                 variant="contained"
@@ -218,10 +231,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
             <Grid container spacing={8}>
               {cityUsers.map(cityUser => (
                 <Grid item key={generate()} xs={12} lg={6}>
-                  <UserCard
-                    user={cityUser}
-                    onSelect={this.handleUserSelection}
-                  />
+                  <UserCard user={cityUser} onSelect={this.openFormModal} />
                 </Grid>
               ))}
               {loadMore && (
@@ -257,6 +267,12 @@ class OnboardingCoworkerPage extends Component<Props, State> {
         <OnboardingSkipModal
           isOpen={isSkipOpen}
           onCloseModal={this.closeSkipModal}
+        />
+        <OnboardingJobFormModal
+          isOpen={isFormOpen}
+          user={selectedUser}
+          initialValues={initialValues}
+          onCloseModal={this.closeFormModal}
         />
       </React.Fragment>
     );
