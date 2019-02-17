@@ -1,5 +1,6 @@
 // @flow
 import React, { Component } from 'react';
+import cx from 'classnames';
 import { capitalize } from 'lodash-es';
 import { withStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
@@ -11,6 +12,10 @@ const styles = theme => ({
     backgroundColor: theme.palette.common.white,
     padding: 18,
     cursor: 'pointer',
+  },
+  noPadding: {
+    padding: 0,
+    marginBottom: 12,
   },
   avatar: {
     backgroundColor: '#afafaf',
@@ -35,14 +40,20 @@ type Props = {
   user: Object,
   classes: Object,
   onSelect: Function,
+  size?: string,
 };
 
 class UserCard extends Component<Props> {
+  static defaultProps = {
+    size: 'default',
+  };
   render() {
-    const { user, classes } = this.props;
+    const { user, size, classes } = this.props;
     return (
       <ListItem
-        className={classes.root}
+        className={cx(classes.root, {
+          [classes.noPadding]: size === 'small',
+        })}
         onClick={() => this.props.onSelect(user)}
       >
         <Avatar
