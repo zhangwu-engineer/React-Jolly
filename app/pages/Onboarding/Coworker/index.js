@@ -102,6 +102,7 @@ const styles = theme => ({
   inviteBox: {
     backgroundColor: theme.palette.common.white,
     padding: '23px 16px 13px 16px',
+    display: 'none',
   },
   inviteBoxTitle: {
     fontSize: 14,
