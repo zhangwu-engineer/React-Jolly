@@ -10,6 +10,7 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
+import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
 import UserCard from 'components/UserCard';
 import OnboardingSkipModal from 'components/OnboardingSkipModal';
@@ -180,6 +181,8 @@ type Props = {
   cityUsers: List<Object>,
   total: number,
   page: number,
+  isSaving: boolean,
+  saveError: string,
   classes: Object,
   requestCityUsers: Function,
   requestCreateWork: Function,
@@ -214,6 +217,12 @@ class OnboardingCoworkerPage extends Component<Props, State> {
       page || 1,
       perPage
     );
+  }
+  componentDidUpdate(prevProps: Props) {
+    const { isSaving, saveError } = this.props;
+    if (prevProps.isSaving && !isSaving && !saveError) {
+      history.push('/edit');
+    }
   }
   openSkipModal = () => {
     this.setState({ isSkipOpen: true });
@@ -380,8 +389,8 @@ const mapStateToProps = state => ({
   page: state.getIn(['app', 'cityUsers', 'page']),
   isCityUsersLoading: state.getIn(['app', 'isCityUsersLoading']),
   cityUsersError: state.getIn(['app', 'cityUsersError']),
-  isCreatingWork: state.getIn(['work', 'isLoading']),
-  createWorkError: state.getIn(['work', 'error']),
+  isSaving: state.getIn(['work', 'isLoading']),
+  saveError: state.getIn(['work', 'error']),
 });
 
 const mapDispatchToProps = dispatch => ({
