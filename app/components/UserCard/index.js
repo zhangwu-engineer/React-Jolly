@@ -7,6 +7,9 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Avatar from '@material-ui/core/Avatar';
 
+import Icon from 'components/Icon';
+import CheckIcon from 'images/sprite/green_checkmark.svg';
+
 const styles = theme => ({
   root: {
     backgroundColor: theme.palette.common.white,
@@ -41,6 +44,7 @@ type Props = {
   classes: Object,
   onSelect: Function,
   size?: string,
+  selected: boolean,
 };
 
 class UserCard extends Component<Props> {
@@ -48,7 +52,7 @@ class UserCard extends Component<Props> {
     size: 'default',
   };
   render() {
-    const { user, size, classes } = this.props;
+    const { user, size, selected, classes } = this.props;
     return (
       <ListItem
         className={cx(classes.root, {
@@ -71,6 +75,7 @@ class UserCard extends Component<Props> {
             secondary: classes.name,
           }}
         />
+        {selected && <Icon glyph={CheckIcon} size={20} />}
       </ListItem>
     );
   }
