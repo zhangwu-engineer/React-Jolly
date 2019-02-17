@@ -27,7 +27,11 @@ const styles = theme => ({
     width: 581,
     borderRadius: '0px !important',
     [theme.breakpoints.down('xs')]: {
-      width: 'calc(100% - 30px)',
+      width: '100%',
+      transform: 'none !important',
+      top: 'initial !important',
+      left: '0px !important',
+      bottom: '0px !important',
     },
   },
   header: {
@@ -55,6 +59,11 @@ const styles = theme => ({
     fontWeight: 'bold',
     letterSpacing: 0.6,
     color: '#555555',
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 15,
+      fontWeight: 600,
+      letterSpacing: 0.5,
+    },
   },
   link: {
     fontSize: 14,
@@ -65,6 +74,9 @@ const styles = theme => ({
   },
   content: {
     padding: '43px 48px 34px',
+    [theme.breakpoints.down('xs')]: {
+      padding: '30px 20px 20px',
+    },
   },
   title: {
     fontSize: 18,
@@ -72,6 +84,10 @@ const styles = theme => ({
     letterSpacing: 0.4,
     color: '#313131',
     marginBottom: 15,
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 14,
+      fontWeight: 'bold',
+    },
   },
   textInput: {
     backgroundColor: '#f1f1f1',
@@ -105,13 +121,20 @@ type Props = {
   isOpen: boolean,
   classes: Object,
   onCloseModal: Function,
+  onSave: Function,
 };
 
 class OnboardingJobFormModal extends Component<Props> {
   closeModal = () => {
     this.props.onCloseModal();
   };
-  handleSave = () => {};
+  handleSave = values => {
+    const { user } = this.props;
+    const data = values;
+    data.coworkers = [user.toJS()];
+    data.to = values.from;
+    this.props.onSave(data, user.toJS());
+  };
   render() {
     const { user, initialValues, isOpen, classes } = this.props;
     return (
@@ -169,6 +192,7 @@ class OnboardingJobFormModal extends Component<Props> {
                 classes={{
                   root: classes.textInput,
                 }}
+                autoComplete="off"
               />
               <Grid container>
                 <Grid item xs={12} lg={5} className={classes.dateInputWrapper}>
