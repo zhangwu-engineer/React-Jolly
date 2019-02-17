@@ -357,7 +357,7 @@ class WorkForm extends Component<Props, State> {
     const { model } = this.state;
     if (model.title && ROLES.indexOf(model.role) !== -1) {
       this.setState({ roleError: '' }, () => {
-        this.props.requestCreateWork(model);
+        this.props.requestCreateWork([model]);
       });
     } else if (model.role === '') {
       this.setState({ roleError: 'Required field' });
