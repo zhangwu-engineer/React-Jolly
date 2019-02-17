@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { generate } from 'shortid';
+import { fromJS } from 'immutable';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -15,6 +16,8 @@ import OnboardingSkipModal from 'components/OnboardingSkipModal';
 import OnboardingJobFormModal from 'components/OnboardingJobFormModal';
 
 import { requestCityUsers } from 'containers/App/sagas';
+import saga, { reducer, requestCreateWork } from 'containers/Work/sagas';
+import injectSagas from 'utils/injectSagas';
 
 const perPage = 8;
 const styles = theme => ({
@@ -23,13 +26,21 @@ const styles = theme => ({
     paddingTop: 50,
     paddingBottom: 30,
     textAlign: 'center',
+    [theme.breakpoints.down('xs')]: {
+      padding: '35px 20px 40px 20px',
+    },
   },
   bannerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
     lineHeight: 1.46,
-    letterSpacing: '0.6px',
+    letterSpacing: 0.6,
     color: theme.palette.common.white,
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 18,
+      lineHeight: 1.94,
+      letterSpacing: 0.4,
+    },
   },
   text: {
     fontSize: 14,
@@ -37,6 +48,11 @@ const styles = theme => ({
     letterSpacing: '0.5px',
     color: theme.palette.common.white,
     marginBottom: 30,
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 12,
+      lineHeight: 1.75,
+      letterSpacing: 0.4,
+    },
   },
   skip: {
     fontSize: 14,
@@ -48,17 +64,28 @@ const styles = theme => ({
     '&:hover': {
       color: theme.palette.common.white,
     },
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 12,
+      letterSpacing: 0.4,
+    },
   },
   content: {
     maxWidth: 830,
     margin: '0 auto',
     display: 'flex',
     paddingBottom: 137,
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+      paddingBottom: 50,
+    },
   },
   leftPanel: {
     width: 254,
     marginRight: 27,
     paddingTop: 100,
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
   },
   coworkersBox: {
     backgroundColor: theme.palette.common.white,
@@ -69,6 +96,7 @@ const styles = theme => ({
     fontSize: 14,
     fontWeight: 500,
     color: '#4a4a4a',
+    marginBottom: 20,
   },
   inviteBox: {
     backgroundColor: theme.palette.common.white,
@@ -95,6 +123,10 @@ const styles = theme => ({
   },
   rightPanel: {
     flex: 1,
+    [theme.breakpoints.down('xs')]: {
+      paddingLeft: 25,
+      paddingRight: 25,
+    },
   },
   title: {
     fontSize: 20,
@@ -103,6 +135,12 @@ const styles = theme => ({
     color: '#1b1b1b',
     marginTop: 40,
     marginBottom: 30,
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 14,
+      letterSpacing: 0.3,
+      marginTop: 30,
+      marginBottom: 20,
+    },
   },
   loadMoreButton: {
     backgroundColor: theme.palette.common.white,
@@ -113,6 +151,10 @@ const styles = theme => ({
     letterSpacing: 0.3,
     paddingTop: 20,
     paddingBottom: 20,
+    [theme.breakpoints.down('xs')]: {
+      paddingTop: 15,
+      paddingBottom: 15,
+    },
   },
   nextButtonWrapper: {
     textAlign: 'right',
@@ -124,6 +166,12 @@ const styles = theme => ({
     fontWeight: 600,
     padding: '14px 70px',
     marginTop: 12,
+    [theme.breakpoints.down('xs')]: {
+      position: 'fixed',
+      bottom: 0,
+      left: 0,
+      width: '100%',
+    },
   },
 });
 
@@ -134,6 +182,7 @@ type Props = {
   page: number,
   classes: Object,
   requestCityUsers: Function,
+  requestCreateWork: Function,
 };
 
 type State = {
@@ -141,6 +190,8 @@ type State = {
   isFormOpen: boolean,
   selectedUser: ?Object,
   initialValues: Object,
+  jobs: Array<Object>,
+  selectedUserIds: Array<string>,
 };
 
 class OnboardingCoworkerPage extends Component<Props, State> {
@@ -153,6 +204,8 @@ class OnboardingCoworkerPage extends Component<Props, State> {
       from: new Date(),
       role: '',
     },
+    jobs: [],
+    selectedUserIds: [],
   };
   componentDidMount() {
     const { user, page } = this.props;
@@ -174,9 +227,34 @@ class OnboardingCoworkerPage extends Component<Props, State> {
   openFormModal = user => {
     this.setState({ selectedUser: user, isFormOpen: true });
   };
+  handleSave = (data, user) => {
+    this.setState(state => ({
+      isFormOpen: false,
+      jobs: [...state.jobs, data],
+      selectedUserIds: [...state.selectedUserIds, user.id],
+      initialValues: {
+        title: data.title,
+        role: data.role,
+        from: data.from,
+      },
+    }));
+  };
+  handleNext = () => {
+    const { jobs } = this.state;
+    if (jobs.length) {
+      this.props.requestCreateWork(jobs);
+    }
+  };
   render() {
     const { user, cityUsers, page, total, classes } = this.props;
-    const { isSkipOpen, isFormOpen, selectedUser, initialValues } = this.state;
+    const {
+      isSkipOpen,
+      isFormOpen,
+      selectedUser,
+      initialValues,
+      jobs,
+      selectedUserIds,
+    } = this.state;
     const loadMore = total > page * perPage;
     return (
       <React.Fragment>
@@ -198,6 +276,16 @@ class OnboardingCoworkerPage extends Component<Props, State> {
               <Typography className={classes.coworkersTitle}>
                 Coworkers
               </Typography>
+              {jobs.map(job =>
+                job.coworkers.map(coworker => (
+                  <UserCard
+                    key={generate()}
+                    user={fromJS(coworker)}
+                    onSelect={this.openFormModal}
+                    size="small"
+                  />
+                ))
+              )}
             </div>
             <div className={classes.inviteBox}>
               <Typography className={classes.inviteBoxTitle} align="center">
@@ -231,7 +319,11 @@ class OnboardingCoworkerPage extends Component<Props, State> {
             <Grid container spacing={8}>
               {cityUsers.map(cityUser => (
                 <Grid item key={generate()} xs={12} lg={6}>
-                  <UserCard user={cityUser} onSelect={this.openFormModal} />
+                  <UserCard
+                    user={cityUser}
+                    onSelect={this.openFormModal}
+                    selected={selectedUserIds.includes(cityUser.get('id'))}
+                  />
                 </Grid>
               ))}
               {loadMore && (
@@ -257,6 +349,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
                   variant="contained"
                   color="primary"
                   className={classes.nextButton}
+                  onClick={this.handleNext}
                 >
                   Next
                 </Button>
@@ -273,6 +366,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
           user={selectedUser}
           initialValues={initialValues}
           onCloseModal={this.closeFormModal}
+          onSave={this.handleSave}
         />
       </React.Fragment>
     );
@@ -286,14 +380,18 @@ const mapStateToProps = state => ({
   page: state.getIn(['app', 'cityUsers', 'page']),
   isCityUsersLoading: state.getIn(['app', 'isCityUsersLoading']),
   cityUsersError: state.getIn(['app', 'cityUsersError']),
+  isCreatingWork: state.getIn(['work', 'isLoading']),
+  createWorkError: state.getIn(['work', 'error']),
 });
 
 const mapDispatchToProps = dispatch => ({
+  requestCreateWork: payload => dispatch(requestCreateWork(payload)),
   requestCityUsers: (city, page, usersPerPage) =>
     dispatch(requestCityUsers(city, page, usersPerPage)),
 });
 
 export default compose(
+  injectSagas({ key: 'work', saga, reducer }),
   connect(
     mapStateToProps,
     mapDispatchToProps
