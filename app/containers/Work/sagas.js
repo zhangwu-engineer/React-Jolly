@@ -31,7 +31,7 @@ declare var analytics;
 // ------------------------------------
 // Actions
 // ------------------------------------
-export const requestCreateWork = (payload: Object) => ({
+export const requestCreateWork = (payload: Array<Object>) => ({
   type: CREATE_WORK + REQUESTED,
   payload,
 });
@@ -575,7 +575,9 @@ function* CreateWorkRequest({ payload }) {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/work`,
-      data: payload,
+      data: {
+        jobs: payload,
+      },
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
