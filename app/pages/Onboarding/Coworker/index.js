@@ -4,6 +4,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { generate } from 'shortid';
 import { fromJS } from 'immutable';
+import update from 'immutability-helper';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -239,16 +240,48 @@ class OnboardingCoworkerPage extends Component<Props, State> {
     this.setState({ selectedUser: user, isFormOpen: true });
   };
   handleSave = (data, user) => {
-    this.setState(state => ({
-      isFormOpen: false,
-      jobs: [...state.jobs, data],
-      selectedUserIds: [...state.selectedUserIds, user.id],
-      initialValues: {
-        title: data.title,
-        role: data.role,
-        from: data.from,
-      },
-    }));
+    const { jobs } = this.state;
+    let pos = -1;
+    jobs.forEach((job, index) => {
+      if (
+        job.title.toLowerCase() === data.title.toLowerCase() &&
+        job.from === data.from &&
+        job.to === data.to
+      ) {
+        pos = index;
+      }
+    });
+    if (pos === -1) {
+      this.setState(state => ({
+        isFormOpen: false,
+        jobs: [...state.jobs, data],
+        selectedUserIds: [...state.selectedUserIds, user.id],
+        initialValues: {
+          title: data.title,
+          role: data.role,
+          from: data.from,
+        },
+      }));
+    } else {
+      this.setState(
+        update(this.state, {
+          isFormOpen: { $set: false },
+          jobs: {
+            [pos]: {
+              coworkers: { $push: data.coworkers },
+            },
+          },
+          selectedUserIds: { $push: [user.id] },
+          initialValues: {
+            $set: {
+              title: data.title,
+              role: data.role,
+              from: data.from,
+            },
+          },
+        })
+      );
+    }
   };
   handleNext = () => {
     const { jobs } = this.state;
