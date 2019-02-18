@@ -179,11 +179,15 @@ class OnboardingJobFormModal extends Component<Props> {
           }) => (
             <div className={classes.content}>
               <Typography variant="h6" component="h1" className={classes.title}>
-                How do you know {user && capitalize(user.get('firstName'))}?
+                {`Help ${user &&
+                  capitalize(
+                    user.get('firstName')
+                  )} verify that you worked together`}
               </Typography>
               <Input
                 id="title"
-                placeholder="Title"
+                placeholder={`Name of event you worked with ${user &&
+                  capitalize(user.get('firstName'))}`}
                 value={values.title}
                 fullWidth
                 disableUnderline
@@ -216,7 +220,7 @@ class OnboardingJobFormModal extends Component<Props> {
                 </Grid>
                 <Grid item xs={12} lg={7}>
                   <RoleSelect
-                    placeholder="Role"
+                    placeholder="Position you worked at the event"
                     options={roles}
                     value={
                       values.role
