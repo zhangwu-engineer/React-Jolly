@@ -181,6 +181,7 @@ type Props = {
   placeholder: string,
   isClearable: boolean,
   isMulti: boolean,
+  isDisabled: boolean,
   theme: Object,
   classes: Object,
   onChange: Function,
@@ -194,6 +195,7 @@ class RoleSelect extends React.Component<Props> {
       placeholder,
       isClearable,
       isMulti,
+      isDisabled,
       classes,
       theme,
     } = this.props;
@@ -220,6 +222,7 @@ class RoleSelect extends React.Component<Props> {
           placeholder={placeholder}
           isClearable={isClearable}
           isMulti={isMulti}
+          isDisabled={isDisabled}
         />
       </div>
     );

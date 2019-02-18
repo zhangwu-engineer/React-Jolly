@@ -168,7 +168,7 @@ class OnboardingJobFormModal extends Component<Props> {
         <Formik initialValues={initialValues} onSubmit={this.handleSave}>
           {({
             values,
-            // dirty,
+            dirty,
             // errors,
             // touched,
             handleChange,
@@ -232,6 +232,7 @@ class OnboardingJobFormModal extends Component<Props> {
                     }}
                     isMulti={false}
                     isClearable={false}
+                    isDisabled={!dirty}
                   />
                 </Grid>
               </Grid>
