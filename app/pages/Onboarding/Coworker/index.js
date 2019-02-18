@@ -254,6 +254,10 @@ class OnboardingCoworkerPage extends Component<Props, State> {
     const { jobs } = this.state;
     if (jobs.length) {
       this.props.requestCreateWork(jobs);
+    } else {
+      this.setState({
+        isSkipOpen: true,
+      });
     }
   };
   render() {
