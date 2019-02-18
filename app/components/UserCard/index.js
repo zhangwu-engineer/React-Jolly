@@ -13,7 +13,7 @@ import CheckIcon from 'images/sprite/green_checkmark.svg';
 const styles = theme => ({
   root: {
     backgroundColor: theme.palette.common.white,
-    padding: 18,
+    padding: '18px 2px 18px 18px',
     cursor: 'pointer',
   },
   noPadding: {
@@ -37,6 +37,11 @@ const styles = theme => ({
     letterSpacing: 0.4,
     color: '#4a4a4a',
   },
+  icon: {
+    position: 'absolute',
+    right: 18,
+    top: 18,
+  },
 });
 
 type Props = {
@@ -53,6 +58,9 @@ class UserCard extends Component<Props> {
   };
   render() {
     const { user, size, selected, classes } = this.props;
+    const nameLength =
+      user.get('firstName').length + user.get('lastName').length;
+    const nameLimit = size === 'small' ? 18 : 25;
     return (
       <ListItem
         className={cx(classes.root, {
@@ -67,15 +75,23 @@ class UserCard extends Component<Props> {
         />
         <ListItemText
           primary={user.getIn(['profile', 'location'])}
-          secondary={`${capitalize(user.get('firstName'))} ${capitalize(
-            user.get('lastName').substr(0, 1)
-          )}.`}
+          secondary={
+            nameLength > nameLimit
+              ? `${capitalize(user.get('firstName'))} ${capitalize(
+                  user.get('lastName').substr(0, 1)
+                )}.`
+              : `${capitalize(user.get('firstName'))} ${capitalize(
+                  user.get('lastName')
+                )}`
+          }
           classes={{
             primary: classes.location,
             secondary: classes.name,
           }}
         />
-        {selected && <Icon glyph={CheckIcon} size={20} />}
+        {selected && (
+          <Icon glyph={CheckIcon} size={20} className={classes.icon} />
+        )}
       </ListItem>
     );
   }

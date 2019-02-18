@@ -91,6 +91,7 @@ const styles = theme => ({
   coworkersBox: {
     backgroundColor: theme.palette.common.white,
     padding: 25,
+    paddingRight: 2,
     marginBottom: 12,
   },
   coworkersTitle: {
