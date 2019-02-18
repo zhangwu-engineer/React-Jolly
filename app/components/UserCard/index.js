@@ -25,6 +25,10 @@ const styles = theme => ({
     width: 50,
     height: 50,
   },
+  smallAvatar: {
+    width: 40,
+    height: 40,
+  },
   location: {
     fontSize: 12,
     fontWeight: 500,
@@ -80,7 +84,9 @@ class UserCard extends Component<Props> {
         <Avatar
           alt={`${user.get('firstName')} ${user.get('lastName')}`}
           src={user.getIn(['profile', 'avatar'])}
-          className={classes.avatar}
+          className={cx(classes.avatar, {
+            [classes.smallAvatar]: size === 'small',
+          })}
         />
         <ListItemText
           primary={user.getIn(['profile', 'location'])}
