@@ -6,6 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
+import { history } from 'components/ConnectedRouter';
 import BaseModal from 'components/BaseModal';
 
 const styles = theme => ({
@@ -54,6 +55,9 @@ type Props = {
 };
 
 class OnboardingSkipModal extends Component<Props> {
+  handleSkip = () => {
+    history.push('/edit');
+  };
   closeModal = () => {
     this.props.onCloseModal();
   };
@@ -76,7 +80,11 @@ class OnboardingSkipModal extends Component<Props> {
         </Typography>
         <Grid container justify="flex-end" alignItems="center">
           <Grid item>
-            <Button className={classes.skipButton} color="primary">
+            <Button
+              className={classes.skipButton}
+              color="primary"
+              onClick={this.handleSkip}
+            >
               Skip this Step
             </Button>
           </Grid>
