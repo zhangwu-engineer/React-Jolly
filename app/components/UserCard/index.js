@@ -60,6 +60,9 @@ class UserCard extends Component<Props> {
     const { user, size, selected } = this.props;
     if (!selected && size === 'default') {
       this.props.onSelect(user);
+      analytics.track('Onboarding Coworker Click', {
+        clickedCoworkerID: user.get('id'),
+      });
     }
   };
   render() {
