@@ -56,6 +56,12 @@ class UserCard extends Component<Props> {
   static defaultProps = {
     size: 'default',
   };
+  handleClick = () => {
+    const { user, size, selected } = this.props;
+    if (!selected && size === 'default') {
+      this.props.onSelect(user);
+    }
+  };
   render() {
     const { user, size, selected, classes } = this.props;
     const nameLength =
@@ -66,7 +72,7 @@ class UserCard extends Component<Props> {
         className={cx(classes.root, {
           [classes.noPadding]: size === 'small',
         })}
-        onClick={() => this.props.onSelect(user)}
+        onClick={this.handleClick}
       >
         <Avatar
           alt={`${user.get('firstName')} ${user.get('lastName')}`}
