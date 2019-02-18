@@ -9,15 +9,18 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Avatar from '@material-ui/core/Avatar';
 
 import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
 import UserCard from 'components/UserCard';
 import OnboardingSkipModal from 'components/OnboardingSkipModal';
 import OnboardingJobFormModal from 'components/OnboardingJobFormModal';
+import InviteForm from 'components/InviteForm';
 
-import { requestCityUsers } from 'containers/App/sagas';
+import { requestCityUsers, requestSignupInvite } from 'containers/App/sagas';
 import saga, { reducer, requestCreateWork } from 'containers/Work/sagas';
 import injectSagas from 'utils/injectSagas';
 
@@ -106,25 +109,6 @@ const styles = theme => ({
     padding: '23px 16px 13px 16px',
     display: 'none',
   },
-  inviteBoxTitle: {
-    fontSize: 14,
-    fontWeight: 500,
-    color: '#4a4a4a',
-    marginBottom: 20,
-  },
-  emailInputLabel: {
-    fontSize: 14,
-    fontWeight: 600,
-    color: '#8c8c8c',
-  },
-  inviteButton: {
-    fontSize: 14,
-    fontWeight: 600,
-    paddingTop: 14,
-    paddingBottom: 13,
-    borderRadius: 0,
-    marginTop: 8,
-  },
   rightPanel: {
     flex: 1,
     [theme.breakpoints.down('xs')]: {
@@ -177,6 +161,20 @@ const styles = theme => ({
       width: '100%',
     },
   },
+  emailCard: {
+    padding: 0,
+    marginBottom: 12,
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    backgroundColor: '#f1f1f1',
+  },
+  email: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#383838',
+  },
 });
 
 type Props = {
@@ -186,8 +184,11 @@ type Props = {
   page: number,
   isSaving: boolean,
   saveError: string,
+  // isSignupInviteLoading: boolean,
+  // signupInviteError: string,
   classes: Object,
   requestCityUsers: Function,
+  // requestSignupInvite: Function,
   requestCreateWork: Function,
 };
 
@@ -198,6 +199,7 @@ type State = {
   initialValues: Object,
   jobs: Array<Object>,
   selectedUserIds: Array<string>,
+  invitedEmails: Array<string>,
 };
 
 class OnboardingCoworkerPage extends Component<Props, State> {
@@ -212,6 +214,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
     },
     jobs: [],
     selectedUserIds: [],
+    invitedEmails: [],
   };
   componentDidMount() {
     const { user, page } = this.props;
@@ -293,6 +296,13 @@ class OnboardingCoworkerPage extends Component<Props, State> {
       });
     }
   };
+  handleSendInvite = email => {
+    this.setState(
+      update(this.state, {
+        invitedEmails: { $push: [email] },
+      })
+    );
+  };
   render() {
     const { user, cityUsers, page, total, classes } = this.props;
     const {
@@ -301,6 +311,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
       selectedUser,
       initialValues,
       jobs,
+      invitedEmails,
       selectedUserIds,
     } = this.state;
     const loadMore = total > page * perPage;
@@ -334,29 +345,20 @@ class OnboardingCoworkerPage extends Component<Props, State> {
                   />
                 ))
               )}
+              {invitedEmails.map(email => (
+                <ListItem key={generate()} className={classes.emailCard}>
+                  <Avatar className={classes.avatar} />
+                  <ListItemText
+                    primary={
+                      email.length > 18 ? `${email.substr(0, 18)}...` : email
+                    }
+                    classes={{ primary: classes.email }}
+                  />
+                </ListItem>
+              ))}
             </div>
             <div className={classes.inviteBox}>
-              <Typography className={classes.inviteBoxTitle} align="center">
-                Don&apos;t see any coworkers? Invite them to Jolly
-              </Typography>
-              <TextField
-                variant="filled"
-                fullWidth
-                label="Enter email"
-                InputLabelProps={{
-                  classes: {
-                    root: classes.emailInputLabel,
-                  },
-                }}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                fullWidth
-                className={classes.inviteButton}
-              >
-                Send Invite
-              </Button>
+              <InviteForm sendInvite={this.handleSendInvite} />
             </div>
           </div>
           <div className={classes.rightPanel}>
@@ -430,12 +432,15 @@ const mapStateToProps = state => ({
   cityUsersError: state.getIn(['app', 'cityUsersError']),
   isSaving: state.getIn(['work', 'isLoading']),
   saveError: state.getIn(['work', 'error']),
+  isSignupInviteLoading: state.getIn(['app', 'isSignupInviteLoading']),
+  signupInviteError: state.getIn(['app', 'signupInviteError']),
 });
 
 const mapDispatchToProps = dispatch => ({
   requestCreateWork: payload => dispatch(requestCreateWork(payload)),
   requestCityUsers: (city, page, usersPerPage) =>
     dispatch(requestCityUsers(city, page, usersPerPage)),
+  requestSignupInvite: email => dispatch(requestSignupInvite(email)),
 });
 
 export default compose(

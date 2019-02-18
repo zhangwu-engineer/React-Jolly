@@ -25,6 +25,7 @@ const USER_PHOTO_UPLOAD = 'Jolly/App/UPLOAD_USER_PHOTO';
 const USER_FILES = 'Jolly/App/USER_FILES';
 const EMAIL_VERIFICATION = 'Jolly/App/EMAIL_VERIFICATION';
 const CITY_USERS = 'Jolly/App/CITY_USERS';
+const SIGNUP_INVITE = 'Jolly/App/SIGNUP_INVITE';
 const MEMBER = 'Jolly/App/Member';
 const WORKS = 'Jolly/App/WORKS';
 const ENDORSEMENTS = 'Jolly/App/ENDORSEMENTS';
@@ -262,6 +263,23 @@ const endorsementsRequestError = (error: string) => ({
   payload: error,
 });
 
+export const requestSignupInvite = (email: string) => ({
+  type: SIGNUP_INVITE + REQUESTED,
+  payload: email,
+});
+const signupInviteRequestSuccess = (payload: Object) => ({
+  type: SIGNUP_INVITE + SUCCEDED,
+  payload,
+});
+const signupInviteRequestFailed = (error: string) => ({
+  type: SIGNUP_INVITE + FAILED,
+  payload: error,
+});
+const signupInviteRequestError = (error: string) => ({
+  type: SIGNUP_INVITE + ERROR,
+  payload: error,
+});
+
 export const openNavbar = () => ({
   type: OPEN_NAVBAR,
 });
@@ -313,6 +331,8 @@ const initialState = fromJS({
   }),
   isCityUsersLoading: false,
   cityUsersError: '',
+  isSignupInviteLoading: false,
+  signupInviteError: '',
 });
 
 export const reducer = (
@@ -578,6 +598,26 @@ export const reducer = (
     case ENDORSEMENTS + ERROR:
       return state.set('isEndorsementsLoading', false).set(
         'endorsementsError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case SIGNUP_INVITE + REQUESTED:
+      return state.set('isSignupInviteLoading', true);
+
+    case SIGNUP_INVITE + SUCCEDED:
+      return state
+        .set('isSignupInviteLoading', false)
+        .set('signupInviteError', '');
+
+    case SIGNUP_INVITE + FAILED:
+      return state
+        .set('isSignupInviteLoading', false)
+        .set('signupInviteError', payload.message);
+
+    case SIGNUP_INVITE + ERROR:
+      return state.set('isSignupInviteLoading', false).set(
+        'signupInviteError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -861,6 +901,27 @@ function* CityUsersRequest({ payload, meta }) {
   }
 }
 
+function* SignupInviteRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/user/signup-invite`,
+      data: {
+        email: payload,
+      },
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(signupInviteRequestSuccess(response.data.response));
+    } else {
+      yield put(signupInviteRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(signupInviteRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(REGISTER + REQUESTED, RegisterRequest),
@@ -875,5 +936,6 @@ export default function*(): Saga<void> {
     takeLatest(WORKS + REQUESTED, WorksRequest),
     takeLatest(ENDORSEMENTS + REQUESTED, EndorsementsRequest),
     takeLatest(CITY_USERS + REQUESTED, CityUsersRequest),
+    takeLatest(SIGNUP_INVITE + REQUESTED, SignupInviteRequest),
   ]);
 }
