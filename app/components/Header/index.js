@@ -149,6 +149,9 @@ const styles = theme => ({
     fontWeight: 600,
     color: '#343434',
   },
+  hide: {
+    display: 'none',
+  },
 });
 
 type Props = {
@@ -300,7 +303,6 @@ class Header extends Component<Props, State> {
       >
         <Grid item>
           <Link
-            to="/"
             className={cx(classes.logoContainer, {
               [classes.centerLogoContainer]:
                 user ||
@@ -312,6 +314,11 @@ class Header extends Component<Props, State> {
                 pathname.includes('/freelancer-signup-2'),
               [classes.hiddenOnSmallDevice]: hideLogo,
             })}
+            onClick={() => {
+              if (!pathname.includes('/ob')) {
+                history.push('/');
+              }
+            }}
           >
             <img className={classes.logo} src={LogoWhite} alt="logo" />
           </Link>
@@ -362,7 +369,12 @@ class Header extends Component<Props, State> {
             </Button>
           )}
         </Grid>
-        <Grid item>
+        <Grid
+          item
+          className={cx({
+            [classes.hide]: pathname.includes('/ob'),
+          })}
+        >
           {user ? (
             <Fragment>
               <Button
