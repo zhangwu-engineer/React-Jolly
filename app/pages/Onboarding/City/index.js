@@ -91,8 +91,8 @@ const styles = theme => ({
 
 type Props = {
   user: Object,
-  isUpdating: boolean,
-  updateError: string,
+  // isUpdating: boolean,
+  // updateError: string,
   classes: Object,
   updateUser: Function,
 };
@@ -111,9 +111,9 @@ class OnboardingCityPage extends Component<Props, State> {
       history.push('/ob/2');
     }
   }
-  componentDidUpdate(prevProps: Props) {
-    const { isUpdating, updateError } = this.props;
-    if (prevProps.isUpdating && !isUpdating && !updateError) {
+  componentDidUpdate() {
+    const { user } = this.props;
+    if (user.getIn(['profile', 'location'])) {
       history.push('/ob/2');
     }
   }
