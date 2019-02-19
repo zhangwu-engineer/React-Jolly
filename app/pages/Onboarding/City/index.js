@@ -119,12 +119,16 @@ class OnboardingCityPage extends Component<Props, State> {
   handleChange = address => {
     this.setState({ address });
   };
-  handleSelect = address => {
-    this.props.updateUser({
-      profile: {
-        location: address,
-      },
-    });
+  handleSelect = (address, placeId) => {
+    if (placeId) {
+      this.props.updateUser({
+        profile: {
+          location: address,
+        },
+      });
+    } else {
+      this.setState({ address: '' });
+    }
   };
   render() {
     const { classes } = this.props;
