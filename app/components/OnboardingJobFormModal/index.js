@@ -210,6 +210,7 @@ class OnboardingJobFormModal extends Component<Props> {
                       leftArrowIcon={<LeftArrowIcon />}
                       rightArrowIcon={<RightArrowIcon />}
                       InputProps={{
+                        placeholder: 'Date of event',
                         disableUnderline: true,
                         classes: {
                           formControl: classes.textInput,
@@ -261,6 +262,7 @@ class OnboardingJobFormModal extends Component<Props> {
                     variant="contained"
                     color="primary"
                     onClick={handleSubmit}
+                    disabled={!values.title || !values.role || !values.from}
                   >
                     Save Coworker
                   </Button>

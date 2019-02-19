@@ -209,7 +209,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
     selectedUser: null,
     initialValues: {
       title: '',
-      from: new Date(),
+      from: null,
       role: '',
     },
     jobs: [],
