@@ -126,8 +126,6 @@ class OnboardingCityPage extends Component<Props, State> {
           location: address,
         },
       });
-    } else {
-      this.setState({ address: '' });
     }
   };
   render() {
