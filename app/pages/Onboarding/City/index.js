@@ -108,13 +108,13 @@ class OnboardingCityPage extends Component<Props, State> {
   componentDidMount() {
     const { user } = this.props;
     if (user.getIn(['profile', 'location'])) {
-      history.push('/edit');
+      history.push('/ob/2');
     }
   }
   componentDidUpdate(prevProps: Props) {
     const { isUpdating, updateError } = this.props;
     if (prevProps.isUpdating && !isUpdating && !updateError) {
-      history.push('/edit');
+      history.push('/ob/2');
     }
   }
   handleChange = address => {

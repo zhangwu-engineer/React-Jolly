@@ -218,11 +218,15 @@ class OnboardingCoworkerPage extends Component<Props, State> {
   };
   componentDidMount() {
     const { user, page } = this.props;
-    this.props.requestCityUsers(
-      user.getIn(['profile', 'location']),
-      page || 1,
-      perPage
-    );
+    if (user.getIn(['profile', 'location'])) {
+      this.props.requestCityUsers(
+        user.getIn(['profile', 'location']),
+        page || 1,
+        perPage
+      );
+    } else {
+      history.push('/ob/1');
+    }
   }
   componentDidUpdate(prevProps: Props) {
     const { isSaving, saveError } = this.props;
