@@ -126,8 +126,11 @@ class OnboardingCityPage extends Component<Props, State> {
           location: address,
         },
       });
+    } else if (this.addressInput.current) {
+      this.addressInput.current.blur();
     }
   };
+  addressInput = React.createRef();
   render() {
     const { classes } = this.props;
     const { address } = this.state;
@@ -160,6 +163,7 @@ class OnboardingCityPage extends Component<Props, State> {
                   {...getInputProps({
                     placeholder: 'What city do you work in most often?',
                   })}
+                  inputRef={this.addressInput}
                   startAdornment={
                     <InputAdornment
                       position="start"
