@@ -132,7 +132,6 @@ const webPackConfigs = options => ({
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify(CONFIG.ENV),
-        API_ENV: JSON.stringify(process.env.API_ENV),
       },
     }),
   ]),
