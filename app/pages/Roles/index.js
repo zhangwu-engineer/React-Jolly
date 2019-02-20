@@ -220,7 +220,7 @@ class RolesPage extends Component<Props, State> {
             <Grid container justify="space-between" alignItems="center">
               <Grid item>
                 <Typography variant="h6" className={classes.sectionTitle}>
-                  Roles &amp; Rate
+                  Positions &amp; Rates
                 </Typography>
               </Grid>
               <Grid item>
