@@ -261,7 +261,7 @@ class Profile extends Component<Props, State> {
           </div>
           <div className={classes.section}>
             <div className={classes.sectionHeader}>
-              <Typography variant="h6">Roles</Typography>
+              <Typography variant="h6">Positions for Hire</Typography>
             </div>
             <div className={classes.sectionBody}>
               {roles && roles.size ? (
@@ -280,7 +280,7 @@ class Profile extends Component<Props, State> {
                       label: classes.addRoleLabel,
                     }}
                   >
-                    + Add Role
+                    Edit Positions
                   </Button>
                 </Grid>
               </Grid>
