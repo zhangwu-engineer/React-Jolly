@@ -225,7 +225,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
         perPage
       );
     } else {
-      history.push('/ob/1');
+      history.push('/edit');
     }
   }
   componentDidUpdate(prevProps: Props) {
