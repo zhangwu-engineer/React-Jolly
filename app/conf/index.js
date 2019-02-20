@@ -12,14 +12,17 @@ const DOMAIN = isDev ? 'dev-jolly.co' : ENV.HOST;
 const PROTOCOL = 'https';
 const ROOT_DIR = process.cwd();
 
+const API_URLS = {
+  staging: 'https://jollyapi-staging.herokuapp.com',
+  production: 'https://jollyapi.herokuapp.com',
+};
+
 module.exports = {
   /** Logging */
   LOG: isDev,
 
   /** Application Running Environment */
   ENV: NODE_ENV,
-
-  API_ENV: process.env.API_ENV,
 
   /** If Application Running In Development Environment. */
   IS_DEV: isDev,
@@ -87,6 +90,6 @@ module.exports = {
   API: {
     /** Application API Base Url */
     // URL: `${PROTOCOL}://${DOMAIN}/api`,
-    URL: isDev ? 'http://localhost:3001' : 'https://jollyapi.herokuapp.com',
+    URL: isDev ? 'http://localhost:3001' : API_URLS[process.env.API_ENV],
   },
 };
