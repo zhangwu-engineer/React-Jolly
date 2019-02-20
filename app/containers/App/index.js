@@ -9,6 +9,7 @@ import { Switch } from 'react-router-dom';
 import { fromJS } from 'immutable';
 import { Route } from 'components/Routes';
 import { history } from 'components/ConnectedRouter';
+import CONFIG from 'conf';
 
 import injectSagas from 'utils/injectSagas';
 
@@ -48,6 +49,8 @@ class App extends Component<Props> {
         history.push('/freelancer-signup');
       }
     }
+    console.log(CONFIG);
+    console.log(process.env);
   }
   componentDidUpdate(prevProps: Props) {
     const { user, location } = this.props;

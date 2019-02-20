@@ -19,6 +19,8 @@ module.exports = {
   /** Application Running Environment */
   ENV: NODE_ENV,
 
+  API_ENV: process.env.API_ENV,
+
   /** If Application Running In Development Environment. */
   IS_DEV: isDev,
 
