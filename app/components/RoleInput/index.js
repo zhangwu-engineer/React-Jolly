@@ -4,8 +4,6 @@ import React, { Component } from 'react';
 import cx from 'classnames';
 import { generate } from 'shortid';
 import { debounce } from 'lodash-es';
-import DateFnsUtils from '@date-io/date-fns';
-import { MuiPickersUtilsProvider, InlineDatePicker } from 'material-ui-pickers';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -25,8 +23,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import DoneIcon from '@material-ui/icons/Done';
 import EditIcon from '@material-ui/icons/Edit';
 import ClearIcon from '@material-ui/icons/Clear';
-import LeftArrowIcon from '@material-ui/icons/KeyboardArrowLeft';
-import RightArrowIcon from '@material-ui/icons/KeyboardArrowRight';
 
 import ROLES from 'enum/roles';
 
@@ -178,9 +174,7 @@ class RoleInput extends Component<Props, State> {
         mode: nextProps.mode,
         model: {
           name: nextProps.data.name,
-          dateStarted: nextProps.data.dateStarted
-            ? new Date(nextProps.data.dateStarted)
-            : new Date(),
+          years: nextProps.data.years,
           minRate: nextProps.data.minRate,
           maxRate: nextProps.data.maxRate,
           unit: nextProps.data.unit,
@@ -259,7 +253,7 @@ class RoleInput extends Component<Props, State> {
     if (!model) return false;
     if (
       data.name !== model.name ||
-      data.dateStarted !== model.dateStarted ||
+      data.years !== model.years ||
       data.minRate !== model.minRate ||
       data.maxRate !== model.maxRate ||
       data.unit !== model.unit
@@ -434,29 +428,40 @@ class RoleInput extends Component<Props, State> {
                     ) : null}
                   </Grid>
                   <Grid item xs={12} lg={4}>
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                      <InlineDatePicker
-                        label="Date Started"
-                        value={model.dateStarted}
-                        onChange={date =>
-                          this.setState(state => ({
-                            model: {
-                              ...state.model,
-                              dateStarted: date,
-                            },
-                          }))
-                        }
-                        format="MMM dd, yyyy"
-                        leftArrowIcon={<LeftArrowIcon />}
-                        rightArrowIcon={<RightArrowIcon />}
-                        InputProps={{
-                          classes: {
-                            root: classes.textInput,
-                          },
+                    <FormControl fullWidth>
+                      <InputLabel htmlFor="years">Years Experience</InputLabel>
+                      <Select
+                        value={model && model.years}
+                        onChange={this.handleSelectChange}
+                        name="years"
+                        inputProps={{
+                          id: 'years',
                         }}
-                        fullWidth
-                      />
-                    </MuiPickersUtilsProvider>
+                        className={classes.selectInput}
+                      >
+                        <MenuItem value={0}>{'< 1'}</MenuItem>
+                        <MenuItem value={1}>1</MenuItem>
+                        <MenuItem value={2}>2</MenuItem>
+                        <MenuItem value={3}>3</MenuItem>
+                        <MenuItem value={4}>4</MenuItem>
+                        <MenuItem value={5}>5</MenuItem>
+                        <MenuItem value={6}>6</MenuItem>
+                        <MenuItem value={7}>7</MenuItem>
+                        <MenuItem value={8}>8</MenuItem>
+                        <MenuItem value={9}>9</MenuItem>
+                        <MenuItem value={10}>10</MenuItem>
+                        <MenuItem value={11}>11</MenuItem>
+                        <MenuItem value={12}>12</MenuItem>
+                        <MenuItem value={13}>13</MenuItem>
+                        <MenuItem value={14}>14</MenuItem>
+                        <MenuItem value={15}>15</MenuItem>
+                        <MenuItem value={16}>16</MenuItem>
+                        <MenuItem value={17}>17</MenuItem>
+                        <MenuItem value={18}>18</MenuItem>
+                        <MenuItem value={19}>19</MenuItem>
+                        <MenuItem value={20}>20 +</MenuItem>
+                      </Select>
+                    </FormControl>
                   </Grid>
                 </Grid>
                 <Grid container>

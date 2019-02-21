@@ -370,8 +370,8 @@ function* UpdateRoleRequest({ payload, meta }) {
         name: response.data.response.role.name,
         unit: response.data.response.role.unit,
       };
-      if (response.data.response.role.dateStarted) {
-        properties.date_started = response.data.response.role.dateStarted;
+      if (response.data.response.role.years) {
+        properties.years = response.data.response.role.years;
       }
       if (response.data.response.role.minRate) {
         properties.rate_low = response.data.response.role.minRate;
@@ -403,8 +403,8 @@ function* CreateRoleRequest({ payload }) {
         name: response.data.response.role.name,
         unit: response.data.response.role.unit,
       };
-      if (response.data.response.role.dateStarted) {
-        properties.date_started = response.data.response.role.dateStarted;
+      if (response.data.response.role.years) {
+        properties.years = response.data.response.role.years;
       }
       if (response.data.response.role.minRate) {
         properties.rate_low = response.data.response.role.minRate;

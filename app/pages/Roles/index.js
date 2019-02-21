@@ -202,7 +202,7 @@ class RolesPage extends Component<Props, State> {
     this.setState({
       newRole: {
         name: '',
-        dateStarted: '',
+        years: 0,
         minRate: '',
         maxRate: '',
         unit: 'hour',
