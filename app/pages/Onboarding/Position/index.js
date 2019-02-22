@@ -251,10 +251,13 @@ class OnboardingPositionPage extends Component<Props, State> {
   };
   debouncedSearch = debounce(value => {
     if (value) {
-      const filteredPositions = ROLES.sort().filter(
-        r => r.toLowerCase().indexOf(value.toLowerCase()) !== -1
+      const regExStartWith = new RegExp(`^${value}`, 'i');
+      const regExContains = new RegExp(`${value}`, 'i');
+      const startWith = ROLES.sort().filter(r => regExStartWith.test(r));
+      const contains = ROLES.sort().filter(
+        r => regExContains.test(r) && !startWith.includes(r)
       );
-      this.setState({ filteredPositions });
+      this.setState({ filteredPositions: [...startWith, ...contains] });
     } else {
       this.setState({ filteredPositions: ROLES.sort() });
     }
