@@ -486,6 +486,7 @@ class RoleInput extends Component<Props, State> {
                             </Typography>
                           </InputAdornment>
                         }
+                        autoComplete="off"
                       />
                     </FormControl>
                   </Grid>
@@ -516,6 +517,7 @@ class RoleInput extends Component<Props, State> {
                               </Typography>
                             </InputAdornment>
                           }
+                          autoComplete="off"
                         />
                       </FormControl>
                     </Grid>
