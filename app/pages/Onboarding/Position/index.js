@@ -257,9 +257,12 @@ class OnboardingPositionPage extends Component<Props, State> {
       const contains = ROLES.sort().filter(
         r => regExContains.test(r) && !startWith.includes(r)
       );
-      this.setState({ filteredPositions: [...startWith, ...contains] });
+      this.setState({
+        filteredPositions: [...startWith, ...contains],
+        page: 1,
+      });
     } else {
-      this.setState({ filteredPositions: ROLES.sort() });
+      this.setState({ filteredPositions: ROLES.sort(), page: 1 });
     }
   }, 500);
   handleChange = e => {
@@ -425,16 +428,18 @@ class OnboardingPositionPage extends Component<Props, State> {
               </Grid>
             ))}
             <Grid container spacing={8}>
-              <Grid item xs={12} lg={12}>
-                <Button
-                  fullWidth
-                  color="primary"
-                  className={classes.loadMoreButton}
-                  onClick={this.loadMore}
-                >
-                  See More
-                </Button>
-              </Grid>
+              {filteredPositions.length > page * perPage && (
+                <Grid item xs={12} lg={12}>
+                  <Button
+                    fullWidth
+                    color="primary"
+                    className={classes.loadMoreButton}
+                    onClick={this.loadMore}
+                  >
+                    See More
+                  </Button>
+                </Grid>
+              )}
               <Grid item xs={12} lg={12} className={classes.nextButtonWrapper}>
                 <Button
                   variant="contained"
