@@ -213,7 +213,7 @@ class RoleInput extends Component<Props, State> {
         if (model && model.rate) {
           model.rate = parseFloat(model.rate);
         }
-        addRole(model);
+        addRole([model]);
       }
       document.getElementById('addButton').style.display = 'flex';
     } else if (data.id) {
