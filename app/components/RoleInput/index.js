@@ -383,7 +383,7 @@ class RoleInput extends Component<Props, State> {
                     <TextField
                       autoComplete="off"
                       id="name"
-                      label="Type of Work"
+                      label="Position"
                       value={model && model.name}
                       onChange={this.handleChange}
                       onBlur={() => {
