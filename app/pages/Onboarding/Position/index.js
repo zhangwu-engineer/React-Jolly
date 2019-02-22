@@ -25,7 +25,9 @@ import OnboardingPositionSkipModal from 'components/OnboardingPositionSkipModal'
 import saga, { reducer, requestCreateRole } from 'containers/Role/sagas';
 import injectSagas from 'utils/injectSagas';
 
-// const perPage = 8;
+import ROLES from 'enum/roles';
+
+const perPage = 12;
 const styles = theme => ({
   banner: {
     backgroundColor: theme.palette.common.darkBlue,
@@ -140,7 +142,8 @@ const styles = theme => ({
     fontWeight: 500,
     letterSpacing: 0.5,
     color: '#1b1b1b',
-    marginBottom: 25,
+    marginBottom: 15,
+    paddingLeft: 5,
   },
   loadMoreButton: {
     backgroundColor: theme.palette.common.white,
@@ -151,6 +154,7 @@ const styles = theme => ({
     letterSpacing: 0.3,
     paddingTop: 20,
     paddingBottom: 20,
+    marginTop: 4,
     [theme.breakpoints.down('xs')]: {
       paddingTop: 15,
       paddingBottom: 15,
@@ -189,6 +193,16 @@ const styles = theme => ({
     letterSpacing: 0.4,
     color: '#4a4a4a',
   },
+  positionGroup: {
+    marginTop: 30,
+  },
+  groupTitle: {
+    fontSize: 18,
+    fontWeight: 600,
+    letterSpacing: 0.4,
+    color: '#313131',
+    paddingLeft: 5,
+  },
 });
 
 type Props = {
@@ -203,6 +217,8 @@ type State = {
   keyword: string,
   selectedPositions: Array<string>,
   commonPositions: Array<string>,
+  filteredPositions: Array<string>,
+  page: number,
   isSkipOpen: boolean,
 };
 
@@ -216,6 +232,8 @@ class OnboardingPositionPage extends Component<Props, State> {
       'Server',
       'Brand Ambassador',
     ],
+    filteredPositions: ROLES.sort(),
+    page: 1,
     isSkipOpen: false,
   };
   componentDidUpdate(prevProps: Props) {
@@ -264,14 +282,37 @@ class OnboardingPositionPage extends Component<Props, State> {
       this.setState({ isSkipOpen: true });
     }
   };
+  groupPositions = positions =>
+    positions.reduce((group, position) => {
+      const newGroup = group;
+      const firstLetter = position.charAt(0).toUpperCase();
+      if (newGroup[firstLetter]) {
+        newGroup[firstLetter] = [...newGroup[firstLetter], position];
+      } else {
+        newGroup[firstLetter] = [position];
+      }
+      return newGroup;
+    }, {});
+  loadMore = () => {
+    this.setState(
+      update(this.state, {
+        page: { $set: this.state.page + 1 },
+      })
+    );
+  };
   render() {
     const { classes } = this.props;
     const {
       keyword,
       selectedPositions,
       commonPositions,
+      filteredPositions,
+      page,
       isSkipOpen,
     } = this.state;
+    const groupedPositions = this.groupPositions(
+      filteredPositions.slice(0, page * perPage)
+    );
     return (
       <React.Fragment>
         <div className={classes.banner}>
@@ -343,12 +384,36 @@ class OnboardingPositionPage extends Component<Props, State> {
                 </Grid>
               ))}
             </Grid>
+            {Object.keys(groupedPositions).map(letter => (
+              <Grid
+                container
+                spacing={8}
+                key={letter}
+                className={classes.positionGroup}
+              >
+                <Grid item xs={12} lg={12}>
+                  <Typography className={classes.groupTitle}>
+                    {letter}
+                  </Typography>
+                </Grid>
+                {groupedPositions[letter].map(position => (
+                  <Grid item xs={12} lg={6} key={generate()}>
+                    <PositionCard
+                      position={position}
+                      selected={selectedPositions.includes(position)}
+                      onSelect={this.addPosition}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            ))}
             <Grid container spacing={8}>
               <Grid item xs={12} lg={12}>
                 <Button
                   fullWidth
                   color="primary"
                   className={classes.loadMoreButton}
+                  onClick={this.loadMore}
                 >
                   See More
                 </Button>
