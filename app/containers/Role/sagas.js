@@ -60,7 +60,7 @@ const roleUpdateRequestError = (error: string) => ({
   payload: error,
 });
 
-export const requestCreateRole = (payload: Object) => ({
+export const requestCreateRole = (payload: Array<Object>) => ({
   type: CREATE_ROLE + REQUESTED,
   payload,
 });
@@ -395,24 +395,28 @@ function* CreateRoleRequest({ payload }) {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/role`,
-      data: payload,
+      data: {
+        roles: payload,
+      },
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
-      const properties = {
-        name: response.data.response.role.name,
-        unit: response.data.response.role.unit,
-      };
-      if (response.data.response.role.years) {
-        properties.years = response.data.response.role.years;
-      }
-      if (response.data.response.role.minRate) {
-        properties.rate_low = response.data.response.role.minRate;
-      }
-      if (response.data.response.role.maxRate) {
-        properties.rate_high = response.data.response.role.maxRate;
-      }
-      analytics.track('Role Added', properties);
+      response.data.response.roles.forEach(role => {
+        const properties = {
+          name: role.name,
+          unit: role.unit,
+        };
+        if (role.years) {
+          properties.years = role.years;
+        }
+        if (role.minRate) {
+          properties.rate_low = role.minRate;
+        }
+        if (role.maxRate) {
+          properties.rate_high = role.maxRate;
+        }
+        analytics.track('Role Added', properties);
+      });
       yield put(roleCreateRequestSuccess(response.data.response));
     } else {
       yield put(roleCreateRequestFailed(response.data.error));
