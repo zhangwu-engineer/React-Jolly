@@ -56,7 +56,7 @@ type Props = {
 
 class OnboardingSkipModal extends Component<Props> {
   handleSkip = () => {
-    history.push('/edit');
+    history.push('/ob/3');
   };
   closeModal = () => {
     this.props.onCloseModal();
