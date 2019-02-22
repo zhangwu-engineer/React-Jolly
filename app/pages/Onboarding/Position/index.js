@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { generate } from 'shortid';
+import { debounce } from 'lodash-es';
 import update from 'immutability-helper';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -248,8 +249,21 @@ class OnboardingPositionPage extends Component<Props, State> {
   closeSkipModal = () => {
     this.setState({ isSkipOpen: false });
   };
+  debouncedSearch = debounce(value => {
+    if (value) {
+      const filteredPositions = ROLES.sort().filter(
+        r => r.toLowerCase().indexOf(value.toLowerCase()) !== -1
+      );
+      this.setState({ filteredPositions });
+    } else {
+      this.setState({ filteredPositions: ROLES.sort() });
+    }
+  }, 500);
   handleChange = e => {
-    this.setState({ keyword: e.target.value });
+    e.persist();
+    this.setState({ keyword: e.target.value }, () => {
+      this.debouncedSearch(e.target.value);
+    });
   };
   addPosition = position => {
     this.setState(
