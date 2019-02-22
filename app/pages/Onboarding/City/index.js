@@ -25,7 +25,7 @@ const styles = theme => ({
     margin: '50px auto 0px auto',
     [theme.breakpoints.down('xs')]: {
       padding: 10,
-      height: 600,
+      height: 800,
     },
   },
   icon: {
