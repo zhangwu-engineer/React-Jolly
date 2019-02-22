@@ -259,7 +259,7 @@ class MemberProfileInfo extends Component<Props, State> {
         </div>
         <div className={classes.bottomSection}>
           <Typography className={classes.username}>
-            {`${user.get('firstName')} ${user.get('lastName')}`}
+            {`${user.get('firstName') || ''} ${user.get('lastName') || ''}`}
           </Typography>
           {user.getIn(['profile', 'distance']) && (
             <Typography className={classes.distance}>
