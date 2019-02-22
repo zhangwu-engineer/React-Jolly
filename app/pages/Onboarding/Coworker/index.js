@@ -182,6 +182,8 @@ type Props = {
   cityUsers: List<Object>,
   total: number,
   page: number,
+  isCityUsersLoading: boolean,
+  cityUsersError: string,
   isSaving: boolean,
   saveError: string,
   // isSignupInviteLoading: boolean,
@@ -229,7 +231,21 @@ class OnboardingCoworkerPage extends Component<Props, State> {
     }
   }
   componentDidUpdate(prevProps: Props) {
-    const { isSaving, saveError } = this.props;
+    const {
+      cityUsers,
+      isCityUsersLoading,
+      cityUsersError,
+      isSaving,
+      saveError,
+    } = this.props;
+    if (
+      prevProps.isCityUsersLoading &&
+      !isCityUsersLoading &&
+      !cityUsersError &&
+      cityUsers.size === 0
+    ) {
+      history.push('/ob/3');
+    }
     if (prevProps.isSaving && !isSaving && !saveError) {
       history.push('/edit');
     }
