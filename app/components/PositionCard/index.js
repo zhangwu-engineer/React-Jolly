@@ -19,11 +19,6 @@ const styles = theme => ({
     letterSpacing: 0.4,
     color: '#313131',
   },
-  icon: {
-    position: 'absolute',
-    right: 18,
-    top: 18,
-  },
 });
 
 type Props = {
@@ -50,9 +45,7 @@ class PositionCard extends Component<Props> {
             primary: classes.position,
           }}
         />
-        {selected && (
-          <Icon glyph={CheckIcon} size={20} className={classes.icon} />
-        )}
+        {selected && <Icon glyph={CheckIcon} size={20} />}
       </ListItem>
     );
   }
