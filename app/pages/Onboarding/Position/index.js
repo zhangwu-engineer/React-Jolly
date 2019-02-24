@@ -23,11 +23,21 @@ import Link from 'components/Link';
 import PositionCard from 'components/PositionCard';
 import OnboardingPositionSkipModal from 'components/OnboardingPositionSkipModal';
 
-import saga, { reducer, requestCreateRole } from 'containers/Role/sagas';
+import saga, {
+  reducer,
+  requestCreateRole,
+  requestRoles,
+} from 'containers/Role/sagas';
 import injectSagas from 'utils/injectSagas';
 
 import ROLES from 'enum/roles';
 
+const COMMON_POSITIONS = [
+  'Bartender',
+  'Event Setup Crew',
+  'Server',
+  'Brand Ambassador',
+];
 const perPage = 12;
 const styles = theme => ({
   banner: {
@@ -208,10 +218,12 @@ const styles = theme => ({
 
 type Props = {
   // user: Object,
+  roles: List,
   isSaving: boolean,
   saveError: string,
   classes: Object,
   requestCreateRole: Function,
+  requestRoles: Function,
 };
 
 type State = {
@@ -227,16 +239,14 @@ class OnboardingPositionPage extends Component<Props, State> {
   state = {
     keyword: '',
     selectedPositions: [],
-    commonPositions: [
-      'Bartender',
-      'Event Setup Crew',
-      'Server',
-      'Brand Ambassador',
-    ],
+    commonPositions: COMMON_POSITIONS.sort(),
     filteredPositions: ROLES.sort(),
     page: 1,
     isSkipOpen: false,
   };
+  componentDidMount() {
+    this.props.requestRoles();
+  }
   componentDidUpdate(prevProps: Props) {
     const { isSaving, saveError } = this.props;
     if (prevProps.isSaving && !isSaving && !saveError) {
@@ -257,12 +267,23 @@ class OnboardingPositionPage extends Component<Props, State> {
       const contains = ROLES.sort().filter(
         r => regExContains.test(r) && !startWith.includes(r)
       );
+      const commonStartWith = COMMON_POSITIONS.sort().filter(r =>
+        regExStartWith.test(r)
+      );
+      const commonContains = COMMON_POSITIONS.sort().filter(
+        r => regExContains.test(r) && !commonStartWith.includes(r)
+      );
       this.setState({
         filteredPositions: [...startWith, ...contains],
+        commonPositions: [...commonStartWith, ...commonContains],
         page: 1,
       });
     } else {
-      this.setState({ filteredPositions: ROLES.sort(), page: 1 });
+      this.setState({
+        filteredPositions: ROLES.sort(),
+        commonPositions: COMMON_POSITIONS.sort(),
+        page: 1,
+      });
     }
   }, 500);
   handleChange = e => {
@@ -321,7 +342,7 @@ class OnboardingPositionPage extends Component<Props, State> {
     );
   };
   render() {
-    const { classes } = this.props;
+    const { roles, classes } = this.props;
     const {
       keyword,
       selectedPositions,
@@ -333,6 +354,9 @@ class OnboardingPositionPage extends Component<Props, State> {
     const groupedPositions = this.groupPositions(
       filteredPositions.slice(0, page * perPage)
     );
+    const existingRoles = roles
+      ? roles.map(role => role.get('name')).toJS()
+      : [];
     return (
       <React.Fragment>
         <div className={classes.banner}>
@@ -352,6 +376,25 @@ class OnboardingPositionPage extends Component<Props, State> {
               <Typography className={classes.positionsTitle}>
                 I&apos;m available as a:
               </Typography>
+              {roles &&
+                roles.map(role => (
+                  <ListItem
+                    key={generate()}
+                    className={classes.positionCard}
+                    onClick={() => this.removePosition(role.get('name'))}
+                  >
+                    <IconButton className={classes.iconButton}>
+                      <ClearIcon />
+                    </IconButton>
+                    <ListItemText
+                      primary={role.get('name')}
+                      classes={{
+                        root: classes.positionRoot,
+                        primary: classes.position,
+                      }}
+                    />
+                  </ListItem>
+                ))}
               {selectedPositions.map(position => (
                 <ListItem
                   key={generate()}
@@ -398,7 +441,10 @@ class OnboardingPositionPage extends Component<Props, State> {
                 <Grid item xs={12} lg={6} key={generate()}>
                   <PositionCard
                     position={position}
-                    selected={selectedPositions.includes(position)}
+                    selected={
+                      selectedPositions.includes(position) ||
+                      existingRoles.includes(position)
+                    }
                     onSelect={this.addPosition}
                   />
                 </Grid>
@@ -420,7 +466,10 @@ class OnboardingPositionPage extends Component<Props, State> {
                   <Grid item xs={12} lg={6} key={generate()}>
                     <PositionCard
                       position={position}
-                      selected={selectedPositions.includes(position)}
+                      selected={
+                        selectedPositions.includes(position) ||
+                        existingRoles.includes(position)
+                      }
                       onSelect={this.addPosition}
                     />
                   </Grid>
@@ -464,11 +513,13 @@ class OnboardingPositionPage extends Component<Props, State> {
 
 const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
+  roles: state.getIn(['role', 'roles']),
   isSaving: state.getIn(['role', 'isCreating']),
   saveError: state.getIn(['role', 'createError']),
 });
 
 const mapDispatchToProps = dispatch => ({
+  requestRoles: () => dispatch(requestRoles()),
   requestCreateRole: payload => dispatch(requestCreateRole(payload)),
 });
 
