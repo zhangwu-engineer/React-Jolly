@@ -29,6 +29,7 @@ const styles = () => ({
 });
 
 type Props = {
+  isInviting: boolean,
   classes: Object,
   sendInvite: Function,
 };
@@ -40,8 +41,9 @@ class InviteForm extends Component<Props> {
       resetForm();
     }
   };
+  textInput = React.createRef();
   render() {
-    const { classes } = this.props;
+    const { isInviting, classes } = this.props;
     return (
       <Formik initialValues={{ email: '' }} onSubmit={this.handleSave}>
         {({
@@ -70,7 +72,16 @@ class InviteForm extends Component<Props> {
                   root: classes.emailInputLabel,
                 },
               }}
+              inputRef={this.textInput}
               onChange={handleChange}
+              onKeyDown={e => {
+                if (e.keyCode === 13 && values.email) {
+                  if (this.textInput.current) {
+                    this.textInput.current.blur();
+                  }
+                  handleSubmit();
+                }
+              }}
               onBlur={handleBlur}
               autoComplete="off"
             />
@@ -80,6 +91,7 @@ class InviteForm extends Component<Props> {
               fullWidth
               className={classes.inviteButton}
               onClick={handleSubmit}
+              disabled={isInviting}
             >
               Send Invite
             </Button>

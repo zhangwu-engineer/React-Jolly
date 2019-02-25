@@ -19,6 +19,7 @@ import UserCard from 'components/UserCard';
 import OnboardingSkipModal from 'components/OnboardingSkipModal';
 import OnboardingJobFormModal from 'components/OnboardingJobFormModal';
 import InviteForm from 'components/InviteForm';
+import Notification from 'components/Notification';
 
 import { requestCityUsers, requestSignupInvite } from 'containers/App/sagas';
 import saga, { reducer, requestCreateWork } from 'containers/Work/sagas';
@@ -107,7 +108,6 @@ const styles = theme => ({
   inviteBox: {
     backgroundColor: theme.palette.common.white,
     padding: '23px 16px 13px 16px',
-    display: 'none',
   },
   rightPanel: {
     flex: 1,
@@ -186,11 +186,11 @@ type Props = {
   cityUsersError: string,
   isSaving: boolean,
   saveError: string,
-  // isSignupInviteLoading: boolean,
-  // signupInviteError: string,
+  isSignupInviteLoading: boolean,
+  signupInviteError: string,
   classes: Object,
   requestCityUsers: Function,
-  // requestSignupInvite: Function,
+  requestSignupInvite: Function,
   requestCreateWork: Function,
 };
 
@@ -200,11 +200,43 @@ type State = {
   selectedUser: ?Object,
   initialValues: Object,
   jobs: Array<Object>,
+  sentTo: ?string,
+  isInviting: boolean,
+  showNotification: boolean,
   selectedUserIds: Array<string>,
   invitedEmails: Array<string>,
 };
 
 class OnboardingCoworkerPage extends Component<Props, State> {
+  static getDerivedStateFromProps(nextProps: Props, prevState: State) {
+    if (nextProps.isSignupInviteLoading) {
+      return {
+        isInviting: true,
+      };
+    }
+    if (
+      !nextProps.isSignupInviteLoading &&
+      !nextProps.signupInviteError &&
+      prevState.isInviting
+    ) {
+      return {
+        showNotification: true,
+        isInviting: false,
+      };
+    }
+    if (
+      !nextProps.isSignupInviteLoading &&
+      nextProps.signupInviteError &&
+      prevState.isInviting
+    ) {
+      return {
+        sentTo: null,
+        showNotification: false,
+        isInviting: false,
+      };
+    }
+    return null;
+  }
   state = {
     isSkipOpen: false,
     isFormOpen: false,
@@ -217,6 +249,9 @@ class OnboardingCoworkerPage extends Component<Props, State> {
     jobs: [],
     selectedUserIds: [],
     invitedEmails: [],
+    sentTo: null,
+    isInviting: false,
+    showNotification: false,
   };
   componentDidMount() {
     const { user, page } = this.props;
@@ -320,8 +355,19 @@ class OnboardingCoworkerPage extends Component<Props, State> {
     this.setState(
       update(this.state, {
         invitedEmails: { $push: [email] },
-      })
+        sentTo: { $set: email },
+      }),
+      () => {
+        this.props.requestSignupInvite(email);
+      }
     );
+  };
+  closeNotification = () => {
+    this.setState({
+      sentTo: null,
+      isInviting: false,
+      showNotification: false,
+    });
   };
   render() {
     const { user, cityUsers, page, total, classes } = this.props;
@@ -331,6 +377,9 @@ class OnboardingCoworkerPage extends Component<Props, State> {
       selectedUser,
       initialValues,
       jobs,
+      sentTo,
+      isInviting,
+      showNotification,
       invitedEmails,
       selectedUserIds,
     } = this.state;
@@ -349,6 +398,12 @@ class OnboardingCoworkerPage extends Component<Props, State> {
             Skip this Step
           </Link>
         </div>
+        {showNotification && (
+          <Notification
+            msg={`Invite sent to ${sentTo}`}
+            close={this.closeNotification}
+          />
+        )}
         <div className={classes.content}>
           <div className={classes.leftPanel}>
             <div className={classes.coworkersBox}>
@@ -378,7 +433,10 @@ class OnboardingCoworkerPage extends Component<Props, State> {
               ))}
             </div>
             <div className={classes.inviteBox}>
-              <InviteForm sendInvite={this.handleSendInvite} />
+              <InviteForm
+                sendInvite={this.handleSendInvite}
+                isInviting={isInviting}
+              />
             </div>
           </div>
           <div className={classes.rightPanel}>
