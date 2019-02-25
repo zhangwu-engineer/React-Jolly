@@ -104,11 +104,19 @@ const styles = theme => ({
     backgroundColor: theme.palette.common.gray,
   },
   menuName: {
+    fontSize: 18,
+    fontWeight: 600,
+    color: '#323232',
     textTransform: 'capitalize',
+  },
+  location: {
+    fontSize: 12,
+    color: '#323232',
   },
   menuButton: {
     backgroundColor: theme.palette.primary.main,
     boxShadow: 'none',
+    padding: 0,
     '&:hover': {
       backgroundColor: theme.palette.primary.main,
     },
@@ -123,6 +131,7 @@ const styles = theme => ({
     backgroundColor: theme.palette.primary.main,
     boxShadow: 'none',
     display: 'none',
+    padding: 0,
     '&:hover': {
       backgroundColor: theme.palette.primary.main,
     },
@@ -134,6 +143,9 @@ const styles = theme => ({
       width: 48,
       display: 'inline-flex',
     },
+  },
+  noPadding: {
+    padding: 0,
   },
   menuList: {
     padding: 0,
@@ -197,6 +209,8 @@ class Header extends Component<Props, State> {
   anchorEl: HTMLElement;
   renderMenu = () => {
     const { user, classes } = this.props;
+    const nameLength =
+      user.get('firstName').length + user.get('lastName').length;
     return (
       <Fragment>
         <Grid container className={classes.menuTop}>
@@ -208,9 +222,13 @@ class Header extends Component<Props, State> {
           </Grid>
           <Grid item>
             <Typography variant="h6" className={classes.menuName}>
-              {`${user.get('firstName')} ${user.get('lastName')}`}
+              {nameLength > 10
+                ? `${user.get('firstName')} ${user.get('lastName').charAt(0)}.`
+                : `${user.get('firstName')} ${user.get('lastName')}`}
             </Typography>
-            <Typography>{user.getIn(['profile', 'location'])}</Typography>
+            <Typography className={classes.location}>
+              {user.getIn(['profile', 'location'])}
+            </Typography>
           </Grid>
         </Grid>
         <MenuList className={classes.menuList}>
@@ -378,7 +396,7 @@ class Header extends Component<Props, State> {
           {user ? (
             <Fragment>
               <Button
-                className={cx({
+                className={cx(classes.noPadding, {
                   [classes.hiddenOnSmallDevice]: hideTopRightButtons,
                 })}
                 onClick={() => {
