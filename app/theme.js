@@ -37,11 +37,6 @@ const theme = createMuiTheme({
           borderBottom: '2px solid #dfe4e6',
         },
       },
-      disabled: {
-        '&:before': {
-          borderBottom: 'none !important',
-        },
-      },
     },
     MuiFilledInput: {
       root: {

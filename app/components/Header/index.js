@@ -413,7 +413,6 @@ class Header extends Component<Props, State> {
                 }}
                 onClick={this.handleToggle}
                 color="inherit"
-                variant="fab"
                 className={classes.menuButton}
               >
                 <MenuIcon />
@@ -421,7 +420,6 @@ class Header extends Component<Props, State> {
               <Button
                 onClick={this.toggleDrawer(true)}
                 color="inherit"
-                variant="fab"
                 className={cx(classes.mobileMenuButton, {
                   [classes.hiddenOnSmallDevice]: hideTopRightButtons,
                 })}
