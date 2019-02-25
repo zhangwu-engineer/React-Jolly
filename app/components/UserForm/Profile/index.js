@@ -1,7 +1,6 @@
 // @flow
 
 import React, { Component } from 'react';
-import update from 'immutability-helper';
 import { Formik } from 'formik';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -66,16 +65,7 @@ type Props = {
   updateUser: Function,
 };
 
-class UserProfileForm extends Component<Props, State> {
-  onChange = (id, value) => {
-    this.setState(
-      update(this.state, {
-        model: {
-          [id]: { $set: value },
-        },
-      })
-    );
-  };
+class UserProfileForm extends Component<Props> {
   handleSave = (values, { resetForm }) => {
     this.props.updateUser({
       profile: values,

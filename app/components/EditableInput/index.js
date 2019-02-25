@@ -136,6 +136,14 @@ class EditableInput extends Component<Props> {
               target: { value: address, id: 'location', name: 'location' },
             });
           }}
+          onSelect={address => {
+            this.props.onChange({
+              target: { value: address, id: 'location', name: 'location' },
+            });
+            this.props.onChange({
+              target: { value: '', id: 'distance', name: 'distance' },
+            });
+          }}
           searchOptions={{ types: ['(cities)'] }}
         >
           {({
