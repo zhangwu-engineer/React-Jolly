@@ -9,7 +9,7 @@ import { Switch } from 'react-router-dom';
 import { fromJS } from 'immutable';
 import { Route } from 'components/Routes';
 import { history } from 'components/ConnectedRouter';
-
+import FloatingAddButton from 'components/FloatingAddButton';
 import injectSagas from 'utils/injectSagas';
 
 import Header from 'components/Header';
@@ -117,6 +117,7 @@ class App extends Component<Props> {
           />
         </Switch>
         <Routes />
+        {user && pathname !== '/add' && <FloatingAddButton />}
       </React.Fragment>
     );
   }
