@@ -135,6 +135,11 @@ class EditableInput extends Component<Props> {
             this.props.onChange({
               target: { value: address, id: 'location', name: 'location' },
             });
+            if (address === '') {
+              this.props.onChange({
+                target: { value: '', id: 'distance', name: 'distance' },
+              });
+            }
           }}
           onSelect={address => {
             this.props.onChange({
