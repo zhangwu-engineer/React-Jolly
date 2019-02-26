@@ -19,16 +19,23 @@ import './styles.scss';
 
 type Props = {
   user: Object,
+  location: Object,
   requestSocialLogin: Function,
 };
 
 class SignIn extends Component<Props> {
   componentDidUpdate(prevProps: Props) {
-    const { user } = this.props;
+    const {
+      user,
+      location: {
+        query: { redirect },
+      },
+    } = this.props;
     if (!prevProps.user && user) {
       storage.set('invite', null);
       if (user.getIn(['profile', 'location'])) {
-        history.push('/edit');
+        const path = redirect || '/edit';
+        history.push(path);
       } else {
         history.push('/ob/1');
       }
@@ -63,6 +70,11 @@ class SignIn extends Component<Props> {
     console.log(err); // eslint-disable-line
   };
   render() {
+    const {
+      location: {
+        query: { redirect },
+      },
+    } = this.props;
     return (
       <div className="signin">
         <div className="signin__leftPanel">
@@ -97,7 +109,15 @@ class SignIn extends Component<Props> {
               Sign In with linkedin
             </SocialButton>
             <h1 className="signin__divider">or</h1>
-            <Button className="signin__btn" element={Link} to="/email-sign-in">
+            <Button
+              className="signin__btn"
+              element={Link}
+              to={
+                redirect
+                  ? `/email-sign-in?redirect=${redirect}`
+                  : '/email-sign-in'
+              }
+            >
               Sign in with email
             </Button>
             <div className="signin__signUpLink">

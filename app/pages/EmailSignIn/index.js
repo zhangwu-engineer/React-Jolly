@@ -112,6 +112,7 @@ type Props = {
   error: string,
   resetPasswordSuccess: string,
   classes: Object,
+  location: Object,
   requestLogin: Function,
 };
 
@@ -134,11 +135,19 @@ class EmailSignIn extends Component<Props, State> {
     validationError: {},
   };
   componentDidUpdate(prevProps: Props) {
-    const { isLoading, error, user } = this.props;
+    const {
+      isLoading,
+      error,
+      user,
+      location: {
+        query: { redirect },
+      },
+    } = this.props;
     if (prevProps.isLoading && !isLoading && !error && user) {
       storage.set('invite', null);
       if (user.getIn(['profile', 'location'])) {
-        history.push('/edit');
+        const path = redirect || '/edit';
+        history.push(path);
       } else {
         history.push('/ob/1');
       }
