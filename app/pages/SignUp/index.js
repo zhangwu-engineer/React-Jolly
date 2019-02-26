@@ -69,9 +69,7 @@ const styles = theme => ({
     },
   },
   passwordDesc: {
-    marginBottom: 40,
     [theme.breakpoints.down('xs')]: {
-      marginBottom: 30,
       fontSize: 14,
     },
   },
