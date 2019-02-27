@@ -423,22 +423,8 @@ class Header extends Component<Props, State> {
   render() {
     const { user, classes, pathname } = this.props;
     const { open, side } = this.state;
-    const hideLogo =
-      pathname.includes('/f/') ||
-      pathname.includes('/settings/general') ||
-      pathname.includes('/settings/profile');
     const hideTopRightButtons =
       pathname.includes('/settings') || pathname.includes('/types-of-work');
-    let title = '';
-    if (pathname.includes('/settings/general')) {
-      title = 'General Account Settings';
-    } else if (pathname.includes('/settings/profile')) {
-      title = 'Edit Profile';
-    } else if (pathname.includes('/settings')) {
-      title = 'Settings';
-    } else if (pathname.includes('/types-of-work')) {
-      title = 'Roles & Rates';
-    }
     return (
       <Grid
         className={classes.root}
@@ -457,7 +443,7 @@ class Header extends Component<Props, State> {
                 pathname.includes('/email-verification') ||
                 pathname.includes('/privacy-policy') ||
                 pathname.includes('/freelancer-signup-2'),
-              [classes.hiddenOnSmallDevice]: hideLogo,
+              [classes.hiddenOnSmallDevice]: pathname.includes('/f/'),
             })}
             onClick={() => {
               if (!pathname.includes('/ob')) {
@@ -475,7 +461,8 @@ class Header extends Component<Props, State> {
                 pathname.includes('/forgot-password') ||
                 pathname.includes('/reset-password') ||
                 pathname.includes('/privacy-policy') ||
-                pathname.includes('/freelancer-signup-2'),
+                pathname.includes('/freelancer-signup-2') ||
+                hideTopRightButtons,
             })}
             onClick={() => {
               if (pathname.includes('/email-sign-in')) {
@@ -488,32 +475,18 @@ class Header extends Component<Props, State> {
                 history.replace('/email-sign-in');
               } else if (pathname.includes('/privacy-policy')) {
                 history.replace('/freelancer-signup-2');
+              } else if (
+                pathname.includes('/settings/general') ||
+                pathname.includes('/settings/profile')
+              ) {
+                history.push('/settings');
+              } else {
+                history.push('/edit');
               }
             }}
           >
             <ArrowBackIcon />
           </Button>
-          {user && (
-            <Button
-              className={cx(classes.backButton, {
-                [classes.shownOnSmallDevice]: hideTopRightButtons,
-              })}
-              onClick={() => {
-                if (
-                  pathname.includes('/settings/general') ||
-                  pathname.includes('/settings/profile')
-                ) {
-                  history.push('/settings');
-                } else {
-                  history.push('/edit');
-                }
-              }}
-            >
-              <ArrowBackIcon />
-              &nbsp;&nbsp;&nbsp;
-              {title}
-            </Button>
-          )}
         </Grid>
         <Grid
           item
