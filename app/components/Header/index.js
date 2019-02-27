@@ -65,6 +65,16 @@ const styles = theme => ({
     [theme.breakpoints.down('xs')]: {
       width: 46,
       height: 30,
+      display: 'none',
+    },
+  },
+  logoText: {
+    color: theme.palette.common.white,
+    fontSize: 20,
+    fontWeight: 600,
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
     },
   },
   backButton: {
@@ -456,6 +466,7 @@ class Header extends Component<Props, State> {
             }}
           >
             <img className={classes.logo} src={LogoWhite} alt="logo" />
+            <Typography className={classes.logoText}>J</Typography>
           </Link>
           <Button
             className={cx(classes.backButton, {
