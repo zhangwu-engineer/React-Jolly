@@ -93,17 +93,12 @@ class MemberGallery extends PureComponent<Props> {
               className={classes.backButton}
               component={props => (
                 <Link
-                  to={
-                    privateGallery
-                      ? `/f/${member.get('slug')}/edit`
-                      : `/f/${member.get('slug')}`
-                  }
+                  to={privateGallery ? `/edit` : `/f/${member.get('slug')}`}
                   {...props}
                 />
               )}
             >
               <ArrowBackIcon />
-              &nbsp;Profile Images &amp; Videos
             </Button>
           </Grid>
         </Grid>
