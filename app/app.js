@@ -11,7 +11,6 @@ import 'babel-polyfill';
 // Import all the third party stuff
 import React from 'react';
 import ReactDOM from 'react-dom';
-import FontFaceObserver from 'fontfaceobserver';
 import ReduxToastr from 'react-redux-toastr';
 import ScrollMemory from 'react-router-scroll-memory';
 import { MuiThemeProvider } from '@material-ui/core/styles';
@@ -33,29 +32,6 @@ import 'file-loader?name=[name].[ext]!pace-js/pace.min.js';
 
 // Load custom material theme
 import theme from './theme';
-
-// Observe loading of web font (to remove it, remove the <link> tag in
-// the index.html file and this observer)
-const primaryFontObserver = new FontFaceObserver('Nunito Sans', {});
-// When the font is loaded, add a font-family to the body
-primaryFontObserver.load().then(
-  () => {
-    document.body.classList.add('primaryFontLoaded');
-  },
-  () => {
-    document.body.classList.remove('primaryFontLoaded');
-  }
-);
-
-const secondaryFontObserver = new FontFaceObserver('Azo Sans', {});
-secondaryFontObserver.load().then(
-  () => {
-    document.body.classList.add('secondaryFontLoaded');
-  },
-  () => {
-    document.body.classList.remove('secondaryFontLoaded');
-  }
-);
 
 ReactDOM.render(
   <ConnectedRouter>
