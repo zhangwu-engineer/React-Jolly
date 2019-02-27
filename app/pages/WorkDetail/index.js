@@ -203,7 +203,9 @@ class WorkDetailPage extends Component<Props> {
                     ? 'Job Details'
                     : `${capitalize(
                         work.getIn(['user', 'firstName'])
-                      )} ${capitalize(work.getIn(['user', 'lastName']))}`}
+                      )} ${capitalize(
+                        work.getIn(['user', 'lastName']).charAt(0)
+                      )}.`}
                 </Typography>
               </Button>
             </Grid>
