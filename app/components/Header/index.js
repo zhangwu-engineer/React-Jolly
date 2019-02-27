@@ -43,7 +43,7 @@ const styles = theme => ({
       padding: 0,
     },
   },
-  centerLogoContainer: {
+  logoContainer: {
     position: 'absolute',
     left: '50%',
     top: '50%',
@@ -434,16 +434,7 @@ class Header extends Component<Props, State> {
       >
         <Grid item>
           <Link
-            className={cx(classes.logoContainer, {
-              [classes.centerLogoContainer]:
-                user ||
-                pathname.includes('/email-sign-in') ||
-                pathname.includes('/forgot-password') ||
-                pathname.includes('/reset-password') ||
-                pathname.includes('/email-verification') ||
-                pathname.includes('/privacy-policy') ||
-                pathname.includes('/freelancer-signup-2'),
-            })}
+            className={classes.logoContainer}
             onClick={() => {
               if (!pathname.includes('/ob')) {
                 history.push('/');
