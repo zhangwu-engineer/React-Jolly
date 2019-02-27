@@ -41,7 +41,6 @@ const styles = theme => ({
     [theme.breakpoints.down('xs')]: {
       height: 48,
       padding: 0,
-      paddingRight: theme.spacing.unit * 2,
     },
   },
   centerLogoContainer: {
@@ -94,6 +93,11 @@ const styles = theme => ({
     backgroundColor: theme.palette.common.white,
     border: '2px solid #ffffff',
     marginRight: 10,
+    [theme.breakpoints.down('xs')]: {
+      width: 30,
+      height: 30,
+      margin: 0,
+    },
   },
   menu: {
     boxShadow: '0 5px 19px 0 rgba(0, 0, 0, 0.07)',
@@ -554,7 +558,14 @@ class Header extends Component<Props, State> {
                 [classes.hiddenOnSmallDevice]: hideTopRightButtons,
               })}
             >
-              <MenuIcon />
+              {user ? (
+                <Avatar
+                  src={user.getIn(['profile', 'avatar'])}
+                  className={classes.avatar}
+                />
+              ) : (
+                <MenuIcon />
+              )}
             </Button>
             <Drawer
               anchor="right"
