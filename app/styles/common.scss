@@ -1,6 +1,7 @@
 html,
 body {
   height: 100%;
+  font-family: 'Avenir Next', 'Azo Sans', serif;
 }
 
 #app {
@@ -16,27 +17,6 @@ body {
 
 svg {
   display: block;
-}
-
-.primaryFontLoaded {
-  h1,
-  h2,
-  h3,
-  .button,
-  .f-primary {
-    font-family: 'Avenir';
-  }
-}
-
-.secondaryFontLoaded {
-  h4,
-  h5,
-  h6,
-  p,
-  div,
-  .f-secondary {
-    font-family: 'Avenir', 'Azo Sans', serif;
-  }
 }
 
 .contactLink {
