@@ -5,6 +5,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 
 import { withStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 
 import UserProfileForm from 'components/UserForm/Profile';
 
@@ -13,6 +14,12 @@ import { requestUserDataUpdate, requestUser } from 'containers/App/sagas';
 const styles = theme => ({
   root: {
     backgroundColor: theme.palette.common.white,
+    padding: 20,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 600,
+    color: '#404040',
     padding: 20,
   },
 });
@@ -31,9 +38,14 @@ class ProfileSettingsPage extends Component<Props> {
   render() {
     const { user, classes } = this.props;
     return (
-      <div className={classes.root}>
-        <UserProfileForm user={user} updateUser={this.props.updateUser} />
-      </div>
+      <React.Fragment>
+        <Typography variant="h1" className={classes.title}>
+          Edit Profile
+        </Typography>
+        <div className={classes.root}>
+          <UserProfileForm user={user} updateUser={this.props.updateUser} />
+        </div>
+      </React.Fragment>
     );
   }
 }
