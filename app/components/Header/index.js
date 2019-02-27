@@ -443,7 +443,6 @@ class Header extends Component<Props, State> {
                 pathname.includes('/email-verification') ||
                 pathname.includes('/privacy-policy') ||
                 pathname.includes('/freelancer-signup-2'),
-              [classes.hiddenOnSmallDevice]: pathname.includes('/f/'),
             })}
             onClick={() => {
               if (!pathname.includes('/ob')) {
