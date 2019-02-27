@@ -16,7 +16,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
 import Drawer from '@material-ui/core/Drawer';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import MenuIcon from '@material-ui/icons/Menu';
 import ContactIcon from '@material-ui/icons/ContactSupportOutlined';
 
@@ -92,26 +91,71 @@ const styles = theme => ({
     },
   },
   avatar: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.common.white,
+    border: '2px solid #ffffff',
+    marginRight: 10,
+  },
+  menu: {
+    boxShadow: '0 5px 19px 0 rgba(0, 0, 0, 0.07)',
   },
   menuTop: {
-    padding: '30px 40px 20px 30px',
+    padding: 25,
+    backgroundColor: '#f2f9ff',
   },
   menuAvatar: {
-    width: 54,
-    height: 54,
+    width: 40,
+    height: 40,
     marginRight: 15,
     backgroundColor: theme.palette.common.gray,
   },
   menuName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 600,
-    color: '#323232',
+    color: '#343434',
+    textTransform: 'capitalize',
+  },
+  createAccountButton: {
+    fontSize: 14,
+    fontWeight: 600,
+    padding: 0,
     textTransform: 'capitalize',
   },
   location: {
     fontSize: 12,
     color: '#323232',
+  },
+  menuBottom: {
+    padding: '40px 20px 0px 20px',
+    minWidth: 247,
+    [theme.breakpoints.down('xs')]: {
+      minWidth: 285,
+    },
+  },
+  joinButton: {
+    fontSize: 14,
+    fontWeight: 600,
+    textTransform: 'none',
+    borderRadius: 0,
+    boxShadow: 'none',
+    paddingTop: 13,
+    paddingBottom: 13,
+    marginBottom: 10,
+  },
+  signInButton: {
+    '&:hover': {
+      backgroundColor: theme.palette.common.white,
+    },
+  },
+  learnButtonWrapper: {
+    [theme.breakpoints.down('xs')]: {
+      position: 'absolute',
+      bottom: 0,
+      left: '50%',
+      transform: 'translateX(-50%)',
+    },
+  },
+  learnButton: {
+    marginTop: 20,
   },
   menuButton: {
     backgroundColor: theme.palette.primary.main,
@@ -164,6 +208,12 @@ const styles = theme => ({
   hide: {
     display: 'none',
   },
+  name: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: theme.palette.common.white,
+    textTransform: 'capitalize',
+  },
 });
 
 type Props = {
@@ -209,85 +259,150 @@ class Header extends Component<Props, State> {
   anchorEl: HTMLElement;
   renderMenu = () => {
     const { user, classes } = this.props;
-    const nameLength =
-      user.get('firstName').length + user.get('lastName').length;
+    const nameLength = user
+      ? user.get('firstName').length + user.get('lastName').length
+      : 0;
     return (
       <Fragment>
-        <Grid container className={classes.menuTop}>
+        <Grid container className={classes.menuTop} alignItems="center">
           <Grid item>
             <Avatar
               className={classes.menuAvatar}
-              src={user.getIn(['profile', 'avatar'])}
+              src={user && user.getIn(['profile', 'avatar'])}
             />
           </Grid>
           <Grid item>
-            <Typography variant="h6" className={classes.menuName}>
-              {nameLength > 10
-                ? `${user.get('firstName')} ${user.get('lastName').charAt(0)}.`
-                : `${user.get('firstName')} ${user.get('lastName')}`}
-            </Typography>
-            <Typography className={classes.location}>
-              {user.getIn(['profile', 'location'])}
-            </Typography>
+            {user ? (
+              <Typography variant="h6" className={classes.menuName}>
+                {nameLength > 10
+                  ? `${user.get('firstName')} ${user
+                      .get('lastName')
+                      .charAt(0)}.`
+                  : `${user.get('firstName')} ${user.get('lastName')}`}
+              </Typography>
+            ) : (
+              <Typography variant="h6" className={classes.menuName}>
+                Your Profile
+              </Typography>
+            )}
+            {user ? (
+              <Typography className={classes.location}>
+                {user.getIn(['profile', 'location'])}
+              </Typography>
+            ) : (
+              <Button
+                color="primary"
+                component={props => <Link to="/freelancer-signup" {...props} />}
+                className={classes.createAccountButton}
+              >
+                Create Account
+              </Button>
+            )}
           </Grid>
         </Grid>
-        <MenuList className={classes.menuList}>
-          <MenuItem
-            className={classes.menuItem}
-            onClick={e => {
-              this.handleClose(e);
-              history.push('/edit');
-            }}
-          >
-            <ListItemIcon className={classes.menuItemIcon}>
-              <Icon glyph={UserIcon} size={18} />
-            </ListItemIcon>
-            <ListItemText
-              classes={{ primary: classes.menuItemText }}
-              primary="Profile"
-            />
-          </MenuItem>
-          <MenuItem
-            className={classes.menuItem}
-            onClick={e => {
-              this.handleClose(e);
-              history.push('/settings');
-            }}
-          >
-            <ListItemIcon className={classes.menuItemIcon}>
-              <Icon glyph={SettingsIcon} size={18} />
-            </ListItemIcon>
-            <ListItemText
-              classes={{ primary: classes.menuItemText }}
-              primary="Edit Profile &amp; Settings"
-            />
-          </MenuItem>
-          <MenuItem
-            className={classes.menuItem}
-            onClick={e => {
-              this.handleClose(e);
-              window.open('https://www.joinjolly.com/contact', '_blank');
-            }}
-          >
-            <ListItemIcon className={classes.menuItemIcon}>
-              <ContactIcon />
-            </ListItemIcon>
-            <ListItemText
-              classes={{ primary: classes.menuItemText }}
-              primary="Contact"
-            />
-          </MenuItem>
-          <MenuItem className={classes.menuItem} onClick={this.handleLogout}>
-            <ListItemIcon className={classes.menuItemIcon}>
-              <Icon glyph={LogoutIcon} size={18} />
-            </ListItemIcon>
-            <ListItemText
-              classes={{ primary: classes.menuItemText }}
-              inset
-              primary="Log out"
-            />
-          </MenuItem>
-        </MenuList>
+        {user ? (
+          <MenuList className={classes.menuList}>
+            <MenuItem
+              className={classes.menuItem}
+              onClick={e => {
+                this.handleClose(e);
+                history.push('/edit');
+              }}
+            >
+              <ListItemIcon className={classes.menuItemIcon}>
+                <Icon glyph={UserIcon} size={18} />
+              </ListItemIcon>
+              <ListItemText
+                classes={{ primary: classes.menuItemText }}
+                primary="Profile"
+              />
+            </MenuItem>
+            <MenuItem
+              className={classes.menuItem}
+              onClick={e => {
+                this.handleClose(e);
+                history.push('/settings');
+              }}
+            >
+              <ListItemIcon className={classes.menuItemIcon}>
+                <Icon glyph={SettingsIcon} size={18} />
+              </ListItemIcon>
+              <ListItemText
+                classes={{ primary: classes.menuItemText }}
+                primary="Edit Profile &amp; Settings"
+              />
+            </MenuItem>
+            <MenuItem
+              className={classes.menuItem}
+              onClick={e => {
+                this.handleClose(e);
+                window.open('https://www.joinjolly.com/contact', '_blank');
+              }}
+            >
+              <ListItemIcon className={classes.menuItemIcon}>
+                <ContactIcon />
+              </ListItemIcon>
+              <ListItemText
+                classes={{ primary: classes.menuItemText }}
+                primary="Contact"
+              />
+            </MenuItem>
+            <MenuItem className={classes.menuItem} onClick={this.handleLogout}>
+              <ListItemIcon className={classes.menuItemIcon}>
+                <Icon glyph={LogoutIcon} size={18} />
+              </ListItemIcon>
+              <ListItemText
+                classes={{ primary: classes.menuItemText }}
+                inset
+                primary="Log out"
+              />
+            </MenuItem>
+          </MenuList>
+        ) : (
+          <div className={classes.menuBottom}>
+            <Grid container>
+              <Grid item xs={12}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  className={classes.joinButton}
+                  onClick={() => history.push('/freelancer-signup')}
+                >
+                  Join Jolly
+                </Button>
+              </Grid>
+            </Grid>
+            <Grid container>
+              <Grid item xs={12}>
+                <Button
+                  color="primary"
+                  fullWidth
+                  className={cx(classes.joinButton, classes.signInButton)}
+                  onClick={() => history.push('/sign-in')}
+                >
+                  or Sign In
+                </Button>
+              </Grid>
+            </Grid>
+            <Grid container className={classes.learnButtonWrapper}>
+              <Grid item xs={12}>
+                <Button
+                  color="primary"
+                  fullWidth
+                  className={cx(
+                    classes.joinButton,
+                    classes.signInButton,
+                    classes.learnButton
+                  )}
+                  href="https://www.joinjolly.com"
+                >
+                  Learn More About Jolly
+                </Button>
+              </Grid>
+            </Grid>
+          </div>
+        )}
       </Fragment>
     );
   };
@@ -299,9 +414,7 @@ class Header extends Component<Props, State> {
       pathname.includes('/settings/general') ||
       pathname.includes('/settings/profile');
     const hideTopRightButtons =
-      pathname.includes('/settings') ||
-      pathname.includes('/personal-information') ||
-      pathname.includes('/types-of-work');
+      pathname.includes('/settings') || pathname.includes('/types-of-work');
     let title = '';
     if (pathname.includes('/settings/general')) {
       title = 'General Account Settings';
@@ -393,97 +506,71 @@ class Header extends Component<Props, State> {
             [classes.hide]: pathname.includes('/ob'),
           })}
         >
-          {user ? (
-            <Fragment>
-              <Button
-                className={cx(classes.noPadding, {
-                  [classes.hiddenOnSmallDevice]: hideTopRightButtons,
-                })}
-                onClick={() => {
-                  history.push('/edit');
-                }}
-              >
-                <Avatar className={classes.avatar}>
-                  <AccountCircleIcon />
-                </Avatar>
-              </Button>
-              <Button
-                buttonRef={node => {
-                  this.anchorEl = node;
-                }}
-                onClick={this.handleToggle}
-                color="inherit"
-                className={classes.menuButton}
-              >
+          <Fragment>
+            <Button
+              buttonRef={node => {
+                this.anchorEl = node;
+              }}
+              onClick={this.handleToggle}
+              color="inherit"
+              className={classes.menuButton}
+            >
+              {user ? (
+                <Fragment>
+                  <Avatar
+                    src={user.getIn(['profile', 'avatar'])}
+                    className={classes.avatar}
+                  />
+                  <Typography className={classes.name}>
+                    {`${user.get('firstName')} ${user
+                      .get('lastName')
+                      .charAt(0)}.`}
+                  </Typography>
+                </Fragment>
+              ) : (
                 <MenuIcon />
-              </Button>
-              <Button
-                onClick={this.toggleDrawer(true)}
-                color="inherit"
-                className={cx(classes.mobileMenuButton, {
-                  [classes.hiddenOnSmallDevice]: hideTopRightButtons,
-                })}
-              >
-                <MenuIcon />
-              </Button>
-              <Popper
-                open={open}
-                anchorEl={this.anchorEl}
-                transition
-                placement="bottom-end"
-              >
-                {({ TransitionProps }) => (
-                  <Fade {...TransitionProps} timeout={350}>
-                    <Paper>
-                      <ClickAwayListener onClickAway={this.handleClose}>
-                        {this.renderMenu()}
-                      </ClickAwayListener>
-                    </Paper>
-                  </Fade>
-                )}
-              </Popper>
-              <Drawer
-                anchor="right"
-                open={side}
-                onClose={this.toggleDrawer(false)}
-              >
-                <div
-                  tabIndex={0}
-                  role="button"
-                  onClick={this.toggleDrawer(false)}
-                  onKeyDown={this.toggleDrawer(false)}
-                >
-                  {this.renderMenu()}
-                </div>
-              </Drawer>
-            </Fragment>
-          ) : (
-            <Typography
-              className={cx(classes.desc, {
-                [classes.hiddenOnSmallDevice]:
-                  pathname.includes('/email-sign-in') ||
-                  pathname.includes('/forgot-password') ||
-                  pathname.includes('/reset-password') ||
-                  pathname.includes('/email-verification') ||
-                  pathname.includes('/privacy-policy') ||
-                  pathname.includes('/freelancer-signup-2'),
+              )}
+            </Button>
+            <Popper
+              open={open}
+              anchorEl={this.anchorEl}
+              transition
+              placement="bottom-end"
+            >
+              {({ TransitionProps }) => (
+                <Fade {...TransitionProps} timeout={350}>
+                  <Paper square classes={{ root: classes.menu }}>
+                    <ClickAwayListener onClickAway={this.handleClose}>
+                      {this.renderMenu()}
+                    </ClickAwayListener>
+                  </Paper>
+                </Fade>
+              )}
+            </Popper>
+            <Button
+              onClick={this.toggleDrawer(true)}
+              color="inherit"
+              className={cx(classes.mobileMenuButton, {
+                [classes.hiddenOnSmallDevice]: hideTopRightButtons,
               })}
             >
-              {pathname === '/email-sign-in'
-                ? 'No account yet? '
-                : 'Already a user? '}
-              <Link
-                to={
-                  pathname === '/email-sign-in'
-                    ? '/freelancer-signup'
-                    : '/sign-in'
-                }
-                className={classes.btnSignIn}
+              <MenuIcon />
+            </Button>
+            <Drawer
+              anchor="right"
+              open={side}
+              onClose={this.toggleDrawer(false)}
+            >
+              <div
+                tabIndex={0}
+                role="button"
+                onClick={this.toggleDrawer(false)}
+                onKeyDown={this.toggleDrawer(false)}
               >
-                {pathname === '/email-sign-in' ? 'Sign Up' : 'Sign In'}
-              </Link>
-            </Typography>
-          )}
+                {this.renderMenu()}
+              </div>
+            </Drawer>
+          </Fragment>
         </Grid>
       </Grid>
     );
