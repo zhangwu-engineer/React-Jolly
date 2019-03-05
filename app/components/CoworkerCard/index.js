@@ -67,7 +67,7 @@ class CoworkerCard extends Component<Props> {
   render() {
     const { user, classes } = this.props;
     return (
-      <div className={classes.root}>
+      <div className={classes.root} onClick={this.viewProfile} role="button">
         <Avatar
           className={classes.avatar}
           src={user && user.getIn(['profile', 'avatar'])}
