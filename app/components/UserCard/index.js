@@ -16,6 +16,11 @@ const styles = theme => ({
     padding: '18px 2px 18px 18px',
     cursor: 'pointer',
   },
+  rootHover: {
+    '&:hover': {
+      backgroundColor: '#eaf1f7',
+    },
+  },
   noPadding: {
     padding: 0,
     marginBottom: 12,
@@ -78,6 +83,7 @@ class UserCard extends Component<Props> {
       <ListItem
         className={cx(classes.root, {
           [classes.noPadding]: size === 'small',
+          [classes.rootHover]: size !== 'small',
         })}
         onClick={this.handleClick}
       >
