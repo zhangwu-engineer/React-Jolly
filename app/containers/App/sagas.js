@@ -518,7 +518,13 @@ export const reducer = (
 
     case CITY_USERS + SUCCEDED: {
       const existingUsers: List = state.getIn(['cityUsers', 'users']);
-      const newUsers = existingUsers.concat(fromJS(payload.users));
+      const currentPage = state.getIn(['cityUsers', 'page']);
+      let newUsers;
+      if (currentPage !== payload.page) {
+        newUsers = existingUsers.concat(fromJS(payload.users));
+      } else {
+        newUsers = fromJS(payload.users);
+      }
       return state
         .set('isCityUsersLoading', false)
         .setIn(['cityUsers', 'total'], payload.total)
