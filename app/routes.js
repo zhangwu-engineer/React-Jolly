@@ -28,6 +28,8 @@ const Roles = load(() => import('pages/Roles'));
 const OnboardingCity = load(() => import('pages/Onboarding/City'));
 const OnboardingCoworker = load(() => import('pages/Onboarding/Coworker'));
 const OnboardingPosition = load(() => import('pages/Onboarding/Position'));
+const Network = load(() => import('pages/Network'));
+const Coworkers = load(() => import('pages/Network/Coworkers'));
 const FourOfour = load(() => import('pages/404'));
 
 class Routes extends Component<{}> {
@@ -115,6 +117,16 @@ class Routes extends Component<{}> {
         <PrivateRoute
           path="/types-of-work"
           render={props => <Roles {...props} />}
+        />
+        <PrivateRoute
+          exact
+          path="/network"
+          render={props => <Network {...props} />}
+        />
+        <PrivateRoute
+          exact
+          path="/network/coworkers"
+          render={props => <Coworkers {...props} />}
         />
         <Route render={props => <FourOfour {...props} />} />
       </Switch>
