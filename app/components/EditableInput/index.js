@@ -2,6 +2,7 @@
 
 import React, { Component, Fragment } from 'react';
 import { generate } from 'shortid';
+import cx from 'classnames';
 import storage from 'store';
 import PlacesAutocomplete from 'react-places-autocomplete';
 import { withStyles } from '@material-ui/core/styles';
@@ -22,6 +23,9 @@ const styles = theme => ({
   root: {
     backgroundColor: '#f1f1f1',
     marginBottom: 15,
+  },
+  disabledRoot: {
+    backgroundColor: 'rgba(241, 241, 241, 0.45)',
   },
   labelField: {
     fontSize: 14,
@@ -214,7 +218,9 @@ class EditableInput extends Component<Props> {
           }}
           onChange={this.props.onChange}
           onBlur={this.props.onBlur}
-          className={classes.textInput}
+          className={cx(classes.textInput, {
+            [classes.disabledTextInput]: disabled,
+          })}
           disabled={disabled}
         >
           <MenuItem value="">Don&apos;t Indicate</MenuItem>
@@ -273,9 +279,14 @@ class EditableInput extends Component<Props> {
     );
   };
   render() {
-    const { label, id, classes } = this.props;
+    const { label, id, disabled, classes } = this.props;
     return (
-      <FormControl classes={{ root: classes.root }} fullWidth>
+      <FormControl
+        classes={{
+          root: cx(classes.root, { [classes.disabledRoot]: disabled }),
+        }}
+        fullWidth
+      >
         <InputLabel
           htmlFor={id}
           classes={{
