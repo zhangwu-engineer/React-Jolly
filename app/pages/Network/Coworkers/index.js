@@ -268,7 +268,9 @@ class CoworkersPage extends Component<Props, State> {
             <Grid container spacing={8}>
               <Grid item xs={12} lg={12}>
                 <Typography className={classes.title}>
-                  {`${coworkersCount} Coworkers`}
+                  {coworkersCount === 1
+                    ? `${coworkersCount} Coworker`
+                    : `${coworkersCount} Coworkers`}
                 </Typography>
               </Grid>
             </Grid>
