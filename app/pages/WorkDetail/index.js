@@ -204,7 +204,8 @@ class WorkDetailPage extends Component<Props> {
                     : `${capitalize(
                         work.getIn(['user', 'firstName'])
                       )} ${capitalize(
-                        work.getIn(['user', 'lastName']).charAt(0)
+                        work.getIn(['user', 'lastName']) &&
+                          work.getIn(['user', 'lastName']).charAt(0)
                       )}.`}
                 </Typography>
               </Button>
