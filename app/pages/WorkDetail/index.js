@@ -4,22 +4,12 @@ import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { matchPath } from 'react-router';
-import { capitalize } from 'lodash-es';
 
-import { withStyles } from '@material-ui/core/styles';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-// import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-// import MoreIcon from '@material-ui/icons/MoreVert';
 
 import WorkDetail from 'components/WorkDetail';
 import Preloader from 'components/Preloader';
-import Link from 'components/Link';
-
-import LogoWhite from 'images/logo-white.png';
+import Header from 'components/Header';
 
 import saga, {
   reducer,
@@ -33,43 +23,6 @@ import saga, {
   requestEndorsers,
 } from 'containers/Work/sagas';
 import injectSagas from 'utils/injectSagas';
-
-const styles = theme => ({
-  header: {
-    backgroundColor: theme.palette.primary.main,
-  },
-  headerInner: {
-    height: 70,
-    maxWidth: 1063,
-    margin: '0 auto',
-    [theme.breakpoints.down('xs')]: {
-      height: 45,
-    },
-  },
-  button: {
-    color: theme.palette.common.white,
-    textTransform: 'none',
-    '&:hover': {
-      color: theme.palette.common.white,
-    },
-  },
-  backButtonText: {
-    fontSize: 16,
-    fontWeight: 600,
-    color: theme.palette.common.white,
-    display: 'none',
-    [theme.breakpoints.down('xs')]: {
-      display: 'block',
-    },
-  },
-  logo: {
-    width: 70,
-    height: 45,
-    [theme.breakpoints.down('xs')]: {
-      display: 'none',
-    },
-  },
-});
 
 type Props = {
   user: Object,
@@ -87,7 +40,7 @@ type Props = {
   endorsements: Object,
   endorsers: Object,
   match: Object,
-  classes: Object,
+  location: Object,
   requestWork: Function,
   requestSearchUsers: Function,
   requestWorkRelatedUsers: Function,
@@ -162,8 +115,8 @@ class WorkDetailPage extends Component<Props> {
       relatedUsers,
       endorsements,
       endorsers,
-      classes,
       match: { url },
+      location: { pathname },
     } = this.props;
     const {
       params: { slug },
@@ -177,64 +130,22 @@ class WorkDetailPage extends Component<Props> {
     }
     return (
       <React.Fragment>
-        <div className={classes.header}>
-          <Grid
-            className={classes.headerInner}
-            container
-            justify="space-between"
-            alignItems="center"
-          >
-            <Grid item>
-              <Button
-                className={classes.button}
-                component={props => (
-                  <Link
-                    to={
-                      user && user.get('slug') === slug ? '/edit' : `/f/${slug}`
-                    }
-                    {...props}
-                  />
-                )}
-              >
-                <ArrowBackIcon />
-                &nbsp;&nbsp;&nbsp;
-                <Typography className={classes.backButtonText}>
-                  {displayMode === 'private'
-                    ? 'Job Details'
-                    : `${capitalize(
-                        work.getIn(['user', 'firstName'])
-                      )} ${capitalize(
-                        work.getIn(['user', 'lastName']) &&
-                          work.getIn(['user', 'lastName']).charAt(0)
-                      )}.`}
-                </Typography>
-              </Button>
-            </Grid>
-            <Grid item>
-              <Link to="/">
-                <img className={classes.logo} src={LogoWhite} alt="logo" />
-              </Link>
-            </Grid>
-            <Grid item style={{ width: 68 }}>
-              {/* <IconButton className={classes.button}>
-                <MoreIcon />
-              </IconButton> */}
-            </Grid>
-          </Grid>
-        </div>
         {work.size > 0 && !workError ? (
-          <WorkDetail
-            work={work}
-            users={users}
-            relatedUsers={relatedUsers}
-            endorsements={endorsements}
-            endorsers={endorsers}
-            searchUsers={this.props.requestSearchUsers}
-            requestAddCoworker={this.props.requestAddCoworker}
-            requestVerifyCoworker={this.props.requestVerifyCoworker}
-            requestEndorseUser={this.props.requestEndorseUser}
-            displayMode={displayMode}
-          />
+          <React.Fragment>
+            <Header user={user} pathname={pathname} work={work} />
+            <WorkDetail
+              work={work}
+              users={users}
+              relatedUsers={relatedUsers}
+              endorsements={endorsements}
+              endorsers={endorsers}
+              searchUsers={this.props.requestSearchUsers}
+              requestAddCoworker={this.props.requestAddCoworker}
+              requestVerifyCoworker={this.props.requestVerifyCoworker}
+              requestEndorseUser={this.props.requestEndorseUser}
+              displayMode={displayMode}
+            />
+          </React.Fragment>
         ) : (
           <FormHelperText error>{workError}</FormHelperText>
         )}
@@ -284,6 +195,5 @@ export default compose(
   connect(
     mapStateToProps,
     mapDispatchToProps
-  ),
-  withStyles(styles)
+  )
 )(WorkDetailPage);
