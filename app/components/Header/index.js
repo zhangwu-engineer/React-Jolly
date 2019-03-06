@@ -2,6 +2,7 @@
 
 import React, { Component, Fragment } from 'react';
 import cx from 'classnames';
+import { capitalize } from 'lodash-es';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -85,6 +86,15 @@ const styles = theme => ({
     fontWeight: 600,
     '&:hover': {
       color: theme.palette.common.white,
+    },
+  },
+  backButtonText: {
+    fontSize: 16,
+    fontWeight: 600,
+    color: theme.palette.common.white,
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
     },
   },
   desc: {
@@ -232,6 +242,7 @@ const styles = theme => ({
 
 type Props = {
   user: Object,
+  work: ?Object,
   classes: Object,
   pathname: string,
   logout: Function,
@@ -421,10 +432,18 @@ class Header extends Component<Props, State> {
     );
   };
   render() {
-    const { user, classes, pathname } = this.props;
+    const { user, work, classes, pathname } = this.props;
     const { open, side } = this.state;
     const hideTopRightButtons =
-      pathname.includes('/settings') || pathname.includes('/types-of-work');
+      pathname.includes('/settings') ||
+      pathname.includes('/types-of-work') ||
+      pathname.includes('/e/');
+    const workDetailBack =
+      user && work && user.get('slug') !== work.getIn(['user', 'slug'])
+        ? `${capitalize(work.getIn(['user', 'firstName']))} ${capitalize(
+            work.getIn(['user', 'lastName']).charAt(0)
+          )}.`
+        : '';
     return (
       <Grid
         className={classes.root}
@@ -470,12 +489,22 @@ class Header extends Component<Props, State> {
                 pathname.includes('/settings/profile')
               ) {
                 history.push('/settings');
+              } else if (pathname.includes('/e/') && work) {
+                if (user && user.get('slug') === work.getIn(['user', 'slug'])) {
+                  history.push('/edit');
+                } else {
+                  history.push(`/f/${work.getIn(['user', 'slug'])}`);
+                }
               } else {
                 history.push('/edit');
               }
             }}
           >
             <ArrowBackIcon />
+            &nbsp;&nbsp;&nbsp;
+            <Typography className={classes.backButtonText}>
+              {workDetailBack}
+            </Typography>
           </Button>
         </Grid>
         <Grid
@@ -528,9 +557,7 @@ class Header extends Component<Props, State> {
             <Button
               onClick={this.toggleDrawer(true)}
               color="inherit"
-              className={cx(classes.mobileMenuButton, {
-                [classes.hiddenOnSmallDevice]: hideTopRightButtons,
-              })}
+              className={classes.mobileMenuButton}
             >
               {user ? (
                 <Avatar
