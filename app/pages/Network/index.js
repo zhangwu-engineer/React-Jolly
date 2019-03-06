@@ -3,19 +3,13 @@ import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { generate } from 'shortid';
-import { fromJS } from 'immutable';
 import update from 'immutability-helper';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Avatar from '@material-ui/core/Avatar';
 
-import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
 import UserCard from 'components/UserCard';
 import ConnectionCard from 'components/ConnectionCard';
@@ -82,6 +76,7 @@ const styles = theme => ({
   },
   rightPanel: {
     flex: 1,
+    paddingTop: 30,
     [theme.breakpoints.down('xs')]: {
       paddingLeft: 25,
       paddingRight: 25,
@@ -92,7 +87,6 @@ const styles = theme => ({
     fontWeight: 500,
     letterSpacing: 0.4,
     color: '#272727',
-    paddingTop: 30,
     paddingBottom: 15,
     [theme.breakpoints.down('xs')]: {
       fontWeight: 600,
@@ -195,7 +189,6 @@ type State = {
   isInviting: boolean,
   showNotification: boolean,
   selectedUserIds: Array<string>,
-  invitedEmails: Array<string>,
   selectedTab: number,
 };
 
@@ -233,7 +226,6 @@ class NetworkPage extends Component<Props, State> {
     isFormOpen: false,
     selectedUser: null,
     selectedUserIds: [],
-    invitedEmails: [],
     sentTo: null,
     isInviting: false,
     showNotification: false,
@@ -269,7 +261,6 @@ class NetworkPage extends Component<Props, State> {
   handleSendInvite = email => {
     this.setState(
       update(this.state, {
-        invitedEmails: { $push: [email] },
         sentTo: { $set: email },
       }),
       () => {
@@ -302,6 +293,9 @@ class NetworkPage extends Component<Props, State> {
       connections &&
       connections.filter(connection => connection.get('status') === 'CONNECTED')
         .size;
+    const pendingConnections =
+      connections &&
+      connections.filter(connection => connection.get('status') === 'PENDING');
     return (
       <React.Fragment>
         {showNotification && (
@@ -330,18 +324,22 @@ class NetworkPage extends Component<Props, State> {
             </div>
           </div>
           <div className={classes.rightPanel}>
-            <Grid container spacing={8}>
-              <Grid item xs={12} lg={12}>
-                <Typography className={classes.pendingConnectionsTitle}>
-                  Pending Connections
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid container spacing={8} className={classes.pendingConnections}>
-              {connections &&
-                connections.map(
-                  connection =>
-                    connection.get('status') === 'PENDING' ? (
+            {pendingConnections &&
+              pendingConnections.size > 0 && (
+                <React.Fragment>
+                  <Grid container spacing={8}>
+                    <Grid item xs={12} lg={12}>
+                      <Typography className={classes.pendingConnectionsTitle}>
+                        Pending Connections
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                  <Grid
+                    container
+                    spacing={8}
+                    className={classes.pendingConnections}
+                  >
+                    {pendingConnections.map(connection => (
                       <Grid item key={generate()} xs={12} lg={12}>
                         <ConnectionCard
                           connection={connection}
@@ -349,9 +347,11 @@ class NetworkPage extends Component<Props, State> {
                           accept={this.props.requestAcceptConnection}
                         />
                       </Grid>
-                    ) : null
-                )}
-            </Grid>
+                    ))}
+                  </Grid>
+                </React.Fragment>
+              )}
+
             <Grid container spacing={8}>
               <Grid item xs={6} lg={6}>
                 <Typography className={classes.title}>
