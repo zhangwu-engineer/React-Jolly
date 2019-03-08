@@ -29,6 +29,11 @@ const styles = () => ({
     fontWeight: 600,
     color: '#474747',
   },
+  years: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#a1a1a1',
+  },
   actionBar: {
     display: 'flex',
     justifyContent: 'flex-end',
@@ -72,6 +77,14 @@ class RoleCard extends Component<Props> {
         <CardContent className={classes.content}>
           <Typography variant="h6" className={classes.name}>
             {role.name}
+          </Typography>
+          <Typography variant="h6" className={classes.years}>
+            {role.years === 0 ? 'Less than 1 year experience' : ''}
+            {role.years === 1 ? '1 year experience' : ''}
+            {role.years > 1 && role.years < 20
+              ? `${role.years} years experience`
+              : ''}
+            {role.years === 20 ? 'Over 20 years experience' : ''}
           </Typography>
           {role.minRate &&
             role.maxRate &&
