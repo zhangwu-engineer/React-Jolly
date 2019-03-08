@@ -5,12 +5,12 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import Avatar from '@material-ui/core/Avatar';
 import TextSMSIcon from '@material-ui/icons/Textsms';
 import EmailIcon from '@material-ui/icons/Email';
 import PhoneIcon from '@material-ui/icons/Phone';
 
 import BaseModal from 'components/BaseModal';
+import UserAvatar from 'components/UserAvatar';
 
 const styles = theme => ({
   modal: {
@@ -40,8 +40,6 @@ const styles = theme => ({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: '50%',
-    backgroundColor: theme.palette.common.white,
-    boxShadow: '0 2px 4px 0 rgba(187, 187, 187, 0.5)',
     margin: '0 auto 10px auto',
     [theme.breakpoints.down('xs')]: {
       width: 54,
@@ -124,7 +122,7 @@ class ContactOptionModal extends Component<Props> {
           Contact
         </Typography>
         <div className={classes.avatarContainer}>
-          <Avatar
+          <UserAvatar
             className={classes.avatar}
             src={data.getIn(['profile', 'avatar'])}
           />
