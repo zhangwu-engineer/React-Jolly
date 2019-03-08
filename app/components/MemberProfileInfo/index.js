@@ -15,7 +15,7 @@ import { history } from 'components/ConnectedRouter';
 import Icon from 'components/Icon';
 import PhotoModal from 'components/PhotoModal';
 
-import EmptyAvatarImg from 'images/empty_avatar.png';
+import EmptyAvatarImg from 'images/sprite/empty_avatar.svg';
 import FacebookIcon from 'images/sprite/facebook.svg';
 import TwitterIcon from 'images/sprite/twitter.svg';
 import LinkedInIcon from 'images/sprite/linkedin.svg';
@@ -216,7 +216,7 @@ class MemberProfileInfo extends Component<Props, State> {
       classes,
     } = this.props;
     const { isOpen } = this.state;
-    const avatarImg = user.getIn(['profile', 'avatar']) || EmptyAvatarImg;
+    const avatarImg = user.getIn(['profile', 'avatar']) || '';
     return (
       <div className={classes.root}>
         <div className={classes.topSection}>
@@ -254,7 +254,11 @@ class MemberProfileInfo extends Component<Props, State> {
             <ShareIcon />
           </IconButton>
           <div className={classes.avatarContainer}>
-            <Avatar className={classes.avatar} src={avatarImg} />
+            {avatarImg ? (
+              <Avatar className={classes.avatar} src={avatarImg} />
+            ) : (
+              <Icon glyph={EmptyAvatarImg} className={classes.avatar} />
+            )}
           </div>
         </div>
         <div className={classes.bottomSection}>
