@@ -29,6 +29,7 @@ import UserIcon from 'images/sprite/user.svg';
 import SettingsIcon from 'images/sprite/settings.svg';
 import LogoutIcon from 'images/sprite/logout.svg';
 import People from 'images/sprite/people_outline.svg';
+import EmptyAvatar from 'images/sprite/empty_avatar.svg';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 const styles = theme => ({
@@ -114,6 +115,19 @@ const styles = theme => ({
     backgroundColor: theme.palette.common.white,
     border: '2px solid #ffffff',
     marginRight: 10,
+    [theme.breakpoints.down('xs')]: {
+      width: 30,
+      height: 30,
+      margin: 0,
+    },
+  },
+  emptyAvatar: {
+    marginRight: 10,
+    width: 40,
+    height: 40,
+    backgroundColor: theme.palette.common.white,
+    border: '2px solid #ffffff',
+    borderRadius: 40,
     [theme.breakpoints.down('xs')]: {
       width: 30,
       height: 30,
@@ -545,10 +559,17 @@ class Header extends Component<Props, State> {
               >
                 {user ? (
                   <Fragment>
-                    <Avatar
-                      src={user.getIn(['profile', 'avatar'])}
-                      className={classes.avatar}
-                    />
+                    {user.getIn(['profile', 'avatar']) ? (
+                      <Avatar
+                        src={user.getIn(['profile', 'avatar'])}
+                        className={classes.avatar}
+                      />
+                    ) : (
+                      <Icon
+                        glyph={EmptyAvatar}
+                        className={classes.emptyAvatar}
+                      />
+                    )}
                     <Typography className={classes.name}>
                       {`${user.get('firstName')} ${user
                         .get('lastName')
@@ -581,10 +602,19 @@ class Header extends Component<Props, State> {
                 className={classes.mobileMenuButton}
               >
                 {user ? (
-                  <Avatar
-                    src={user.getIn(['profile', 'avatar'])}
-                    className={classes.avatar}
-                  />
+                  <React.Fragment>
+                    {user.getIn(['profile', 'avatar']) ? (
+                      <Avatar
+                        src={user.getIn(['profile', 'avatar'])}
+                        className={classes.avatar}
+                      />
+                    ) : (
+                      <Icon
+                        glyph={EmptyAvatar}
+                        className={classes.emptyAvatar}
+                      />
+                    )}
+                  </React.Fragment>
                 ) : (
                   <MenuIcon />
                 )}
