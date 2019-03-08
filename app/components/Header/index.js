@@ -28,6 +28,7 @@ import LogoWhite from 'images/logo-white.png';
 import UserIcon from 'images/sprite/user.svg';
 import SettingsIcon from 'images/sprite/settings.svg';
 import LogoutIcon from 'images/sprite/logout.svg';
+import People from 'images/sprite/people_outline.svg';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 const styles = theme => ({
@@ -237,6 +238,20 @@ const styles = theme => ({
     fontWeight: 'bold',
     color: theme.palette.common.white,
     textTransform: 'capitalize',
+  },
+  networkButton: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.16)',
+    height: 70,
+    width: 70,
+    marginRight: 25,
+    [theme.breakpoints.down('xs')]: {
+      height: 48,
+      width: 48,
+      marginRight: 5,
+    },
   },
 });
 
@@ -513,76 +528,83 @@ class Header extends Component<Props, State> {
             [classes.hide]: pathname.includes('/ob'),
           })}
         >
-          <Fragment>
-            <Button
-              buttonRef={node => {
-                this.anchorEl = node;
-              }}
-              onClick={this.handleToggle}
-              color="inherit"
-              className={classes.menuButton}
-            >
-              {user ? (
-                <Fragment>
+          <Grid container alignItems="center">
+            <Grid item>
+              <Link to="/network" className={classes.networkButton}>
+                <Icon glyph={People} size={30} />
+              </Link>
+            </Grid>
+            <Grid item>
+              <Button
+                buttonRef={node => {
+                  this.anchorEl = node;
+                }}
+                onClick={this.handleToggle}
+                color="inherit"
+                className={classes.menuButton}
+              >
+                {user ? (
+                  <Fragment>
+                    <Avatar
+                      src={user.getIn(['profile', 'avatar'])}
+                      className={classes.avatar}
+                    />
+                    <Typography className={classes.name}>
+                      {`${user.get('firstName')} ${user
+                        .get('lastName')
+                        .charAt(0)}.`}
+                    </Typography>
+                  </Fragment>
+                ) : (
+                  <MenuIcon />
+                )}
+              </Button>
+              <Popper
+                open={open}
+                anchorEl={this.anchorEl}
+                transition
+                placement="bottom-end"
+              >
+                {({ TransitionProps }) => (
+                  <Fade {...TransitionProps} timeout={350}>
+                    <Paper square classes={{ root: classes.menu }}>
+                      <ClickAwayListener onClickAway={this.handleClose}>
+                        {this.renderMenu()}
+                      </ClickAwayListener>
+                    </Paper>
+                  </Fade>
+                )}
+              </Popper>
+              <Button
+                onClick={this.toggleDrawer(true)}
+                color="inherit"
+                className={classes.mobileMenuButton}
+              >
+                {user ? (
                   <Avatar
                     src={user.getIn(['profile', 'avatar'])}
                     className={classes.avatar}
                   />
-                  <Typography className={classes.name}>
-                    {`${user.get('firstName')} ${user
-                      .get('lastName')
-                      .charAt(0)}.`}
-                  </Typography>
-                </Fragment>
-              ) : (
-                <MenuIcon />
-              )}
-            </Button>
-            <Popper
-              open={open}
-              anchorEl={this.anchorEl}
-              transition
-              placement="bottom-end"
-            >
-              {({ TransitionProps }) => (
-                <Fade {...TransitionProps} timeout={350}>
-                  <Paper square classes={{ root: classes.menu }}>
-                    <ClickAwayListener onClickAway={this.handleClose}>
-                      {this.renderMenu()}
-                    </ClickAwayListener>
-                  </Paper>
-                </Fade>
-              )}
-            </Popper>
-            <Button
-              onClick={this.toggleDrawer(true)}
-              color="inherit"
-              className={classes.mobileMenuButton}
-            >
-              {user ? (
-                <Avatar
-                  src={user.getIn(['profile', 'avatar'])}
-                  className={classes.avatar}
-                />
-              ) : (
-                <MenuIcon />
-              )}
-            </Button>
-            <Drawer
-              anchor="right"
-              open={side}
-              onClose={this.toggleDrawer(false)}
-            >
-              <div
-                tabIndex={0}
-                role="button"
-                onClick={this.toggleDrawer(false)}
-                onKeyDown={this.toggleDrawer(false)}
+                ) : (
+                  <MenuIcon />
+                )}
+              </Button>
+              <Drawer
+                anchor="right"
+                open={side}
+                onClose={this.toggleDrawer(false)}
               >
-                {this.renderMenu()}
-              </div>
-            </Drawer>
-          </Fragment>
+                <div
+                  tabIndex={0}
+                  role="button"
+                  onClick={this.toggleDrawer(false)}
+                  onKeyDown={this.toggleDrawer(false)}
+                >
+                  {this.renderMenu()}
+                </div>
+              </Drawer>
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
     );

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="26px" height="18px" viewBox="0 0 26 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 53.2 (72643) - https://sketchapp.com -->
+    <title>icon/social/people_outline_24px</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M11.25,17.1875 C8.325,17.1875 2.5,18.65 2.5,21.5625 L2.5,23.75 L20,23.75 L20,21.5625 C20,18.65 14.175,17.1875 11.25,17.1875 Z M5.425,21.25 C6.475,20.525 9.0125,19.6875 11.25,19.6875 C13.4875,19.6875 16.025,20.525 17.075,21.25 L5.425,21.25 Z M11.25,15 C13.6625,15 15.625,13.0375 15.625,10.625 C15.625,8.2125 13.6625,6.25 11.25,6.25 C8.8375,6.25 6.875,8.2125 6.875,10.625 C6.875,13.0375 8.8375,15 11.25,15 Z M11.25,8.75 C12.2875,8.75 13.125,9.5875 13.125,10.625 C13.125,11.6625 12.2875,12.5 11.25,12.5 C10.2125,12.5 9.375,11.6625 9.375,10.625 C9.375,9.5875 10.2125,8.75 11.25,8.75 Z M20.05,17.2625 C21.5,18.3125 22.5,19.7125 22.5,21.5625 L22.5,23.75 L27.5,23.75 L27.5,21.5625 C27.5,19.0375 23.125,17.6 20.05,17.2625 Z M18.75,15 C21.1625,15 23.125,13.0375 23.125,10.625 C23.125,8.2125 21.1625,6.25 18.75,6.25 C18.075,6.25 17.45,6.4125 16.875,6.6875 C17.6625,7.8 18.125,9.1625 18.125,10.625 C18.125,12.0875 17.6625,13.45 16.875,14.5625 C17.45,14.8375 18.075,15 18.75,15 Z" id="path-1"></path>
+    </defs>
+    <g id="Onboarding-with-Vouching" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Coworkers-Copy-4" transform="translate(-1201.000000, -27.000000)">
+            <g id="icon/social/people_outline_24px" transform="translate(1199.000000, 21.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <g fill-rule="nonzero"></g>
+                <g id="✱-/-Color-/-Icons-/-Selected-/-On-Primary-/-Active-" mask="url(#mask-2)" fill="#FFFFFF" fill-rule="evenodd">
+                    <rect id="Rectangle-3" x="0" y="0" width="30" height="30"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
