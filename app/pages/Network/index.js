@@ -191,7 +191,7 @@ type State = {
 
 class NetworkPage extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State) {
-    if (nextProps.isCreating) {
+    if (nextProps.isCreating && prevState.sentTo) {
       return {
         isInviting: true,
       };
