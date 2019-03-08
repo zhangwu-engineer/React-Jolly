@@ -17,7 +17,7 @@ import VouchInviteFormModal from 'components/VouchInviteFormModal';
 import InviteForm from 'components/InviteForm';
 import Notification from 'components/Notification';
 
-import { requestCityUsers } from 'containers/App/sagas';
+import { requestCityUsers, requestUserCoworkers } from 'containers/App/sagas';
 import saga, {
   reducer,
   requestCreateConnection,
@@ -162,6 +162,7 @@ type Props = {
   page: number, // eslint-disable-line
   isCityUsersLoading: boolean, // eslint-disable-line
   cityUsersError: string, // eslint-disable-line
+  coworkers: List<Object>,
   connections: List<Object>,
   isCreating: boolean, // eslint-disable-line
   createError: string, // eslint-disable-line
@@ -171,6 +172,7 @@ type Props = {
   acceptError: string,
   classes: Object,
   requestCityUsers: Function,
+  requestUserCoworkers: Function,
   requestCreateConnection: Function,
   requestRemoveConnection: Function,
   requestAcceptConnection: Function,
@@ -234,14 +236,17 @@ class NetworkPage extends Component<Props, State> {
       this.props.requestCityUsers(user.getIn(['profile', 'location']));
     }
     this.props.requestConnections();
+    this.props.requestUserCoworkers();
   }
   componentDidUpdate(prevProps: Props) {
     const { isRemoving, removeError, isAccepting, acceptError } = this.props;
     if (prevProps.isRemoving && !isRemoving && !removeError) {
       this.props.requestConnections();
+      this.props.requestUserCoworkers();
     }
     if (prevProps.isAccepting && !isAccepting && !acceptError) {
       this.props.requestConnections();
+      this.props.requestUserCoworkers();
     }
   }
   closeFormModal = () => {
@@ -276,7 +281,7 @@ class NetworkPage extends Component<Props, State> {
     this.setState({ selectedTab: value });
   };
   render() {
-    const { connections, cityUsers, classes } = this.props;
+    const { coworkers, connections, cityUsers, classes } = this.props;
     const {
       isFormOpen,
       selectedUser,
@@ -286,10 +291,6 @@ class NetworkPage extends Component<Props, State> {
       selectedUserIds,
       selectedTab,
     } = this.state;
-    const coworkersCount =
-      connections &&
-      connections.filter(connection => connection.get('status') === 'CONNECTED')
-        .size;
     const pendingConnections =
       connections &&
       connections.filter(connection => connection.get('status') === 'PENDING');
@@ -303,14 +304,14 @@ class NetworkPage extends Component<Props, State> {
         )}
         <div className={classes.smallCoworkersBox}>
           <Link to="/network/coworkers" className={classes.coworkersTitle}>
-            {`My Coworkers (${coworkersCount || 0})`}
+            {`My Coworkers ${coworkers ? `(${coworkers.size})` : ''}`}
           </Link>
         </div>
         <div className={classes.content}>
           <div className={classes.leftPanel}>
             <div className={classes.coworkersBox}>
               <Link to="/network/coworkers" className={classes.coworkersTitle}>
-                {`My Coworkers (${coworkersCount || 0})`}
+                {`My Coworkers ${coworkers ? `(${coworkers.size})` : ''}`}
               </Link>
             </div>
             <div className={classes.inviteBox}>
@@ -422,6 +423,7 @@ const mapStateToProps = state => ({
   page: state.getIn(['app', 'cityUsers', 'page']),
   isCityUsersLoading: state.getIn(['app', 'isCityUsersLoading']),
   cityUsersError: state.getIn(['app', 'cityUsersError']),
+  coworkers: state.getIn(['app', 'coworkers']),
   connections: state.getIn(['network', 'connections']),
   isCreating: state.getIn(['network', 'isCreating']),
   createError: state.getIn(['network', 'createError']),
@@ -434,6 +436,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
+  requestUserCoworkers: () => dispatch(requestUserCoworkers()),
   requestRemoveConnection: connectionId =>
     dispatch(requestRemoveConnection(connectionId)),
   requestAcceptConnection: connectionId =>

@@ -23,6 +23,7 @@ const USER = 'Jolly/App/USER';
 const USER_DATA_UPDATE = 'Jolly/App/UPDATE_USER_DATA';
 const USER_PHOTO_UPLOAD = 'Jolly/App/UPLOAD_USER_PHOTO';
 const USER_FILES = 'Jolly/App/USER_FILES';
+const USER_COWORKERS = 'Jolly/App/USER_COWORKERS';
 const EMAIL_VERIFICATION = 'Jolly/App/EMAIL_VERIFICATION';
 const CITY_USERS = 'Jolly/App/CITY_USERS';
 const SIGNUP_INVITE = 'Jolly/App/SIGNUP_INVITE';
@@ -172,6 +173,22 @@ const userFilesRequestError = (error: string) => ({
   payload: error,
 });
 
+export const requestUserCoworkers = () => ({
+  type: USER_COWORKERS + REQUESTED,
+});
+const userCoworkersRequestSuccess = (payload: Object) => ({
+  type: USER_COWORKERS + SUCCEDED,
+  payload,
+});
+const userCoworkersRequestFailed = (error: string) => ({
+  type: USER_COWORKERS + FAILED,
+  payload: error,
+});
+const userCoworkersRequestError = (error: string) => ({
+  type: USER_COWORKERS + ERROR,
+  payload: error,
+});
+
 export const requestUserEmailVerification = (payload: Object) => ({
   type: EMAIL_VERIFICATION + REQUESTED,
   payload,
@@ -315,6 +332,9 @@ const initialState = fromJS({
   files: [],
   isFileLoading: false,
   fileError: '',
+  coworkers: null,
+  isCoworkersLoading: false,
+  coworkersError: '',
   member: fromJS({}),
   isMemberLoading: false,
   memberError: '',
@@ -495,6 +515,23 @@ export const reducer = (
       return state.set('isFileLoading', false).set('fileError', payload);
 
     case USER_FILES + ERROR:
+      return state.set('isCoworkersLoading', false);
+
+    case USER_COWORKERS + REQUESTED:
+      return state.set('isCoworkersLoading', true);
+
+    case USER_COWORKERS + SUCCEDED:
+      return state
+        .set('isCoworkersLoading', false)
+        .set('coworkers', fromJS(payload.coworkers))
+        .set('coworkersError', '');
+
+    case USER_COWORKERS + FAILED:
+      return state
+        .set('isCoworkersLoading', false)
+        .set('coworkersError', payload);
+
+    case USER_COWORKERS + ERROR:
       return state.set('isFileLoading', false);
 
     case EMAIL_VERIFICATION + REQUESTED:
@@ -811,6 +848,25 @@ function* UserFilesRequest() {
   }
 }
 
+function* UserCoworkersRequest() {
+  const token = yield select(getToken);
+  const userId = yield select(getUserId);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/user/${userId}/coworkers`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(userCoworkersRequestSuccess(response.data.response));
+    } else {
+      yield put(userCoworkersRequestFailed(response.data.error.message));
+    }
+  } catch (error) {
+    yield put(userCoworkersRequestError(error));
+  }
+}
+
 function* UserEmailVerificationRequest({ payload }) {
   try {
     const response = yield call(request, {
@@ -937,6 +993,7 @@ export default function*(): Saga<void> {
     takeLatest(USER_DATA_UPDATE + REQUESTED, UpdateUserDataRequest),
     takeLatest(USER_PHOTO_UPLOAD + REQUESTED, UploadUserPhotoRequest),
     takeLatest(USER_FILES + REQUESTED, UserFilesRequest),
+    takeLatest(USER_COWORKERS + REQUESTED, UserCoworkersRequest),
     takeLatest(EMAIL_VERIFICATION + REQUESTED, UserEmailVerificationRequest),
     takeLatest(MEMBER + REQUESTED, MemberRequest),
     takeLatest(WORKS + REQUESTED, WorksRequest),
