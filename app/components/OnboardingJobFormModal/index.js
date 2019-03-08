@@ -10,12 +10,12 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
-import Avatar from '@material-ui/core/Avatar';
 import LeftArrowIcon from '@material-ui/icons/KeyboardArrowLeft';
 import RightArrowIcon from '@material-ui/icons/KeyboardArrowRight';
 
 import BaseModal from 'components/BaseModal';
 import RoleSelect from 'components/RoleSelect';
+import UserAvatar from 'components/UserAvatar';
 
 import ROLES from 'enum/roles';
 
@@ -146,7 +146,7 @@ class OnboardingJobFormModal extends Component<Props> {
       >
         <div className={classes.header}>
           <div className={classes.avatarWrapper}>
-            <Avatar
+            <UserAvatar
               className={classes.avatar}
               src={user && user.getIn(['profile', 'avatar'])}
               alt={user && user.get('firstName')}
