@@ -17,7 +17,7 @@ import VouchInviteFormModal from 'components/VouchInviteFormModal';
 import InviteForm from 'components/InviteForm';
 import Notification from 'components/Notification';
 
-import { requestCityUsers, requestSignupInvite } from 'containers/App/sagas';
+import { requestCityUsers } from 'containers/App/sagas';
 import saga, {
   reducer,
   requestCreateConnection,
@@ -156,24 +156,21 @@ const styles = theme => ({
 });
 
 type Props = {
-  user: Object,
+  user: Object, // eslint-disable-line
   cityUsers: List<Object>,
-  total: number,
-  page: number,
-  isCityUsersLoading: boolean,
-  cityUsersError: string,
-  isSignupInviteLoading: boolean,
-  signupInviteError: string,
+  total: number, // eslint-disable-line
+  page: number, // eslint-disable-line
+  isCityUsersLoading: boolean, // eslint-disable-line
+  cityUsersError: string, // eslint-disable-line
   connections: List<Object>,
-  isCreating: boolean,
-  createError: string,
+  isCreating: boolean, // eslint-disable-line
+  createError: string, // eslint-disable-line
   isRemoving: boolean,
   removeError: string,
   isAccepting: boolean,
   acceptError: string,
   classes: Object,
   requestCityUsers: Function,
-  requestSignupInvite: Function,
   requestCreateConnection: Function,
   requestRemoveConnection: Function,
   requestAcceptConnection: Function,
@@ -194,14 +191,14 @@ type State = {
 
 class NetworkPage extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State) {
-    if (nextProps.isSignupInviteLoading) {
+    if (nextProps.isCreating) {
       return {
         isInviting: true,
       };
     }
     if (
-      !nextProps.isSignupInviteLoading &&
-      !nextProps.signupInviteError &&
+      !nextProps.isCreating &&
+      !nextProps.createError &&
       prevState.isInviting
     ) {
       return {
@@ -210,8 +207,8 @@ class NetworkPage extends Component<Props, State> {
       };
     }
     if (
-      !nextProps.isSignupInviteLoading &&
-      nextProps.signupInviteError &&
+      !nextProps.isCreating &&
+      nextProps.createError &&
       prevState.isInviting
     ) {
       return {
@@ -264,7 +261,7 @@ class NetworkPage extends Component<Props, State> {
         sentTo: { $set: email },
       }),
       () => {
-        this.props.requestSignupInvite(email);
+        this.props.requestCreateConnection(email);
       }
     );
   };
@@ -279,7 +276,7 @@ class NetworkPage extends Component<Props, State> {
     this.setState({ selectedTab: value });
   };
   render() {
-    const { user, connections, cityUsers, classes } = this.props;
+    const { connections, cityUsers, classes } = this.props;
     const {
       isFormOpen,
       selectedUser,
@@ -425,8 +422,6 @@ const mapStateToProps = state => ({
   page: state.getIn(['app', 'cityUsers', 'page']),
   isCityUsersLoading: state.getIn(['app', 'isCityUsersLoading']),
   cityUsersError: state.getIn(['app', 'cityUsersError']),
-  isSignupInviteLoading: state.getIn(['app', 'isSignupInviteLoading']),
-  signupInviteError: state.getIn(['app', 'signupInviteError']),
   connections: state.getIn(['network', 'connections']),
   isCreating: state.getIn(['network', 'isCreating']),
   createError: state.getIn(['network', 'createError']),
@@ -446,7 +441,6 @@ const mapDispatchToProps = dispatch => ({
   requestConnections: () => dispatch(requestConnections()),
   requestCityUsers: (city, page, usersPerPage) =>
     dispatch(requestCityUsers(city, page, usersPerPage)),
-  requestSignupInvite: email => dispatch(requestSignupInvite(email)),
 });
 
 export default compose(
