@@ -5,9 +5,9 @@ import { capitalize } from 'lodash-es';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import Avatar from '@material-ui/core/Avatar';
 
 import BaseModal from 'components/BaseModal';
+import UserAvatar from 'components/UserAvatar';
 
 const styles = theme => ({
   modal: {
@@ -103,7 +103,7 @@ class VouchInviteFormModal extends Component<Props> {
         onCloseModal={this.closeModal}
       >
         <div className={classes.content}>
-          <Avatar
+          <UserAvatar
             className={classes.avatar}
             src={user && user.getIn(['profile', 'avatar'])}
             alt={user && user.get('firstName')}
