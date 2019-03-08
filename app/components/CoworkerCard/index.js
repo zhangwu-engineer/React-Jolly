@@ -5,9 +5,9 @@ import { capitalize } from 'lodash-es';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import Avatar from '@material-ui/core/Avatar';
 
 import { history } from 'components/ConnectedRouter';
+import UserAvatar from 'components/UserAvatar';
 
 const styles = theme => ({
   root: {
@@ -68,7 +68,7 @@ class CoworkerCard extends Component<Props> {
     const { user, classes } = this.props;
     return (
       <div className={classes.root} onClick={this.viewProfile} role="button">
-        <Avatar
+        <UserAvatar
           className={classes.avatar}
           src={user && user.getIn(['profile', 'avatar'])}
           alt={user && user.get('firstName')}
