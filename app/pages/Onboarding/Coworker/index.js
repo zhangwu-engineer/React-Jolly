@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { generate } from 'shortid';
-import { fromJS } from 'immutable';
 import update from 'immutability-helper';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -17,12 +16,15 @@ import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
 import UserCard from 'components/UserCard';
 import OnboardingSkipModal from 'components/OnboardingSkipModal';
-import OnboardingJobFormModal from 'components/OnboardingJobFormModal';
+import VouchInviteFormModal from 'components/VouchInviteFormModal';
 import InviteForm from 'components/InviteForm';
 import Notification from 'components/Notification';
 
 import { requestCityUsers, requestSignupInvite } from 'containers/App/sagas';
-import saga, { reducer, requestCreateWork } from 'containers/Work/sagas';
+import saga, {
+  reducer,
+  requestCreateConnection,
+} from 'containers/Network/sagas';
 import injectSagas from 'utils/injectSagas';
 
 const perPage = 8;
@@ -184,22 +186,20 @@ type Props = {
   page: number,
   isCityUsersLoading: boolean,
   cityUsersError: string,
-  isSaving: boolean,
-  saveError: string,
-  isSignupInviteLoading: boolean,
-  signupInviteError: string,
+  isCreating: boolean, // eslint-disable-line
+  createError: string, // eslint-disable-line
+  isSignupInviteLoading: boolean, // eslint-disable-line
+  signupInviteError: string, // eslint-disable-line
   classes: Object,
   requestCityUsers: Function,
   requestSignupInvite: Function,
-  requestCreateWork: Function,
+  requestCreateConnection: Function,
 };
 
 type State = {
   isSkipOpen: boolean,
   isFormOpen: boolean,
   selectedUser: ?Object,
-  initialValues: Object,
-  jobs: Array<Object>,
   sentTo: ?string,
   isInviting: boolean,
   showNotification: boolean,
@@ -241,12 +241,6 @@ class OnboardingCoworkerPage extends Component<Props, State> {
     isSkipOpen: false,
     isFormOpen: false,
     selectedUser: null,
-    initialValues: {
-      title: '',
-      from: null,
-      role: '',
-    },
-    jobs: [],
     selectedUserIds: [],
     invitedEmails: [],
     sentTo: null,
@@ -266,13 +260,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
     }
   }
   componentDidUpdate(prevProps: Props) {
-    const {
-      cityUsers,
-      isCityUsersLoading,
-      cityUsersError,
-      isSaving,
-      saveError,
-    } = this.props;
+    const { cityUsers, isCityUsersLoading, cityUsersError } = this.props;
     if (
       prevProps.isCityUsersLoading &&
       !isCityUsersLoading &&
@@ -280,9 +268,6 @@ class OnboardingCoworkerPage extends Component<Props, State> {
       cityUsers.size === 0
     ) {
       history.push('/ob/3');
-    }
-    if (prevProps.isSaving && !isSaving && !saveError) {
-      history.push('/edit');
     }
   }
   openSkipModal = () => {
@@ -297,59 +282,8 @@ class OnboardingCoworkerPage extends Component<Props, State> {
   openFormModal = user => {
     this.setState({ selectedUser: user, isFormOpen: true });
   };
-  handleSave = (data, user) => {
-    const { jobs } = this.state;
-    let pos = -1;
-    jobs.forEach((job, index) => {
-      if (
-        job.title.toLowerCase() === data.title.toLowerCase() &&
-        job.from === data.from &&
-        job.to === data.to
-      ) {
-        pos = index;
-      }
-    });
-    if (pos === -1) {
-      this.setState(state => ({
-        isFormOpen: false,
-        jobs: [...state.jobs, data],
-        selectedUserIds: [...state.selectedUserIds, user.id],
-        initialValues: {
-          title: data.title,
-          role: data.role,
-          from: data.from,
-        },
-      }));
-    } else {
-      this.setState(
-        update(this.state, {
-          isFormOpen: { $set: false },
-          jobs: {
-            [pos]: {
-              coworkers: { $push: data.coworkers },
-            },
-          },
-          selectedUserIds: { $push: [user.id] },
-          initialValues: {
-            $set: {
-              title: data.title,
-              role: data.role,
-              from: data.from,
-            },
-          },
-        })
-      );
-    }
-  };
   handleNext = () => {
-    const { jobs } = this.state;
-    if (jobs.length) {
-      this.props.requestCreateWork(jobs);
-    } else {
-      this.setState({
-        isSkipOpen: true,
-      });
-    }
+    history.push('/ob/3');
   };
   handleSendInvite = email => {
     this.setState(
@@ -369,14 +303,17 @@ class OnboardingCoworkerPage extends Component<Props, State> {
       showNotification: false,
     });
   };
+  handleConnectionInvite = user => {
+    this.setState({ isFormOpen: false }, () => {
+      this.props.requestCreateConnection(user.get('id'));
+    });
+  };
   render() {
     const { user, cityUsers, page, total, classes } = this.props;
     const {
       isSkipOpen,
       isFormOpen,
       selectedUser,
-      initialValues,
-      jobs,
       sentTo,
       isInviting,
       showNotification,
@@ -410,16 +347,6 @@ class OnboardingCoworkerPage extends Component<Props, State> {
               <Typography className={classes.coworkersTitle}>
                 Coworkers
               </Typography>
-              {jobs.map(job =>
-                job.coworkers.map(coworker => (
-                  <UserCard
-                    key={generate()}
-                    user={fromJS(coworker)}
-                    onSelect={this.openFormModal}
-                    size="small"
-                  />
-                ))
-              )}
               {invitedEmails.map(email => (
                 <ListItem key={generate()} className={classes.emailCard}>
                   <Avatar className={classes.avatar} />
@@ -489,12 +416,11 @@ class OnboardingCoworkerPage extends Component<Props, State> {
           isOpen={isSkipOpen}
           onCloseModal={this.closeSkipModal}
         />
-        <OnboardingJobFormModal
+        <VouchInviteFormModal
           isOpen={isFormOpen}
           user={selectedUser}
-          initialValues={initialValues}
           onCloseModal={this.closeFormModal}
-          onSave={this.handleSave}
+          onInvite={this.handleConnectionInvite}
         />
       </React.Fragment>
     );
@@ -508,21 +434,22 @@ const mapStateToProps = state => ({
   page: state.getIn(['app', 'cityUsers', 'page']),
   isCityUsersLoading: state.getIn(['app', 'isCityUsersLoading']),
   cityUsersError: state.getIn(['app', 'cityUsersError']),
-  isSaving: state.getIn(['work', 'isLoading']),
-  saveError: state.getIn(['work', 'error']),
   isSignupInviteLoading: state.getIn(['app', 'isSignupInviteLoading']),
   signupInviteError: state.getIn(['app', 'signupInviteError']),
+  isCreating: state.getIn(['network', 'isCreating']),
+  createError: state.getIn(['network', 'createError']),
 });
 
 const mapDispatchToProps = dispatch => ({
-  requestCreateWork: payload => dispatch(requestCreateWork(payload)),
+  requestCreateConnection: payload =>
+    dispatch(requestCreateConnection(payload)),
   requestCityUsers: (city, page, usersPerPage) =>
     dispatch(requestCityUsers(city, page, usersPerPage)),
   requestSignupInvite: email => dispatch(requestSignupInvite(email)),
 });
 
 export default compose(
-  injectSagas({ key: 'work', saga, reducer }),
+  injectSagas({ key: 'network', saga, reducer }),
   connect(
     mapStateToProps,
     mapDispatchToProps
