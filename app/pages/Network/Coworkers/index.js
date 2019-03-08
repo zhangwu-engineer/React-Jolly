@@ -3,24 +3,21 @@ import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { generate } from 'shortid';
-import { fromJS } from 'immutable';
 import update from 'immutability-helper';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Avatar from '@material-ui/core/Avatar';
 
-import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
 import CoworkerCard from 'components/CoworkerCard';
 import InviteForm from 'components/InviteForm';
 import Notification from 'components/Notification';
 
-import { requestSignupInvite } from 'containers/App/sagas';
-import saga, { reducer, requestConnections } from 'containers/Network/sagas';
+import { requestUserCoworkers } from 'containers/App/sagas';
+import saga, {
+  reducer,
+  requestCreateConnection,
+} from 'containers/Network/sagas';
 import injectSagas from 'utils/injectSagas';
 
 const styles = theme => ({
@@ -157,32 +154,31 @@ const styles = theme => ({
 });
 
 type Props = {
-  user: Object,
-  isSignupInviteLoading: boolean,
-  signupInviteError: string,
-  connections: List<Object>,
+  // user: Object,
+  coworkers: List<Object>,
+  isCreating: boolean, // eslint-disable-line
+  createError: string, // eslint-disable-line
   classes: Object,
-  requestSignupInvite: Function,
-  requestConnections: Function,
+  requestUserCoworkers: Function,
+  requestCreateConnection: Function,
 };
 
 type State = {
   sentTo: ?string,
   isInviting: boolean,
   showNotification: boolean,
-  invitedEmails: Array<string>,
 };
 
 class CoworkersPage extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State) {
-    if (nextProps.isSignupInviteLoading) {
+    if (nextProps.isCreating && prevState.sentTo) {
       return {
         isInviting: true,
       };
     }
     if (
-      !nextProps.isSignupInviteLoading &&
-      !nextProps.signupInviteError &&
+      !nextProps.isCreating &&
+      !nextProps.createError &&
       prevState.isInviting
     ) {
       return {
@@ -191,8 +187,8 @@ class CoworkersPage extends Component<Props, State> {
       };
     }
     if (
-      !nextProps.isSignupInviteLoading &&
-      nextProps.signupInviteError &&
+      !nextProps.isCreating &&
+      nextProps.createError &&
       prevState.isInviting
     ) {
       return {
@@ -204,22 +200,20 @@ class CoworkersPage extends Component<Props, State> {
     return null;
   }
   state = {
-    invitedEmails: [],
     sentTo: null,
     isInviting: false,
     showNotification: false,
   };
   componentDidMount() {
-    this.props.requestConnections();
+    this.props.requestUserCoworkers();
   }
   handleSendInvite = email => {
     this.setState(
       update(this.state, {
-        invitedEmails: { $push: [email] },
         sentTo: { $set: email },
       }),
       () => {
-        this.props.requestSignupInvite(email);
+        this.props.requestCreateConnection(email);
       }
     );
   };
@@ -231,12 +225,8 @@ class CoworkersPage extends Component<Props, State> {
     });
   };
   render() {
-    const { user, connections, classes } = this.props;
+    const { coworkers, classes } = this.props;
     const { sentTo, isInviting, showNotification } = this.state;
-    const coworkersCount =
-      connections &&
-      connections.filter(connection => connection.get('status') === 'CONNECTED')
-        .size;
     return (
       <React.Fragment>
         {showNotification && (
@@ -268,40 +258,38 @@ class CoworkersPage extends Component<Props, State> {
             <Grid container spacing={8}>
               <Grid item xs={12} lg={12}>
                 <Typography className={classes.title}>
-                  {coworkersCount === 1
-                    ? `${coworkersCount} Coworker`
-                    : `${coworkersCount} Coworkers`}
+                  {coworkers && coworkers.size === 1
+                    ? `${coworkers.size} Coworker`
+                    : `${coworkers && coworkers.size} Coworkers`}
                 </Typography>
               </Grid>
             </Grid>
             <Grid container spacing={8}>
-              {connections &&
-                connections.map(
-                  connection =>
-                    connection.get('status') === 'CONNECTED' ? (
-                      <Grid item key={generate()} xs={12} lg={12}>
-                        <CoworkerCard user={connection.get('from')} />
-                      </Grid>
-                    ) : null
-                )}
+              {coworkers &&
+                coworkers.map(coworker => (
+                  <Grid item key={generate()} xs={12} lg={12}>
+                    <CoworkerCard user={coworker} />
+                  </Grid>
+                ))}
             </Grid>
-            {coworkersCount === 0 && (
-              <Grid container spacing={8}>
-                <Grid item xs={12} lg={12}>
-                  <div className={classes.emptyCoworkersPanel}>
-                    <div className={classes.emptyCoworkers}>
-                      <Typography className={classes.descText}>
-                        Build your network to <br />
-                        find your next gig &amp; stay in the know!
-                      </Typography>
-                      <Link to="/network" className={classes.coworkersTitle}>
-                        Find Coworkers
-                      </Link>
+            {coworkers &&
+              coworkers.size === 0 && (
+                <Grid container spacing={8}>
+                  <Grid item xs={12} lg={12}>
+                    <div className={classes.emptyCoworkersPanel}>
+                      <div className={classes.emptyCoworkers}>
+                        <Typography className={classes.descText}>
+                          Build your network to <br />
+                          find your next gig &amp; stay in the know!
+                        </Typography>
+                        <Link to="/network" className={classes.coworkersTitle}>
+                          Find Coworkers
+                        </Link>
+                      </div>
                     </div>
-                  </div>
+                  </Grid>
                 </Grid>
-              </Grid>
-            )}
+              )}
           </div>
         </div>
       </React.Fragment>
@@ -311,14 +299,15 @@ class CoworkersPage extends Component<Props, State> {
 
 const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
-  isSignupInviteLoading: state.getIn(['app', 'isSignupInviteLoading']),
-  signupInviteError: state.getIn(['app', 'signupInviteError']),
-  connections: state.getIn(['network', 'connections']),
+  coworkers: state.getIn(['app', 'coworkers']),
+  isCreating: state.getIn(['network', 'isCreating']),
+  createError: state.getIn(['network', 'createError']),
 });
 
 const mapDispatchToProps = dispatch => ({
-  requestConnections: () => dispatch(requestConnections()),
-  requestSignupInvite: email => dispatch(requestSignupInvite(email)),
+  requestCreateConnection: payload =>
+    dispatch(requestCreateConnection(payload)),
+  requestUserCoworkers: () => dispatch(requestUserCoworkers()),
 });
 
 export default compose(
