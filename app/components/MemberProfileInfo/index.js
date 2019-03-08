@@ -9,13 +9,12 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import ShareIcon from '@material-ui/icons/Share';
 import ImageIcon from '@material-ui/icons/Image';
-import Avatar from '@material-ui/core/Avatar';
 
 import { history } from 'components/ConnectedRouter';
 import Icon from 'components/Icon';
 import PhotoModal from 'components/PhotoModal';
+import UserAvatar from 'components/UserAvatar';
 
-import EmptyAvatarImg from 'images/sprite/empty_avatar.svg';
 import FacebookIcon from 'images/sprite/facebook.svg';
 import TwitterIcon from 'images/sprite/twitter.svg';
 import LinkedInIcon from 'images/sprite/linkedin.svg';
@@ -254,11 +253,7 @@ class MemberProfileInfo extends Component<Props, State> {
             <ShareIcon />
           </IconButton>
           <div className={classes.avatarContainer}>
-            {avatarImg ? (
-              <Avatar className={classes.avatar} src={avatarImg} />
-            ) : (
-              <Icon glyph={EmptyAvatarImg} className={classes.avatar} />
-            )}
+            <UserAvatar className={classes.avatar} src={avatarImg} />
           </div>
         </div>
         <div className={classes.bottomSection}>

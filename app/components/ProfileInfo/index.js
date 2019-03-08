@@ -11,14 +11,13 @@ import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import ShareIcon from '@material-ui/icons/Share';
 import CameraIcon from '@material-ui/icons/CameraAltOutlined';
-import Avatar from '@material-ui/core/Avatar';
 import ImageIcon from '@material-ui/icons/Image';
 
 import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
 import Icon from 'components/Icon';
+import UserAvatar from 'components/UserAvatar';
 
-import EmptyAvatarImg from 'images/sprite/empty_avatar.svg';
 import FacebookIcon from 'images/sprite/facebook.svg';
 import TwitterIcon from 'images/sprite/twitter.svg';
 import LinkedInIcon from 'images/sprite/linkedin.svg';
@@ -361,11 +360,7 @@ class ProfileInfo extends PureComponent<Props> {
             <ShareIcon />
           </IconButton>
           <div className={classes.avatarContainer}>
-            {avatarImg ? (
-              <Avatar className={classes.avatar} src={avatarImg} />
-            ) : (
-              <Icon glyph={EmptyAvatarImg} className={classes.avatar} />
-            )}
+            <UserAvatar className={classes.avatar} src={avatarImg} />
             <IconButton
               className={classes.editAvatarButton}
               onClick={() => {
