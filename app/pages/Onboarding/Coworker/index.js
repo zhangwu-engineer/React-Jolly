@@ -10,7 +10,6 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Avatar from '@material-ui/core/Avatar';
 
 import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
@@ -19,6 +18,7 @@ import OnboardingSkipModal from 'components/OnboardingSkipModal';
 import VouchInviteFormModal from 'components/VouchInviteFormModal';
 import InviteForm from 'components/InviteForm';
 import Notification from 'components/Notification';
+import UserAvatar from 'components/UserAvatar';
 
 import { requestCityUsers, requestSignupInvite } from 'containers/App/sagas';
 import saga, {
@@ -170,7 +170,6 @@ const styles = theme => ({
   avatar: {
     width: 40,
     height: 40,
-    backgroundColor: '#f1f1f1',
   },
   email: {
     fontSize: 14,
@@ -349,7 +348,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
               </Typography>
               {invitedEmails.map(email => (
                 <ListItem key={generate()} className={classes.emailCard}>
-                  <Avatar className={classes.avatar} />
+                  <UserAvatar className={classes.avatar} />
                   <ListItemText
                     primary={
                       email.length > 18 ? `${email.substr(0, 18)}...` : email

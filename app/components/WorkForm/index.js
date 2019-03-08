@@ -21,7 +21,6 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Avatar from '@material-ui/core/Avatar';
 import ClearIcon from '@material-ui/icons/Clear';
 import LeftArrowIcon from '@material-ui/icons/KeyboardArrowLeft';
 import RightArrowIcon from '@material-ui/icons/KeyboardArrowRight';
@@ -30,6 +29,7 @@ import Link from 'components/Link';
 import Icon from 'components/Icon';
 import Dropzone from 'components/Dropzone';
 import CustomSelect from 'components/CustomSelect';
+import UserAvatar from 'components/UserAvatar';
 
 import RoleIcon from 'images/sprite/role.svg';
 import CaptionIcon from 'images/sprite/caption.svg';
@@ -208,7 +208,8 @@ const styles = theme => ({
     height: 100,
   },
   avatar: {
-    backgroundColor: '#afafaf',
+    width: 40,
+    height: 40,
   },
   emptyResultText: {
     fontSize: 14,
@@ -755,7 +756,7 @@ class WorkForm extends Component<Props, State> {
                               }
                             }}
                           >
-                            <Avatar
+                            <UserAvatar
                               className={classes.avatar}
                               alt={`${u.get('firstName')} ${u.get('lastName')}`}
                               src={u.getIn(['profile', 'avatar'])}
@@ -786,7 +787,7 @@ class WorkForm extends Component<Props, State> {
                         className={classes.coworkerItem}
                         key={generate()}
                       >
-                        <Avatar
+                        <UserAvatar
                           className={classes.avatar}
                           alt={`${get(c, ['firstName'])} ${get(c, [
                             'lastName',

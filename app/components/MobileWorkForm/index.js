@@ -26,7 +26,6 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Paper from '@material-ui/core/Paper';
-import Avatar from '@material-ui/core/Avatar';
 import ClearIcon from '@material-ui/icons/Clear';
 import LeftArrowIcon from '@material-ui/icons/KeyboardArrowLeft';
 import RightArrowIcon from '@material-ui/icons/KeyboardArrowRight';
@@ -38,6 +37,7 @@ import Red from '@material-ui/core/colors/red';
 import { history } from 'components/ConnectedRouter';
 import Icon from 'components/Icon';
 import CustomSelect from 'components/CustomSelect';
+import UserAvatar from 'components/UserAvatar';
 
 import RoleIcon from 'images/sprite/role.svg';
 import CaptionIcon from 'images/sprite/caption.svg';
@@ -299,7 +299,8 @@ const styles = theme => ({
     marginBottom: 20,
   },
   avatar: {
-    backgroundColor: '#afafaf',
+    width: 40,
+    height: 40,
   },
   addCoworkerSmallButton: {
     color: theme.palette.common.white,
@@ -312,11 +313,11 @@ const styles = theme => ({
 const emailRegEx = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 type Props = {
-  user: Object,
+  user: Object, // eslint-disable-line
   isLoading: boolean,
-  error: string,
+  error: string, // eslint-disable-line
   works: Object,
-  roles: Object,
+  roles: Object, // eslint-disable-line
   users: Object,
   classes: Object,
   searchUsers: Function,
@@ -1067,7 +1068,7 @@ class MobileWorkForm extends Component<Props, State> {
                       }
                     }}
                   >
-                    <Avatar
+                    <UserAvatar
                       className={classes.avatar}
                       alt={`${u.get('firstName')} ${u.get('lastName')}`}
                       src={u.getIn(['profile', 'avatar'])}
@@ -1099,7 +1100,7 @@ class MobileWorkForm extends Component<Props, State> {
             <List className={classes.coworkersList}>
               {model.coworkers.map(c => (
                 <ListItem className={classes.coworkerItem} key={generate()}>
-                  <Avatar
+                  <UserAvatar
                     className={classes.avatar}
                     alt={`${get(c, ['firstName'])} ${get(c, ['lastName'])}`}
                     src={get(c, ['avatar'])}

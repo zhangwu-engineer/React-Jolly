@@ -26,12 +26,12 @@ import Input from '@material-ui/core/Input';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Avatar from '@material-ui/core/Avatar';
 // import EditIcon from '@material-ui/icons/Edit';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import User from 'components/User';
 import Icon from 'components/Icon';
+import UserAvatar from 'components/UserAvatar';
 import PeopleIcon from 'images/sprite/people.svg';
 import CaptionIcon from 'images/sprite/caption.svg';
 
@@ -223,7 +223,8 @@ const styles = theme => ({
     },
   },
   avatar: {
-    backgroundColor: '#afafaf',
+    width: 40,
+    height: 40,
   },
   endorseFactor: {
     fontSize: 14,
@@ -562,7 +563,7 @@ class WorkDetail extends Component<Props, State> {
                   >
                     {work.get('verifiers').map(verifier => (
                       <Grid item key={generate()}>
-                        <Avatar
+                        <UserAvatar
                           className={classes.avatar}
                           src={verifier.getIn(['profile', 'avatar'])}
                         />
@@ -597,7 +598,7 @@ class WorkDetail extends Component<Props, State> {
                       >
                         {group.users.map(user => (
                           <Grid item key={generate()}>
-                            <Avatar
+                            <UserAvatar
                               className={classes.avatar}
                               src={user.from.profile.avatar}
                             />
@@ -634,7 +635,7 @@ class WorkDetail extends Component<Props, State> {
                           }
                           return (
                             <Grid item key={generate()}>
-                              <Avatar
+                              <UserAvatar
                                 className={classes.avatar}
                                 src={user.getIn(['user', 'profile', 'avatar'])}
                               />
@@ -719,7 +720,7 @@ class WorkDetail extends Component<Props, State> {
                                 this.setState({ newUser: '' });
                               }}
                             >
-                              <Avatar
+                              <UserAvatar
                                 alt={`${u.get('firstName')} ${u.get(
                                   'lastName'
                                 )}`}
@@ -853,7 +854,7 @@ class WorkDetail extends Component<Props, State> {
                       });
                     }}
                   >
-                    <Avatar
+                    <UserAvatar
                       alt={`${u.get('firstName')} ${u.get('lastName')}`}
                       src={u.getIn(['profile', 'avatar'])}
                       className={classes.avatar}

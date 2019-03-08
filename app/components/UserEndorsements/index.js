@@ -8,11 +8,11 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import Avatar from '@material-ui/core/Avatar';
 
 import { history } from 'components/ConnectedRouter';
 import BaseModal from 'components/BaseModal';
 import Icon from 'components/Icon';
+import UserAvatar from 'components/UserAvatar';
 
 import MedalIcon from 'images/sprite/medal.svg';
 
@@ -90,7 +90,6 @@ const styles = theme => ({
     marginBottom: 10,
   },
   avatar: {
-    backgroundColor: '#afafaf',
     width: 30,
     height: 30,
   },
@@ -309,7 +308,7 @@ class UserEndorsements extends Component<Props, State> {
                     >
                       {group.users.map(u => (
                         <Grid item key={generate()}>
-                          <Avatar
+                          <UserAvatar
                             className={classes.avatar}
                             src={u.from.profile.avatar}
                           />

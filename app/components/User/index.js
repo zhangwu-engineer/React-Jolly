@@ -14,13 +14,13 @@ import Checkbox from '@material-ui/core/Checkbox';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Avatar from '@material-ui/core/Avatar';
 
 import HelpIcon from '@material-ui/icons/HelpOutline';
 import CloseIcon from '@material-ui/icons/Clear';
 
 import EndorsementTip from 'components/EndorsementTip';
 import EndorsementModal from 'components/EndorsementModal';
+import UserAvatar from 'components/UserAvatar';
 
 const styles = theme => ({
   root: {
@@ -30,7 +30,8 @@ const styles = theme => ({
     padding: 0,
   },
   avatar: {
-    backgroundColor: '#afafaf',
+    width: 40,
+    height: 40,
   },
   resultText: {
     fontSize: 16,
@@ -201,7 +202,7 @@ class User extends Component<Props, State> {
     return (
       <div className={classes.root}>
         <ListItem className={classes.coworkerItem}>
-          <Avatar
+          <UserAvatar
             alt={`${user.get('firstName')} ${user.get('lastName')}`}
             src={user.getIn(['profile', 'avatar'])}
             className={classes.avatar}
