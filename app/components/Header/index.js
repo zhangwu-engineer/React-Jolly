@@ -145,7 +145,6 @@ const styles = theme => ({
     width: 40,
     height: 40,
     marginRight: 15,
-    backgroundColor: theme.palette.common.gray,
   },
   menuName: {
     fontSize: 16,
@@ -320,10 +319,14 @@ class Header extends Component<Props, State> {
       <Fragment>
         <Grid container className={classes.menuTop} alignItems="center">
           <Grid item>
-            <Avatar
-              className={classes.menuAvatar}
-              src={user && user.getIn(['profile', 'avatar'])}
-            />
+            {user.getIn(['profile', 'avatar']) ? (
+              <Avatar
+                className={classes.menuAvatar}
+                src={user && user.getIn(['profile', 'avatar'])}
+              />
+            ) : (
+              <Icon glyph={EmptyAvatar} className={classes.menuAvatar} />
+            )}
           </Grid>
           <Grid item>
             {user ? (
