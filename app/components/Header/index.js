@@ -319,7 +319,7 @@ class Header extends Component<Props, State> {
       <Fragment>
         <Grid container className={classes.menuTop} alignItems="center">
           <Grid item>
-            {user.getIn(['profile', 'avatar']) ? (
+            {user && user.getIn(['profile', 'avatar']) ? (
               <Avatar
                 className={classes.menuAvatar}
                 src={user && user.getIn(['profile', 'avatar'])}
