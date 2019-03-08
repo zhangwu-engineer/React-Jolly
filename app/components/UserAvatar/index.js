@@ -8,7 +8,7 @@ import EmptyAvatar from 'images/sprite/empty_avatar.svg';
 type Props = {
   className?: string,
   src?: string,
-  alt: string,
+  alt?: string,
 };
 
 class UserAvatar extends Component<Props> {
