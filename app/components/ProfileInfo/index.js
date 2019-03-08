@@ -18,7 +18,7 @@ import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
 import Icon from 'components/Icon';
 
-import EmptyAvatarImg from 'images/empty_avatar.png';
+import EmptyAvatarImg from 'images/sprite/empty_avatar.svg';
 import FacebookIcon from 'images/sprite/facebook.svg';
 import TwitterIcon from 'images/sprite/twitter.svg';
 import LinkedInIcon from 'images/sprite/linkedin.svg';
@@ -302,7 +302,7 @@ class ProfileInfo extends PureComponent<Props> {
       numberOfEndorsements,
       classes,
     } = this.props;
-    const avatarImg = user.getIn(['profile', 'avatar']) || EmptyAvatarImg;
+    const avatarImg = user.getIn(['profile', 'avatar']) || '';
     return (
       <div className={classes.root}>
         <div className={classes.topSection}>
@@ -361,7 +361,11 @@ class ProfileInfo extends PureComponent<Props> {
             <ShareIcon />
           </IconButton>
           <div className={classes.avatarContainer}>
-            <Avatar className={classes.avatar} src={avatarImg} />
+            {avatarImg ? (
+              <Avatar className={classes.avatar} src={avatarImg} />
+            ) : (
+              <Icon glyph={EmptyAvatarImg} className={classes.avatar} />
+            )}
             <IconButton
               className={classes.editAvatarButton}
               onClick={() => {
