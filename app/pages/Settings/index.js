@@ -8,12 +8,12 @@ import cx from 'classnames';
 
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Avatar from '@material-ui/core/Avatar';
 import Grid from '@material-ui/core/Grid';
 
 import UserGeneralForm from 'components/UserForm/General';
 import UserProfileForm from 'components/UserForm/Profile';
 import Link from 'components/Link';
+import UserAvatar from 'components/UserAvatar';
 
 import { requestUserDataUpdate, requestUser } from 'containers/App/sagas';
 
@@ -190,7 +190,7 @@ class SettingsPage extends Component<Props> {
               }}
             >
               <Grid item>
-                <Avatar
+                <UserAvatar
                   className={classes.avatar}
                   src={user.getIn(['profile', 'avatar'])}
                 />
