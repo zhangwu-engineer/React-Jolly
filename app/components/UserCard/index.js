@@ -5,9 +5,9 @@ import { capitalize } from 'lodash-es';
 import { withStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Avatar from '@material-ui/core/Avatar';
 
 import Icon from 'components/Icon';
+import UserAvatar from 'components/UserAvatar';
 import CheckIcon from 'images/sprite/green_checkmark.svg';
 
 const styles = theme => ({
@@ -26,7 +26,6 @@ const styles = theme => ({
     marginBottom: 12,
   },
   avatar: {
-    backgroundColor: '#afafaf',
     width: 50,
     height: 50,
   },
@@ -87,7 +86,7 @@ class UserCard extends Component<Props> {
         })}
         onClick={this.handleClick}
       >
-        <Avatar
+        <UserAvatar
           alt={`${user.get('firstName')} ${user.get('lastName')}`}
           src={user.getIn(['profile', 'avatar'])}
           className={cx(classes.avatar, {
