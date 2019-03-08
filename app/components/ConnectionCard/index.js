@@ -6,9 +6,10 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import Avatar from '@material-ui/core/Avatar';
 import DoneIcon from '@material-ui/icons/Done';
 import ClearIcon from '@material-ui/icons/Clear';
+
+import UserAvatar from 'components/UserAvatar';
 
 const styles = theme => ({
   root: {
@@ -108,7 +109,7 @@ class ConnectionCard extends Component<Props> {
     const user = connection.get('from');
     return (
       <div className={classes.root}>
-        <Avatar
+        <UserAvatar
           className={classes.avatar}
           src={user && user.getIn(['profile', 'avatar'])}
           alt={user && user.get('firstName')}
