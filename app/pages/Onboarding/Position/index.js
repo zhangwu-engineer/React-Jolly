@@ -313,7 +313,7 @@ class OnboardingPositionPage extends Component<Props, State> {
     if (selectedPositions.length) {
       const positions = selectedPositions.map(position => ({
         name: position,
-        years: 0,
+        years: '',
         minRate: '',
         maxRate: '',
         unit: 'hour',

@@ -78,14 +78,16 @@ class RoleCard extends Component<Props> {
           <Typography variant="h6" className={classes.name}>
             {role.name}
           </Typography>
-          <Typography variant="h6" className={classes.years}>
-            {role.years === 0 ? 'Less than 1 year experience' : ''}
-            {role.years === 1 ? '1 year experience' : ''}
-            {role.years > 1 && role.years < 20
-              ? `${role.years} years experience`
-              : ''}
-            {role.years === 20 ? 'Over 20 years experience' : ''}
-          </Typography>
+          {role.years !== '' && (
+            <Typography variant="h6" className={classes.years}>
+              {role.years === 0 ? '< 1 year experience' : ''}
+              {role.years === 1 ? '1 year experience' : ''}
+              {role.years > 1 && role.years < 20
+                ? `${role.years} years experience`
+                : ''}
+              {role.years === 20 ? 'Over 20 years experience' : ''}
+            </Typography>
+          )}
           {role.minRate &&
             role.maxRate &&
             role.unit && (
