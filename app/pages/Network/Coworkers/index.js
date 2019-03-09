@@ -260,7 +260,7 @@ class CoworkersPage extends Component<Props, State> {
                 <Typography className={classes.title}>
                   {coworkers && coworkers.size === 1
                     ? `${coworkers.size} Coworker`
-                    : `${coworkers && coworkers.size} Coworkers`}
+                    : `${coworkers ? coworkers.size : ''} Coworkers`}
                 </Typography>
               </Grid>
             </Grid>
