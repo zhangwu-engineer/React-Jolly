@@ -546,11 +546,13 @@ class Header extends Component<Props, State> {
           })}
         >
           <Grid container alignItems="center">
-            <Grid item>
-              <Link to="/network" className={classes.networkButton}>
-                <Icon glyph={People} size={30} />
-              </Link>
-            </Grid>
+            {user && (
+              <Grid item>
+                <Link to="/network" className={classes.networkButton}>
+                  <Icon glyph={People} size={30} />
+                </Link>
+              </Grid>
+            )}
             <Grid item>
               <Button
                 buttonRef={node => {
