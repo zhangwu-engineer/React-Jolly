@@ -26,6 +26,7 @@ import OnboardingPositionSkipModal from 'components/OnboardingPositionSkipModal'
 import saga, {
   reducer,
   requestCreateRole,
+  requestDeleteRole,
   requestRoles,
 } from 'containers/Role/sagas';
 import injectSagas from 'utils/injectSagas';
@@ -221,8 +222,11 @@ type Props = {
   roles: List,
   isSaving: boolean,
   saveError: string,
+  isDeleting: boolean,
+  deleteError: string,
   classes: Object,
   requestCreateRole: Function,
+  requestDeleteRole: Function,
   requestRoles: Function,
 };
 
@@ -248,9 +252,12 @@ class OnboardingPositionPage extends Component<Props, State> {
     this.props.requestRoles();
   }
   componentDidUpdate(prevProps: Props) {
-    const { isSaving, saveError } = this.props;
+    const { isSaving, saveError, isDeleting, deleteError } = this.props;
     if (prevProps.isSaving && !isSaving && !saveError) {
       history.push('/edit');
+    }
+    if (prevProps.isDeleting && !isDeleting && !deleteError) {
+      this.props.requestRoles();
     }
   }
   openSkipModal = () => {
@@ -300,13 +307,21 @@ class OnboardingPositionPage extends Component<Props, State> {
     );
   };
   removePosition = position => {
+    const { roles } = this.props;
     const { selectedPositions } = this.state;
     const pos = selectedPositions.indexOf(position);
-    this.setState(
-      update(this.state, {
-        selectedPositions: { $splice: [[pos, 1]] },
-      })
-    );
+    if (pos !== -1) {
+      this.setState(
+        update(this.state, {
+          selectedPositions: { $splice: [[pos, 1]] },
+        })
+      );
+    } else {
+      const selectedRoles = roles.filter(role => role.get('name') === position);
+      if (selectedRoles.size === 1) {
+        this.props.requestDeleteRole({ id: selectedRoles.getIn([0, 'id']) });
+      }
+    }
   };
   handleNext = () => {
     const { selectedPositions } = this.state;
@@ -381,7 +396,9 @@ class OnboardingPositionPage extends Component<Props, State> {
                   <ListItem
                     key={generate()}
                     className={classes.positionCard}
-                    onClick={() => this.removePosition(role.get('name'))}
+                    onClick={() =>
+                      this.props.requestDeleteRole({ id: role.get('id') })
+                    }
                   >
                     <IconButton className={classes.iconButton}>
                       <ClearIcon />
@@ -445,7 +462,8 @@ class OnboardingPositionPage extends Component<Props, State> {
                       selectedPositions.includes(position) ||
                       existingRoles.includes(position)
                     }
-                    onSelect={this.addPosition}
+                    addPosition={this.addPosition}
+                    removePosition={this.removePosition}
                   />
                 </Grid>
               ))}
@@ -470,7 +488,8 @@ class OnboardingPositionPage extends Component<Props, State> {
                         selectedPositions.includes(position) ||
                         existingRoles.includes(position)
                       }
-                      onSelect={this.addPosition}
+                      addPosition={this.addPosition}
+                      removePosition={this.removePosition}
                     />
                   </Grid>
                 ))}
@@ -516,11 +535,14 @@ const mapStateToProps = state => ({
   roles: state.getIn(['role', 'roles']),
   isSaving: state.getIn(['role', 'isCreating']),
   saveError: state.getIn(['role', 'createError']),
+  isDeleting: state.getIn(['role', 'isDeleting']),
+  deleteError: state.getIn(['role', 'deleteError']),
 });
 
 const mapDispatchToProps = dispatch => ({
   requestRoles: () => dispatch(requestRoles()),
   requestCreateRole: payload => dispatch(requestCreateRole(payload)),
+  requestDeleteRole: payload => dispatch(requestDeleteRole(payload)),
 });
 
 export default compose(

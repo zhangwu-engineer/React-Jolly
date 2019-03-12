@@ -23,16 +23,19 @@ const styles = theme => ({
 
 type Props = {
   position: string,
-  classes: Object,
-  onSelect: Function,
   selected: boolean,
+  classes: Object,
+  addPosition: Function,
+  removePosition: Function,
 };
 
 class PositionCard extends Component<Props> {
   handleClick = () => {
     const { position, selected } = this.props;
-    if (!selected) {
-      this.props.onSelect(position);
+    if (selected) {
+      this.props.removePosition(position);
+    } else {
+      this.props.addPosition(position);
     }
   };
   render() {
