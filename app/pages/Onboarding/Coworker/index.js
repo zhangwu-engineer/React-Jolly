@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { generate } from 'shortid';
+import { capitalize } from 'lodash-es';
 import update from 'immutability-helper';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -202,6 +203,9 @@ type State = {
   sentTo: ?string,
   isInviting: boolean,
   showNotification: boolean,
+  connectedTo: ?string,
+  isConnecting: boolean,
+  showConnectionNotification: boolean,
   selectedUserIds: Array<string>,
   invitedEmails: Array<string>,
 };
@@ -234,6 +238,32 @@ class OnboardingCoworkerPage extends Component<Props, State> {
         isInviting: false,
       };
     }
+    if (nextProps.isCreating && prevState.connectedTo) {
+      return {
+        isConnecting: true,
+      };
+    }
+    if (
+      !nextProps.isCreating &&
+      !nextProps.createError &&
+      prevState.isConnecting
+    ) {
+      return {
+        showConnectionNotification: true,
+        isConnecting: false,
+      };
+    }
+    if (
+      !nextProps.isCreating &&
+      nextProps.createError &&
+      prevState.isConnecting
+    ) {
+      return {
+        connectedTo: null,
+        showConnectionNotification: false,
+        isConnecting: false,
+      };
+    }
     return null;
   }
   state = {
@@ -245,6 +275,9 @@ class OnboardingCoworkerPage extends Component<Props, State> {
     sentTo: null,
     isInviting: false,
     showNotification: false,
+    isConnecting: false, // eslint-disable-line
+    connectedTo: null,
+    showConnectionNotification: false,
   };
   componentDidMount() {
     const { user, page } = this.props;
@@ -302,10 +335,23 @@ class OnboardingCoworkerPage extends Component<Props, State> {
       showNotification: false,
     });
   };
-  handleConnectionInvite = user => {
-    this.setState({ isFormOpen: false }, () => {
-      this.props.requestCreateConnection(user.get('id'));
+  closeConnectionNotification = () => {
+    this.setState({
+      connectedTo: null,
+      isConnecting: false, // eslint-disable-line
+      showConnectionNotification: false,
     });
+  };
+  handleConnectionInvite = user => {
+    this.setState(
+      update(this.state, {
+        connectedTo: { $set: capitalize(user.get('firstName')) },
+        isFormOpen: { $set: false },
+      }),
+      () => {
+        this.props.requestCreateConnection(user.get('id'));
+      }
+    );
   };
   render() {
     const { user, cityUsers, page, total, classes } = this.props;
@@ -316,6 +362,8 @@ class OnboardingCoworkerPage extends Component<Props, State> {
       sentTo,
       isInviting,
       showNotification,
+      connectedTo,
+      showConnectionNotification,
       invitedEmails,
       selectedUserIds,
     } = this.state;
@@ -338,6 +386,12 @@ class OnboardingCoworkerPage extends Component<Props, State> {
           <Notification
             msg={`Invite sent to ${sentTo}`}
             close={this.closeNotification}
+          />
+        )}
+        {showConnectionNotification && (
+          <Notification
+            msg={`Coworker connection request sent to ${connectedTo}`}
+            close={this.closeConnectionNotification}
           />
         )}
         <div className={classes.content}>
