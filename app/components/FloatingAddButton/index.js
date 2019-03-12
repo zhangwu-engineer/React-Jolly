@@ -29,6 +29,7 @@ type Props = {
 
 class FloatingAddButton extends Component<Props> {
   handleClick = () => {
+    analytics.track('Action Button Clicked');
     history.push('/add');
   };
   render() {
