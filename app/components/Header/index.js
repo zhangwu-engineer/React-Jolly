@@ -256,10 +256,12 @@ const styles = theme => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.16)',
     height: 70,
     width: 70,
     marginRight: 25,
+    '&:hover': {
+      backgroundColor: 'rgba(255, 255, 255, 0.16)',
+    },
     [theme.breakpoints.down('xs')]: {
       height: 48,
       width: 48,
