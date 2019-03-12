@@ -11,7 +11,7 @@ import UserAvatar from 'components/UserAvatar';
 
 const styles = theme => ({
   modal: {
-    padding: 0,
+    padding: 30,
     width: 581,
     borderRadius: '0px !important',
     [theme.breakpoints.down('xs')]: {
@@ -20,16 +20,24 @@ const styles = theme => ({
       top: 'initial !important',
       left: '0px !important',
       bottom: '0px !important',
+      padding: '20px 25px',
+    },
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 600,
+    letterSpacing: 0.4,
+    color: '#313131',
+    marginBottom: 15,
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 14,
+      fontWeight: 'bold',
     },
   },
   content: {
     backgroundColor: theme.palette.common.white,
-    padding: 30,
     display: 'flex',
     alignItems: 'center',
-    [theme.breakpoints.down('xs')]: {
-      padding: '20px 25px',
-    },
   },
   avatar: {
     height: 96,
@@ -102,6 +110,11 @@ class VouchInviteFormModal extends Component<Props> {
         isOpen={isOpen}
         onCloseModal={this.closeModal}
       >
+        <Typography
+          className={classes.title}
+        >{`Have you been coworkers with ${capitalize(
+          user && user.get('firstName')
+        )}?`}</Typography>
         <div className={classes.content}>
           <UserAvatar
             className={classes.avatar}
@@ -128,7 +141,7 @@ class VouchInviteFormModal extends Component<Props> {
             className={classes.inviteButton}
             onClick={this.handleInvite}
           >
-            Invite
+            Connect
           </Button>
         </div>
       </BaseModal>
