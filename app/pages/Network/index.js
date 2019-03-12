@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { generate } from 'shortid';
+import { capitalize } from 'lodash-es';
 import update from 'immutability-helper';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -256,9 +257,15 @@ class NetworkPage extends Component<Props, State> {
     this.setState({ selectedUser: user, isFormOpen: true });
   };
   handleConnectionInvite = user => {
-    this.setState({ isFormOpen: false }, () => {
-      this.props.requestCreateConnection(user.get('id'));
-    });
+    this.setState(
+      update(this.state, {
+        sentTo: { $set: capitalize(user.get('firstName')) },
+        isFormOpen: { $set: false },
+      }),
+      () => {
+        this.props.requestCreateConnection(user.get('id'));
+      }
+    );
   };
   handleSendInvite = email => {
     this.setState(
@@ -298,7 +305,7 @@ class NetworkPage extends Component<Props, State> {
       <React.Fragment>
         {showNotification && (
           <Notification
-            msg={`Invite sent to ${sentTo}`}
+            msg={`Coworker connection request sent to ${sentTo}`}
             close={this.closeNotification}
           />
         )}
@@ -351,12 +358,11 @@ class NetworkPage extends Component<Props, State> {
               )}
 
             <Grid container spacing={8}>
-              <Grid item xs={6} lg={6}>
+              <Grid item xs={12} lg={12}>
                 <Typography className={classes.title}>
-                  Find coworkers
+                  Add past coworkers to your network
                 </Typography>
               </Grid>
-              <Grid item xs={6} lg={6} />
               <Grid item xs={12} lg={12}>
                 <Tabs
                   value={selectedTab}
