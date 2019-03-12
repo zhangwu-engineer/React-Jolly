@@ -206,7 +206,7 @@ type State = {
   connectedTo: ?string,
   isConnecting: boolean,
   showConnectionNotification: boolean,
-  selectedUserIds: Array<string>,
+  invitedUserIds: Array<string>,
   invitedEmails: Array<string>,
 };
 
@@ -238,46 +238,46 @@ class OnboardingCoworkerPage extends Component<Props, State> {
         isInviting: false,
       };
     }
-    if (nextProps.isCreating && prevState.connectedTo) {
-      return {
-        isConnecting: true,
-      };
-    }
-    if (
-      !nextProps.isCreating &&
-      !nextProps.createError &&
-      prevState.isConnecting
-    ) {
-      return {
-        showConnectionNotification: true,
-        isConnecting: false,
-      };
-    }
-    if (
-      !nextProps.isCreating &&
-      nextProps.createError &&
-      prevState.isConnecting
-    ) {
-      return {
-        connectedTo: null,
-        showConnectionNotification: false,
-        isConnecting: false,
-      };
-    }
+    // if (nextProps.isCreating && prevState.connectedTo) {
+    //   return {
+    //     isConnecting: true,
+    //   };
+    // }
+    // if (
+    //   !nextProps.isCreating &&
+    //   !nextProps.createError &&
+    //   prevState.isConnecting
+    // ) {
+    //   return {
+    //     showConnectionNotification: true,
+    //     isConnecting: false,
+    //   };
+    // }
+    // if (
+    //   !nextProps.isCreating &&
+    //   nextProps.createError &&
+    //   prevState.isConnecting
+    // ) {
+    //   return {
+    //     connectedTo: null,
+    //     showConnectionNotification: false,
+    //     isConnecting: false,
+    //   };
+    // }
     return null;
   }
   state = {
     isSkipOpen: false,
     isFormOpen: false,
     selectedUser: null,
-    selectedUserIds: [],
+    invitedUserIds: [],
     invitedEmails: [],
     sentTo: null,
     isInviting: false,
     showNotification: false,
     isConnecting: false, // eslint-disable-line
     connectedTo: null,
-    showConnectionNotification: false,
+    showConnectionNotification: false, // eslint-disable-line
   };
   componentDidMount() {
     const { user, page } = this.props;
@@ -339,12 +339,13 @@ class OnboardingCoworkerPage extends Component<Props, State> {
     this.setState({
       connectedTo: null,
       isConnecting: false, // eslint-disable-line
-      showConnectionNotification: false,
+      showConnectionNotification: false, // eslint-disable-line
     });
   };
   handleConnectionInvite = user => {
     this.setState(
       update(this.state, {
+        invitedUserIds: { $push: [user.get('id')] },
         connectedTo: { $set: capitalize(user.get('firstName')) },
         isFormOpen: { $set: false },
       }),
@@ -363,9 +364,8 @@ class OnboardingCoworkerPage extends Component<Props, State> {
       isInviting,
       showNotification,
       connectedTo,
-      showConnectionNotification,
       invitedEmails,
-      selectedUserIds,
+      invitedUserIds,
     } = this.state;
     const loadMore = total > page * perPage;
     return (
@@ -388,7 +388,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
             close={this.closeNotification}
           />
         )}
-        {showConnectionNotification && (
+        {connectedTo && (
           <Notification
             msg={`Coworker connection request sent to ${connectedTo}`}
             close={this.closeConnectionNotification}
@@ -400,6 +400,17 @@ class OnboardingCoworkerPage extends Component<Props, State> {
               <Typography className={classes.coworkersTitle}>
                 Coworkers
               </Typography>
+              {cityUsers.map(
+                cityUser =>
+                  invitedUserIds.includes(cityUser.get('id')) ? (
+                    <UserCard
+                      key={generate()}
+                      user={cityUser}
+                      onSelect={this.openFormModal}
+                      size="small"
+                    />
+                  ) : null
+              )}
               {invitedEmails.map(email => (
                 <ListItem key={generate()} className={classes.emailCard}>
                   <UserAvatar className={classes.avatar} />
@@ -430,7 +441,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
                   <UserCard
                     user={cityUser}
                     onSelect={this.openFormModal}
-                    selected={selectedUserIds.includes(cityUser.get('id'))}
+                    selected={invitedUserIds.includes(cityUser.get('id'))}
                   />
                 </Grid>
               ))}
