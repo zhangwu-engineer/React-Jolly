@@ -188,7 +188,8 @@ type State = {
   sentTo: ?string,
   isInviting: boolean,
   showNotification: boolean,
-  selectedUserIds: Array<string>,
+  connectedTo: ?string,
+  invitedUserIds: Array<string>,
   selectedTab: number,
 };
 
@@ -225,7 +226,7 @@ class NetworkPage extends Component<Props, State> {
   state = {
     isFormOpen: false,
     selectedUser: null,
-    selectedUserIds: [],
+    invitedUserIds: [],
     sentTo: null,
     isInviting: false,
     showNotification: false,
@@ -259,7 +260,8 @@ class NetworkPage extends Component<Props, State> {
   handleConnectionInvite = user => {
     this.setState(
       update(this.state, {
-        sentTo: { $set: capitalize(user.get('firstName')) },
+        invitedUserIds: { $push: [user.get('id')] },
+        connectedTo: { $set: capitalize(user.get('firstName')) },
         isFormOpen: { $set: false },
       }),
       () => {
@@ -284,6 +286,11 @@ class NetworkPage extends Component<Props, State> {
       showNotification: false,
     });
   };
+  closeConnectionNotification = () => {
+    this.setState({
+      connectedTo: null,
+    });
+  };
   handleChangeTab = (e, value) => {
     this.setState({ selectedTab: value });
   };
@@ -295,7 +302,8 @@ class NetworkPage extends Component<Props, State> {
       sentTo,
       isInviting,
       showNotification,
-      selectedUserIds,
+      invitedUserIds,
+      connectedTo,
       selectedTab,
     } = this.state;
     const pendingConnections =
@@ -307,6 +315,12 @@ class NetworkPage extends Component<Props, State> {
           <Notification
             msg={`Coworker connection request sent to ${sentTo}`}
             close={this.closeNotification}
+          />
+        )}
+        {connectedTo && (
+          <Notification
+            msg={`Coworker connection request sent to ${connectedTo}`}
+            close={this.closeConnectionNotification}
           />
         )}
         <div className={classes.smallCoworkersBox}>
@@ -403,7 +417,7 @@ class NetworkPage extends Component<Props, State> {
                     <UserCard
                       user={cityUser}
                       onSelect={this.openFormModal}
-                      selected={selectedUserIds.includes(cityUser.get('id'))}
+                      selected={invitedUserIds.includes(cityUser.get('id'))}
                     />
                   </Grid>
                 ))}
