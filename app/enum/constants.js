@@ -20,121 +20,25 @@ export const CLEAR = '_CLEAR';
 export const DEFAULT_LAT = 45.4215;
 export const DEFAULT_LONG = -75.6972;
 
-export const GLOBAL_SEARCH_CATEGORY_ORDER = {
-  support: 1,
-  strains: 2,
-  oils: 3,
-  accessories: 4,
-  producers: 5,
-  dispensaries: 6,
-  doctors: 7,
-  advice: 8,
-  news: 9,
-};
-
-export const BUSINESS_REVIEW_FIELDS = {
-  producer: [
-    {
-      title: 'Pricing',
-      model: 'pricing',
-    },
-    {
-      title: 'Delivery Speed',
-      model: 'speedOfDelivery',
-    },
-    {
-      title: 'Helpfulness',
-      model: 'helpfulness',
-    },
-    {
-      title: 'Ordering Process',
-      model: 'orderingProcess',
-    },
-  ],
-  doctor: [
-    {
-      title: 'Customer Service',
-      model: 'customerService',
-    },
-    {
-      title: 'Knowledge',
-      model: 'knowledge',
-    },
-    {
-      title: 'Wait Time',
-      model: 'waitTime',
-    },
-    {
-      title: 'Facilities',
-      model: 'facilities',
-    },
-  ],
-  dispensary: [
-    {
-      title: 'Customer Service',
-      model: 'customerService',
-    },
-    {
-      title: 'Knowledge',
-      model: 'knowledge',
-    },
-    {
-      title: 'Pricing',
-      model: 'pricing',
-    },
-    {
-      title: 'Product Selection',
-      model: 'productSelection',
-    },
-  ],
-};
-
-export const MAGAZINE_REFERRER_OPTIONS = [
+export const CATEGORY_OPTIONS = [
   {
-    label: 'Cannabis Clinic',
-    value: 'cannabis clinic',
+    label: 'Gig info or question',
+    value: 'gig-info-or-question',
   },
   {
-    label: 'Doctor’s Office or Pharmacy',
-    value: 'doctor’s office or pharmacy',
+    label: 'Work opportunity',
+    value: 'work-opportunity',
   },
   {
-    label: 'Licensed Producer',
-    value: 'licensed producer',
+    label: 'Business review',
+    value: 'business-review',
   },
   {
-    label: 'Lift Event (CCAs, Lift Expo, etc)',
-    value: 'lift event (CCAs, Lift Expo, etc)',
+    label: 'Coworker shout-out',
+    value: 'coworker-shout-out',
   },
   {
-    label: 'Mailed To My Home',
-    value: 'mailed to my home',
+    label: 'General message',
+    value: 'general-message',
   },
 ];
-
-export const CONTENT_TYPES = {
-  AUTHOR: '1kUEViTN4EmGiEaaeC6ouY',
-  CATEGORY: '5KMiN6YPvi42icqAUQMCQe',
-  PAGE: 'page',
-  POST: '2wKn6yEnZewu2SCCkus4as',
-  C101HOMEPAGE: 'c101Homepage',
-  C101ARTICLE: 'c101Article',
-  C101CTA: 'c101Cta',
-  PDF: 'pdf',
-  TAG: 'tag',
-};
-
-export const RECO_PRODUCT_CATEGORY = [
-  {
-    type: 'strain',
-    text: 'Strain',
-  },
-  {
-    type: 'oil',
-    text: 'Oil',
-  },
-];
-
-export const MIN_USER_AGE = 18;
-
-export const PROFILE_COMPLETION_TEMP = 'profile-completion-temp';
