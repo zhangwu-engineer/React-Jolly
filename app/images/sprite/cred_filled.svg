@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="12px" height="16px" viewBox="0 0 12 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 53.2 (72643) - https://sketchapp.com -->
+    <title>icon/action/label_important_24px 2 copy 6</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M2.91666667,15.8291667 L12.0833333,15.8291667 C12.6416667,15.8291667 13.1416667,15.5625 13.4416667,15.1375 L17.0833333,10.0041667 L13.4416667,4.87083333 C13.1416667,4.44583333 12.6416667,4.17083333 12.0833333,4.17083333 L2.91666667,4.17083333 L7.08333333,10.0041667 L2.91666667,15.8291667 L2.91666667,15.8291667 Z" id="path-1"></path>
+    </defs>
+    <g id="Feed" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="V1Feed_MobileHome-Copy-5" transform="translate(-333.000000, -628.000000)">
+            <g id="icon/action/label_important_24px" transform="translate(339.000000, 636.000000) rotate(-90.000000) translate(-339.000000, -636.000000) translate(329.000000, 626.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <g fill-rule="nonzero"></g>
+                <g id="✱-/-Color-/-Icons-/-Selected-/-On-Surface-/-Inactive" mask="url(#mask-2)" fill="#000000" fill-opacity="0.54" fill-rule="evenodd">
+                    <rect id="Rectangle" x="0" y="0" width="20" height="20"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
