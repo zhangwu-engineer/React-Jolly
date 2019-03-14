@@ -30,6 +30,7 @@ const OnboardingCoworker = load(() => import('pages/Onboarding/Coworker'));
 const OnboardingPosition = load(() => import('pages/Onboarding/Position'));
 const Network = load(() => import('pages/Network'));
 const Coworkers = load(() => import('pages/Network/Coworkers'));
+const Feed = load(() => import('pages/Feed'));
 const FourOfour = load(() => import('pages/404'));
 
 class Routes extends Component<{}> {
@@ -127,6 +128,11 @@ class Routes extends Component<{}> {
           exact
           path="/network/coworkers"
           render={props => <Coworkers {...props} />}
+        />
+        <PrivateRoute
+          exact
+          path="/feed"
+          render={props => <Feed {...props} />}
         />
         <Route render={props => <FourOfour {...props} />} />
       </Switch>
