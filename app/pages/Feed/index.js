@@ -9,6 +9,14 @@ import Typography from '@material-ui/core/Typography';
 import UserAvatar from 'components/UserAvatar';
 import UserCredStats from 'components/UserCredStats';
 import PostFormModal from 'components/PostFormModal';
+import PostCard from 'components/PostCard';
+
+import saga, {
+  reducer,
+  requestPosts,
+  requestCreatePost,
+} from 'containers/Feed/sagas';
+import injectSagas from 'utils/injectSagas';
 
 const styles = theme => ({
   root: {
@@ -29,6 +37,7 @@ const styles = theme => ({
     padding: '15px 20px 18px 21px',
     boxShadow: '0 10px 15px 5px rgba(0, 0, 0, 0.05)',
     cursor: 'pointer',
+    marginBottom: 30,
   },
   createPostAvatar: {
     width: 45,
@@ -49,7 +58,12 @@ const styles = theme => ({
 
 type Props = {
   user: Object,
+  posts: List<Map>,
+  isCreating: boolean,
+  createError: string,
   classes: Object,
+  requestCreatePost: Function,
+  requestPosts: Function,
 };
 
 type State = {
@@ -60,14 +74,27 @@ class FeedPage extends Component<Props, State> {
   state = {
     isOpen: false,
   };
+  componentDidMount() {
+    this.props.requestPosts();
+  }
+  componentDidUpdate(prevProps: Props) {
+    const { isCreating, createError } = this.props;
+    if (prevProps.isCreating && !isCreating && !createError) {
+      this.props.requestPosts();
+    }
+  }
   openModal = () => {
     this.setState({ isOpen: true });
   };
   closeModal = () => {
     this.setState({ isOpen: false });
   };
+  savePost = data => {
+    this.closeModal();
+    this.props.requestCreatePost(data);
+  };
   render() {
-    const { user, classes } = this.props;
+    const { user, posts, classes } = this.props;
     const { isOpen } = this.state;
     return (
       <React.Fragment>
@@ -92,6 +119,8 @@ class FeedPage extends Component<Props, State> {
                 </Typography>
               </Grid>
             </Grid>
+            {posts &&
+              posts.map(post => <PostCard post={post} key={post.get('id')} />)}
           </div>
           <div className={classes.rightPanel}>
             <UserCredStats user={user} onClick={this.openModal} />
@@ -101,6 +130,7 @@ class FeedPage extends Component<Props, State> {
           isOpen={isOpen}
           user={user}
           onCloseModal={this.closeModal}
+          onSave={this.savePost}
         />
       </React.Fragment>
     );
@@ -109,10 +139,18 @@ class FeedPage extends Component<Props, State> {
 
 const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
+  posts: state.getIn(['feed', 'posts']),
+  isCreating: state.getIn(['feed', 'isCreating']),
+  createError: state.getIn(['feed', 'createError']),
 });
 
-const mapDispatchToProps = () => ({});
+const mapDispatchToProps = dispatch => ({
+  requestCreatePost: payload => dispatch(requestCreatePost(payload)),
+  requestPosts: () => dispatch(requestPosts()),
+});
+
 export default compose(
+  injectSagas({ key: 'feed', saga, reducer }),
   connect(
     mapStateToProps,
     mapDispatchToProps
