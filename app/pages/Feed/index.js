@@ -22,6 +22,8 @@ import saga, {
 import { requestUser } from 'containers/App/sagas';
 import injectSagas from 'utils/injectSagas';
 
+import { CATEGORY_OPTIONS } from 'enum/constants';
+
 const styles = theme => ({
   root: {
     width: 1106,
@@ -98,22 +100,37 @@ type Props = {
 
 type State = {
   isOpen: boolean,
+  query: ?Object,
 };
 
 class FeedPage extends Component<Props, State> {
+  static getDerivedStateFromProps(nextProps: Props, prevState: State) {
+    if (nextProps.user && prevState.query === undefined) {
+      return {
+        query: {
+          location: nextProps.user.getIn(['profile', 'location']),
+          categories: CATEGORY_OPTIONS.map(option => option.value),
+        },
+      };
+    }
+    return null;
+  }
   state = {
     isOpen: false,
+    query: undefined,
   };
   componentDidMount() {
-    this.props.requestPosts();
+    const { query } = this.state;
+    this.props.requestPosts(query);
   }
   componentDidUpdate(prevProps: Props) {
     const { isCreating, createError, isVoting, voteError } = this.props;
+    const { query } = this.state;
     if (prevProps.isCreating && !isCreating && !createError) {
-      this.props.requestPosts();
+      this.props.requestPosts(query);
     }
     if (prevProps.isVoting && !isVoting && !voteError) {
-      this.props.requestPosts();
+      this.props.requestPosts(query);
       this.props.requestUser();
     }
   }
@@ -127,9 +144,14 @@ class FeedPage extends Component<Props, State> {
     this.closeModal();
     this.props.requestCreatePost(data);
   };
+  handleFilterChange = query => {
+    this.setState({ query }, () => {
+      this.props.requestPosts(query);
+    });
+  };
   render() {
     const { user, posts, classes } = this.props;
-    const { isOpen } = this.state;
+    const { isOpen, query } = this.state;
     return (
       <React.Fragment>
         <div className={classes.root}>
@@ -156,7 +178,11 @@ class FeedPage extends Component<Props, State> {
                 </Link>
               </Grid>
             </Grid>
-            <FeedFilter />
+            <FeedFilter
+              user={user}
+              query={query}
+              onChange={this.handleFilterChange}
+            />
           </div>
           <div className={classes.content}>
             <Grid
@@ -213,7 +239,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   requestCreatePost: payload => dispatch(requestCreatePost(payload)),
-  requestPosts: () => dispatch(requestPosts()),
+  requestPosts: payload => dispatch(requestPosts(payload)),
   requestVotePost: postId => dispatch(requestVotePost(postId)),
   requestUser: () => dispatch(requestUser()),
 });

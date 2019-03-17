@@ -54,8 +54,9 @@ const postRemoveRequestError = (error: string) => ({
   payload: error,
 });
 
-export const requestPosts = () => ({
+export const requestPosts = (query: Object) => ({
   type: POST + REQUESTED,
+  payload: query,
 });
 const postsRequestSuccess = (payload: Object) => ({
   type: POST + SUCCEDED,
@@ -222,13 +223,16 @@ function* RemovePostRequest({ payload }) {
   }
 }
 
-function* PostsRequest() {
+function* PostsRequest({ payload }) {
   const token = yield select(getToken);
   try {
     const response = yield call(request, {
-      method: 'GET',
-      url: `${API_URL}/post`,
+      method: 'POST',
+      url: `${API_URL}/post/search`,
       headers: { 'x-access-token': token },
+      data: {
+        query: payload,
+      },
     });
     if (response.status === 200) {
       yield put(postsRequestSuccess(response.data.response));
