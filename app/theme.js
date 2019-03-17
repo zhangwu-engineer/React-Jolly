@@ -22,7 +22,7 @@ const theme = createMuiTheme({
   typography: {
     useNextVariants: true,
     fontFamily: '"Avenir Next", "Roboto", "Helvetica", "Arial", sans-serif',
-    fontSize: 16,
+    fontSize: 14,
   },
   overrides: {
     MuiInputLabel: {
