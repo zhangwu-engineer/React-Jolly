@@ -36,6 +36,15 @@ const styles = theme => ({
       top: 'initial !important',
       left: '0px !important',
       bottom: '0px !important',
+      height: '100%',
+    },
+  },
+  blueLine: {
+    backgroundColor: theme.palette.primary.main,
+    height: 10,
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
     },
   },
   content: {
@@ -157,6 +166,7 @@ class PostFormModal extends Component<Props, State> {
         onCloseModal={this.closeModal}
         shouldCloseOnOverlayClick={false}
       >
+        <div className={classes.blueLine} />
         <Formik initialValues={initialValues} onSubmit={this.handleSave}>
           {({
             values,

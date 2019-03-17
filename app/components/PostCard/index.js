@@ -20,6 +20,7 @@ const styles = theme => ({
   root: {
     backgroundColor: theme.palette.common.white,
     padding: '22px 23px 15px 24px',
+    marginBottom: 10,
   },
   userInfo: {
     padding: 0,

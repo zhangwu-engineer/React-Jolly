@@ -5,13 +5,19 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 
 import UserAvatar from 'components/UserAvatar';
 import UserCredStats from 'components/UserCredStats';
 import PostFormModal from 'components/PostFormModal';
 import PostCard from 'components/PostCard';
 import FeedFilter from 'components/FeedFilter';
+import FeedFilterModal from 'components/FeedFilterModal';
+import UserCredModal from 'components/UserCredModal';
 import Link from 'components/Link';
+import Icon from 'components/Icon';
+import FilterIcon from 'images/sprite/filter.svg';
+import CredIcon from 'images/sprite/cred_white.svg';
 
 import saga, {
   reducer,
@@ -30,10 +36,18 @@ const styles = theme => ({
     margin: '0 auto',
     paddingTop: 25,
     display: 'flex',
+    [theme.breakpoints.down('xs')]: {
+      paddingTop: 0,
+      width: '100%',
+      display: 'block',
+    },
   },
   leftPanel: {
     width: 254,
     marginRight: 19,
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
   },
   profileInfo: {
     marginBottom: 30,
@@ -59,6 +73,10 @@ const styles = theme => ({
   },
   content: {
     flex: 1,
+    [theme.breakpoints.down('xs')]: {
+      height: 'calc(100vh - 103px)',
+      overflowY: 'scroll',
+    },
   },
   createPostPanel: {
     backgroundColor: theme.palette.common.white,
@@ -81,6 +99,26 @@ const styles = theme => ({
   rightPanel: {
     width: 254,
     marginLeft: 20,
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+  },
+  mobileMenu: {
+    backgroundColor: '#083f76',
+    height: 55,
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'flex',
+    },
+  },
+  mobileButtonWrapper: {
+    marginLeft: 20,
+    marginRight: 20,
+  },
+  mobileButton: {
+    fontWeight: 600,
+    color: theme.palette.common.white,
+    textTransform: 'none',
   },
 });
 
@@ -100,6 +138,8 @@ type Props = {
 
 type State = {
   isOpen: boolean,
+  isFilterOpen: boolean,
+  isCredOpen: boolean,
   query: ?Object,
 };
 
@@ -117,6 +157,8 @@ class FeedPage extends Component<Props, State> {
   }
   state = {
     isOpen: false,
+    isFilterOpen: false,
+    isCredOpen: false,
     query: undefined,
   };
   componentDidMount() {
@@ -140,6 +182,18 @@ class FeedPage extends Component<Props, State> {
   closeModal = () => {
     this.setState({ isOpen: false });
   };
+  openFilterModal = () => {
+    this.setState({ isFilterOpen: true });
+  };
+  closeFilterModal = () => {
+    this.setState({ isFilterOpen: false });
+  };
+  openCredModal = () => {
+    this.setState({ isCredOpen: true });
+  };
+  closeCredModal = () => {
+    this.setState({ isCredOpen: false });
+  };
   savePost = data => {
     this.closeModal();
     this.props.requestCreatePost(data);
@@ -151,10 +205,41 @@ class FeedPage extends Component<Props, State> {
   };
   render() {
     const { user, posts, classes } = this.props;
-    const { isOpen, query } = this.state;
+    const { isOpen, isFilterOpen, isCredOpen, query } = this.state;
     return (
       <React.Fragment>
         <div className={classes.root}>
+          <Grid
+            container
+            alignItems="center"
+            justify="center"
+            className={classes.mobileMenu}
+          >
+            <Grid item className={classes.mobileButtonWrapper}>
+              <Button className={classes.mobileButton} onClick={this.openModal}>
+                Post
+              </Button>
+            </Grid>
+            <Grid item className={classes.mobileButtonWrapper}>
+              <Button
+                className={classes.mobileButton}
+                onClick={this.openFilterModal}
+              >
+                <Icon glyph={FilterIcon} />
+                &nbsp;&nbsp;Filter
+              </Button>
+            </Grid>
+            <Grid item className={classes.mobileButtonWrapper}>
+              <Button
+                className={classes.mobileButton}
+                onClick={this.openCredModal}
+              >
+                <Icon glyph={CredIcon} />
+                &nbsp;&nbsp;
+                {`${user.getIn(['profile', 'cred'])} Cred`}
+              </Button>
+            </Grid>
+          </Grid>
           <div className={classes.leftPanel}>
             <Grid
               container
@@ -222,6 +307,19 @@ class FeedPage extends Component<Props, State> {
           user={user}
           onCloseModal={this.closeModal}
           onSave={this.savePost}
+        />
+        <FeedFilterModal
+          isOpen={isFilterOpen}
+          user={user}
+          query={query}
+          onCloseModal={this.closeFilterModal}
+          onChange={this.handleFilterChange}
+        />
+        <UserCredModal
+          isOpen={isCredOpen}
+          user={user}
+          onCloseModal={this.closeCredModal}
+          openPostModal={this.openModal}
         />
       </React.Fragment>
     );
