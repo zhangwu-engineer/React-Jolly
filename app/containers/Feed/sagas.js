@@ -13,10 +13,10 @@ import { getToken } from 'containers/App/selectors';
 // ------------------------------------
 // Constants
 // ------------------------------------
-const CREATE = 'Jolly/Network/CREATE_POST';
-const REMOVE = 'Jolly/Network/REMOVE_POST';
-const POST = 'Jolly/Network/POST';
-
+const CREATE = 'Jolly/Feed/CREATE_POST';
+const REMOVE = 'Jolly/Feed/REMOVE_POST';
+const POST = 'Jolly/Feed/POST';
+const VOTE = 'Jolly/Feed/VOTE_POST';
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -70,6 +70,22 @@ const postsRequestError = (error: string) => ({
   payload: error,
 });
 
+export const requestVotePost = (postId: string) => ({
+  type: VOTE + REQUESTED,
+  payload: postId,
+});
+const postVoteRequestSuccess = (payload: Object) => ({
+  type: VOTE + SUCCEDED,
+  payload,
+});
+const postVoteRequestFailed = (error: string) => ({
+  type: VOTE + FAILED,
+  payload: error,
+});
+const postVoteRequestError = (error: string) => ({
+  type: VOTE + ERROR,
+  payload: error,
+});
 // ------------------------------------
 // Reducer
 // ------------------------------------
@@ -81,6 +97,8 @@ const initialState = fromJS({
   createError: '',
   isRemoving: false,
   removeError: '',
+  isVoting: false,
+  voteError: '',
 });
 
 export const reducer = (
@@ -135,6 +153,22 @@ export const reducer = (
     case POST + ERROR:
       return state.set('isLoading', false).set(
         'error',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case VOTE + REQUESTED:
+      return state.set('isVoting', true);
+
+    case VOTE + SUCCEDED:
+      return state.set('isVoting', false).set('voteError', '');
+
+    case VOTE + FAILED:
+      return state.set('isVoting', false).set('voteError', payload.message);
+
+    case VOTE + ERROR:
+      return state.set('isVoting', false).set(
+        'voteError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -206,10 +240,29 @@ function* PostsRequest() {
   }
 }
 
+function* PostVoteRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/post/${payload}/vote`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(postVoteRequestSuccess(response.data.response));
+    } else {
+      yield put(postVoteRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(postVoteRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(CREATE + REQUESTED, CreatePostRequest),
     takeLatest(REMOVE + REQUESTED, RemovePostRequest),
     takeLatest(POST + REQUESTED, PostsRequest),
+    takeLatest(VOTE + REQUESTED, PostVoteRequest),
   ]);
 }

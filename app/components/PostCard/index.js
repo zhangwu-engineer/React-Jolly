@@ -1,5 +1,6 @@
 // @flow
 import React, { Component } from 'react';
+import cx from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -11,6 +12,7 @@ import Icon from 'components/Icon';
 
 import CredIcon from 'images/sprite/cred.svg';
 import CredFilledIcon from 'images/sprite/cred_filled.svg';
+import CredBlueIcon from 'images/sprite/cred_blue.svg';
 
 import { CATEGORY_OPTIONS } from 'enum/constants';
 
@@ -68,20 +70,26 @@ const styles = theme => ({
     color: '#404040',
     paddingLeft: 5,
   },
+  blue: {
+    color: theme.palette.primary.main,
+  },
 });
 
 type Props = {
   post: Map,
+  currentUser: Map,
   classes: Object,
+  votePost: Function,
 };
 
 class PostCard extends Component<Props> {
   render() {
-    const { post, classes } = this.props;
+    const { post, currentUser, classes } = this.props;
     const user = post.get('user');
     const category = CATEGORY_OPTIONS.filter(
       option => option.value === post.get('category')
     );
+    const voted = post.get('votes').includes(currentUser.get('id'));
     return (
       <div className={classes.root}>
         <ListItem className={classes.userInfo}>
@@ -115,20 +123,37 @@ class PostCard extends Component<Props> {
           {post.get('content')}
         </Typography>
         <Grid container justify="space-between" className={classes.bottom}>
-          <Grid item className={classes.helpfulButton}>
+          <Grid
+            item
+            className={classes.helpfulButton}
+            onClick={() => {
+              if (
+                post.getIn(['user', 'id']) !== currentUser.get('id') &&
+                !voted
+              ) {
+                this.props.votePost(post.get('id'));
+              }
+            }}
+          >
             <Grid container alignItems="center">
               <Grid item>
-                <Icon glyph={CredIcon} size={16} />
+                <Icon glyph={voted ? CredBlueIcon : CredIcon} size={16} />
               </Grid>
               <Grid item>
-                <Typography className={classes.helpful}>Helpful</Typography>
+                <Typography
+                  className={cx(classes.helpful, {
+                    [classes.blue]: voted,
+                  })}
+                >
+                  Helpful
+                </Typography>
               </Grid>
             </Grid>
           </Grid>
           <Grid item>
             <Grid container alignItems="center">
               <Grid item>
-                <Icon glyph={CredFilledIcon} size={16} />
+                <Icon glyph={voted ? CredBlueIcon : CredFilledIcon} size={16} />
               </Grid>
               <Grid item>
                 <Typography className={classes.votes}>

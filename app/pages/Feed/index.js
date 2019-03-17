@@ -10,12 +10,16 @@ import UserAvatar from 'components/UserAvatar';
 import UserCredStats from 'components/UserCredStats';
 import PostFormModal from 'components/PostFormModal';
 import PostCard from 'components/PostCard';
+import FeedFilter from 'components/FeedFilter';
+import Link from 'components/Link';
 
 import saga, {
   reducer,
   requestPosts,
   requestCreatePost,
+  requestVotePost,
 } from 'containers/Feed/sagas';
+import { requestUser } from 'containers/App/sagas';
 import injectSagas from 'utils/injectSagas';
 
 const styles = theme => ({
@@ -28,6 +32,28 @@ const styles = theme => ({
   leftPanel: {
     width: 254,
     marginRight: 19,
+  },
+  profileInfo: {
+    marginBottom: 30,
+    paddingLeft: 12,
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    marginRight: 20,
+  },
+  greetings: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#373737',
+    textTransform: 'capitalize',
+  },
+  link: {
+    fontSize: 14,
+    fontWeight: 600,
+    letterSpacing: '0.7px',
+    textTransform: 'none',
+    textDecoration: 'none',
   },
   content: {
     flex: 1,
@@ -61,9 +87,13 @@ type Props = {
   posts: List<Map>,
   isCreating: boolean,
   createError: string,
+  isVoting: boolean,
+  voteError: string,
   classes: Object,
   requestCreatePost: Function,
   requestPosts: Function,
+  requestVotePost: Function,
+  requestUser: Function,
 };
 
 type State = {
@@ -78,9 +108,13 @@ class FeedPage extends Component<Props, State> {
     this.props.requestPosts();
   }
   componentDidUpdate(prevProps: Props) {
-    const { isCreating, createError } = this.props;
+    const { isCreating, createError, isVoting, voteError } = this.props;
     if (prevProps.isCreating && !isCreating && !createError) {
       this.props.requestPosts();
+    }
+    if (prevProps.isVoting && !isVoting && !voteError) {
+      this.props.requestPosts();
+      this.props.requestUser();
     }
   }
   openModal = () => {
@@ -99,7 +133,31 @@ class FeedPage extends Component<Props, State> {
     return (
       <React.Fragment>
         <div className={classes.root}>
-          <div className={classes.leftPanel} />
+          <div className={classes.leftPanel}>
+            <Grid
+              container
+              alignItems="center"
+              classes={{
+                container: classes.profileInfo,
+              }}
+            >
+              <Grid item>
+                <UserAvatar
+                  className={classes.avatar}
+                  src={user.getIn(['profile', 'avatar'])}
+                />
+              </Grid>
+              <Grid item>
+                <Typography variant="h6" className={classes.greetings}>
+                  {`Hi, ${user.get('firstName')}!`}
+                </Typography>
+                <Link to="/edit" className={classes.link}>
+                  View Profile
+                </Link>
+              </Grid>
+            </Grid>
+            <FeedFilter />
+          </div>
           <div className={classes.content}>
             <Grid
               container
@@ -120,7 +178,14 @@ class FeedPage extends Component<Props, State> {
               </Grid>
             </Grid>
             {posts &&
-              posts.map(post => <PostCard post={post} key={post.get('id')} />)}
+              posts.map(post => (
+                <PostCard
+                  post={post}
+                  key={post.get('id')}
+                  currentUser={user}
+                  votePost={this.props.requestVotePost}
+                />
+              ))}
           </div>
           <div className={classes.rightPanel}>
             <UserCredStats user={user} onClick={this.openModal} />
@@ -142,11 +207,15 @@ const mapStateToProps = state => ({
   posts: state.getIn(['feed', 'posts']),
   isCreating: state.getIn(['feed', 'isCreating']),
   createError: state.getIn(['feed', 'createError']),
+  isVoting: state.getIn(['feed', 'isVoting']),
+  voteError: state.getIn(['feed', 'voteError']),
 });
 
 const mapDispatchToProps = dispatch => ({
   requestCreatePost: payload => dispatch(requestCreatePost(payload)),
   requestPosts: () => dispatch(requestPosts()),
+  requestVotePost: postId => dispatch(requestVotePost(postId)),
+  requestUser: () => dispatch(requestUser()),
 });
 
 export default compose(
