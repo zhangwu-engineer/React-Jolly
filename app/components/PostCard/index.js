@@ -76,11 +76,15 @@ const styles = theme => ({
     letterSpacing: 0.4,
     color: '#6f6f73',
     paddingLeft: 5,
+    position: 'relative',
+    top: 1,
   },
   votes: {
     fontSize: 14,
     color: '#404040',
     paddingLeft: 5,
+    position: 'relative',
+    top: 1,
   },
   blue: {
     color: theme.palette.primary.main,
