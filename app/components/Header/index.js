@@ -29,6 +29,7 @@ import UserIcon from 'images/sprite/user.svg';
 import SettingsIcon from 'images/sprite/settings.svg';
 import LogoutIcon from 'images/sprite/logout.svg';
 import People from 'images/sprite/people_outline.svg';
+import HomeIcon from 'images/sprite/home.svg';
 import EmptyAvatar from 'images/sprite/empty_avatar.svg';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
@@ -37,8 +38,6 @@ const styles = theme => ({
     flexGrow: 1,
     height: 70,
     backgroundColor: theme.palette.primary.main,
-    paddingLeft: theme.spacing.unit * 5,
-    paddingRight: theme.spacing.unit * 5,
     color: theme.palette.common.white,
     position: 'relative',
     [theme.breakpoints.down('xs')]: {
@@ -199,8 +198,11 @@ const styles = theme => ({
     backgroundColor: theme.palette.primary.main,
     boxShadow: 'none',
     padding: 0,
+    paddingLeft: 25,
+    paddingRight: 40,
+    height: 70,
     '&:hover': {
-      backgroundColor: theme.palette.primary.main,
+      backgroundColor: '#083f76',
     },
     '&:active': {
       boxShadow: 'none',
@@ -252,13 +254,26 @@ const styles = theme => ({
     color: theme.palette.common.white,
     textTransform: 'capitalize',
   },
+  feedButton: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 70,
+    width: 70,
+    '&:hover': {
+      backgroundColor: 'rgba(255, 255, 255, 0.16)',
+    },
+    [theme.breakpoints.down('xs')]: {
+      height: 48,
+      width: 48,
+    },
+  },
   networkButton: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     height: 70,
     width: 70,
-    marginRight: 25,
     '&:hover': {
       backgroundColor: 'rgba(255, 255, 255, 0.16)',
     },
@@ -478,6 +493,10 @@ class Header extends Component<Props, State> {
             work.getIn(['user', 'lastName']).charAt(0)
           )}.`
         : '';
+    const showFeedButton =
+      pathname.includes('/edit') ||
+      pathname.includes('/network') ||
+      pathname.includes('/feed');
     return (
       <Grid
         className={classes.root}
@@ -485,18 +504,18 @@ class Header extends Component<Props, State> {
         justify="space-between"
         alignItems="center"
       >
+        <Link
+          className={classes.logoContainer}
+          onClick={() => {
+            if (!pathname.includes('/ob')) {
+              history.push('/');
+            }
+          }}
+        >
+          <img className={classes.logo} src={LogoWhite} alt="logo" />
+          <Typography className={classes.logoText}>J</Typography>
+        </Link>
         <Grid item>
-          <Link
-            className={classes.logoContainer}
-            onClick={() => {
-              if (!pathname.includes('/ob')) {
-                history.push('/');
-              }
-            }}
-          >
-            <img className={classes.logo} src={LogoWhite} alt="logo" />
-            <Typography className={classes.logoText}>J</Typography>
-          </Link>
           <Button
             className={cx(classes.backButton, {
               [classes.shownOnSmallDevice]:
@@ -540,6 +559,11 @@ class Header extends Component<Props, State> {
               {workDetailBack}
             </Typography>
           </Button>
+          {showFeedButton && (
+            <Link to="/feed" className={classes.feedButton}>
+              <Icon glyph={HomeIcon} size={30} />
+            </Link>
+          )}
         </Grid>
         <Grid
           item
