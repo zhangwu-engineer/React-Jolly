@@ -117,9 +117,7 @@ class App extends Component<Props> {
           />
         </Switch>
         <Routes />
-        {(pathname === '/edit' || pathname === '/types-of-work') && (
-          <FloatingAddButton />
-        )}
+        {pathname === '/edit' && <FloatingAddButton />}
       </React.Fragment>
     );
   }
