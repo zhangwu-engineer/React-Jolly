@@ -16,6 +16,7 @@ import FeedFilterModal from 'components/FeedFilterModal';
 import UserCredModal from 'components/UserCredModal';
 import Link from 'components/Link';
 import Icon from 'components/Icon';
+import PlusIcon from 'images/sprite/plus_white.svg';
 import FilterIcon from 'images/sprite/filter.svg';
 import CredIcon from 'images/sprite/cred_white.svg';
 
@@ -217,7 +218,8 @@ class FeedPage extends Component<Props, State> {
           >
             <Grid item className={classes.mobileButtonWrapper}>
               <Button className={classes.mobileButton} onClick={this.openModal}>
-                Post
+                <Icon glyph={PlusIcon} size={20} />
+                &nbsp;&nbsp;Post
               </Button>
             </Grid>
             <Grid item className={classes.mobileButtonWrapper}>
@@ -225,7 +227,7 @@ class FeedPage extends Component<Props, State> {
                 className={classes.mobileButton}
                 onClick={this.openFilterModal}
               >
-                <Icon glyph={FilterIcon} />
+                <Icon glyph={FilterIcon} size={20} />
                 &nbsp;&nbsp;Filter
               </Button>
             </Grid>
@@ -234,7 +236,7 @@ class FeedPage extends Component<Props, State> {
                 className={classes.mobileButton}
                 onClick={this.openCredModal}
               >
-                <Icon glyph={CredIcon} />
+                <Icon glyph={CredIcon} size={19} />
                 &nbsp;&nbsp;
                 {`${user.getIn(['profile', 'cred'])} Cred`}
               </Button>
