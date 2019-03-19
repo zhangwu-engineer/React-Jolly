@@ -25,6 +25,7 @@ const styles = () => ({
     paddingBottom: 13,
     borderRadius: 0,
     marginTop: 8,
+    textTransform: 'none',
   },
 });
 
