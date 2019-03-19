@@ -17,7 +17,7 @@ const styles = theme => ({
     },
   },
   position: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 600,
     letterSpacing: 0.4,
     color: '#313131',
