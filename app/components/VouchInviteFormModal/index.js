@@ -1,6 +1,7 @@
 // @flow
 
 import React, { Component } from 'react';
+import cx from 'classnames';
 import { capitalize } from 'lodash-es';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -82,6 +83,16 @@ const styles = theme => ({
     [theme.breakpoints.down('xs')]: {
       padding: '11px 30px',
       fontWeight: 600,
+      display: 'none',
+    },
+  },
+  inviteSmallButton: {
+    display: 'none',
+    width: '100%',
+    marginTop: 15,
+    [theme.breakpoints.down('xs')]: {
+      display: 'inline-flex',
+      padding: 20,
     },
   },
 });
@@ -144,6 +155,14 @@ class VouchInviteFormModal extends Component<Props> {
             Connect
           </Button>
         </div>
+        <Button
+          variant="contained"
+          color="primary"
+          className={cx(classes.inviteButton, classes.inviteSmallButton)}
+          onClick={this.handleInvite}
+        >
+          Connect
+        </Button>
       </BaseModal>
     );
   }
