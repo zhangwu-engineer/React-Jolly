@@ -12,6 +12,9 @@ const styles = theme => ({
     backgroundColor: theme.palette.common.white,
     padding: '28px 25px 25px 26px',
     cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: '#eaf1f7',
+    },
   },
   position: {
     fontSize: 16,
