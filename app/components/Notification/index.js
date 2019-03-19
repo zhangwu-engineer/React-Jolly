@@ -6,8 +6,7 @@ import Typography from '@material-ui/core/Typography';
 const styles = () => ({
   root: {
     backgroundColor: '#14a384',
-    paddingTop: 15,
-    paddingBottom: 15,
+    padding: '15px 25px',
   },
   content: {
     maxWidth: 830,
