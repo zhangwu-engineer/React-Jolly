@@ -1,6 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 import cx from 'classnames';
+import { formatDistanceStrict } from 'date-fns';
 import { withStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -91,6 +92,15 @@ class PostCard extends Component<Props> {
       option => option.value === post.get('category')
     );
     const voted = post.get('votes').includes(currentUser.get('id'));
+    const timeDistance = formatDistanceStrict(
+      new Date(),
+      new Date(post.get('date_created'))
+    );
+    const timeAgo = timeDistance
+      .replace(/ seconds| second/gi, 's')
+      .replace(/ minutes| minute/gi, 'm')
+      .replace(/ hours| hour/gi, 'h')
+      .replace(/ days| day/gi, 'd');
     return (
       <div className={classes.root}>
         <ListItem className={classes.userInfo}>
@@ -114,7 +124,7 @@ class PostCard extends Component<Props> {
                 </Grid>
               </Grid>
             }
-            secondary={post.get('date_created')}
+            secondary={`${timeAgo} ago`}
             classes={{
               secondary: classes.time,
             }}
