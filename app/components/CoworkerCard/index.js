@@ -6,7 +6,6 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
-import { history } from 'components/ConnectedRouter';
 import UserAvatar from 'components/UserAvatar';
 
 const styles = theme => ({
@@ -62,7 +61,7 @@ type Props = {
 class CoworkerCard extends Component<Props> {
   viewProfile = () => {
     const { user } = this.props;
-    history.push(`/f/${user.get('slug')}`);
+    window.open(`/f/${user.get('slug')}`, '_blank');
   };
   render() {
     const { user, classes } = this.props;
