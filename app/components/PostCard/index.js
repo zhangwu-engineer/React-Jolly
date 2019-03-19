@@ -7,6 +7,15 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
+import Popper from '@material-ui/core/Popper';
+import Fade from '@material-ui/core/Fade';
+import Paper from '@material-ui/core/Paper';
+import MenuList from '@material-ui/core/MenuList';
+import MenuItem from '@material-ui/core/MenuItem';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Divider from '@material-ui/core/Divider';
+import MoreIcon from '@material-ui/icons/MoreHoriz';
 
 import UserAvatar from 'components/UserAvatar';
 import Icon from 'components/Icon';
@@ -22,6 +31,7 @@ const styles = theme => ({
     backgroundColor: theme.palette.common.white,
     padding: '22px 23px 15px 24px',
     marginBottom: 10,
+    position: 'relative',
   },
   userInfo: {
     padding: 0,
@@ -75,6 +85,35 @@ const styles = theme => ({
   blue: {
     color: theme.palette.primary.main,
   },
+  menuButton: {
+    position: 'absolute',
+    top: 15,
+    right: 10,
+    color: '#7f7f7f',
+    zIndex: 100,
+    minWidth: 'inherit',
+  },
+  menu: {
+    boxShadow: 'none',
+    border: '1px solid #d8d8d8',
+    width: 190,
+  },
+  menuList: {
+    padding: 0,
+  },
+  menuItemText: {
+    fontSize: 14,
+    fontWeight: 600,
+    lineHeight: 1.86,
+    color: '#464646',
+  },
+  dividerWrapper: {
+    paddingLeft: 16,
+    paddingRight: 16,
+  },
+  divider: {
+    height: 1,
+  },
 });
 
 type Props = {
@@ -82,11 +121,30 @@ type Props = {
   currentUser: Map,
   classes: Object,
   votePost: Function,
+  removePost: Function,
 };
 
-class PostCard extends Component<Props> {
+type State = {
+  open: boolean,
+};
+
+class PostCard extends Component<Props, State> {
+  state = {
+    open: false,
+  };
+  handleToggle = () => {
+    this.setState(state => ({ open: !state.open }));
+  };
+  handleClose = event => {
+    if (this.anchorEl.contains(event.target)) {
+      return;
+    }
+    this.setState({ open: false });
+  };
+  anchorEl: HTMLElement;
   render() {
     const { post, currentUser, classes } = this.props;
+    const { open } = this.state;
     const user = post.get('user');
     const category = CATEGORY_OPTIONS.filter(
       option => option.value === post.get('category')
@@ -103,6 +161,60 @@ class PostCard extends Component<Props> {
       .replace(/ days| day/gi, 'd');
     return (
       <div className={classes.root}>
+        {user.get('id') === currentUser.get('id') && (
+          <Button
+            buttonRef={node => {
+              this.anchorEl = node;
+            }}
+            onClick={this.handleToggle}
+            className={classes.menuButton}
+          >
+            <MoreIcon />
+          </Button>
+        )}
+        <Popper
+          open={open}
+          anchorEl={this.anchorEl}
+          transition
+          placement="bottom-end"
+        >
+          {({ TransitionProps }) => (
+            <Fade {...TransitionProps} timeout={350}>
+              <Paper square classes={{ root: classes.menu }}>
+                <ClickAwayListener onClickAway={this.handleClose}>
+                  <MenuList className={classes.menuList}>
+                    <MenuItem
+                      className={classes.menuItem}
+                      onClick={e => {
+                        this.handleClose(e);
+                        this.props.removePost(post.get('id'));
+                      }}
+                    >
+                      <ListItemText
+                        classes={{ primary: classes.menuItemText }}
+                        primary="Delete post"
+                      />
+                    </MenuItem>
+                    <div className={classes.dividerWrapper}>
+                      <Divider className={classes.divider} />
+                    </div>
+                    <MenuItem
+                      className={classes.menuItem}
+                      onClick={e => {
+                        this.handleClose(e);
+                      }}
+                    >
+                      <ListItemText
+                        classes={{ primary: classes.menuItemText }}
+                        primary="Cancel"
+                      />
+                    </MenuItem>
+                  </MenuList>
+                </ClickAwayListener>
+              </Paper>
+            </Fade>
+          )}
+        </Popper>
         <ListItem className={classes.userInfo}>
           <UserAvatar
             alt={`${user.get('firstName')} ${user.get('lastName')}`}

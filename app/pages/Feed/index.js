@@ -24,6 +24,7 @@ import saga, {
   reducer,
   requestPosts,
   requestCreatePost,
+  requestRemovePost,
   requestVotePost,
 } from 'containers/Feed/sagas';
 import { requestUser } from 'containers/App/sagas';
@@ -130,10 +131,13 @@ type Props = {
   createError: string,
   isVoting: boolean,
   voteError: string,
+  isRemoving: boolean,
+  removeError: string,
   classes: Object,
   requestCreatePost: Function,
   requestPosts: Function,
   requestVotePost: Function,
+  requestRemovePost: Function,
   requestUser: Function,
 };
 
@@ -167,7 +171,14 @@ class FeedPage extends Component<Props, State> {
     this.props.requestPosts(query);
   }
   componentDidUpdate(prevProps: Props) {
-    const { isCreating, createError, isVoting, voteError } = this.props;
+    const {
+      isCreating,
+      createError,
+      isVoting,
+      voteError,
+      isRemoving,
+      removeError,
+    } = this.props;
     const { query } = this.state;
     if (prevProps.isCreating && !isCreating && !createError) {
       this.props.requestPosts(query);
@@ -175,6 +186,9 @@ class FeedPage extends Component<Props, State> {
     if (prevProps.isVoting && !isVoting && !voteError) {
       this.props.requestPosts(query);
       this.props.requestUser();
+    }
+    if (prevProps.isRemoving && !isRemoving && !removeError) {
+      this.props.requestPosts(query);
     }
   }
   openModal = () => {
@@ -297,6 +311,7 @@ class FeedPage extends Component<Props, State> {
                   key={post.get('id')}
                   currentUser={user}
                   votePost={this.props.requestVotePost}
+                  removePost={this.props.requestRemovePost}
                 />
               ))}
           </div>
@@ -335,11 +350,14 @@ const mapStateToProps = state => ({
   createError: state.getIn(['feed', 'createError']),
   isVoting: state.getIn(['feed', 'isVoting']),
   voteError: state.getIn(['feed', 'voteError']),
+  isRemoving: state.getIn(['feed', 'isRemoving']),
+  removeError: state.getIn(['feed', 'removeError']),
 });
 
 const mapDispatchToProps = dispatch => ({
   requestCreatePost: payload => dispatch(requestCreatePost(payload)),
   requestPosts: payload => dispatch(requestPosts(payload)),
+  requestRemovePost: postId => dispatch(requestRemovePost(postId)),
   requestVotePost: postId => dispatch(requestVotePost(postId)),
   requestUser: () => dispatch(requestUser()),
 });
