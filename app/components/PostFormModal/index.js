@@ -18,6 +18,7 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import BaseModal from 'components/BaseModal';
+import UserAvatar from 'components/UserAvatar';
 import Icon from 'components/Icon';
 
 import CategoryIcon from 'images/sprite/category.svg';
@@ -51,15 +52,28 @@ const styles = theme => ({
     position: 'relative',
     padding: 30,
     [theme.breakpoints.down('xs')]: {
-      padding: '30px 20px 20px',
+      padding: 20,
     },
+  },
+  header: {
+    marginBottom: 15,
+  },
+  avatarWrapper: {
+    paddingRight: 10,
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+    },
+  },
+  avatar: {
+    width: 32,
+    height: 32,
   },
   title: {
     fontSize: 16,
     fontWeight: 700,
     letterSpacing: 0.3,
     color: '#1e1e24',
-    marginBottom: 20,
     [theme.breakpoints.down('xs')]: {
       fontSize: 14,
       fontWeight: 'bold',
@@ -86,9 +100,9 @@ const styles = theme => ({
     color: '#404040 !important',
   },
   optionLabel: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 500,
-    color: '#404040',
+    color: '#1e1e24',
   },
   categoryTitleWrapper: {
     flex: 1,
@@ -100,20 +114,28 @@ const styles = theme => ({
     color: '#1e1e24',
     paddingLeft: 7,
   },
-  textInput: {
+  textInputRoot: {
     backgroundColor: '#f1f1f1',
     padding: '13px 26px 8px 10px',
     marginBottom: 12,
+  },
+  textInput: {
+    fontSize: 16,
   },
   buttonsWrapper: {
     marginTop: 7,
   },
   postButton: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'bold',
     textTransform: 'none',
     padding: '12px 40px',
     borderRadius: 0,
+    letterSpacing: 0.3,
+  },
+  postButtonDisabled: {
+    backgroundColor: '#6f6f73 !important',
+    color: '#ffffff !important',
   },
   closeButton: {
     position: 'absolute',
@@ -186,9 +208,23 @@ class PostFormModal extends Component<Props, State> {
               >
                 <ClearIcon />
               </IconButton>
-              <Typography variant="h6" component="h1" className={classes.title}>
-                {`Post to ${user && user.getIn(['profile', 'location'])} Feed`}
-              </Typography>
+              <Grid container alignItems="center" className={classes.header}>
+                <Grid item className={classes.avatarWrapper}>
+                  <UserAvatar
+                    src={user.getIn(['profile', 'avatar'])}
+                    className={classes.avatar}
+                  />
+                </Grid>
+                <Grid item>
+                  <Typography
+                    variant="h6"
+                    component="h1"
+                    className={classes.title}
+                  >
+                    {`Post to ${user && user.getIn(['profile', 'location'])}`}
+                  </Typography>
+                </Grid>
+              </Grid>
               <div className={classes.categoryWrapper}>
                 <Grid
                   container
@@ -201,7 +237,12 @@ class PostFormModal extends Component<Props, State> {
                   </Grid>
                   <Grid item className={classes.categoryTitleWrapper}>
                     <Typography className={classes.category}>
-                      Choose category
+                      {values.category
+                        ? CATEGORY_OPTIONS.map(
+                            option =>
+                              option.value === values.category && option.label
+                          )
+                        : 'Choose category'}
                     </Typography>
                   </Grid>
                   <Grid item>
@@ -221,7 +262,10 @@ class PostFormModal extends Component<Props, State> {
                       name="category"
                       className={classes.group}
                       value={values.category}
-                      onChange={handleChange}
+                      onChange={e => {
+                        handleChange(e);
+                        this.toggleOption();
+                      }}
                     >
                       {CATEGORY_OPTIONS.map(option => (
                         <FormControlLabel
@@ -240,13 +284,14 @@ class PostFormModal extends Component<Props, State> {
               </div>
               <Input
                 id="content"
-                placeholder="Message"
+                placeholder="Category-specific prompt goes here"
                 fullWidth
                 disableUnderline
                 onChange={handleChange}
                 onBlur={handleBlur}
                 classes={{
-                  root: classes.textInput,
+                  root: classes.textInputRoot,
+                  input: classes.textInput,
                 }}
                 autoComplete="off"
                 multiline
@@ -260,11 +305,14 @@ class PostFormModal extends Component<Props, State> {
               >
                 <Grid item>
                   <Button
-                    className={classes.postButton}
                     variant="contained"
                     color="primary"
                     onClick={handleSubmit}
                     disabled={!values.content || !values.category}
+                    classes={{
+                      root: classes.postButton,
+                      disabled: classes.postButtonDisabled,
+                    }}
                   >
                     Post
                   </Button>
