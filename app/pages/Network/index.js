@@ -301,6 +301,7 @@ class NetworkPage extends Component<Props, State> {
       connections.filter(connection => connection.get('status') === 'PENDING');
     return (
       <React.Fragment>
+        <NetworkNav />
         {showNotification && (
           <Notification
             msg={`Coworker connection request sent to ${sentTo}`}
@@ -313,7 +314,6 @@ class NetworkPage extends Component<Props, State> {
             close={this.closeConnectionNotification}
           />
         )}
-        <NetworkNav />
         <div className={classes.content}>
           <div className={classes.leftPanel}>
             <div className={classes.coworkersBox}>

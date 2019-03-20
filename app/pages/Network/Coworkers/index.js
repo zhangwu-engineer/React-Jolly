@@ -219,13 +219,13 @@ class CoworkersPage extends Component<Props, State> {
     const { sentTo, isInviting, showNotification } = this.state;
     return (
       <React.Fragment>
+        <NetworkNav />
         {showNotification && (
           <Notification
             msg={`Invite sent to ${sentTo}`}
             close={this.closeNotification}
           />
         )}
-        <NetworkNav />
         <div className={classes.content}>
           <div className={classes.leftPanel}>
             <div className={classes.coworkersBox}>
