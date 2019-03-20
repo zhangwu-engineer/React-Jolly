@@ -12,6 +12,7 @@ import Link from 'components/Link';
 import CoworkerCard from 'components/CoworkerCard';
 import InviteForm from 'components/InviteForm';
 import Notification from 'components/Notification';
+import NetworkNav from 'components/NetworkNav';
 
 import { requestUserCoworkers } from 'containers/App/sagas';
 import saga, {
@@ -37,17 +38,6 @@ const styles = theme => ({
     paddingTop: 70,
     [theme.breakpoints.down('xs')]: {
       display: 'none',
-    },
-  },
-  smallCoworkersBox: {
-    display: 'none',
-    backgroundColor: theme.palette.common.white,
-    paddingTop: 15,
-    paddingBottom: 15,
-    textAlign: 'center',
-    borderBottom: 'solid 1px rgba(0, 117, 216, 0.21)',
-    [theme.breakpoints.down('xs')]: {
-      display: 'block',
     },
   },
   coworkersBox: {
@@ -235,11 +225,7 @@ class CoworkersPage extends Component<Props, State> {
             close={this.closeNotification}
           />
         )}
-        <div className={classes.smallCoworkersBox}>
-          <Link to="/network" className={classes.coworkersTitle}>
-            Find Coworkers
-          </Link>
-        </div>
+        <NetworkNav />
         <div className={classes.content}>
           <div className={classes.leftPanel}>
             <div className={classes.coworkersBox}>

@@ -17,6 +17,7 @@ import ConnectionCard from 'components/ConnectionCard';
 import VouchInviteFormModal from 'components/VouchInviteFormModal';
 import InviteForm from 'components/InviteForm';
 import Notification from 'components/Notification';
+import NetworkNav from 'components/NetworkNav';
 
 import { requestCityUsers, requestUserCoworkers } from 'containers/App/sagas';
 import saga, {
@@ -45,17 +46,6 @@ const styles = theme => ({
     paddingTop: 70,
     [theme.breakpoints.down('xs')]: {
       display: 'none',
-    },
-  },
-  smallCoworkersBox: {
-    display: 'none',
-    backgroundColor: theme.palette.common.white,
-    paddingTop: 15,
-    paddingBottom: 15,
-    textAlign: 'center',
-    borderBottom: 'solid 1px rgba(0, 117, 216, 0.21)',
-    [theme.breakpoints.down('xs')]: {
-      display: 'block',
     },
   },
   coworkersBox: {
@@ -323,11 +313,7 @@ class NetworkPage extends Component<Props, State> {
             close={this.closeConnectionNotification}
           />
         )}
-        <div className={classes.smallCoworkersBox}>
-          <Link to="/network/coworkers" className={classes.coworkersTitle}>
-            {`My Coworkers ${coworkers ? `(${coworkers.size})` : ''}`}
-          </Link>
-        </div>
+        <NetworkNav />
         <div className={classes.content}>
           <div className={classes.leftPanel}>
             <div className={classes.coworkersBox}>
