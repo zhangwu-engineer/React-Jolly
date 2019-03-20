@@ -9,8 +9,8 @@ import Button from '@material-ui/core/Button';
 const styles = () => ({
   inviteBoxTitle: {
     fontSize: 14,
-    fontWeight: 500,
-    color: '#4a4a4a',
+    fontWeight: 600,
+    color: '#1e1e24',
     marginBottom: 20,
   },
   emailInputLabel: {
@@ -31,11 +31,15 @@ const styles = () => ({
 
 type Props = {
   isInviting: boolean,
+  text: ?string,
   classes: Object,
   sendInvite: Function,
 };
 
 class InviteForm extends Component<Props> {
+  static defaultProps = {
+    text: `Don't see any coworkers? Invite them to Jolly`,
+  };
   handleSave = (values, { resetForm }) => {
     if (values.email) {
       this.props.sendInvite(values.email);
@@ -44,7 +48,7 @@ class InviteForm extends Component<Props> {
   };
   textInput = React.createRef();
   render() {
-    const { isInviting, classes } = this.props;
+    const { isInviting, text, classes } = this.props;
     return (
       <Formik initialValues={{ email: '' }} onSubmit={this.handleSave}>
         {({
@@ -60,7 +64,7 @@ class InviteForm extends Component<Props> {
         }) => (
           <React.Fragment>
             <Typography className={classes.inviteBoxTitle} align="center">
-              Don&apos;t see any coworkers? Invite them to Jolly
+              <span dangerouslySetInnerHTML={{ __html: text }} />
             </Typography>
             <TextField
               variant="filled"
