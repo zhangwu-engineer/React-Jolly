@@ -116,6 +116,7 @@ class NetworkInvitePage extends Component<Props, State> {
               sendInvite={this.handleSendInvite}
               isInviting={isInviting}
               text="Meet someone new?<br/>Invite them to connect with you<br/>as coworkers on Jolly"
+              buttonTitle="Send Invitation"
             />
           </div>
         </div>

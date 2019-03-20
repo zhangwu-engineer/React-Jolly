@@ -32,6 +32,7 @@ const styles = () => ({
 type Props = {
   isInviting: boolean,
   text: ?string,
+  buttonTitle: ?string,
   classes: Object,
   sendInvite: Function,
 };
@@ -39,6 +40,7 @@ type Props = {
 class InviteForm extends Component<Props> {
   static defaultProps = {
     text: `Don't see any coworkers? Invite them to Jolly`,
+    buttonTitle: 'Send Invite',
   };
   handleSave = (values, { resetForm }) => {
     if (values.email) {
@@ -48,7 +50,7 @@ class InviteForm extends Component<Props> {
   };
   textInput = React.createRef();
   render() {
-    const { isInviting, text, classes } = this.props;
+    const { isInviting, text, buttonTitle, classes } = this.props;
     return (
       <Formik initialValues={{ email: '' }} onSubmit={this.handleSave}>
         {({
@@ -98,7 +100,7 @@ class InviteForm extends Component<Props> {
               onClick={handleSubmit}
               disabled={isInviting}
             >
-              Send Invite
+              {buttonTitle}
             </Button>
           </React.Fragment>
         )}
