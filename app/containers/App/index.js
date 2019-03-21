@@ -74,6 +74,7 @@ class App extends Component<Props> {
         background_picture: user.getIn(['profile', 'backgroundImage']),
         profile_picture: user.getIn(['profile', 'avatar']),
         source: user.get('source'),
+        cred_count: user.getIn(['profile', 'cred']),
       });
     }
   }
