@@ -8,7 +8,6 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import Input from '@material-ui/core/Input';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -19,6 +18,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import BaseModal from 'components/BaseModal';
 import UserAvatar from 'components/UserAvatar';
+import EditableInput from 'components/EditableInput';
 import Icon from 'components/Icon';
 
 import CategoryIcon from 'images/sprite/category.svg';
@@ -174,6 +174,26 @@ class PostFormModal extends Component<Props, State> {
     data.location = user.getIn(['profile', 'location']);
     this.props.onSave(data);
   };
+  contentPlaceholder = category => {
+    let placeholder = 'Message';
+    if (category === 'gig-info-or-question') {
+      placeholder =
+        'Ask or provide info about an upcoming gig you’ll be working, get parking details, arrange a carpool, etc.';
+    } else if (category === 'work-opportunity') {
+      placeholder =
+        'Include location, payment rates, positions being hired, and instructions on how to apply...';
+    } else if (category === 'business-review') {
+      placeholder =
+        'Describe an experience working for a brand, vendor, staffing company, etc.';
+    } else if (category === 'coworker-shout-out') {
+      placeholder =
+        'Describe a great experience you had working with a particular coworker or manager...';
+    } else if (category === 'general-message') {
+      placeholder =
+        'Post a question or comment to the event freelancers in your area…';
+    }
+    return placeholder;
+  };
   render() {
     const { user, isOpen, classes } = this.props;
     const { isOptionOpen } = this.state;
@@ -282,19 +302,14 @@ class PostFormModal extends Component<Props, State> {
                   </FormControl>
                 )}
               </div>
-              <Input
+              <EditableInput
+                placeholder={this.contentPlaceholder(values.category)}
                 id="content"
-                placeholder="Category-specific prompt goes here"
-                fullWidth
-                disableUnderline
+                name="content"
+                value={values.content}
+                multiline
                 onChange={handleChange}
                 onBlur={handleBlur}
-                classes={{
-                  root: classes.textInputRoot,
-                  input: classes.textInput,
-                }}
-                autoComplete="off"
-                multiline
                 rows={8}
               />
               <Grid

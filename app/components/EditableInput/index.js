@@ -96,6 +96,9 @@ const styles = theme => ({
     top: -9,
     right: 20,
   },
+  marginTop: {
+    marginTop: '12px !important',
+  },
 });
 
 type Props = {
@@ -107,6 +110,8 @@ type Props = {
   classes: Object,
   multiline: boolean,
   disabled?: boolean,
+  rows?: number,
+  placeholder?: string,
   startWith?: string,
   onChange: Function,
   onBlur: Function,
@@ -130,6 +135,8 @@ class EditableInput extends Component<Props> {
       classes,
       multiline,
       startWith,
+      rows,
+      placeholder,
     } = this.props;
     if (id === 'location') {
       return (
@@ -272,9 +279,11 @@ class EditableInput extends Component<Props> {
         autoComplete="off"
         disabled={disabled}
         classes={{
-          root: classes.textInput,
+          root: cx(classes.textInput, { [classes.marginTop]: placeholder }),
           disabled: classes.disabledTextInput,
         }}
+        rows={rows}
+        placeholder={placeholder}
       />
     );
   };
@@ -287,15 +296,17 @@ class EditableInput extends Component<Props> {
         }}
         fullWidth
       >
-        <InputLabel
-          htmlFor={id}
-          classes={{
-            root: classes.labelField,
-            shrink: classes.shrink,
-          }}
-        >
-          {label}
-        </InputLabel>
+        {label && (
+          <InputLabel
+            htmlFor={id}
+            classes={{
+              root: classes.labelField,
+              shrink: classes.shrink,
+            }}
+          >
+            {label}
+          </InputLabel>
+        )}
         {this.renderInput()}
       </FormControl>
     );
