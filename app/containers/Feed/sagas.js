@@ -17,6 +17,8 @@ const CREATE = 'Jolly/Feed/CREATE_POST';
 const REMOVE = 'Jolly/Feed/REMOVE_POST';
 const POST = 'Jolly/Feed/POST';
 const VOTE = 'Jolly/Feed/VOTE_POST';
+const CREATE_COMMENT = 'Jolly/Feed/CREATE_COMMENT';
+
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -87,6 +89,24 @@ const postVoteRequestError = (error: string) => ({
   type: VOTE + ERROR,
   payload: error,
 });
+
+export const requestCreateComment = (payload: Object) => ({
+  type: CREATE_COMMENT + REQUESTED,
+  payload,
+});
+const commentCreateRequestSuccess = (payload: Object) => ({
+  type: CREATE_COMMENT + SUCCEDED,
+  payload,
+});
+const commentCreateRequestFailed = (error: string) => ({
+  type: CREATE_COMMENT + FAILED,
+  payload: error,
+});
+const commentCreateRequestError = (error: string) => ({
+  type: CREATE_COMMENT + ERROR,
+  payload: error,
+});
+
 // ------------------------------------
 // Reducer
 // ------------------------------------
@@ -100,6 +120,8 @@ const initialState = fromJS({
   removeError: '',
   isVoting: false,
   voteError: '',
+  isCommentCreating: false,
+  commentCreateError: '',
 });
 
 export const reducer = (
@@ -170,6 +192,26 @@ export const reducer = (
     case VOTE + ERROR:
       return state.set('isVoting', false).set(
         'voteError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case CREATE_COMMENT + REQUESTED:
+      return state.set('isCommentCreating', true);
+
+    case CREATE_COMMENT + SUCCEDED:
+      return state
+        .set('isCommentCreating', false)
+        .set('commentCreateError', '');
+
+    case CREATE_COMMENT + FAILED:
+      return state
+        .set('isCommentCreating', false)
+        .set('commentCreateError', payload.message);
+
+    case CREATE_COMMENT + ERROR:
+      return state.set('isCommentCreating', false).set(
+        'commentCreateError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -262,11 +304,31 @@ function* PostVoteRequest({ payload }) {
   }
 }
 
+function* CreateCommentRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/comment`,
+      data: payload,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(commentCreateRequestSuccess(response.data.response));
+    } else {
+      yield put(commentCreateRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(commentCreateRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(CREATE + REQUESTED, CreatePostRequest),
     takeLatest(REMOVE + REQUESTED, RemovePostRequest),
     takeLatest(POST + REQUESTED, PostsRequest),
     takeLatest(VOTE + REQUESTED, PostVoteRequest),
+    takeLatest(CREATE_COMMENT + REQUESTED, CreateCommentRequest),
   ]);
 }
