@@ -20,10 +20,12 @@ import MoreIcon from '@material-ui/icons/MoreHoriz';
 
 import UserAvatar from 'components/UserAvatar';
 import Icon from 'components/Icon';
+import CommentCard from 'components/CommentCard';
 
 import CredIcon from 'images/sprite/cred.svg';
 import CredFilledIcon from 'images/sprite/cred_filled.svg';
 import CredBlueIcon from 'images/sprite/cred_blue.svg';
+import CommentIcon from 'images/sprite/comment.svg';
 
 import { CATEGORY_OPTIONS } from 'enum/constants';
 
@@ -154,6 +156,12 @@ const styles = theme => ({
       paddingBottom: 10,
     },
   },
+  showMore: {
+    fontSize: 14,
+    fontWeight: 600,
+    color: theme.palette.primary.main,
+    cursor: 'pointer',
+  },
 });
 
 type Props = {
@@ -169,6 +177,7 @@ type State = {
   open: boolean,
   showComments: boolean,
   comment: string,
+  commentPage: number,
 };
 
 class PostCard extends Component<Props, State> {
@@ -176,6 +185,7 @@ class PostCard extends Component<Props, State> {
     open: false,
     showComments: false,
     comment: '',
+    commentPage: 1,
   };
   handleToggle = () => {
     this.setState(state => ({ open: !state.open }));
@@ -198,10 +208,13 @@ class PostCard extends Component<Props, State> {
     this.setState({ comment: '' });
     this.props.createComment({ content: comment, post: post.get('id') });
   };
+  showNextComments = () => {
+    this.setState(state => ({ commentPage: state.commentPage + 1 }));
+  };
   anchorEl: HTMLElement;
   render() {
     const { post, currentUser, classes } = this.props;
-    const { open, showComments, comment } = this.state;
+    const { open, showComments, comment, commentPage } = this.state;
     const user = post.get('user');
     const category = CATEGORY_OPTIONS.filter(
       option => option.value === post.get('category')
@@ -216,6 +229,8 @@ class PostCard extends Component<Props, State> {
       .replace(/ minutes| minute/gi, 'm')
       .replace(/ hours| hour/gi, 'h')
       .replace(/ days| day/gi, 'd');
+
+    const commentsTotalCount = (commentPage - 1) * 4 + 2;
     return (
       <div className={classes.root}>
         {user.get('id') === currentUser.get('id') && (
@@ -345,7 +360,7 @@ class PostCard extends Component<Props, State> {
               >
                 <Grid container alignItems="center">
                   <Grid item>
-                    <Icon glyph={CredIcon} size={16} />
+                    <Icon glyph={CommentIcon} width={16} height={15} />
                   </Grid>
                   <Grid item>
                     <Typography
@@ -380,7 +395,7 @@ class PostCard extends Component<Props, State> {
               <Grid item>
                 <Grid container alignItems="center">
                   <Grid item>
-                    <Icon glyph={CredFilledIcon} size={16} />
+                    <Icon glyph={CommentIcon} width={16} height={15} />
                   </Grid>
                   <Grid item>
                     <Typography className={classes.votes}>
@@ -421,6 +436,22 @@ class PostCard extends Component<Props, State> {
                 />
               </Grid>
             </Grid>
+            {post
+              .get('fullComments')
+              .map(
+                (c, index) =>
+                  index < commentsTotalCount ? (
+                    <CommentCard comment={c} key={c.get('id')} />
+                  ) : null
+              )}
+            {commentsTotalCount < post.get('fullComments').size && (
+              <Typography
+                className={classes.showMore}
+                onClick={this.showNextComments}
+              >
+                See 4 more comments
+              </Typography>
+            )}
           </React.Fragment>
         )}
       </div>

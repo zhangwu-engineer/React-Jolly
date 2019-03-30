@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import { generate } from 'shortid';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -310,7 +311,7 @@ class FeedPage extends Component<Props, State> {
               posts.map(post => (
                 <PostCard
                   post={post}
-                  key={post.get('id')}
+                  key={generate()}
                   currentUser={user}
                   votePost={this.props.requestVotePost}
                   removePost={this.props.requestRemovePost}

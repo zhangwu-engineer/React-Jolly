@@ -199,10 +199,27 @@ export const reducer = (
     case CREATE_COMMENT + REQUESTED:
       return state.set('isCommentCreating', true);
 
-    case CREATE_COMMENT + SUCCEDED:
+    case CREATE_COMMENT + SUCCEDED: {
+      const currentPosts = state.get('posts');
+      const i = currentPosts.findIndex(
+        post => post.get('id') === payload.comment.post
+      );
+      const currentComments = currentPosts.getIn([i, 'comments']);
+      const currentFullComments = currentPosts.getIn([i, 'fullComments']);
+      const newComments = currentComments.push(payload.comment.id);
+      const newFullComments = currentFullComments.splice(
+        0,
+        0,
+        fromJS(payload.comment)
+      );
+      const newPosts = currentPosts.update(i, post =>
+        post.set('comments', newComments).set('fullComments', newFullComments)
+      );
       return state
+        .set('posts', newPosts)
         .set('isCommentCreating', false)
         .set('commentCreateError', '');
+    }
 
     case CREATE_COMMENT + FAILED:
       return state
