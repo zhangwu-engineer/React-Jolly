@@ -299,6 +299,7 @@ class NetworkPage extends Component<Props, State> {
     const pendingConnections =
       connections &&
       connections.filter(connection => connection.get('status') === 'PENDING');
+    const coworkerIds = coworkers ? coworkers.map(c => c.get('id')).toJS() : [];
     return (
       <React.Fragment>
         <NetworkNav />
@@ -398,15 +399,18 @@ class NetworkPage extends Component<Props, State> {
             </Grid>
             {selectedTab === 0 && (
               <Grid container spacing={8}>
-                {cityUsers.map(cityUser => (
-                  <Grid item key={generate()} xs={12} lg={6}>
-                    <UserCard
-                      user={cityUser}
-                      onSelect={this.openFormModal}
-                      selected={invitedUserIds.includes(cityUser.get('id'))}
-                    />
-                  </Grid>
-                ))}
+                {cityUsers.map(
+                  cityUser =>
+                    !coworkerIds.includes(cityUser.get('id')) ? (
+                      <Grid item key={generate()} xs={12} lg={6}>
+                        <UserCard
+                          user={cityUser}
+                          onSelect={this.openFormModal}
+                          selected={invitedUserIds.includes(cityUser.get('id'))}
+                        />
+                      </Grid>
+                    ) : null
+                )}
               </Grid>
             )}
           </div>
