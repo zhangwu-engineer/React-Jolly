@@ -146,7 +146,7 @@ class EmailSignIn extends Component<Props, State> {
     if (prevProps.isLoading && !isLoading && !error && user) {
       storage.set('invite', null);
       if (user.getIn(['profile', 'location'])) {
-        const path = redirect || '/edit';
+        const path = redirect || '/feed';
         history.push(path);
       } else {
         history.push('/ob/1');

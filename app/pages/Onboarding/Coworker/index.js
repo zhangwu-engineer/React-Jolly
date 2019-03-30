@@ -288,7 +288,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
         perPage
       );
     } else {
-      history.push('/edit');
+      history.push('/feed');
     }
   }
   componentDidUpdate(prevProps: Props) {

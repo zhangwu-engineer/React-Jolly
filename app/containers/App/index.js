@@ -43,7 +43,7 @@ class App extends Component<Props> {
     }
     if (this.props.location.pathname === '/') {
       if (user) {
-        history.push('/edit');
+        history.push('/feed');
       } else {
         history.push('/freelancer-signup');
       }
@@ -54,7 +54,7 @@ class App extends Component<Props> {
     if (location.pathname === '/' && !user) {
       history.push('/sign-in');
     } else if (location.pathname === '/' && user) {
-      history.push('/edit');
+      history.push('/feed');
     }
     if (prevProps.location.pathname !== location.pathname) {
       analytics.page(location.pathname);

@@ -29,7 +29,7 @@ class Welcome extends Component<Props> {
     if (!prevProps.user && user) {
       storage.set('invite', null);
       if (user.getIn(['profile', 'location'])) {
-        history.push('/edit');
+        history.push('/feed');
       } else {
         history.push('/ob/1');
       }
