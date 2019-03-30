@@ -25,6 +25,7 @@ import saga, {
   reducer,
   requestPosts,
   requestCreatePost,
+  requestUpdatePost,
   requestRemovePost,
   requestVotePost,
   requestCreateComment,
@@ -131,12 +132,15 @@ type Props = {
   posts: List<Map>,
   isCreating: boolean,
   createError: string,
+  isUpdating: boolean,
+  updateError: string,
   isVoting: boolean,
   voteError: string,
   isRemoving: boolean,
   removeError: string,
   classes: Object,
   requestCreatePost: Function,
+  requestUpdatePost: Function,
   requestPosts: Function,
   requestVotePost: Function,
   requestRemovePost: Function,
@@ -149,6 +153,7 @@ type State = {
   isFilterOpen: boolean,
   isCredOpen: boolean,
   query: ?Object,
+  editingPost: Object,
 };
 
 class FeedPage extends Component<Props, State> {
@@ -168,6 +173,7 @@ class FeedPage extends Component<Props, State> {
     isFilterOpen: false,
     isCredOpen: false,
     query: undefined,
+    editingPost: null,
   };
   componentDidMount() {
     const { query } = this.state;
@@ -177,6 +183,8 @@ class FeedPage extends Component<Props, State> {
     const {
       isCreating,
       createError,
+      isUpdating,
+      updateError,
       isVoting,
       voteError,
       isRemoving,
@@ -184,6 +192,9 @@ class FeedPage extends Component<Props, State> {
     } = this.props;
     const { query } = this.state;
     if (prevProps.isCreating && !isCreating && !createError) {
+      this.props.requestPosts(query);
+    }
+    if (prevProps.isUpdating && !isUpdating && !updateError) {
       this.props.requestPosts(query);
     }
     if (prevProps.isVoting && !isVoting && !voteError) {
@@ -195,7 +206,7 @@ class FeedPage extends Component<Props, State> {
     }
   }
   openModal = () => {
-    this.setState({ isOpen: true });
+    this.setState({ editingPost: null, isOpen: true });
   };
   closeModal = () => {
     this.setState({ isOpen: false });
@@ -216,14 +227,24 @@ class FeedPage extends Component<Props, State> {
     this.closeModal();
     this.props.requestCreatePost(data);
   };
+  updatePost = (id, data) => {
+    this.closeModal();
+    this.props.requestUpdatePost(id, data);
+  };
   handleFilterChange = query => {
     this.setState({ query }, () => {
       this.props.requestPosts(query);
     });
   };
+  editPost = post => {
+    this.setState({
+      editingPost: post,
+      isOpen: true,
+    });
+  };
   render() {
     const { user, posts, classes } = this.props;
-    const { isOpen, isFilterOpen, isCredOpen, query } = this.state;
+    const { isOpen, isFilterOpen, isCredOpen, query, editingPost } = this.state;
     return (
       <React.Fragment>
         <div className={classes.root}>
@@ -316,6 +337,7 @@ class FeedPage extends Component<Props, State> {
                   votePost={this.props.requestVotePost}
                   removePost={this.props.requestRemovePost}
                   createComment={this.props.requestCreateComment}
+                  editPost={this.editPost}
                 />
               ))}
           </div>
@@ -326,8 +348,10 @@ class FeedPage extends Component<Props, State> {
         <PostFormModal
           isOpen={isOpen}
           user={user}
+          post={editingPost}
           onCloseModal={this.closeModal}
           onSave={this.savePost}
+          onUpdate={this.updatePost}
         />
         <FeedFilterModal
           isOpen={isFilterOpen}
@@ -352,6 +376,8 @@ const mapStateToProps = state => ({
   posts: state.getIn(['feed', 'posts']),
   isCreating: state.getIn(['feed', 'isCreating']),
   createError: state.getIn(['feed', 'createError']),
+  isUpdating: state.getIn(['feed', 'isUpdating']),
+  updateError: state.getIn(['feed', 'updateError']),
   isVoting: state.getIn(['feed', 'isVoting']),
   voteError: state.getIn(['feed', 'voteError']),
   isRemoving: state.getIn(['feed', 'isRemoving']),
@@ -360,6 +386,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   requestCreatePost: payload => dispatch(requestCreatePost(payload)),
+  requestUpdatePost: (id, payload) => dispatch(requestUpdatePost(id, payload)),
   requestPosts: payload => dispatch(requestPosts(payload)),
   requestRemovePost: postId => dispatch(requestRemovePost(postId)),
   requestVotePost: postId => dispatch(requestVotePost(postId)),

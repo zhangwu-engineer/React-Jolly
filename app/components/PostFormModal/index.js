@@ -147,10 +147,12 @@ const styles = theme => ({
 
 type Props = {
   user: Object,
+  post: Object,
   isOpen: boolean,
   classes: Object,
   onCloseModal: Function,
   onSave: Function,
+  onUpdate: Function,
 };
 
 type State = {
@@ -169,10 +171,14 @@ class PostFormModal extends Component<Props, State> {
     this.setState(state => ({ isOptionOpen: !state.isOptionOpen }));
   };
   handleSave = values => {
-    const { user } = this.props;
+    const { user, post } = this.props;
     const data = values;
     data.location = user.getIn(['profile', 'location']);
-    this.props.onSave(data);
+    if (post) {
+      this.props.onUpdate(post.get('id'), data);
+    } else {
+      this.props.onSave(data);
+    }
   };
   contentPlaceholder = category => {
     let placeholder = 'Message';
@@ -195,11 +201,11 @@ class PostFormModal extends Component<Props, State> {
     return placeholder;
   };
   render() {
-    const { user, isOpen, classes } = this.props;
+    const { user, post, isOpen, classes } = this.props;
     const { isOptionOpen } = this.state;
     const initialValues = {
-      category: '',
-      content: '',
+      category: post ? post.get('category') : '',
+      content: post ? post.get('content') : '',
     };
     return (
       <BaseModal

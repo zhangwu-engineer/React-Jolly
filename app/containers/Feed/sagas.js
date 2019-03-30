@@ -14,6 +14,7 @@ import { getToken } from 'containers/App/selectors';
 // Constants
 // ------------------------------------
 const CREATE = 'Jolly/Feed/CREATE_POST';
+const UPDATE = 'Jolly/Feed/UPDATE_POST';
 const REMOVE = 'Jolly/Feed/REMOVE_POST';
 const POST = 'Jolly/Feed/POST';
 const VOTE = 'Jolly/Feed/VOTE_POST';
@@ -36,6 +37,24 @@ const postCreateRequestFailed = (error: string) => ({
 });
 const postCreateRequestError = (error: string) => ({
   type: CREATE + ERROR,
+  payload: error,
+});
+
+export const requestUpdatePost = (id: string, payload: Object) => ({
+  type: UPDATE + REQUESTED,
+  payload,
+  meta: id,
+});
+const postUpdateRequestSuccess = (payload: Object) => ({
+  type: UPDATE + SUCCEDED,
+  payload,
+});
+const postUpdateRequestFailed = (error: string) => ({
+  type: UPDATE + FAILED,
+  payload: error,
+});
+const postUpdateRequestError = (error: string) => ({
+  type: UPDATE + ERROR,
   payload: error,
 });
 
@@ -116,6 +135,8 @@ const initialState = fromJS({
   error: '',
   isCreating: false,
   createError: '',
+  isUpdating: false,
+  updateError: '',
   isRemoving: false,
   removeError: '',
   isVoting: false,
@@ -141,6 +162,22 @@ export const reducer = (
     case CREATE + ERROR:
       return state.set('isCreating', false).set(
         'createError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case UPDATE + REQUESTED:
+      return state.set('isUpdating', true);
+
+    case UPDATE + SUCCEDED:
+      return state.set('isUpdating', false).set('updateError', '');
+
+    case UPDATE + FAILED:
+      return state.set('isUpdating', false).set('updateError', payload.message);
+
+    case UPDATE + ERROR:
+      return state.set('isUpdating', false).set(
+        'updateError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -264,6 +301,25 @@ function* CreatePostRequest({ payload }) {
   }
 }
 
+function* UpdatePostRequest({ payload, meta }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'PUT',
+      url: `${API_URL}/post/${meta}`,
+      data: payload,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(postUpdateRequestSuccess(response.data.response));
+    } else {
+      yield put(postUpdateRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(postUpdateRequestError(error));
+  }
+}
+
 function* RemovePostRequest({ payload }) {
   const token = yield select(getToken);
   try {
@@ -343,6 +399,7 @@ function* CreateCommentRequest({ payload }) {
 export default function*(): Saga<void> {
   yield all([
     takeLatest(CREATE + REQUESTED, CreatePostRequest),
+    takeLatest(UPDATE + REQUESTED, UpdatePostRequest),
     takeLatest(REMOVE + REQUESTED, RemovePostRequest),
     takeLatest(POST + REQUESTED, PostsRequest),
     takeLatest(VOTE + REQUESTED, PostVoteRequest),

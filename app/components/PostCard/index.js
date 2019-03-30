@@ -15,7 +15,6 @@ import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import Input from '@material-ui/core/Input';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Divider from '@material-ui/core/Divider';
 import MoreIcon from '@material-ui/icons/MoreHoriz';
 
 import UserAvatar from 'components/UserAvatar';
@@ -109,25 +108,17 @@ const styles = theme => ({
     minWidth: 'inherit',
   },
   menu: {
-    boxShadow: 'none',
-    border: '1px solid #d8d8d8',
     width: 190,
+    boxShadow: '0 10px 15px 5px rgba(0, 0, 0, 0.05)',
   },
-  menuList: {
-    padding: 0,
+  menuItem: {
+    paddingTop: 3,
+    paddingBottom: 3,
   },
   menuItemText: {
-    fontSize: 14,
-    fontWeight: 600,
-    lineHeight: 1.86,
-    color: '#464646',
-  },
-  dividerWrapper: {
-    paddingLeft: 16,
-    paddingRight: 16,
-  },
-  divider: {
-    height: 1,
+    fontSize: 12,
+    fontWeight: 500,
+    color: '#0c74d4',
   },
   votesWrapper: {
     marginRight: 25,
@@ -171,6 +162,7 @@ type Props = {
   votePost: Function,
   removePost: Function,
   createComment: Function,
+  editPost: Function,
 };
 
 type State = {
@@ -264,21 +256,19 @@ class PostCard extends Component<Props, State> {
                     >
                       <ListItemText
                         classes={{ primary: classes.menuItemText }}
-                        primary="Delete post"
+                        primary="Delete Post"
                       />
                     </MenuItem>
-                    <div className={classes.dividerWrapper}>
-                      <Divider className={classes.divider} />
-                    </div>
                     <MenuItem
                       className={classes.menuItem}
                       onClick={e => {
                         this.handleClose(e);
+                        this.props.editPost(post);
                       }}
                     >
                       <ListItemText
                         classes={{ primary: classes.menuItemText }}
-                        primary="Cancel"
+                        primary="Edit Post"
                       />
                     </MenuItem>
                   </MenuList>
