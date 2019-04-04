@@ -19,7 +19,7 @@ import { requestUserDataUpdate, requestUser } from 'containers/App/sagas';
 
 const styles = theme => ({
   root: {
-    maxWidth: '860px',
+    maxWidth: 1064,
     margin: '10px auto 300px auto',
     display: 'flex',
     [theme.breakpoints.down('xs')]: {
@@ -47,13 +47,14 @@ const styles = theme => ({
     padding: '15px 0px',
   },
   leftPanel: {
-    width: 265,
-    marginRight: 35,
+    width: 353,
+    marginRight: 26,
     [theme.breakpoints.down('xs')]: {
       display: 'none',
     },
   },
   leftMenu: {
+    width: 353,
     position: 'fixed',
     paddingTop: 35,
   },
