@@ -37,7 +37,7 @@ import { CATEGORY_OPTIONS } from 'enum/constants';
 
 const styles = theme => ({
   root: {
-    width: 1106,
+    width: 1064,
     margin: '0 auto',
     paddingTop: 25,
     display: 'flex',
@@ -48,8 +48,8 @@ const styles = theme => ({
     },
   },
   leftPanel: {
-    width: 254,
-    marginRight: 19,
+    width: 223,
+    marginRight: 26,
     [theme.breakpoints.down('xs')]: {
       display: 'none',
     },
@@ -102,8 +102,8 @@ const styles = theme => ({
     color: '#9f9f9f',
   },
   rightPanel: {
-    width: 254,
-    marginLeft: 20,
+    width: 223,
+    marginLeft: 26,
     [theme.breakpoints.down('xs')]: {
       display: 'none',
     },
