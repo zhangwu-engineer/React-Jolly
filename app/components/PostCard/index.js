@@ -122,6 +122,10 @@ const styles = theme => ({
   },
   votesWrapper: {
     marginRight: 25,
+    cursor: 'pointer',
+  },
+  commentsIconWrapper: {
+    cursor: 'pointer',
   },
   newCommentSection: {
     paddingTop: 25,
@@ -353,13 +357,7 @@ class PostCard extends Component<Props, State> {
                     <Icon glyph={CommentIcon} width={16} height={15} />
                   </Grid>
                   <Grid item>
-                    <Typography
-                      className={cx(classes.helpful, {
-                        [classes.blue]: voted,
-                      })}
-                    >
-                      Comment
-                    </Typography>
+                    <Typography className={classes.helpful}>Comment</Typography>
                   </Grid>
                 </Grid>
               </Grid>
@@ -367,7 +365,18 @@ class PostCard extends Component<Props, State> {
           </Grid>
           <Grid item>
             <Grid container>
-              <Grid item className={classes.votesWrapper}>
+              <Grid
+                item
+                className={classes.votesWrapper}
+                onClick={() => {
+                  if (
+                    post.getIn(['user', 'id']) !== currentUser.get('id') &&
+                    !voted
+                  ) {
+                    this.props.votePost(post.get('id'));
+                  }
+                }}
+              >
                 <Grid container alignItems="center">
                   <Grid item>
                     <Icon
@@ -382,7 +391,11 @@ class PostCard extends Component<Props, State> {
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid item>
+              <Grid
+                item
+                className={classes.commentsIconWrapper}
+                onClick={this.toggleComments}
+              >
                 <Grid container alignItems="center">
                   <Grid item>
                     <Icon glyph={CommentIcon} width={16} height={15} />
