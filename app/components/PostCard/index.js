@@ -149,6 +149,10 @@ const styles = theme => ({
     '& input': {
       paddingTop: 10,
       paddingBottom: 10,
+      '&::placeholder': {
+        color: '#9d9d9d',
+        opacity: 1,
+      },
     },
   },
   showMore: {
