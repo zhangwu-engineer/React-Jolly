@@ -79,7 +79,7 @@ const styles = theme => ({
     },
   },
   content: {
-    maxWidth: 830,
+    maxWidth: 1064,
     margin: '0 auto',
     display: 'flex',
     paddingBottom: 137,
@@ -89,8 +89,8 @@ const styles = theme => ({
     },
   },
   leftPanel: {
-    width: 254,
-    marginRight: 27,
+    width: 353,
+    marginRight: 26,
     paddingTop: 100,
     [theme.breakpoints.down('xs')]: {
       display: 'none',
