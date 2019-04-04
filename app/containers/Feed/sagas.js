@@ -19,7 +19,8 @@ const REMOVE = 'Jolly/Feed/REMOVE_POST';
 const POST = 'Jolly/Feed/POST';
 const VOTE = 'Jolly/Feed/VOTE_POST';
 const CREATE_COMMENT = 'Jolly/Feed/CREATE_COMMENT';
-
+const TOGGLE_COMMENT_SECTION = 'Jolly/Feed/TOGGLE_COMMENT_SECTION';
+const SHOW_NEXT_COMMENT = 'Jolly/Feed/SHOW_NEXT_COMMENT';
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -124,6 +125,16 @@ const commentCreateRequestFailed = (error: string) => ({
 const commentCreateRequestError = (error: string) => ({
   type: CREATE_COMMENT + ERROR,
   payload: error,
+});
+
+export const toggleCommentSection = (postId: string) => ({
+  type: TOGGLE_COMMENT_SECTION,
+  payload: postId,
+});
+
+export const showNextComment = (postId: string) => ({
+  type: SHOW_NEXT_COMMENT,
+  payload: postId,
 });
 
 // ------------------------------------
@@ -241,19 +252,20 @@ export const reducer = (
       const i = currentPosts.findIndex(
         post => post.get('id') === payload.comment.post
       );
-      const currentComments = currentPosts.getIn([i, 'comments']);
-      const currentFullComments = currentPosts.getIn([i, 'fullComments']);
+      const currentPost = currentPosts.get(i);
+      const currentComments = currentPost.get('comments');
+      const currentFullComments = currentPost.get('fullComments');
       const newComments = currentComments.push(payload.comment.id);
       const newFullComments = currentFullComments.splice(
         0,
         0,
         fromJS(payload.comment)
       );
-      const newPosts = currentPosts.update(i, post =>
-        post.set('comments', newComments).set('fullComments', newFullComments)
-      );
+      const newPost = currentPost
+        .set('comments', newComments)
+        .set('fullComments', newFullComments);
       return state
-        .set('posts', newPosts)
+        .setIn(['posts', i], newPost)
         .set('isCommentCreating', false)
         .set('commentCreateError', '');
     }
@@ -269,6 +281,20 @@ export const reducer = (
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
+
+    case TOGGLE_COMMENT_SECTION: {
+      const currentPosts = state.get('posts');
+      const i = currentPosts.findIndex(post => post.get('id') === payload);
+      const currentStatus = currentPosts.getIn([i, 'showComments']);
+      return state.setIn(['posts', i, 'showComments'], !currentStatus);
+    }
+
+    case SHOW_NEXT_COMMENT: {
+      const currentPosts = state.get('posts');
+      const i = currentPosts.findIndex(post => post.get('id') === payload);
+      const currentPage = currentPosts.getIn([i, 'commentPage']);
+      return state.setIn(['posts', i, 'commentPage'], currentPage + 1);
+    }
 
     default:
       return state;

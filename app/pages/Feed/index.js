@@ -29,6 +29,8 @@ import saga, {
   requestRemovePost,
   requestVotePost,
   requestCreateComment,
+  toggleCommentSection,
+  showNextComment,
 } from 'containers/Feed/sagas';
 import { requestUser } from 'containers/App/sagas';
 import injectSagas from 'utils/injectSagas';
@@ -146,6 +148,8 @@ type Props = {
   requestRemovePost: Function,
   requestUser: Function,
   requestCreateComment: Function,
+  toggleCommentSection: Function,
+  showNextComment: Function,
 };
 
 type State = {
@@ -338,6 +342,8 @@ class FeedPage extends Component<Props, State> {
                   removePost={this.props.requestRemovePost}
                   createComment={this.props.requestCreateComment}
                   editPost={this.editPost}
+                  toggleComment={this.props.toggleCommentSection}
+                  showNextComment={this.props.showNextComment}
                 />
               ))}
           </div>
@@ -392,6 +398,8 @@ const mapDispatchToProps = dispatch => ({
   requestVotePost: postId => dispatch(requestVotePost(postId)),
   requestUser: () => dispatch(requestUser()),
   requestCreateComment: payload => dispatch(requestCreateComment(payload)),
+  toggleCommentSection: postId => dispatch(toggleCommentSection(postId)),
+  showNextComment: postId => dispatch(showNextComment(postId)),
 });
 
 export default compose(

@@ -171,21 +171,19 @@ type Props = {
   removePost: Function,
   createComment: Function,
   editPost: Function,
+  toggleComment: Function,
+  showNextComment: Function,
 };
 
 type State = {
   open: boolean,
-  showComments: boolean,
   comment: string,
-  commentPage: number,
 };
 
 class PostCard extends Component<Props, State> {
   state = {
     open: false,
-    showComments: false,
     comment: '',
-    commentPage: 1,
   };
   handleToggle = () => {
     this.setState(state => ({ open: !state.open }));
@@ -197,7 +195,8 @@ class PostCard extends Component<Props, State> {
     this.setState({ open: false });
   };
   toggleComments = () => {
-    this.setState(state => ({ showComments: !state.showComments }));
+    const { post } = this.props;
+    this.props.toggleComment(post.get('id'));
   };
   handleChange = e => {
     this.setState({ comment: e.target.value });
@@ -209,12 +208,13 @@ class PostCard extends Component<Props, State> {
     this.props.createComment({ content: comment, post: post.get('id') });
   };
   showNextComments = () => {
-    this.setState(state => ({ commentPage: state.commentPage + 1 }));
+    const { post } = this.props;
+    this.props.showNextComment(post.get('id'));
   };
   anchorEl: HTMLElement;
   render() {
     const { post, currentUser, classes } = this.props;
-    const { open, showComments, comment, commentPage } = this.state;
+    const { open, comment } = this.state;
     const user = post.get('user');
     const category = CATEGORY_OPTIONS.filter(
       option => option.value === post.get('category')
@@ -229,7 +229,8 @@ class PostCard extends Component<Props, State> {
       .replace(/ minutes| minute/gi, 'm')
       .replace(/ hours| hour/gi, 'h')
       .replace(/ days| day/gi, 'd');
-
+    const showComments = post.get('showComments');
+    const commentPage = post.get('commentPage');
     const commentsTotalCount = (commentPage - 1) * 4 + 2;
     return (
       <div className={classes.root}>
