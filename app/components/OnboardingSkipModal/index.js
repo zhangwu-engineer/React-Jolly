@@ -56,6 +56,9 @@ type Props = {
 
 class OnboardingSkipModal extends Component<Props> {
   handleSkip = () => {
+    analytics.track('Onboarding Step Skipped', {
+      page: '/ob/2',
+    });
     history.push('/ob/3');
   };
   closeModal = () => {
