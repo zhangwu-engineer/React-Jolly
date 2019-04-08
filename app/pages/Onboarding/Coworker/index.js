@@ -315,7 +315,12 @@ class OnboardingCoworkerPage extends Component<Props, State> {
     this.setState({ selectedUser: user, isFormOpen: true });
   };
   handleNext = () => {
-    history.push('/ob/3');
+    const { invitedUserIds, invitedEmails } = this.state;
+    if (invitedUserIds.length === 0 && invitedEmails.length === 0) {
+      this.setState({ isSkipOpen: true });
+    } else {
+      history.push('/ob/3');
+    }
   };
   handleSendInvite = email => {
     this.setState(
