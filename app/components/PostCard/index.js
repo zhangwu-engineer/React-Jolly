@@ -232,6 +232,7 @@ class PostCard extends Component<Props, State> {
     const showComments = post.get('showComments');
     const commentPage = post.get('commentPage');
     const commentsTotalCount = (commentPage - 1) * 4 + 2;
+    const commentsLeft = post.get('fullComments').size - commentsTotalCount;
     return (
       <div className={classes.root}>
         {user.get('id') === currentUser.get('id') && (
@@ -457,7 +458,9 @@ class PostCard extends Component<Props, State> {
                 className={classes.showMore}
                 onClick={this.showNextComments}
               >
-                See 4 more comments
+                {commentsLeft > 4
+                  ? `See 4 more comments`
+                  : `See ${commentsLeft} more comments`}
               </Typography>
             )}
           </React.Fragment>
