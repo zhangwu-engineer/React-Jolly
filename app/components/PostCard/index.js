@@ -64,6 +64,7 @@ const styles = theme => ({
     color: '#464646',
     marginTop: 20,
     marginBottom: 30,
+    whiteSpace: 'pre-line',
   },
   bottom: {
     borderTop: '1px solid #f1f1f1',
