@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import cx from 'classnames';
 import { formatDistanceStrict } from 'date-fns';
+import Linkify from 'react-linkify';
 import { withStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -65,6 +66,10 @@ const styles = theme => ({
     marginTop: 20,
     marginBottom: 30,
     whiteSpace: 'pre-line',
+    '& a': {
+      textTransform: 'none',
+      fontSize: 14,
+    },
   },
   bottom: {
     borderTop: '1px solid #f1f1f1',
@@ -316,7 +321,7 @@ class PostCard extends Component<Props, State> {
           />
         </ListItem>
         <Typography className={classes.content}>
-          {post.get('content')}
+          <Linkify>{post.get('content')}</Linkify>
         </Typography>
         <Grid
           container
