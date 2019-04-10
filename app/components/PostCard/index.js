@@ -21,6 +21,7 @@ import MoreIcon from '@material-ui/icons/MoreHoriz';
 import UserAvatar from 'components/UserAvatar';
 import Icon from 'components/Icon';
 import CommentCard from 'components/CommentCard';
+import Link from 'components/Link';
 
 import CredIcon from 'images/sprite/cred.svg';
 import CredFilledIcon from 'images/sprite/cred_filled.svg';
@@ -46,9 +47,10 @@ const styles = theme => ({
   username: {
     fontSize: 14,
     fontWeight: 600,
-    color: '#464646',
+    color: '#0c74d4',
     textTransform: 'capitalize',
     marginRight: 7,
+    textDecoration: 'none',
   },
   category: {
     fontSize: 14,
@@ -303,9 +305,12 @@ class PostCard extends Component<Props, State> {
             primary={
               <Grid container alignItems="center">
                 <Grid item>
-                  <Typography className={classes.username}>{`${user.get(
-                    'firstName'
-                  )} ${user.get('lastName').charAt(0)}.`}</Typography>
+                  <Link
+                    to={`/f/${user.get('slug')}`}
+                    className={classes.username}
+                  >{`${user.get('firstName')} ${user
+                    .get('lastName')
+                    .charAt(0)}.`}</Link>
                 </Grid>
                 <Grid item>
                   <Typography className={classes.category}>
