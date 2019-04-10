@@ -208,12 +208,14 @@ const userEmailVerificationRequestError = (error: string) => ({
 
 export const requestCityUsers = (
   city: string,
+  query: string,
   page: Number,
   perPage: Number
 ) => ({
   type: CITY_USERS + REQUESTED,
   payload: city,
   meta: {
+    query,
     page,
     perPage,
   },
@@ -557,7 +559,7 @@ export const reducer = (
       const existingUsers: List = state.getIn(['cityUsers', 'users']);
       const currentPage = state.getIn(['cityUsers', 'page']);
       let newUsers;
-      if (currentPage !== payload.page) {
+      if (currentPage !== payload.page && payload.page !== 1) {
         newUsers = existingUsers.concat(fromJS(payload.users));
       } else {
         newUsers = fromJS(payload.users);
@@ -948,6 +950,7 @@ function* CityUsersRequest({ payload, meta }) {
       url: `${API_URL}/user/city`,
       data: {
         city: payload,
+        query: meta.query,
         page: meta.page,
         perPage: meta.perPage,
       },

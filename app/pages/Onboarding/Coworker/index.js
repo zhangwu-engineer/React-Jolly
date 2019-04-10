@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { generate } from 'shortid';
-import { capitalize } from 'lodash-es';
+import { debounce, capitalize } from 'lodash-es';
 import update from 'immutability-helper';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -11,6 +11,10 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Input from '@material-ui/core/Input';
+import FormControl from '@material-ui/core/FormControl';
+import SearchIcon from '@material-ui/icons/Search';
 
 import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
@@ -177,6 +181,30 @@ const styles = theme => ({
     fontWeight: 500,
     color: '#383838',
   },
+  formControl: {
+    backgroundColor: theme.palette.common.white,
+    marginTop: 20,
+    boxShadow: '0 10px 15px 5px rgba(0, 0, 0, 0.05)',
+  },
+  textInput: {
+    paddingLeft: 18,
+    marginTop: 20,
+    fontSize: 16,
+    fontWeight: 600,
+    color: '#555555',
+    '& input': {
+      paddingTop: 5,
+      paddingBottom: 20,
+      '&::placeholder': {
+        color: '#555555',
+        opacity: 1,
+      },
+    },
+  },
+  adornment: {
+    position: 'relative',
+    top: -8,
+  },
 });
 
 type Props = {
@@ -208,6 +236,7 @@ type State = {
   showConnectionNotification: boolean,
   invitedUserIds: Array<string>,
   invitedEmails: Array<string>,
+  query: string,
 };
 
 class OnboardingCoworkerPage extends Component<Props, State> {
@@ -278,12 +307,15 @@ class OnboardingCoworkerPage extends Component<Props, State> {
     isConnecting: false, // eslint-disable-line
     connectedTo: null,
     showConnectionNotification: false, // eslint-disable-line
+    query: '',
   };
   componentDidMount() {
     const { user, page } = this.props;
+    const { query } = this.state;
     if (user.getIn(['profile', 'location'])) {
       this.props.requestCityUsers(
         user.getIn(['profile', 'location']),
+        query,
         page || 1,
         perPage
       );
@@ -359,6 +391,21 @@ class OnboardingCoworkerPage extends Component<Props, State> {
       }
     );
   };
+  debouncedSearch = debounce(query => {
+    const { user } = this.props;
+    this.props.requestCityUsers(
+      user.getIn(['profile', 'location']),
+      query,
+      1,
+      perPage
+    );
+  }, 500);
+  handleChange = e => {
+    e.persist();
+    this.setState({ query: e.target.value }, () => {
+      this.debouncedSearch(e.target.value);
+    });
+  };
   render() {
     const { user, cityUsers, page, total, classes } = this.props;
     const {
@@ -371,6 +418,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
       connectedTo,
       invitedEmails,
       invitedUserIds,
+      query,
     } = this.state;
     const loadMore = total > page * perPage;
     return (
@@ -436,6 +484,24 @@ class OnboardingCoworkerPage extends Component<Props, State> {
             </div>
           </div>
           <div className={classes.rightPanel}>
+            <FormControl classes={{ root: classes.formControl }} fullWidth>
+              <Input
+                value={query}
+                onChange={this.handleChange}
+                className={classes.textInput}
+                placeholder="Search Jolly for Coworkers"
+                fullWidth
+                disableUnderline
+                startAdornment={
+                  <InputAdornment
+                    position="start"
+                    className={classes.adornment}
+                  >
+                    <SearchIcon />
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
             <Typography className={classes.title}>
               Find coworkers near{' '}
               <strong>{user.getIn(['profile', 'location'])}</strong>
@@ -459,6 +525,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
                     onClick={() => {
                       this.props.requestCityUsers(
                         user.getIn(['profile', 'location']),
+                        query,
                         page + 1,
                         perPage
                       );
@@ -512,8 +579,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
-  requestCityUsers: (city, page, usersPerPage) =>
-    dispatch(requestCityUsers(city, page, usersPerPage)),
+  requestCityUsers: (city, query, page, usersPerPage) =>
+    dispatch(requestCityUsers(city, query, page, usersPerPage)),
   requestSignupInvite: email => dispatch(requestSignupInvite(email)),
 });
 
