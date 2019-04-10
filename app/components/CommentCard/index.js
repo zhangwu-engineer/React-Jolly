@@ -7,6 +7,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 
 import UserAvatar from 'components/UserAvatar';
+import Link from 'components/Link';
 
 const styles = theme => ({
   root: {
@@ -22,6 +23,7 @@ const styles = theme => ({
     fontWeight: 600,
     color: theme.palette.primary.main,
     textTransform: 'capitalize',
+    textDecoration: 'none',
   },
   content: {
     fontSize: 14,
@@ -59,9 +61,11 @@ class CommentCard extends Component<Props> {
           className={classes.avatar}
         />
         <ListItemText
-          primary={`${user.get('firstName')} ${user
-            .get('lastName')
-            .charAt(0)}.`}
+          primary={
+            <Link to={`/f/${user.get('slug')}`} className={classes.name}>
+              {`${user.get('firstName')} ${user.get('lastName').charAt(0)}.`}
+            </Link>
+          }
           secondary={
             <Typography className={classes.content}>
               {comment.get('content')}
@@ -69,9 +73,6 @@ class CommentCard extends Component<Props> {
               <span className={classes.time}>{timeAgo}</span>
             </Typography>
           }
-          classes={{
-            primary: classes.name,
-          }}
         />
       </ListItem>
     );
