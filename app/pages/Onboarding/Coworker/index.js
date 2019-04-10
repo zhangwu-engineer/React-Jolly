@@ -325,11 +325,13 @@ class OnboardingCoworkerPage extends Component<Props, State> {
   }
   componentDidUpdate(prevProps: Props) {
     const { cityUsers, isCityUsersLoading, cityUsersError } = this.props;
+    const { query } = this.state;
     if (
       prevProps.isCityUsersLoading &&
       !isCityUsersLoading &&
       !cityUsersError &&
-      cityUsers.size === 0
+      cityUsers.size === 0 &&
+      query === ''
     ) {
       history.push('/ob/3');
     }
