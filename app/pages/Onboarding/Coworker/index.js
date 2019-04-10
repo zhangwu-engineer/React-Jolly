@@ -185,6 +185,7 @@ const styles = theme => ({
     backgroundColor: theme.palette.common.white,
     marginTop: 20,
     boxShadow: '0 10px 15px 5px rgba(0, 0, 0, 0.05)',
+    display: 'none',
   },
   textInput: {
     paddingLeft: 18,
