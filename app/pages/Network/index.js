@@ -172,7 +172,6 @@ const styles = theme => ({
     top: -3,
   },
   hideForSmall: {
-    display: 'none',
     [theme.breakpoints.down('xs')]: {
       display: 'none',
     },
@@ -180,7 +179,7 @@ const styles = theme => ({
   showForSmall: {
     display: 'none',
     [theme.breakpoints.down('xs')]: {
-      display: 'none',
+      display: 'inline-flex',
     },
   },
 });
