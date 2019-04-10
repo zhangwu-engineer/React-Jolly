@@ -3,13 +3,18 @@ import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { generate } from 'shortid';
-import { capitalize } from 'lodash-es';
+import cx from 'classnames';
+import { debounce, capitalize } from 'lodash-es';
 import update from 'immutability-helper';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Input from '@material-ui/core/Input';
+import FormControl from '@material-ui/core/FormControl';
+import SearchIcon from '@material-ui/icons/Search';
 
 import Link from 'components/Link';
 import UserCard from 'components/UserCard';
@@ -144,6 +149,39 @@ const styles = theme => ({
     height: 3,
     backgroundColor: '#6b6b6b',
   },
+  formControl: {
+    marginBottom: 10,
+  },
+  textInput: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#484848',
+    '&:before': {
+      borderBottom: '2px solid #4a4a4a',
+    },
+    '& input': {
+      paddingTop: 5,
+      '&::placeholder': {
+        color: '#484848',
+        opacity: 1,
+      },
+    },
+  },
+  adornment: {
+    position: 'relative',
+    top: -3,
+  },
+  hideForSmall: {
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+  },
+  showForSmall: {
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'inline-flex',
+    },
+  },
 });
 
 type Props = {
@@ -181,6 +219,7 @@ type State = {
   connectedTo: ?string,
   invitedUserIds: Array<string>,
   selectedTab: number,
+  query: string,
 };
 
 class NetworkPage extends Component<Props, State> {
@@ -221,11 +260,13 @@ class NetworkPage extends Component<Props, State> {
     isInviting: false,
     showNotification: false,
     selectedTab: 0,
+    query: '',
   };
   componentDidMount() {
     const { user } = this.props;
+    const { query } = this.state;
     if (user.getIn(['profile', 'location'])) {
-      this.props.requestCityUsers(user.getIn(['profile', 'location']));
+      this.props.requestCityUsers(user.getIn(['profile', 'location']), query);
     }
     this.props.requestConnections();
     this.props.requestUserCoworkers();
@@ -284,6 +325,16 @@ class NetworkPage extends Component<Props, State> {
   handleChangeTab = (e, value) => {
     this.setState({ selectedTab: value });
   };
+  debouncedSearch = debounce(query => {
+    const { user } = this.props;
+    this.props.requestCityUsers(user.getIn(['profile', 'location']), query);
+  }, 500);
+  handleChange = e => {
+    e.persist();
+    this.setState({ query: e.target.value }, () => {
+      this.debouncedSearch(e.target.value);
+    });
+  };
   render() {
     const { coworkers, connections, cityUsers, classes } = this.props;
     const {
@@ -295,6 +346,7 @@ class NetworkPage extends Component<Props, State> {
       invitedUserIds,
       connectedTo,
       selectedTab,
+      query,
     } = this.state;
     const pendingConnections =
       connections &&
@@ -359,11 +411,47 @@ class NetworkPage extends Component<Props, State> {
               )}
 
             <Grid container spacing={8}>
-              <Grid item xs={12} lg={12}>
+              <Grid item xs={8} lg={8}>
                 <Typography className={classes.title}>
-                  Add past coworkers to your network
+                  Find coworkers
                 </Typography>
               </Grid>
+              <Grid item xs={4} lg={4}>
+                <FormControl classes={{ root: classes.formControl }} fullWidth>
+                  <Input
+                    value={query}
+                    onChange={this.handleChange}
+                    className={cx(classes.textInput, classes.hideForSmall)}
+                    placeholder="Search by name"
+                    fullWidth
+                    startAdornment={
+                      <InputAdornment
+                        position="start"
+                        className={classes.adornment}
+                      >
+                        <SearchIcon />
+                      </InputAdornment>
+                    }
+                  />
+                  <Input
+                    value={query}
+                    onChange={this.handleChange}
+                    className={cx(classes.textInput, classes.showForSmall)}
+                    placeholder="Search"
+                    fullWidth
+                    startAdornment={
+                      <InputAdornment
+                        position="start"
+                        className={classes.adornment}
+                      >
+                        <SearchIcon />
+                      </InputAdornment>
+                    }
+                  />
+                </FormControl>
+              </Grid>
+            </Grid>
+            <Grid container spacing={8}>
               <Grid item xs={12} lg={12}>
                 <Tabs
                   value={selectedTab}
@@ -452,8 +540,8 @@ const mapDispatchToProps = dispatch => ({
   requestAcceptConnection: connectionId =>
     dispatch(requestAcceptConnection(connectionId)),
   requestConnections: () => dispatch(requestConnections()),
-  requestCityUsers: (city, page, usersPerPage) =>
-    dispatch(requestCityUsers(city, page, usersPerPage)),
+  requestCityUsers: (city, query, page, usersPerPage) =>
+    dispatch(requestCityUsers(city, query, page, usersPerPage)),
 });
 
 export default compose(
