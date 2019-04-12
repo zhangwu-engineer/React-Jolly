@@ -10,7 +10,7 @@ import { API_URL, REQUESTED, SUCCEDED, FAILED, ERROR } from 'enum/constants';
 import { LOCATION_CHANGE } from 'react-router-redux';
 import type { Action, State } from 'types/common';
 import type { Saga } from 'redux-saga';
-import { getToken, getUserId } from 'containers/App/selectors';
+import { getToken, getUserId, getAdminToken } from 'containers/App/selectors';
 
 // ------------------------------------
 // Constants
@@ -32,6 +32,9 @@ const WORKS = 'Jolly/App/WORKS';
 const ENDORSEMENTS = 'Jolly/App/ENDORSEMENTS';
 const OPEN_NAVBAR = 'Jolly/App/OPEN_NAVBAR';
 const CLOSE_NAVBAR = 'Jolly/App/CLOSE_NAVBAR';
+const ADMIN_LOGIN = 'Jolly/App/ADMIN_LOGIN';
+const ADMIN_USER = 'Jolly/App/ADMIN_USER';
+const ADMIN_LOGOUT = 'Jolly/App/ADMIN_LOGOUT';
 
 const SET_META_JSON = 'Jolly/App/SET_META_JSON';
 
@@ -299,6 +302,43 @@ const signupInviteRequestError = (error: string) => ({
   payload: error,
 });
 
+export const requestAdminLogin = (payload: Object) => ({
+  type: ADMIN_LOGIN + REQUESTED,
+  payload,
+});
+export const adminLoginRequestSuccess = (payload: Object) => ({
+  type: ADMIN_LOGIN + SUCCEDED,
+  payload,
+});
+const adminLoginRequestFailed = (error: string) => ({
+  type: ADMIN_LOGIN + FAILED,
+  payload: error,
+});
+const adminLoginRequestError = (error: string) => ({
+  type: ADMIN_LOGIN + ERROR,
+  payload: error,
+});
+
+export const requestAdminUser = () => ({
+  type: ADMIN_USER + REQUESTED,
+});
+export const adminUserRequestSuccess = (payload: Object) => ({
+  type: ADMIN_USER + SUCCEDED,
+  payload,
+});
+const adminUserRequestFailed = (error: string) => ({
+  type: ADMIN_USER + FAILED,
+  payload: error,
+});
+const adminUserRequestError = (error: string) => ({
+  type: ADMIN_USER + ERROR,
+  payload: error,
+});
+
+export const logoutAdmin = () => ({
+  type: ADMIN_LOGOUT,
+});
+
 export const openNavbar = () => ({
   type: OPEN_NAVBAR,
 });
@@ -323,6 +363,10 @@ const initialState = fromJS({
   token: storage.get('token'),
   isLoading: false,
   error: '',
+  adminUser: fromJS(storage.get('adminUser')),
+  adminToken: storage.get('adminToken'),
+  isAdminLoading: false,
+  adminError: '',
   isUpdating: false,
   updateError: '',
   isUploading: false,
@@ -667,6 +711,48 @@ export const reducer = (
         Please try again later or contact support and provide the following error information: ${payload}`
       );
 
+    case ADMIN_LOGIN + REQUESTED:
+      return state.set('isAdminLoading', true);
+
+    case ADMIN_LOGIN + SUCCEDED: {
+      storage.set('adminToken', payload.auth_token);
+      return state
+        .set('isAdminLoading', false)
+        .set('adminToken', payload.auth_token)
+        .set('adminError', '');
+    }
+
+    case ADMIN_LOGIN + FAILED:
+      return state.set('isAdminLoading', false).set('adminError', payload);
+
+    case ADMIN_LOGIN + ERROR:
+      return state.set('isAdminLoading', false).set(
+        'adminError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case ADMIN_USER + REQUESTED:
+      return state.set('isAdminLoading', true);
+
+    case ADMIN_USER + SUCCEDED:
+      storage.set('adminUser', payload);
+      return state
+        .set('isAdminLoading', false)
+        .set('adminUser', fromJS(payload))
+        .set('adminError', '');
+
+    case ADMIN_USER + FAILED:
+      return state.set('isAdminLoading', false).set('adminError', payload);
+
+    case ADMIN_USER + ERROR:
+      return state.set('isAdminLoading', false);
+
+    case ADMIN_LOGOUT:
+      storage.remove('adminToken');
+      storage.remove('adminUser');
+      return state.set('adminUser', null).set('adminToken', null);
+
     case OPEN_NAVBAR:
       return state.set('navbarOpen', true);
 
@@ -987,6 +1073,44 @@ function* SignupInviteRequest({ payload }) {
   }
 }
 
+function* AdminLoginRequest({ payload }) {
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/auth/admin-login`,
+      data: payload,
+    });
+    if (response.status === 200) {
+      yield put(adminLoginRequestSuccess(response.data.response));
+      yield put(requestAdminUser());
+    } else {
+      yield put(adminLoginRequestFailed(response.data.error.message));
+    }
+  } catch (error) {
+    yield put(adminLoginRequestError(error));
+  }
+}
+
+function* AdminUserRequest() {
+  const token = yield select(getAdminToken);
+  try {
+    const response = yield call(request, {
+      url: `${API_URL}/user/me`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(adminUserRequestSuccess(response.data.response));
+    } else if (response.data.error.message === 'jwt expired') {
+      yield put(adminUserRequestFailed(''));
+      yield put(logoutAdmin());
+    } else {
+      yield put(adminUserRequestFailed(response.data.error.message));
+    }
+  } catch (error) {
+    yield put(adminUserRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(REGISTER + REQUESTED, RegisterRequest),
@@ -1003,5 +1127,7 @@ export default function*(): Saga<void> {
     takeLatest(ENDORSEMENTS + REQUESTED, EndorsementsRequest),
     takeLatest(CITY_USERS + REQUESTED, CityUsersRequest),
     takeLatest(SIGNUP_INVITE + REQUESTED, SignupInviteRequest),
+    takeLatest(ADMIN_LOGIN + REQUESTED, AdminLoginRequest),
+    takeLatest(ADMIN_USER + REQUESTED, AdminUserRequest),
   ]);
 }

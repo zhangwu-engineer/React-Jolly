@@ -15,8 +15,9 @@ class PrivateRoute extends Component<Props> {
   render() {
     const { render, ...rest } = this.props;
     const pathname = get(rest, ['location', 'pathname']);
-    const isAuthenticated = storage.get('user');
-    const redirect = '/sign-in';
+    const isAdminPath = pathname.startsWith('/admin');
+    const isAuthenticated = storage.get(isAdminPath ? 'adminUser' : 'user');
+    const redirect = isAdminPath ? '/admin/signin' : '/sign-in';
     return (
       <Route
         render={props =>

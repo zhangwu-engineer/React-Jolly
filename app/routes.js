@@ -32,6 +32,8 @@ const Network = load(() => import('pages/Network'));
 const Coworkers = load(() => import('pages/Network/Coworkers'));
 const NetworkInvite = load(() => import('pages/Network/Invite'));
 const Feed = load(() => import('pages/Feed'));
+const AdminLogin = load(() => import('pages/Admin/Login'));
+const Admin = load(() => import('pages/Admin'));
 const FourOfour = load(() => import('pages/404'));
 
 class Routes extends Component<{}> {
@@ -140,6 +142,12 @@ class Routes extends Component<{}> {
           path="/feed"
           render={props => <Feed {...props} />}
         />
+        <Route
+          exact
+          path="/admin/signin"
+          render={props => <AdminLogin {...props} />}
+        />
+        <PrivateRoute path="/admin" render={props => <Admin {...props} />} />
         <Route render={props => <FourOfour {...props} />} />
       </Switch>
     );
