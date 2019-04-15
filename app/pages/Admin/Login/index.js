@@ -118,6 +118,12 @@ class AdminLogin extends Component<Props, State> {
   state = {
     showPassword: false,
   };
+  componentDidMount() {
+    const { user } = this.props;
+    if (user) {
+      history.push('/admin');
+    }
+  }
   componentDidUpdate(prevProps: Props) {
     const {
       isLoading,
