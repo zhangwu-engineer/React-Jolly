@@ -91,6 +91,16 @@ class User extends Component<Props, State> {
               accessor: d => d.get('jobs'),
             },
             {
+              Header: 'Top Position',
+              id: 'topPosition',
+              accessor: d => d.get('topPosition'),
+            },
+            {
+              Header: '2nd Top Position',
+              id: 'top2ndPosition',
+              accessor: d => d.get('top2ndPosition'),
+            },
+            {
               Header: 'Posts Made',
               id: 'posts',
               accessor: d => d.get('posts'),
