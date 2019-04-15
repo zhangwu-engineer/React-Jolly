@@ -189,6 +189,17 @@ const styles = theme => ({
     fontWeight: 'bold',
     textTransform: 'capitalize',
   },
+  sideMenu: {
+    padding: 0,
+    width: 250,
+  },
+  sideMenuButton: {
+    color: '#434343',
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'inline-flex',
+    },
+  },
 });
 
 type Props = {
@@ -202,12 +213,14 @@ type Props = {
 type State = {
   open: boolean,
   side: boolean,
+  leftSide: boolean,
 };
 
 class AdminHeader extends Component<Props, State> {
   state = {
     open: false,
     side: false,
+    leftSide: false,
   };
   handleToggle = () => {
     this.setState(state => ({ open: !state.open }));
@@ -232,7 +245,30 @@ class AdminHeader extends Component<Props, State> {
       side: open,
     });
   };
+  toggleLeftDrawer = open => () => {
+    this.setState({
+      leftSide: open,
+    });
+  };
   anchorEl: HTMLElement;
+  renderSideMenu = () => {
+    const { classes } = this.props;
+    return (
+      <MenuList className={classes.sideMenu}>
+        <MenuItem
+          className={classes.menuItem}
+          onClick={() => {
+            history.push('/admin');
+          }}
+        >
+          <ListItemText
+            classes={{ primary: classes.menuItemText }}
+            primary="Users"
+          />
+        </MenuItem>
+      </MenuList>
+    );
+  };
   renderMenu = () => {
     const { classes } = this.props;
     return (
@@ -254,7 +290,7 @@ class AdminHeader extends Component<Props, State> {
   };
   render() {
     const { user, classes } = this.props;
-    const { open, side } = this.state;
+    const { open, side, leftSide } = this.state;
     return (
       <Grid
         className={classes.root}
@@ -262,7 +298,29 @@ class AdminHeader extends Component<Props, State> {
         justify="space-between"
         alignItems="center"
       >
-        <Grid item />
+        <Grid item>
+          <Button
+            onClick={this.toggleLeftDrawer(true)}
+            color="inherit"
+            className={classes.sideMenuButton}
+          >
+            <MenuIcon />
+          </Button>
+          <Drawer
+            anchor="left"
+            open={leftSide}
+            onClose={this.toggleLeftDrawer(false)}
+          >
+            <div
+              tabIndex={0}
+              role="button"
+              onClick={this.toggleLeftDrawer(false)}
+              onKeyDown={this.toggleLeftDrawer(false)}
+            >
+              {this.renderSideMenu()}
+            </div>
+          </Drawer>
+        </Grid>
         <Grid item>
           <Button
             buttonRef={node => {
