@@ -48,6 +48,9 @@ const styles = theme => ({
   },
   content: {
     flex: 1,
+    [theme.breakpoints.down('xs')]: {
+      width: '100%',
+    },
   },
 });
 

@@ -15,6 +15,9 @@ import saga, { reducer, requestUsers } from './sagas';
 const styles = theme => ({
   root: {
     padding: 30,
+    [theme.breakpoints.down('xs')]: {
+      padding: '30px 10px',
+    },
   },
   table: {
     backgroundColor: theme.palette.common.white,
