@@ -163,7 +163,7 @@ class AdminLogin extends Component<Props, State> {
           values,
           // dirty,
           errors,
-          // touched,
+          touched,
           handleChange,
           handleBlur,
           handleSubmit,
@@ -194,14 +194,14 @@ class AdminLogin extends Component<Props, State> {
                   }}
                   className={cx(classes.fieldMargin, classes.textInput)}
                   fullWidth
-                  error={!!errors.email}
+                  error={!!errors.email && touched.email}
                   helperText={errors.email}
                   autoFocus
                 />
                 <FormControl
                   className={classes.fieldMargin}
                   fullWidth
-                  error={!!errors.password}
+                  error={!!errors.password && touched.password}
                   aria-describedby="password-helper-text"
                 >
                   <InputLabel htmlFor="password">Password</InputLabel>
@@ -229,9 +229,12 @@ class AdminLogin extends Component<Props, State> {
                       </InputAdornment>
                     }
                   />
-                  <FormHelperText id="password-helper-text">
-                    {errors.message}
-                  </FormHelperText>
+                  {errors.password &&
+                    touched.password && (
+                      <FormHelperText id="password-helper-text">
+                        {errors.password}
+                      </FormHelperText>
+                    )}
                 </FormControl>
                 {error && (
                   <FormHelperText className={classes.fieldMargin} error>
