@@ -9,7 +9,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 
 import { history } from 'components/ConnectedRouter';
 import Header from 'components/Header/Admin';
-import { logoutAdmin } from 'containers/App/sagas';
+import { requestAdminUser, logoutAdmin } from 'containers/App/sagas';
 import Logo from 'images/logo.png';
 import Routes from './routes';
 
@@ -58,10 +58,17 @@ type Props = {
   user: Object,
   location: Object,
   classes: Object,
+  requestAdminUser: Function,
   logoutAdmin: Function,
 };
 
 class Admin extends Component<Props> {
+  componentDidMount() {
+    const { user } = this.props;
+    if (user) {
+      this.props.requestAdminUser();
+    }
+  }
   render() {
     const {
       user,
@@ -106,6 +113,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+  requestAdminUser: () => dispatch(requestAdminUser()),
   logoutAdmin: () => dispatch(logoutAdmin()),
 });
 
