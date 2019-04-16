@@ -55,6 +55,15 @@ class User extends Component<Props, State> {
     const { pageSize } = this.state;
     this.props.requestUsers({ page: e + 1, perPage: pageSize });
   };
+  onPageSizeChange = e => {
+    const { page } = this.props;
+    this.setState({ pageSize: e }, () => {
+      this.props.requestUsers({
+        page,
+        perPage: e,
+      });
+    });
+  };
   renderInput = ({ column: { id } }) => (
     <input
       id={id}
@@ -126,11 +135,11 @@ class User extends Component<Props, State> {
           loading={isLoading} // Display the loading overlay when we need it
           noDataText="No users found"
           onPageChange={this.onPageChange}
-          // onPageSizeChange={this.onPageSizeChange}
+          onPageSizeChange={this.onPageSizeChange}
           // onFilteredChange={this.handleFilterChange}
           page={page - 1}
           pageSize={pageSize}
-          // filterable
+          filterable
           defaultPageSize={pageSize}
           className={classes.table}
           getNoDataProps={() => ({
