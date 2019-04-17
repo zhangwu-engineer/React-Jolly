@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { format } from 'date-fns';
+import { debounce } from 'lodash-es';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
@@ -64,6 +65,20 @@ class User extends Component<Props, State> {
       });
     });
   };
+  handleFilterChange = filter => {
+    this.debounceSearch(filter);
+  };
+  debounceSearch = debounce(filter => {
+    const { pageSize } = this.state;
+    const payload = {
+      page: 1,
+      perPage: pageSize,
+    };
+    filter.forEach(f => {
+      payload[f.id] = f.value;
+    });
+    this.props.requestUsers(payload);
+  }, 500);
   renderInput = ({ column: { id } }) => (
     <input
       id={id}
@@ -100,31 +115,37 @@ class User extends Component<Props, State> {
             {
               Header: 'Jobs Entered',
               id: 'jobs',
+              filterable: false,
               accessor: d => d.get('jobs'),
             },
             {
               Header: 'Top Position',
               id: 'topPosition',
+              filterable: false,
               accessor: d => d.get('topPosition'),
             },
             {
               Header: '2nd Top Position',
               id: 'top2ndPosition',
+              filterable: false,
               accessor: d => d.get('top2ndPosition'),
             },
             {
               Header: 'Posts Made',
               id: 'posts',
+              filterable: false,
               accessor: d => d.get('posts'),
             },
             {
               Header: 'Coworker Connections',
               id: 'coworkers',
+              filterable: false,
               accessor: d => d.get('coworkers'),
             },
             {
               Header: 'Created On',
               id: 'createdOn',
+              filterable: false,
               accessor: d =>
                 format(new Date(d.get('date_created')), 'MMMM do, yyyy'),
             },
@@ -136,7 +157,7 @@ class User extends Component<Props, State> {
           noDataText="No users found"
           onPageChange={this.onPageChange}
           onPageSizeChange={this.onPageSizeChange}
-          // onFilteredChange={this.handleFilterChange}
+          onFilteredChange={this.handleFilterChange}
           page={page - 1}
           pageSize={pageSize}
           filterable
