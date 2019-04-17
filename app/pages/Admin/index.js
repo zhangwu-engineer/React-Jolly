@@ -69,6 +69,12 @@ class Admin extends Component<Props> {
       this.props.requestAdminUser();
     }
   }
+  componentDidUpdate() {
+    const { user, location } = this.props;
+    if (location.pathname === '/admin' && !user) {
+      history.push('/admin/signin');
+    }
+  }
   render() {
     const {
       user,
