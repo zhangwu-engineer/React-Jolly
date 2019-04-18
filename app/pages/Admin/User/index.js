@@ -9,6 +9,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
 import Table from 'components/Table';
+import ActionMenu from 'components/ActionMenu';
 
 import injectSagas from 'utils/injectSagas';
 import saga, { reducer, requestUsers } from './sagas';
@@ -148,6 +149,11 @@ class User extends Component<Props, State> {
               filterable: false,
               accessor: d =>
                 format(new Date(d.get('date_created')), 'MMMM do, yyyy'),
+            },
+            {
+              Header: 'Actions',
+              filterable: false,
+              Cell: props => <ActionMenu data={props.row} />,
             },
           ]}
           manual // Forces table not to paginate or sort automatically, so we can handle it server-side
