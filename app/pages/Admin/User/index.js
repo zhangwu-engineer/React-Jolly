@@ -39,55 +39,49 @@ type Props = {
 };
 
 type State = {
+  filter: Array<Object>,
   pageSize: number,
 };
 
 class User extends Component<Props, State> {
   state = {
-    pageSize: 10,
+    filter: [],
+    pageSize: 100,
   };
   componentDidMount() {
     const { page } = this.props;
-    const { pageSize } = this.state;
     if (page === null) {
-      this.props.requestUsers({ page: 1, perPage: pageSize });
+      this.fetchUsers(1);
     }
   }
   onPageChange = e => {
-    const { pageSize } = this.state;
-    this.props.requestUsers({ page: e + 1, perPage: pageSize });
+    this.fetchUsers(e + 1);
   };
   onPageSizeChange = e => {
     const { page } = this.props;
     this.setState({ pageSize: e }, () => {
-      this.props.requestUsers({
-        page,
-        perPage: e,
-      });
+      this.fetchUsers(page);
     });
   };
   handleFilterChange = filter => {
-    this.debounceSearch(filter);
+    this.setState({ filter }, () => this.debounceSearch());
   };
-  debounceSearch = debounce(filter => {
-    const { pageSize } = this.state;
+  debounceSearch = debounce(() => {
+    this.fetchUsers(1);
+  }, 500);
+
+  fetchUsers = page => {
+    const { filter, pageSize } = this.state;
     const payload = {
-      page: 1,
+      page,
       perPage: pageSize,
     };
     filter.forEach(f => {
       payload[f.id] = f.value;
     });
     this.props.requestUsers(payload);
-  }, 500);
-  renderInput = ({ column: { id } }) => (
-    <input
-      id={id}
-      onChange={this.handleFilterChange}
-      style={{ width: '100%' }}
-      value={this.state[id]}
-    />
-  );
+  };
+
   render() {
     const { users, page, pages, isLoading, classes } = this.props;
     const { pageSize } = this.state;
