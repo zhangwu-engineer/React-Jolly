@@ -40,12 +40,19 @@ type Props = {
 
 type State = {
   filter: Array<Object>,
+  sort: Array<Object>,
   pageSize: number,
 };
 
 class User extends Component<Props, State> {
   state = {
     filter: [],
+    sort: [
+      {
+        id: 'date_created',
+        desc: true,
+      },
+    ],
     pageSize: 100,
   };
   componentDidMount() {
@@ -66,12 +73,16 @@ class User extends Component<Props, State> {
   handleFilterChange = filter => {
     this.setState({ filter }, () => this.debounceSearch());
   };
+  handleSortChange = sort => {
+    this.setState({ sort }, () => this.fetchUsers(1));
+  };
+
   debounceSearch = debounce(() => {
     this.fetchUsers(1);
   }, 500);
 
   fetchUsers = page => {
-    const { filter, pageSize } = this.state;
+    const { filter, sort, pageSize } = this.state;
     const payload = {
       page,
       perPage: pageSize,
@@ -79,12 +90,13 @@ class User extends Component<Props, State> {
     filter.forEach(f => {
       payload[f.id] = f.value;
     });
+    payload.sort = { [sort[0].id]: sort[0].desc ? -1 : 1 };
     this.props.requestUsers(payload);
   };
 
   render() {
     const { users, page, pages, isLoading, classes } = this.props;
-    const { pageSize } = this.state;
+    const { pageSize, sort } = this.state;
     return (
       <div className={classes.root}>
         <Typography variant="h6" classes={{ root: classes.title }}>
@@ -111,35 +123,40 @@ class User extends Component<Props, State> {
               Header: 'Jobs Entered',
               id: 'jobs',
               filterable: false,
+              sortable: false,
               accessor: d => d.get('jobs'),
             },
             {
               Header: 'Top Position',
               id: 'topPosition',
               filterable: false,
+              sortable: false,
               accessor: d => d.get('topPosition'),
             },
             {
               Header: '2nd Top Position',
               id: 'top2ndPosition',
               filterable: false,
+              sortable: false,
               accessor: d => d.get('top2ndPosition'),
             },
             {
               Header: 'Posts Made',
               id: 'posts',
               filterable: false,
+              sortable: false,
               accessor: d => d.get('posts'),
             },
             {
               Header: 'Coworker Connections',
               id: 'coworkers',
               filterable: false,
+              sortable: false,
               accessor: d => d.get('coworkers'),
             },
             {
               Header: 'Created On',
-              id: 'createdOn',
+              id: 'date_created',
               filterable: false,
               accessor: d =>
                 format(new Date(d.get('date_created')), 'MMMM do, yyyy'),
@@ -147,6 +164,7 @@ class User extends Component<Props, State> {
             {
               Header: 'Actions',
               filterable: false,
+              sortable: false,
               Cell: props => <ActionMenu data={props.row} />,
             },
           ]}
@@ -166,6 +184,8 @@ class User extends Component<Props, State> {
           getNoDataProps={() => ({
             style: { display: !users || users.size === 0 ? 'block' : 'none' },
           })}
+          sorted={sort}
+          onSortedChange={this.handleSortChange}
           // SubComponent={row => (
           //   <Menu data={row} onBan={this.banUser} onLoginAs={this.loginAs} />
           // )}
