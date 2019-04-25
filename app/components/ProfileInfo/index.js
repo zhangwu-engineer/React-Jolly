@@ -1,7 +1,6 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { capitalize } from 'lodash-es';
 import { withStyles } from '@material-ui/core/styles';
 
 import Grid from '@material-ui/core/Grid';
@@ -14,13 +13,7 @@ import ImageIcon from '@material-ui/icons/Image';
 
 import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
-import Icon from 'components/Icon';
 import UserAvatar from 'components/UserAvatar';
-
-import FacebookIcon from 'images/sprite/facebook.svg';
-import TwitterIcon from 'images/sprite/twitter.svg';
-import LinkedInIcon from 'images/sprite/linkedin.svg';
-import YoutubeIcon from 'images/sprite/youtube.svg';
 
 const styles = theme => ({
   root: {},
@@ -227,34 +220,6 @@ const styles = theme => ({
       textAlign: 'center',
     },
   },
-  bio: {
-    fontSize: 18,
-    marginLeft: 30,
-    marginRight: 30,
-    marginBottom: 20,
-    [theme.breakpoints.down('xs')]: {
-      textAlign: 'center',
-      marginTop: 20,
-    },
-  },
-  socialButtons: {
-    marginLeft: 30,
-    marginRight: 30,
-    width: 'auto',
-    [theme.breakpoints.down('xs')]: {
-      justifyContent: 'center',
-    },
-  },
-  iconButton: {
-    '&:hover svg': {
-      color: theme.palette.primary.main,
-      fill: theme.palette.primary.main,
-    },
-  },
-  icon: {
-    color: '#b3b9bf',
-    fill: '#b3b9bf',
-  },
 });
 
 type Props = {
@@ -384,83 +349,6 @@ class ProfileInfo extends PureComponent<Props> {
               {user.getIn(['profile', 'location'])}
             </Typography>
           )}
-          <Typography className={classes.bio}>
-            {user.getIn(['profile', 'bio'])
-              ? user.getIn(['profile', 'bio'])
-              : `Hi, I'm ${capitalize(user.get('firstName'))} ${capitalize(
-                  user.get('lastName')
-                )}...`}
-          </Typography>
-          <Grid container className={classes.socialButtons}>
-            {user.getIn(['profile', 'facebook']) && (
-              <Grid item>
-                <IconButton
-                  className={classes.iconButton}
-                  onClick={() =>
-                    this.openUrl(
-                      `https://www.facebook.com/${user.getIn([
-                        'profile',
-                        'facebook',
-                      ])}`
-                    )
-                  }
-                >
-                  <Icon glyph={FacebookIcon} className={classes.icon} />
-                </IconButton>
-              </Grid>
-            )}
-            {user.getIn(['profile', 'twitter']) && (
-              <Grid item>
-                <IconButton
-                  className={classes.iconButton}
-                  onClick={() =>
-                    this.openUrl(
-                      `https://www.twitter.com/${user.getIn([
-                        'profile',
-                        'twitter',
-                      ])}`
-                    )
-                  }
-                >
-                  <Icon glyph={TwitterIcon} className={classes.icon} />
-                </IconButton>
-              </Grid>
-            )}
-            {user.getIn(['profile', 'linkedin']) && (
-              <Grid item>
-                <IconButton
-                  className={classes.iconButton}
-                  onClick={() =>
-                    this.openUrl(
-                      `https://www.linkedin.com/in/${user.getIn([
-                        'profile',
-                        'linkedin',
-                      ])}`
-                    )
-                  }
-                >
-                  <Icon glyph={LinkedInIcon} className={classes.icon} />
-                </IconButton>
-              </Grid>
-            )}
-            {user.getIn(['profile', 'youtube']) && (
-              <Grid item>
-                <IconButton
-                  className={classes.iconButton}
-                  onClick={() =>
-                    this.openUrl(
-                      `https://www.youtube.com/${user.getIn([
-                        'profile',
-                        'youtube',
-                      ])}`
-                    )
-                  }
-                >
-                  <Icon glyph={YoutubeIcon} className={classes.icon} />
-                </IconButton>
-              </Grid>
-            )}
-          </Grid>
         </div>
       </div>
     );
