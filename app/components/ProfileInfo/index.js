@@ -103,12 +103,11 @@ const styles = theme => ({
   },
   avatarContainer: {
     position: 'absolute',
-    left: 30,
-    bottom: -60,
-    padding: 3,
+    left: 80,
+    bottom: -40,
+    padding: 5,
     borderRadius: '50%',
     backgroundColor: theme.palette.common.white,
-    boxShadow: '0 2px 4px 0 rgba(187, 187, 187, 0.5)',
     [theme.breakpoints.down('xs')]: {
       left: '50%',
       bottom: '-47.5px',
@@ -116,21 +115,20 @@ const styles = theme => ({
     },
   },
   avatar: {
-    width: 120,
-    height: 120,
+    width: 150,
+    height: 150,
     [theme.breakpoints.down('xs')]: {
       width: 95,
       height: 95,
     },
   },
   editAvatarButton: {
-    color: theme.palette.primary.main,
     backgroundColor: theme.palette.common.white,
     position: 'absolute',
-    boxShadow: '0 2px 4px 0 rgba(187, 187, 187, 0.5)',
-    bottom: '10px',
-    right: 0,
-    padding: 5,
+    boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.17)',
+    bottom: 10,
+    right: -10,
+    padding: 13,
     '&:hover': {
       backgroundColor: theme.palette.common.white,
     },
@@ -368,7 +366,7 @@ class ProfileInfo extends PureComponent<Props> {
                 this.props.openPhotoModal('avatar');
               }}
             >
-              <EditIcon fontSize="small" />
+              <EditIcon fontSize="medium" />
             </IconButton>
             <IconButton
               className={classes.smallEditAvatarButton}
