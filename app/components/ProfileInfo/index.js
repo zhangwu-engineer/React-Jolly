@@ -35,16 +35,16 @@ const styles = theme => ({
   },
   addCoverButton: {
     position: 'absolute',
-    top: 30,
-    left: 30,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    color: theme.palette.common.white,
-    paddingLeft: 10,
-    paddingRight: 10,
+    top: 13,
+    left: 18,
+    backgroundColor: theme.palette.common.white,
+    color: theme.palette.primary.main,
+    padding: '10px 30px',
     textTransform: 'none',
+    borderRadius: 0,
     fontSize: 14,
     '&:hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.4)',
+      backgroundColor: theme.palette.common.white,
     },
     [theme.breakpoints.down('xs')]: {
       top: '15px',
@@ -96,10 +96,11 @@ const styles = theme => ({
     },
   },
   shareButton: {
-    position: 'absolute',
-    top: 30,
-    right: 20,
-    color: theme.palette.common.white,
+    backgroundColor: theme.palette.common.white,
+    '&:hover': {
+      backgroundColor: theme.palette.common.white,
+    },
+    color: theme.palette.primary.main,
     [theme.breakpoints.down('xs')]: {
       top: '15px',
       right: '13px',
@@ -164,7 +165,7 @@ const styles = theme => ({
     backgroundPosition: 'center',
   },
   overlay: {
-    height: '342px',
+    height: '258px',
     opacity: 0.5,
     backgroundImage:
       'linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7))',
@@ -177,17 +178,22 @@ const styles = theme => ({
     paddingBottom: 20,
   },
   editButtonContainer: {
-    padding: '20px',
+    position: 'absolute',
+    bottom: 0,
+    padding: '20px 25px',
+  },
+  editButtonBox: {
+    marginRight: 10,
   },
   editButton: {
     color: theme.palette.primary.main,
-    border: '1px solid #e5e5e5',
     textTransform: 'none',
     backgroundColor: theme.palette.common.white,
-    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.08)',
     '&:hover': {
       backgroundColor: theme.palette.common.white,
     },
+    padding: '10px 38px',
+    borderRadius: 0,
     [theme.breakpoints.down('xs')]: {
       display: 'none',
     },
@@ -322,10 +328,8 @@ class ProfileInfo extends PureComponent<Props> {
               this.props.openPhotoModal('backgroundImage');
             }}
           >
-            <CameraIcon />
-            &nbsp;&nbsp;
             {user.getIn(['profile', 'backgroundImage']) ? 'Change' : 'Add'}{' '}
-            cover
+            Cover Picture
           </Button>
           <Button
             className={classes.smallAddCoverButton}
@@ -353,12 +357,35 @@ class ProfileInfo extends PureComponent<Props> {
           >
             <ImageIcon />
           </IconButton>
-          <IconButton
-            className={classes.shareButton}
-            onClick={() => this.props.openShareModal('Top Profile')}
+          <Grid
+            container
+            justify="flex-end"
+            alignItems="center"
+            className={classes.editButtonContainer}
           >
-            <ShareIcon />
-          </IconButton>
+            <Grid item className={classes.editButtonBox}>
+              <Button
+                className={classes.editButton}
+                component={props => <Link to="/settings#general" {...props} />}
+              >
+                Edit Profile
+              </Button>
+              <Button
+                className={classes.smallEditButton}
+                component={props => <Link to="/settings" {...props} />}
+              >
+                Edit
+              </Button>
+            </Grid>
+            <Grid item>
+              <IconButton
+                className={classes.shareButton}
+                onClick={() => this.props.openShareModal('Top Profile')}
+              >
+                <ShareIcon />
+              </IconButton>
+            </Grid>
+          </Grid>
           <div className={classes.avatarContainer}>
             <UserAvatar className={classes.avatar} src={avatarImg} />
             <IconButton
@@ -380,28 +407,6 @@ class ProfileInfo extends PureComponent<Props> {
           </div>
         </div>
         <div className={classes.bottomSection}>
-          <Grid
-            container
-            justify="flex-end"
-            className={classes.editButtonContainer}
-          >
-            <Grid item>
-              <Button
-                className={classes.editButton}
-                component={props => <Link to="/settings#general" {...props} />}
-              >
-                <EditIcon />
-                &nbsp;Edit Personal Information
-              </Button>
-              <Button
-                className={classes.smallEditButton}
-                component={props => <Link to="/settings" {...props} />}
-              >
-                <EditIcon />
-                &nbsp;Edit
-              </Button>
-            </Grid>
-          </Grid>
           <Typography className={classes.username}>
             {`${user.get('firstName')} ${user.get('lastName')}`}
           </Typography>
