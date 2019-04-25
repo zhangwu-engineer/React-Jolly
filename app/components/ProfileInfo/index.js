@@ -24,12 +24,7 @@ import LinkedInIcon from 'images/sprite/linkedin.svg';
 import YoutubeIcon from 'images/sprite/youtube.svg';
 
 const styles = theme => ({
-  root: {
-    boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
-    [theme.breakpoints.down('xs')]: {
-      boxShadow: 'none',
-    },
-  },
+  root: {},
   topSection: {
     position: 'relative',
   },
@@ -268,21 +263,6 @@ const styles = theme => ({
     color: '#b3b9bf',
     fill: '#b3b9bf',
   },
-  aggregateLine: {
-    marginTop: 40,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  aggregateValue: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#555555',
-  },
-  aggregateLabel: {
-    fontSize: 12,
-    fontWeight: 600,
-    color: '#555555',
-  },
 });
 
 type Props = {
@@ -300,13 +280,7 @@ class ProfileInfo extends PureComponent<Props> {
     window.open(url, '_blank');
   };
   render() {
-    const {
-      user,
-      numberOfJobs,
-      numberOfVerifications,
-      numberOfEndorsements,
-      classes,
-    } = this.props;
+    const { user, classes } = this.props;
     const avatarImg = user.getIn(['profile', 'avatar']) || '';
     return (
       <div className={classes.root}>
@@ -420,30 +394,6 @@ class ProfileInfo extends PureComponent<Props> {
               {user.getIn(['profile', 'location'])}
             </Typography>
           )}
-          <Grid container className={classes.aggregateLine}>
-            <Grid item xs={4}>
-              <Typography className={classes.aggregateValue}>
-                {numberOfJobs}
-              </Typography>
-              <Typography className={classes.aggregateLabel}>Jobs</Typography>
-            </Grid>
-            <Grid item xs={4}>
-              <Typography className={classes.aggregateValue}>
-                {numberOfVerifications}
-              </Typography>
-              <Typography className={classes.aggregateLabel}>
-                Verifications
-              </Typography>
-            </Grid>
-            <Grid item xs={4}>
-              <Typography className={classes.aggregateValue}>
-                {numberOfEndorsements}
-              </Typography>
-              <Typography className={classes.aggregateLabel}>
-                Endorsements
-              </Typography>
-            </Grid>
-          </Grid>
           <Typography className={classes.bio}>
             {user.getIn(['profile', 'bio'])
               ? user.getIn(['profile', 'bio'])
