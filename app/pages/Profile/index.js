@@ -39,7 +39,7 @@ import injectSagas from 'utils/injectSagas';
 
 const styles = theme => ({
   root: {
-    maxWidth: '712px',
+    maxWidth: '1064px',
     margin: '0 auto 300px auto',
     [theme.breakpoints.down('xs')]: {
       margin: 0,
