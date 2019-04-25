@@ -10,7 +10,6 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import ShareIcon from '@material-ui/icons/Share';
-import CameraIcon from '@material-ui/icons/CameraAltOutlined';
 import ImageIcon from '@material-ui/icons/Image';
 
 import { history } from 'components/ConnectedRouter';
@@ -38,6 +37,7 @@ const styles = theme => ({
     textTransform: 'none',
     borderRadius: 0,
     fontSize: 14,
+    cursor: 'pointer',
     '&:hover': {
       backgroundColor: theme.palette.common.white,
     },
@@ -49,17 +49,19 @@ const styles = theme => ({
   },
   smallAddCoverButton: {
     position: 'absolute',
-    top: 30,
-    left: 30,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    color: theme.palette.common.white,
+    top: 13,
+    left: 18,
+    backgroundColor: theme.palette.common.white,
+    color: theme.palette.primary.main,
     paddingLeft: 10,
     paddingRight: 10,
     textTransform: 'none',
     fontSize: 14,
     display: 'none',
+    borderRadius: 0,
+    cursor: 'pointer',
     '&:hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.4)',
+      backgroundColor: theme.palette.common.white,
     },
     [theme.breakpoints.down('xs')]: {
       top: '15px',
@@ -69,24 +71,20 @@ const styles = theme => ({
   },
   imageButton: {
     position: 'absolute',
-    top: 30,
-    right: 60,
+    top: 13,
+    right: 25,
     color: theme.palette.common.white,
     [theme.breakpoints.down('xs')]: {
-      top: '15px',
-      right: '53px',
       display: 'none',
     },
   },
   smallImageButton: {
     position: 'absolute',
-    top: 30,
-    right: 60,
+    top: 13,
+    right: 25,
     color: theme.palette.common.white,
     display: 'none',
     [theme.breakpoints.down('xs')]: {
-      top: '15px',
-      right: '53px',
       display: 'flex',
     },
   },
@@ -96,10 +94,6 @@ const styles = theme => ({
       backgroundColor: theme.palette.common.white,
     },
     color: theme.palette.primary.main,
-    [theme.breakpoints.down('xs')]: {
-      top: '15px',
-      right: '13px',
-    },
   },
   avatarContainer: {
     position: 'absolute',
@@ -109,17 +103,16 @@ const styles = theme => ({
     borderRadius: '50%',
     backgroundColor: theme.palette.common.white,
     [theme.breakpoints.down('xs')]: {
-      left: '50%',
-      bottom: '-47.5px',
-      transform: 'translate(-50%)',
+      left: 25,
+      bottom: -33,
     },
   },
   avatar: {
     width: 150,
     height: 150,
     [theme.breakpoints.down('xs')]: {
-      width: 95,
-      height: 95,
+      width: 85,
+      height: 85,
     },
   },
   editAvatarButton: {
@@ -137,10 +130,9 @@ const styles = theme => ({
     },
   },
   smallEditAvatarButton: {
-    color: theme.palette.primary.main,
     backgroundColor: theme.palette.common.white,
     position: 'absolute',
-    boxShadow: '0 2px 4px 0 rgba(187, 187, 187, 0.5)',
+    boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.17)',
     bottom: '10px',
     right: 0,
     padding: 5,
@@ -174,6 +166,9 @@ const styles = theme => ({
     position: 'absolute',
     bottom: 0,
     padding: '20px 25px',
+    [theme.breakpoints.down('xs')]: {
+      padding: '20px',
+    },
   },
   editButtonBox: {
     marginRight: 10,
@@ -193,11 +188,10 @@ const styles = theme => ({
   },
   smallEditButton: {
     color: theme.palette.primary.main,
-    border: '1px solid #e5e5e5',
     textTransform: 'none',
     backgroundColor: theme.palette.common.white,
-    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.08)',
     display: 'none',
+    borderRadius: 0,
     '&:hover': {
       backgroundColor: theme.palette.common.white,
     },
@@ -309,10 +303,8 @@ class ProfileInfo extends PureComponent<Props> {
               history.push('/background-picture');
             }}
           >
-            <CameraIcon />
-            &nbsp;&nbsp;
             {user.getIn(['profile', 'backgroundImage']) ? 'Change' : 'Add'}{' '}
-            cover
+            Cover
           </Button>
           <IconButton
             className={classes.imageButton}
