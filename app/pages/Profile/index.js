@@ -16,6 +16,7 @@ import ShareIcon from '@material-ui/icons/ShareOutlined';
 
 import { history } from 'components/ConnectedRouter';
 import ProfileInfo from 'components/ProfileInfo';
+import UserInfo from 'components/UserInfo';
 import Link from 'components/Link';
 import Icon from 'components/Icon';
 import ShareProfileModal from 'components/ShareProfileModal';
@@ -277,7 +278,9 @@ class Profile extends Component<Props, State> {
             />
           </div>
           <div className={classes.panel}>
-            <div className={classes.leftPanel} />
+            <div className={classes.leftPanel}>
+              <UserInfo user={user} roles={roles} />
+            </div>
             <div className={classes.rightPanel}>
               <div className={classes.section}>
                 <div className={classes.sectionHeader}>
