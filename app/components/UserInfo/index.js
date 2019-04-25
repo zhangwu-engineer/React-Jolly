@@ -67,6 +67,9 @@ type Props = {
 };
 
 class UserInfo extends Component<Props> {
+  editPositions = () => {
+    history.push('/types-of-work');
+  };
   editBio = () => {
     if (isMobile()) {
       history.push('/settings/profile');
