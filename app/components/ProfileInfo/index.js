@@ -358,7 +358,7 @@ class ProfileInfo extends PureComponent<Props> {
                 this.props.openPhotoModal('avatar');
               }}
             >
-              <EditIcon fontSize="medium" />
+              <EditIcon />
             </IconButton>
             <IconButton
               className={classes.smallEditAvatarButton}
