@@ -57,6 +57,23 @@ const styles = theme => ({
       marginBottom: 0,
     },
   },
+  panel: {
+    display: 'flex',
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+    },
+  },
+  leftPanel: {
+    width: 355,
+    marginRight: 23,
+    [theme.breakpoints.down('xs')]: {
+      width: 'inherit',
+      marginRight: 0,
+    },
+  },
+  rightPanel: {
+    flex: 1,
+  },
   section: {},
   sectionHeader: {
     paddingLeft: 15,
@@ -259,146 +276,153 @@ class Profile extends Component<Props, State> {
               openPhotoModal={this.openPhotoModal}
             />
           </div>
-          <div className={classes.section}>
-            <div className={classes.sectionHeader}>
-              <Typography variant="h6">Positions for Hire</Typography>
-            </div>
-            <div className={classes.sectionBody}>
-              {roles && roles.size ? (
-                roles.map(role => (
-                  <RoleCard key={generate()} role={role.toJS()} />
-                ))
-              ) : (
-                <RoleCard />
-              )}
-              <Grid container justify="center">
-                <Grid item>
-                  <Button
-                    component={props => <Link to="/types-of-work" {...props} />}
-                    classes={{
-                      root: classes.addRoleButton,
-                      label: classes.addRoleLabel,
-                    }}
+          <div className={classes.panel}>
+            <div className={classes.leftPanel} />
+            <div className={classes.rightPanel}>
+              <div className={classes.section}>
+                <div className={classes.sectionHeader}>
+                  <Typography variant="h6">Positions for Hire</Typography>
+                </div>
+                <div className={classes.sectionBody}>
+                  {roles && roles.size ? (
+                    roles.map(role => (
+                      <RoleCard key={generate()} role={role.toJS()} />
+                    ))
+                  ) : (
+                    <RoleCard />
+                  )}
+                  <Grid container justify="center">
+                    <Grid item>
+                      <Button
+                        component={props => (
+                          <Link to="/types-of-work" {...props} />
+                        )}
+                        classes={{
+                          root: classes.addRoleButton,
+                          label: classes.addRoleLabel,
+                        }}
+                      >
+                        Edit Positions
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </div>
+              </div>
+              <UserEndorsements user={user} endorsements={endorsements} />
+              <div className={classes.section}>
+                <div className={classes.sectionHeader}>
+                  <Typography variant="h6">Experience</Typography>
+                </div>
+                <div className={classes.sectionBody}>
+                  {works && works.size ? (
+                    works.map(work => (
+                      <JobCard
+                        key={generate()}
+                        job={work}
+                        openGallery={this.openGallery}
+                      />
+                    ))
+                  ) : (
+                    <JobCard />
+                  )}
+                  <Grid container justify="center">
+                    <Grid item>
+                      <Button
+                        component={props => <Link to="/add" {...props} />}
+                        classes={{
+                          root: classes.addRoleButton,
+                          label: classes.addRoleLabel,
+                        }}
+                      >
+                        + Add Experience
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </div>
+              </div>
+              <div className={classes.bottomBannerContainer}>
+                {user.getIn(['profile', 'avatar']) ? (
+                  <Grid
+                    className={classes.bottomBanner}
+                    container
+                    justify="space-between"
+                    alignItems="center"
                   >
-                    Edit Positions
-                  </Button>
-                </Grid>
-              </Grid>
-            </div>
-          </div>
-          <UserEndorsements user={user} endorsements={endorsements} />
-          <div className={classes.section}>
-            <div className={classes.sectionHeader}>
-              <Typography variant="h6">Experience</Typography>
-            </div>
-            <div className={classes.sectionBody}>
-              {works && works.size ? (
-                works.map(work => (
-                  <JobCard
-                    key={generate()}
-                    job={work}
-                    openGallery={this.openGallery}
-                  />
-                ))
-              ) : (
-                <JobCard />
-              )}
-              <Grid container justify="center">
-                <Grid item>
-                  <Button
-                    component={props => <Link to="/add" {...props} />}
-                    classes={{
-                      root: classes.addRoleButton,
-                      label: classes.addRoleLabel,
-                    }}
-                  >
-                    + Add Experience
-                  </Button>
-                </Grid>
-              </Grid>
-            </div>
-          </div>
-          <div className={classes.bottomBannerContainer}>
-            {user.getIn(['profile', 'avatar']) ? (
-              <Grid
-                className={classes.bottomBanner}
-                container
-                justify="space-between"
-                alignItems="center"
-              >
-                <Grid item xs={12} lg={6}>
-                  <Typography className={classes.bannerText}>
-                    {`Ready to share your profile? Grab the link here (`}
-                    <Link
-                      className={classes.link}
-                      to={`/f/${user.get('slug')}`}
+                    <Grid item xs={12} lg={6}>
+                      <Typography className={classes.bannerText}>
+                        {`Ready to share your profile? Grab the link here (`}
+                        <Link
+                          className={classes.link}
+                          to={`/f/${user.get('slug')}`}
+                        >
+                          or view as public
+                        </Link>
+                        {'):'}
+                      </Typography>
+                    </Grid>
+                    <Grid
+                      item
+                      xs={12}
+                      lg={6}
+                      className={classes.bannerButtonContainer}
                     >
-                      or view as public
-                    </Link>
-                    {'):'}
-                  </Typography>
-                </Grid>
-                <Grid
-                  item
-                  xs={12}
-                  lg={6}
-                  className={classes.bannerButtonContainer}
-                >
-                  <Button
-                    color="primary"
-                    className={classes.bannerButton}
-                    onClick={() => this.openShareModal('Bottom Profile')}
+                      <Button
+                        color="primary"
+                        className={classes.bannerButton}
+                        onClick={() => this.openShareModal('Bottom Profile')}
+                      >
+                        <ShareIcon />
+                        &nbsp;&nbsp;Share my profile
+                      </Button>
+                    </Grid>
+                  </Grid>
+                ) : (
+                  <Grid
+                    className={classes.bottomBanner}
+                    container
+                    justify="space-between"
+                    alignItems="center"
                   >
-                    <ShareIcon />
-                    &nbsp;&nbsp;Share my profile
-                  </Button>
-                </Grid>
-              </Grid>
-            ) : (
-              <Grid
-                className={classes.bottomBanner}
-                container
-                justify="space-between"
-                alignItems="center"
-              >
-                <Grid item xs={12} lg={6}>
-                  <Typography className={classes.bannerText}>
-                    {`Before you share your profile, you need to add a profile picture.`}
-                  </Typography>
-                </Grid>
-                <Grid
-                  item
-                  xs={12}
-                  lg={6}
-                  className={classes.bannerButtonContainer}
-                >
-                  <Button
-                    color="primary"
-                    className={cx(
-                      classes.bannerButton,
-                      classes.addPictureButton
-                    )}
-                    onClick={() => this.openPhotoModal('avatar')}
-                  >
-                    <Icon glyph={AddPhotoIcon} size={20} />
-                    &nbsp;&nbsp;Add picture
-                  </Button>
-                  <Button
-                    color="primary"
-                    className={cx(
-                      classes.bannerButton,
-                      classes.smallAddPictureButton
-                    )}
-                    onClick={() => {
-                      history.push('/profile-picture');
-                    }}
-                  >
-                    <Icon glyph={AddPhotoIcon} size={20} />
-                    &nbsp;&nbsp;Add picture
-                  </Button>
-                </Grid>
-              </Grid>
-            )}
+                    <Grid item xs={12} lg={6}>
+                      <Typography className={classes.bannerText}>
+                        {`Before you share your profile, you need to add a profile picture.`}
+                      </Typography>
+                    </Grid>
+                    <Grid
+                      item
+                      xs={12}
+                      lg={6}
+                      className={classes.bannerButtonContainer}
+                    >
+                      <Button
+                        color="primary"
+                        className={cx(
+                          classes.bannerButton,
+                          classes.addPictureButton
+                        )}
+                        onClick={() => this.openPhotoModal('avatar')}
+                      >
+                        <Icon glyph={AddPhotoIcon} size={20} />
+                        &nbsp;&nbsp;Add picture
+                      </Button>
+                      <Button
+                        color="primary"
+                        className={cx(
+                          classes.bannerButton,
+                          classes.smallAddPictureButton
+                        )}
+                        onClick={() => {
+                          history.push('/profile-picture');
+                        }}
+                      >
+                        <Icon glyph={AddPhotoIcon} size={20} />
+                        &nbsp;&nbsp;Add picture
+                      </Button>
+                    </Grid>
+                  </Grid>
+                )}
+              </div>
+            </div>
           </div>
         </div>
         <ShareProfileModal
