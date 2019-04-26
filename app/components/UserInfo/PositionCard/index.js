@@ -11,6 +11,7 @@ const styles = () => ({
     backgroundColor: '#f7f7f7',
     marginBottom: 6,
     padding: '15px 20px',
+    cursor: 'pointer',
   },
   name: {
     color: '#2c2c2c',
@@ -32,7 +33,7 @@ class PositionCard extends Component<Props> {
     const { role, classes } = this.props;
     if (!role) {
       return (
-        <Grid container>
+        <Grid container justify="space-between" className={classes.root}>
           <Grid item>
             <Typography className={classes.name}>No Roles added yet</Typography>
           </Grid>
