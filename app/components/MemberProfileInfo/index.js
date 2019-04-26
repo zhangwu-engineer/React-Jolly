@@ -4,6 +4,8 @@ import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 
 import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import ShareIcon from '@material-ui/icons/Share';
 import ImageIcon from '@material-ui/icons/Image';
@@ -13,65 +15,47 @@ import PhotoModal from 'components/PhotoModal';
 import UserAvatar from 'components/UserAvatar';
 
 const styles = theme => ({
-  root: {
-    boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
-  },
+  root: {},
   topSection: {
     position: 'relative',
   },
-  shareButton: {
-    position: 'absolute',
-    top: 30,
-    right: 20,
-    color: theme.palette.common.white,
-    [theme.breakpoints.down('xs')]: {
-      top: '15px',
-      right: '13px',
-    },
-  },
   imageButton: {
     position: 'absolute',
-    top: 30,
-    right: 60,
+    top: 13,
+    right: 25,
     color: theme.palette.common.white,
     [theme.breakpoints.down('xs')]: {
-      top: '15px',
-      right: '53px',
       display: 'none',
     },
   },
   smallImageButton: {
     position: 'absolute',
-    top: 30,
-    right: 60,
+    top: 13,
+    right: 25,
     color: theme.palette.common.white,
     display: 'none',
     [theme.breakpoints.down('xs')]: {
-      top: '15px',
-      right: '53px',
       display: 'flex',
     },
   },
   avatarContainer: {
     position: 'absolute',
-    left: 30,
-    bottom: -60,
-    padding: 3,
+    left: 80,
+    bottom: -40,
+    padding: 5,
     borderRadius: '50%',
     backgroundColor: theme.palette.common.white,
-    boxShadow: '0 2px 4px 0 rgba(187, 187, 187, 0.5)',
     [theme.breakpoints.down('xs')]: {
-      left: '50%',
-      bottom: '-47.5px',
-      transform: 'translate(-50%)',
+      left: 25,
+      bottom: -33,
     },
   },
   avatar: {
-    width: 120,
-    height: 120,
+    width: 150,
+    height: 150,
     [theme.breakpoints.down('xs')]: {
-      width: 95,
-      height: 95,
+      width: 85,
+      height: 85,
     },
   },
   backgroundImage: {
@@ -80,13 +64,41 @@ const styles = theme => ({
     backgroundPosition: 'center',
   },
   overlay: {
-    height: '342px',
+    height: '258px',
     opacity: 0.5,
     backgroundImage:
       'linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7))',
     [theme.breakpoints.down('xs')]: {
-      height: '180px',
+      height: '168px',
     },
+  },
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 0,
+    padding: '20px 25px',
+    [theme.breakpoints.down('xs')]: {
+      padding: '20px',
+    },
+  },
+  connectButtonBox: {
+    marginRight: 10,
+  },
+  connectButton: {
+    color: theme.palette.primary.main,
+    textTransform: 'none',
+    backgroundColor: theme.palette.common.white,
+    '&:hover': {
+      backgroundColor: theme.palette.common.white,
+    },
+    padding: '10px 38px',
+    borderRadius: 0,
+  },
+  shareButton: {
+    backgroundColor: theme.palette.common.white,
+    '&:hover': {
+      backgroundColor: theme.palette.common.white,
+    },
+    color: theme.palette.primary.main,
   },
   bottomSection: {
     backgroundColor: theme.palette.common.white,
@@ -120,56 +132,6 @@ const styles = theme => ({
       marginLeft: 0,
       textAlign: 'center',
     },
-  },
-  divider: {
-    marginTop: 20,
-    marginBottom: 20,
-    [theme.breakpoints.down('xs')]: {
-      display: 'none',
-    },
-  },
-  bio: {
-    fontSize: 18,
-    marginLeft: 30,
-    marginRight: 30,
-    marginBottom: 20,
-    [theme.breakpoints.down('xs')]: {
-      textAlign: 'center',
-      marginTop: 20,
-    },
-  },
-  socialButtons: {
-    marginLeft: 30,
-    marginRight: 30,
-    width: 'auto',
-    [theme.breakpoints.down('xs')]: {
-      justifyContent: 'center',
-    },
-  },
-  iconButton: {
-    '&:hover svg': {
-      color: theme.palette.primary.main,
-      fill: theme.palette.primary.main,
-    },
-  },
-  icon: {
-    color: '#b3b9bf',
-    fill: '#b3b9bf',
-  },
-  aggregateLine: {
-    marginTop: 40,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  aggregateValue: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#555555',
-  },
-  aggregateLabel: {
-    fontSize: 12,
-    fontWeight: 600,
-    color: '#555555',
   },
 });
 
@@ -228,12 +190,24 @@ class MemberProfileInfo extends Component<Props, State> {
               </IconButton>
             </Fragment>
           )}
-          <IconButton
-            className={classes.shareButton}
-            onClick={() => this.props.openShareModal('Top Profile')}
+          <Grid
+            container
+            justify="flex-end"
+            alignItems="center"
+            className={classes.buttonContainer}
           >
-            <ShareIcon />
-          </IconButton>
+            <Grid item className={classes.connectButtonBox}>
+              <Button className={classes.connectButton}>Connect</Button>
+            </Grid>
+            <Grid item>
+              <IconButton
+                className={classes.shareButton}
+                onClick={() => this.props.openShareModal('Top Profile')}
+              >
+                <ShareIcon />
+              </IconButton>
+            </Grid>
+          </Grid>
           <div className={classes.avatarContainer}>
             <UserAvatar className={classes.avatar} src={avatarImg} />
           </div>
