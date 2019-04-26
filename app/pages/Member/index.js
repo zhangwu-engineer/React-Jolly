@@ -17,6 +17,7 @@ import Grid from '@material-ui/core/Grid';
 import ShareIcon from '@material-ui/icons/Share';
 
 import MemberProfileInfo from 'components/MemberProfileInfo';
+import UserInfo from 'components/UserInfo';
 import Link from 'components/Link';
 import RoleCard from 'components/RoleCard';
 import JobCard from 'components/JobCard';
@@ -36,8 +37,8 @@ import injectSagas from 'utils/injectSagas';
 
 const styles = theme => ({
   root: {
-    maxWidth: '712px',
-    margin: '40px auto 150px auto',
+    maxWidth: '1064px',
+    margin: '0px auto 150px auto',
     [theme.breakpoints.down('xs')]: {
       margin: 0,
       marginBottom: 120,
@@ -48,6 +49,23 @@ const styles = theme => ({
     [theme.breakpoints.down('xs')]: {
       marginBottom: 0,
     },
+  },
+  panel: {
+    display: 'flex',
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+    },
+  },
+  leftPanel: {
+    width: 355,
+    marginRight: 23,
+    [theme.breakpoints.down('xs')]: {
+      width: 'inherit',
+      marginRight: 0,
+    },
+  },
+  rightPanel: {
+    flex: 1,
   },
   section: {},
   sectionHeader: {
@@ -355,61 +373,68 @@ class Member extends Component<Props, State> {
               openShareModal={this.openShareModal}
             />
           </div>
-          <div className={classes.section}>
-            <div className={classes.sectionHeader}>
-              <Typography variant="h6">Positions for Hire</Typography>
+          <div className={classes.panel}>
+            <div className={classes.leftPanel}>
+              <UserInfo user={member} roles={roles} isPrivate={false} />
             </div>
-            <div className={classes.sectionBody}>
-              {roles.size ? (
-                roles.map(role => (
-                  <RoleCard key={generate()} role={role.toJS()} />
-                ))
-              ) : (
-                <RoleCard />
-              )}
-            </div>
-          </div>
-          <UserEndorsements
-            user={member}
-            endorsements={endorsements}
-            publicMode
-          />
-          <div className={classes.section}>
-            <div className={classes.sectionHeader}>
-              <Typography variant="h6">Experience</Typography>
-            </div>
-            <div className={classes.sectionBody}>
-              {works && works.size ? (
-                works.map(work => (
-                  <JobCard
-                    key={generate()}
-                    job={work}
-                    openGallery={this.openGallery}
-                  />
-                ))
-              ) : (
-                <JobCard />
-              )}
-            </div>
-          </div>
-          <div className={classes.shareSection}>
-            <div className={classes.shareSectionBody}>
-              <Grid container justify="space-between" alignItems="center">
-                <Grid item lg={6}>
-                  <Typography className={classes.shareText}>
-                    Know someone who needs this freelancer’s talents?
-                  </Typography>
-                </Grid>
-                <Grid item>
-                  <Button
-                    className={classes.shareProfileButton}
-                    onClick={() => this.openShareModal('Bottom Profile')}
-                  >
-                    <ShareIcon />
-                    &nbsp;Share this profile
-                  </Button>
-                </Grid>
-              </Grid>
+            <div className={classes.rightPanel}>
+              <UserEndorsements
+                user={member}
+                endorsements={endorsements}
+                publicMode
+              />
+              <div className={classes.section}>
+                <div className={classes.sectionHeader}>
+                  <Typography variant="h6">Past Event Gigs</Typography>
+                </div>
+                <div className={classes.sectionBody}>
+                  {works && works.size ? (
+                    works.map(work => (
+                      <JobCard
+                        key={generate()}
+                        job={work}
+                        openGallery={this.openGallery}
+                      />
+                    ))
+                  ) : (
+                    <JobCard />
+                  )}
+                </div>
+              </div>
+              <div className={classes.section}>
+                <div className={classes.sectionHeader}>
+                  <Typography variant="h6">Roles</Typography>
+                </div>
+                <div className={classes.sectionBody}>
+                  {roles.size ? (
+                    roles.map(role => (
+                      <RoleCard key={generate()} role={role.toJS()} />
+                    ))
+                  ) : (
+                    <RoleCard />
+                  )}
+                </div>
+              </div>
+              <div className={classes.shareSection}>
+                <div className={classes.shareSectionBody}>
+                  <Grid container justify="space-between" alignItems="center">
+                    <Grid item lg={6}>
+                      <Typography className={classes.shareText}>
+                        Know someone who needs this freelancer’s talents?
+                      </Typography>
+                    </Grid>
+                    <Grid item>
+                      <Button
+                        className={classes.shareProfileButton}
+                        onClick={() => this.openShareModal('Bottom Profile')}
+                      >
+                        <ShareIcon />
+                        &nbsp;Share this profile
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </div>
+              </div>
             </div>
           </div>
         </div>
