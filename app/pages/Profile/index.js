@@ -282,39 +282,10 @@ class Profile extends Component<Props, State> {
               <UserInfo user={user} roles={roles} />
             </div>
             <div className={classes.rightPanel}>
-              <div className={classes.section}>
-                <div className={classes.sectionHeader}>
-                  <Typography variant="h6">Positions for Hire</Typography>
-                </div>
-                <div className={classes.sectionBody}>
-                  {roles && roles.size ? (
-                    roles.map(role => (
-                      <RoleCard key={generate()} role={role.toJS()} />
-                    ))
-                  ) : (
-                    <RoleCard />
-                  )}
-                  <Grid container justify="center">
-                    <Grid item>
-                      <Button
-                        component={props => (
-                          <Link to="/types-of-work" {...props} />
-                        )}
-                        classes={{
-                          root: classes.addRoleButton,
-                          label: classes.addRoleLabel,
-                        }}
-                      >
-                        Edit Positions
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </div>
-              </div>
               <UserEndorsements user={user} endorsements={endorsements} />
               <div className={classes.section}>
                 <div className={classes.sectionHeader}>
-                  <Typography variant="h6">Experience</Typography>
+                  <Typography variant="h6">Past Event Gigs</Typography>
                 </div>
                 <div className={classes.sectionBody}>
                   {works && works.size ? (
@@ -338,6 +309,35 @@ class Profile extends Component<Props, State> {
                         }}
                       >
                         + Add Experience
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </div>
+              </div>
+              <div className={classes.section}>
+                <div className={classes.sectionHeader}>
+                  <Typography variant="h6">Roles</Typography>
+                </div>
+                <div className={classes.sectionBody}>
+                  {roles && roles.size ? (
+                    roles.map(role => (
+                      <RoleCard key={generate()} role={role.toJS()} />
+                    ))
+                  ) : (
+                    <RoleCard />
+                  )}
+                  <Grid container justify="center">
+                    <Grid item>
+                      <Button
+                        component={props => (
+                          <Link to="/types-of-work" {...props} />
+                        )}
+                        classes={{
+                          root: classes.addRoleButton,
+                          label: classes.addRoleLabel,
+                        }}
+                      >
+                        Edit Positions
                       </Button>
                     </Grid>
                   </Grid>
