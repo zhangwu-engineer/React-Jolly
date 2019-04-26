@@ -1,24 +1,16 @@
 // @flow
 
 import React, { Component, Fragment } from 'react';
-import { capitalize } from 'lodash-es';
 import { withStyles } from '@material-ui/core/styles';
 
-import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import ShareIcon from '@material-ui/icons/Share';
 import ImageIcon from '@material-ui/icons/Image';
 
 import { history } from 'components/ConnectedRouter';
-import Icon from 'components/Icon';
 import PhotoModal from 'components/PhotoModal';
 import UserAvatar from 'components/UserAvatar';
-
-import FacebookIcon from 'images/sprite/facebook.svg';
-import TwitterIcon from 'images/sprite/twitter.svg';
-import LinkedInIcon from 'images/sprite/linkedin.svg';
-import YoutubeIcon from 'images/sprite/youtube.svg';
 
 const styles = theme => ({
   root: {
@@ -184,9 +176,6 @@ const styles = theme => ({
 type Props = {
   user: Object,
   files: Object,
-  numberOfJobs: number,
-  numberOfVerifications: number,
-  numberOfEndorsements: number,
   classes: Object,
   openShareModal: Function,
 };
@@ -206,14 +195,7 @@ class MemberProfileInfo extends Component<Props, State> {
     this.setState({ isOpen: false });
   };
   render() {
-    const {
-      user,
-      files,
-      numberOfJobs,
-      numberOfVerifications,
-      numberOfEndorsements,
-      classes,
-    } = this.props;
+    const { user, files, classes } = this.props;
     const { isOpen } = this.state;
     const avatarImg = user.getIn(['profile', 'avatar']) || '';
     return (
@@ -269,111 +251,6 @@ class MemberProfileInfo extends Component<Props, State> {
             <Typography className={classes.location}>
               {user.getIn(['profile', 'location'])}
             </Typography>
-          )}
-          <Grid container className={classes.aggregateLine}>
-            <Grid item xs={4}>
-              <Typography className={classes.aggregateValue}>
-                {numberOfJobs}
-              </Typography>
-              <Typography className={classes.aggregateLabel}>Jobs</Typography>
-            </Grid>
-            <Grid item xs={4}>
-              <Typography className={classes.aggregateValue}>
-                {numberOfVerifications}
-              </Typography>
-              <Typography className={classes.aggregateLabel}>
-                Verifications
-              </Typography>
-            </Grid>
-            <Grid item xs={4}>
-              <Typography className={classes.aggregateValue}>
-                {numberOfEndorsements}
-              </Typography>
-              <Typography className={classes.aggregateLabel}>
-                Endorsements
-              </Typography>
-            </Grid>
-          </Grid>
-          {user.getIn(['profile', 'bio']) && (
-            <Fragment>
-              <Typography className={classes.bio}>
-                {user.getIn(['profile', 'bio'])
-                  ? user.getIn(['profile', 'bio'])
-                  : `Hi, I'm ${capitalize(user.get('firstName'))} ${capitalize(
-                      user.get('lastName')
-                    )}...`}
-              </Typography>
-              <Grid container className={classes.socialButtons}>
-                {user.getIn(['profile', 'facebook']) && (
-                  <Grid item>
-                    <IconButton
-                      className={classes.iconButton}
-                      onClick={() =>
-                        this.openUrl(
-                          `https://www.facebook.com/${user.getIn([
-                            'profile',
-                            'facebook',
-                          ])}`
-                        )
-                      }
-                    >
-                      <Icon glyph={FacebookIcon} className={classes.icon} />
-                    </IconButton>
-                  </Grid>
-                )}
-                {user.getIn(['profile', 'twitter']) && (
-                  <Grid item>
-                    <IconButton
-                      className={classes.iconButton}
-                      onClick={() =>
-                        this.openUrl(
-                          `https://www.twitter.com/${user.getIn([
-                            'profile',
-                            'twitter',
-                          ])}`
-                        )
-                      }
-                    >
-                      <Icon glyph={TwitterIcon} className={classes.icon} />
-                    </IconButton>
-                  </Grid>
-                )}
-                {user.getIn(['profile', 'linkedin']) && (
-                  <Grid item>
-                    <IconButton
-                      className={classes.iconButton}
-                      onClick={() =>
-                        this.openUrl(
-                          `https://www.linkedin.com/in/${user.getIn([
-                            'profile',
-                            'linkedin',
-                          ])}`
-                        )
-                      }
-                    >
-                      <Icon glyph={LinkedInIcon} className={classes.icon} />
-                    </IconButton>
-                  </Grid>
-                )}
-                {user.getIn(['profile', 'youtube']) && (
-                  <Grid item>
-                    <IconButton
-                      className={classes.iconButton}
-                      onClick={() =>
-                        this.openUrl(
-                          `https://www.youtube.com/${user.getIn([
-                            'profile',
-                            'youtube',
-                          ])}`
-                        )
-                      }
-                    >
-                      <Icon glyph={YoutubeIcon} className={classes.icon} />
-                    </IconButton>
-                  </Grid>
-                )}
-              </Grid>
-            </Fragment>
           )}
         </div>
         <PhotoModal
