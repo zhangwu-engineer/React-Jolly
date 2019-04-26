@@ -1,6 +1,6 @@
 // @flow
 
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { capitalize } from 'lodash-es';
 import { generate } from 'shortid';
 import { withStyles } from '@material-ui/core/styles';
@@ -139,6 +139,7 @@ class UserInfo extends Component<Props> {
   };
   render() {
     const { user, roles, isPrivate, classes } = this.props;
+    const hideResume = !isPrivate && !user.getIn(['profile', 'resume']);
     return (
       <div className={classes.root}>
         <div className={classes.position}>
@@ -153,14 +154,16 @@ class UserInfo extends Component<Props> {
                 My Positions for Hire
               </Typography>
             </Grid>
-            <Grid item>
-              <IconButton
-                classes={{ root: classes.editButton }}
-                onClick={this.editPositions}
-              >
-                <PenIcon fontSize="small" />
-              </IconButton>
-            </Grid>
+            {isPrivate && (
+              <Grid item>
+                <IconButton
+                  classes={{ root: classes.editButton }}
+                  onClick={this.editPositions}
+                >
+                  <PenIcon fontSize="small" />
+                </IconButton>
+              </Grid>
+            )}
           </Grid>
           {roles && roles.size ? (
             roles.map(role => (
@@ -180,14 +183,16 @@ class UserInfo extends Component<Props> {
             <Grid item>
               <Typography className={classes.title}>Bio</Typography>
             </Grid>
-            <Grid item>
-              <IconButton
-                classes={{ root: classes.editButton }}
-                onClick={this.editBio}
-              >
-                <PenIcon fontSize="small" />
-              </IconButton>
-            </Grid>
+            {isPrivate && (
+              <Grid item>
+                <IconButton
+                  classes={{ root: classes.editButton }}
+                  onClick={this.editBio}
+                >
+                  <PenIcon fontSize="small" />
+                </IconButton>
+              </Grid>
+            )}
           </Grid>
           <Typography>
             {user.getIn(['profile', 'bio'])
@@ -283,56 +288,63 @@ class UserInfo extends Component<Props> {
             )}
           </Grid>
         </div>
-        <Grid container alignItems="center">
-          <Grid item>
-            <IconButton
-              classes={{ root: classes.openButton }}
-              onClick={() => {
-                if (user && user.getIn(['profile', 'resume'])) {
-                  this.openResume();
-                } else if (isPrivate) {
-                  this.onUploadClick();
-                }
-              }}
-            >
-              <OpenIcon fontSize="small" />
-            </IconButton>
-          </Grid>
-          <Grid item className={classes.resumeWrapper}>
-            {user && user.getIn(['profile', 'resume']) ? (
-              <Typography onClick={this.openResume} className={classes.resume}>
-                {isPrivate
-                  ? `My Resume`
-                  : `View ${capitalize(user.get('firstName'))}'s Resume`}
-              </Typography>
-            ) : (
-              <Typography
-                onClick={this.onUploadClick}
-                className={classes.resume}
-              >
-                Upload a resume
-              </Typography>
-            )}
-          </Grid>
-          {isPrivate &&
-            user &&
-            user.getIn(['profile', 'resume']) && (
+        {!hideResume && (
+          <Fragment>
+            <Grid container alignItems="center">
               <Grid item>
                 <IconButton
-                  classes={{ root: classes.editButton }}
-                  onClick={this.removeResume}
+                  classes={{ root: classes.openButton }}
+                  onClick={() => {
+                    if (user && user.getIn(['profile', 'resume'])) {
+                      this.openResume();
+                    } else if (isPrivate) {
+                      this.onUploadClick();
+                    }
+                  }}
                 >
-                  <DeleteIcon fontSize="small" />
+                  <OpenIcon fontSize="small" />
                 </IconButton>
               </Grid>
-            )}
-        </Grid>
-        <input
-          type="file"
-          className={classes.fileInput}
-          ref={this.fileInput}
-          onChange={this.handleFileUpload}
-        />
+              <Grid item className={classes.resumeWrapper}>
+                {user && user.getIn(['profile', 'resume']) ? (
+                  <Typography
+                    onClick={this.openResume}
+                    className={classes.resume}
+                  >
+                    {isPrivate
+                      ? `My Resume`
+                      : `View ${capitalize(user.get('firstName'))}'s Resume`}
+                  </Typography>
+                ) : (
+                  <Typography
+                    onClick={this.onUploadClick}
+                    className={classes.resume}
+                  >
+                    Upload a resume
+                  </Typography>
+                )}
+              </Grid>
+              {isPrivate &&
+                user &&
+                user.getIn(['profile', 'resume']) && (
+                  <Grid item>
+                    <IconButton
+                      classes={{ root: classes.editButton }}
+                      onClick={this.removeResume}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Grid>
+                )}
+            </Grid>
+            <input
+              type="file"
+              className={classes.fileInput}
+              ref={this.fileInput}
+              onChange={this.handleFileUpload}
+            />
+          </Fragment>
+        )}
       </div>
     );
   }
