@@ -23,6 +23,7 @@ const USER = 'Jolly/App/USER';
 const USER_DATA_UPDATE = 'Jolly/App/UPDATE_USER_DATA';
 const USER_PHOTO_UPLOAD = 'Jolly/App/USER_PHOTO_UPLOAD';
 const USER_RESUME_UPLOAD = 'Jolly/App/USER_RESUME_UPLOAD';
+const USER_RESUME_DELETE = 'Jolly/App/USER_RESUME_DELETE';
 const USER_FILES = 'Jolly/App/USER_FILES';
 const USER_COWORKERS = 'Jolly/App/USER_COWORKERS';
 const EMAIL_VERIFICATION = 'Jolly/App/EMAIL_VERIFICATION';
@@ -112,6 +113,22 @@ const userResumeUploadFailed = error => ({
 });
 const userResumeUploadError = error => ({
   type: USER_RESUME_UPLOAD + ERROR,
+  payload: error,
+});
+
+export const requestUserResumeDelete = () => ({
+  type: USER_RESUME_DELETE + REQUESTED,
+});
+const userResumeDeleteSuccess = (payload: Object) => ({
+  type: USER_RESUME_DELETE + SUCCEDED,
+  payload,
+});
+const userResumeDeleteFailed = error => ({
+  type: USER_RESUME_DELETE + FAILED,
+  payload: error,
+});
+const userResumeDeleteError = error => ({
+  type: USER_RESUME_DELETE + ERROR,
   payload: error,
 });
 
@@ -391,6 +408,8 @@ const initialState = fromJS({
   uploadError: '',
   isResumeUploading: false,
   resumeUploadError: '',
+  isResumeDeleting: false,
+  resumeDeleteError: '',
   navbarOpen: false,
   metaJson: {},
   isSocialLoading: false,
@@ -505,6 +524,24 @@ export const reducer = (
     case USER_RESUME_UPLOAD + ERROR:
       return state.set('isResumeUploading', false).set(
         'resumeUploadError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case USER_RESUME_DELETE + REQUESTED:
+      return state.set('isResumeDeleting', true).set('resumeDeleteError', null);
+
+    case USER_RESUME_DELETE + SUCCEDED:
+      return state.set('isResumeDeleting', false).set('resumeDeleteError', '');
+
+    case USER_RESUME_DELETE + FAILED:
+      return state
+        .set('isResumeDeleting', false)
+        .set('resumeDeleteError', payload);
+
+    case USER_RESUME_DELETE + ERROR:
+      return state.set('isResumeDeleting', false).set(
+        'resumeDeleteError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -971,11 +1008,32 @@ function* UploadUserResumeRequest({ payload }) {
     });
     if (response.status === 200) {
       yield put(userResumeUploadSuccess(response.data.response));
+      yield put(requestUser());
     } else {
       yield put(userResumeUploadFailed(response.data.error.message));
     }
   } catch (error) {
     yield put(userResumeUploadError(error));
+  }
+}
+
+function* DeleteUserResumeRequest() {
+  const token = yield select(getToken);
+  const userId = yield select(getUserId);
+  try {
+    const response = yield call(request, {
+      method: 'DELETE',
+      url: `${API_URL}/user/${userId}/resume`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(userResumeDeleteSuccess(response.data.response));
+      yield put(requestUser());
+    } else {
+      yield put(userResumeDeleteFailed(response.data.error.message));
+    }
+  } catch (error) {
+    yield put(userResumeDeleteError(error));
   }
 }
 
@@ -1181,6 +1239,7 @@ export default function*(): Saga<void> {
     takeLatest(USER_DATA_UPDATE + REQUESTED, UpdateUserDataRequest),
     takeLatest(USER_PHOTO_UPLOAD + REQUESTED, UploadUserPhotoRequest),
     takeLatest(USER_RESUME_UPLOAD + REQUESTED, UploadUserResumeRequest),
+    takeLatest(USER_RESUME_DELETE + REQUESTED, DeleteUserResumeRequest),
     takeLatest(USER_FILES + REQUESTED, UserFilesRequest),
     takeLatest(USER_COWORKERS + REQUESTED, UserCoworkersRequest),
     takeLatest(EMAIL_VERIFICATION + REQUESTED, UserEmailVerificationRequest),

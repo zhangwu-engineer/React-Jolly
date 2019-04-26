@@ -91,6 +91,7 @@ type Props = {
   isPrivate: ?boolean,
   classes: Object,
   uploadResume: Function,
+  deleteResume: Function,
 };
 
 class UserInfo extends Component<Props> {
@@ -132,6 +133,9 @@ class UserInfo extends Component<Props> {
     if (user && user.getIn(['profile', 'resume'])) {
       window.open(user.getIn(['profile', 'resume']), '_blank');
     }
+  };
+  removeResume = () => {
+    this.props.deleteResume();
   };
   render() {
     const { user, roles, isPrivate, classes } = this.props;

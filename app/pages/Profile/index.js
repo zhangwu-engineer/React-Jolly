@@ -31,6 +31,7 @@ import {
   requestUser,
   requestUserPhotoUpload,
   requestUserResumeUpload,
+  requestUserResumeDelete,
   requestUserFiles,
   requestUserDataUpdate,
   requestWorks,
@@ -182,6 +183,7 @@ type Props = {
   requestUserFiles: Function,
   requestUserPhotoUpload: Function,
   requestUserResumeUpload: Function,
+  requestUserResumeDelete: Function,
   updateUser: Function,
   requestRoles: Function,
   requestWorks: Function,
@@ -285,6 +287,7 @@ class Profile extends Component<Props, State> {
                 user={user}
                 roles={roles}
                 uploadResume={this.props.requestUserResumeUpload}
+                deleteResume={this.props.requestUserResumeDelete}
               />
             </div>
             <div className={classes.rightPanel}>
@@ -491,6 +494,7 @@ const mapDispatchToProps = dispatch => ({
   requestUserPhotoUpload: (photo, type) =>
     dispatch(requestUserPhotoUpload(photo, type)),
   requestUserResumeUpload: resume => dispatch(requestUserResumeUpload(resume)),
+  requestUserResumeDelete: () => dispatch(requestUserResumeDelete()),
   requestUserFiles: () => dispatch(requestUserFiles()),
   updateUser: payload => dispatch(requestUserDataUpdate(payload)),
   requestWorks: () => dispatch(requestWorks()),
