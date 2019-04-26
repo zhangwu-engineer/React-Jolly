@@ -21,7 +21,8 @@ const SOCIAL_LOGIN = 'Acheev/App/SOCIAL_LOGIN';
 const LOGOUT = 'Jolly/App/LOGOUT';
 const USER = 'Jolly/App/USER';
 const USER_DATA_UPDATE = 'Jolly/App/UPDATE_USER_DATA';
-const USER_PHOTO_UPLOAD = 'Jolly/App/UPLOAD_USER_PHOTO';
+const USER_PHOTO_UPLOAD = 'Jolly/App/USER_PHOTO_UPLOAD';
+const USER_RESUME_UPLOAD = 'Jolly/App/USER_RESUME_UPLOAD';
 const USER_FILES = 'Jolly/App/USER_FILES';
 const USER_COWORKERS = 'Jolly/App/USER_COWORKERS';
 const EMAIL_VERIFICATION = 'Jolly/App/EMAIL_VERIFICATION';
@@ -94,6 +95,23 @@ const userPhotoUploadFailed = error => ({
 });
 const userPhotoUploadError = error => ({
   type: USER_PHOTO_UPLOAD + ERROR,
+  payload: error,
+});
+
+export const requestUserResumeUpload = (resume: string) => ({
+  type: USER_RESUME_UPLOAD + REQUESTED,
+  payload: resume,
+});
+const userResumeUploadSuccess = (payload: Object) => ({
+  type: USER_RESUME_UPLOAD + SUCCEDED,
+  payload,
+});
+const userResumeUploadFailed = error => ({
+  type: USER_RESUME_UPLOAD + FAILED,
+  payload: error,
+});
+const userResumeUploadError = error => ({
+  type: USER_RESUME_UPLOAD + ERROR,
   payload: error,
 });
 
@@ -371,6 +389,8 @@ const initialState = fromJS({
   updateError: '',
   isUploading: false,
   uploadError: '',
+  isResumeUploading: false,
+  resumeUploadError: '',
   navbarOpen: false,
   metaJson: {},
   isSocialLoading: false,
@@ -465,6 +485,26 @@ export const reducer = (
     case USER_PHOTO_UPLOAD + ERROR:
       return state.set('isUploading', false).set(
         'uploadError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case USER_RESUME_UPLOAD + REQUESTED:
+      return state
+        .set('isResumeUploading', true)
+        .set('resumeUploadError', null);
+
+    case USER_RESUME_UPLOAD + SUCCEDED:
+      return state.set('isResumeUploading', false).set('resumeUploadError', '');
+
+    case USER_RESUME_UPLOAD + FAILED:
+      return state
+        .set('isResumeUploading', false)
+        .set('resumeUploadError', payload);
+
+    case USER_RESUME_UPLOAD + ERROR:
+      return state.set('isResumeUploading', false).set(
+        'resumeUploadError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -918,6 +958,27 @@ function* UploadUserPhotoRequest({ payload, meta }) {
   }
 }
 
+function* UploadUserResumeRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/user/resume`,
+      data: {
+        resume: payload,
+      },
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(userResumeUploadSuccess(response.data.response));
+    } else {
+      yield put(userResumeUploadFailed(response.data.error.message));
+    }
+  } catch (error) {
+    yield put(userResumeUploadError(error));
+  }
+}
+
 function* UserFilesRequest() {
   const token = yield select(getToken);
   try {
@@ -1119,6 +1180,7 @@ export default function*(): Saga<void> {
     takeLatest(USER + REQUESTED, UserRequest),
     takeLatest(USER_DATA_UPDATE + REQUESTED, UpdateUserDataRequest),
     takeLatest(USER_PHOTO_UPLOAD + REQUESTED, UploadUserPhotoRequest),
+    takeLatest(USER_RESUME_UPLOAD + REQUESTED, UploadUserResumeRequest),
     takeLatest(USER_FILES + REQUESTED, UserFilesRequest),
     takeLatest(USER_COWORKERS + REQUESTED, UserCoworkersRequest),
     takeLatest(EMAIL_VERIFICATION + REQUESTED, UserEmailVerificationRequest),

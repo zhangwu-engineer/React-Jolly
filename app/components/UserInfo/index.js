@@ -8,6 +8,8 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import PenIcon from '@material-ui/icons/CreateOutlined';
+import OpenIcon from '@material-ui/icons/OpenInNew';
+import DeleteIcon from '@material-ui/icons/DeleteForever';
 
 import { history } from 'components/ConnectedRouter';
 import Icon from 'components/Icon';
@@ -36,6 +38,7 @@ const styles = theme => ({
   },
   bio: {
     color: '#373737',
+    marginBottom: 30,
   },
   bioHeader: {
     marginBottom: 10,
@@ -58,15 +61,63 @@ const styles = theme => ({
     color: '#b3b9bf',
     fill: '#b3b9bf',
   },
+  resumeWrapper: {
+    flex: 1,
+  },
+  resume: {
+    color: theme.palette.primary.main,
+    cursor: 'pointer',
+  },
+  fileInput: {
+    display: 'none',
+  },
+  openButton: {
+    padding: 10,
+    marginRight: 10,
+    backgroundColor: '#f2f9ff',
+    '&:hover': {
+      backgroundColor: '#f2f9ff',
+    },
+    '& svg': {
+      color: theme.palette.primary.main,
+      fill: theme.palette.primary.main,
+    },
+  },
 });
 
 type Props = {
   user: Object,
   roles: Object,
+  isPrivate: ?boolean,
   classes: Object,
+  uploadResume: Function,
 };
 
 class UserInfo extends Component<Props> {
+  static defaultProps = {
+    isPrivate: true,
+  };
+  onUploadClick = (e: Event) => {
+    e.preventDefault();
+    if (this.fileInput.current) this.fileInput.current.click();
+  };
+  handleFileUpload = ({ target }: Event) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const block = e.target.result.split(';');
+      const [, base64] = block;
+      const [, realData] = base64.split(','); // eslint-disable-line
+      this.props.uploadResume(realData);
+    };
+    if (target instanceof HTMLInputElement) {
+      const [file] = target.files;
+      if (file && file.type !== 'application/pdf') {
+        return;
+      }
+      reader.readAsDataURL(file);
+    }
+  };
+  fileInput = React.createRef();
   editPositions = () => {
     history.push('/types-of-work');
   };
@@ -77,8 +128,14 @@ class UserInfo extends Component<Props> {
       history.push('/settings#profile');
     }
   };
+  openResume = () => {
+    const { user } = this.props;
+    if (user && user.getIn(['profile', 'resume'])) {
+      window.open(user.getIn(['profile', 'resume']), '_blank');
+    }
+  };
   render() {
-    const { user, roles, classes } = this.props;
+    const { user, roles, isPrivate, classes } = this.props;
     return (
       <div className={classes.root}>
         <div className={classes.position}>
@@ -223,6 +280,56 @@ class UserInfo extends Component<Props> {
             )}
           </Grid>
         </div>
+        <Grid container alignItems="center">
+          <Grid item>
+            <IconButton
+              classes={{ root: classes.openButton }}
+              onClick={() => {
+                if (user && user.getIn(['profile', 'resume'])) {
+                  this.openResume();
+                } else if (isPrivate) {
+                  this.onUploadClick();
+                }
+              }}
+            >
+              <OpenIcon fontSize="small" />
+            </IconButton>
+          </Grid>
+          <Grid item className={classes.resumeWrapper}>
+            {user && user.getIn(['profile', 'resume']) ? (
+              <Typography onClick={this.openResume} className={classes.resume}>
+                {isPrivate
+                  ? `My Resume`
+                  : `View ${capitalize(user.get('firstName'))}'s Resume`}
+              </Typography>
+            ) : (
+              <Typography
+                onClick={this.onUploadClick}
+                className={classes.resume}
+              >
+                Upload a resume
+              </Typography>
+            )}
+          </Grid>
+          {isPrivate &&
+            user &&
+            user.getIn(['profile', 'resume']) && (
+              <Grid item>
+                <IconButton
+                  classes={{ root: classes.editButton }}
+                  onClick={this.removeResume}
+                >
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </Grid>
+            )}
+        </Grid>
+        <input
+          type="file"
+          className={classes.fileInput}
+          ref={this.fileInput}
+          onChange={this.handleFileUpload}
+        />
       </div>
     );
   }

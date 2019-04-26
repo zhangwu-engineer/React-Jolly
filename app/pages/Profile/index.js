@@ -30,6 +30,7 @@ import AddPhotoIcon from 'images/sprite/add-photo-blue.svg';
 import {
   requestUser,
   requestUserPhotoUpload,
+  requestUserResumeUpload,
   requestUserFiles,
   requestUserDataUpdate,
   requestWorks,
@@ -180,6 +181,7 @@ type Props = {
   requestUser: Function,
   requestUserFiles: Function,
   requestUserPhotoUpload: Function,
+  requestUserResumeUpload: Function,
   updateUser: Function,
   requestRoles: Function,
   requestWorks: Function,
@@ -279,7 +281,11 @@ class Profile extends Component<Props, State> {
           </div>
           <div className={classes.panel}>
             <div className={classes.leftPanel}>
-              <UserInfo user={user} roles={roles} />
+              <UserInfo
+                user={user}
+                roles={roles}
+                uploadResume={this.props.requestUserResumeUpload}
+              />
             </div>
             <div className={classes.rightPanel}>
               <UserEndorsements user={user} endorsements={endorsements} />
@@ -484,6 +490,7 @@ const mapDispatchToProps = dispatch => ({
   requestRoles: () => dispatch(requestRoles()),
   requestUserPhotoUpload: (photo, type) =>
     dispatch(requestUserPhotoUpload(photo, type)),
+  requestUserResumeUpload: resume => dispatch(requestUserResumeUpload(resume)),
   requestUserFiles: () => dispatch(requestUserFiles()),
   updateUser: payload => dispatch(requestUserDataUpdate(payload)),
   requestWorks: () => dispatch(requestWorks()),
