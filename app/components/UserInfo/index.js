@@ -97,8 +97,7 @@ class UserInfo extends Component<Props> {
   static defaultProps = {
     isPrivate: true,
   };
-  onUploadClick = (e: Event) => {
-    e.preventDefault();
+  onUploadClick = () => {
     if (this.fileInput.current) this.fileInput.current.click();
   };
   handleFileUpload = ({ target }: Event) => {
