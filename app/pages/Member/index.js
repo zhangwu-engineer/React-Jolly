@@ -119,32 +119,24 @@ const styles = theme => ({
   bottomBanner: {
     position: 'fixed',
     bottom: 0,
-    padding: '25px 70px',
-    backgroundColor: 'rgba(43, 43, 43, 0.9)',
-    [theme.breakpoints.down('xs')]: {
-      padding: '25px 15px',
-    },
-  },
-  bannerText: {
-    color: theme.palette.common.white,
-    fontWeight: 500,
-    fontSize: 26,
-    [theme.breakpoints.down('xs')]: {
-      fontSize: 18,
-    },
+    paddingTop: 15,
+    paddingBottom: 15,
+    backgroundColor: theme.palette.common.white,
+    boxShadow: '0 -4px 20px 0 rgba(0, 0, 0, 0.07)',
   },
   bannerButton: {
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.common.white,
-    fontSize: 16,
-    fontWeight: 500,
-    padding: '10px 20px',
+    fontSize: 12,
+    fontWeight: 600,
+    padding: '10px 110px',
     textTransform: 'none',
+    borderRadius: 0,
     '&:hover': {
       backgroundColor: theme.palette.primary.main,
     },
     [theme.breakpoints.down('xs')]: {
-      fontSize: 15,
+      fontSize: 12,
     },
   },
   topBanner: {
@@ -431,22 +423,18 @@ class Member extends Component<Props, State> {
           <Grid
             className={classes.bottomBanner}
             container
-            justify="space-between"
+            justify="center"
             alignItems="center"
           >
-            <Grid item>
-              <Typography className={classes.bannerText}>
-                Get in Touch!
-              </Typography>
-            </Grid>
             <Grid item>
               <Button
                 className={classes.bannerButton}
                 onClick={() => {
                   this.setState({ isContactOpen: true });
                 }}
+                color="primary"
               >
-                Contact Options
+                Contact Me
               </Button>
             </Grid>
           </Grid>
