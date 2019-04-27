@@ -87,18 +87,20 @@ const styles = theme => ({
     color: theme.palette.primary.main,
     textTransform: 'none',
     backgroundColor: theme.palette.common.white,
+    padding: '10px 38px',
+    borderRadius: 0,
+    boxShadow: '0 2px 11px 0 rgba(0, 0, 0, 0.14)',
     '&:hover': {
       backgroundColor: theme.palette.common.white,
     },
-    padding: '10px 38px',
-    borderRadius: 0,
   },
   shareButton: {
     backgroundColor: theme.palette.common.white,
+    color: theme.palette.primary.main,
+    boxShadow: '0 2px 11px 0 rgba(0, 0, 0, 0.15)',
     '&:hover': {
       backgroundColor: theme.palette.common.white,
     },
-    color: theme.palette.primary.main,
   },
   bottomSection: {
     backgroundColor: theme.palette.common.white,
