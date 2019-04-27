@@ -106,6 +106,10 @@ const styles = theme => ({
     backgroundColor: theme.palette.common.white,
     height: 170,
   },
+  nameSection: {
+    paddingLeft: 80,
+    paddingTop: 15,
+  },
   username: {
     fontSize: 24,
     fontWeight: 'bold',
