@@ -104,36 +104,26 @@ const styles = theme => ({
   },
   bottomSection: {
     backgroundColor: theme.palette.common.white,
-    paddingBottom: 20,
-    paddingTop: 80,
+    height: 170,
   },
   username: {
     fontSize: 24,
-    fontWeight: 500,
+    fontWeight: 'bold',
     textTransform: 'capitalize',
-    marginLeft: 30,
-    [theme.breakpoints.down('xs')]: {
-      marginLeft: 0,
-      textAlign: 'center',
-    },
+    textAlign: 'center',
+    color: '#2c2c2c',
   },
   distance: {
-    marginLeft: 30,
-    fontSize: 15,
-    color: 'rgba(60, 62, 67, 0.6)',
-    [theme.breakpoints.down('xs')]: {
-      marginLeft: 0,
-      textAlign: 'center',
-    },
+    fontSize: 14,
+    fontWeight: 600,
+    color: '#696969',
+    textAlign: 'center',
   },
   location: {
-    marginLeft: 30,
-    fontSize: 15,
-    color: 'rgba(60, 62, 67, 0.6)',
-    [theme.breakpoints.down('xs')]: {
-      marginLeft: 0,
-      textAlign: 'center',
-    },
+    fontSize: 14,
+    fontWeight: 600,
+    color: '#696969',
+    textAlign: 'center',
   },
 });
 
@@ -214,21 +204,29 @@ class MemberProfileInfo extends Component<Props, State> {
             <UserAvatar className={classes.avatar} src={avatarImg} />
           </div>
         </div>
-        <div className={classes.bottomSection}>
-          <Typography className={classes.username}>
-            {`${user.get('firstName') || ''} ${user.get('lastName') || ''}`}
-          </Typography>
-          {user.getIn(['profile', 'distance']) && (
-            <Typography className={classes.distance}>
-              {`Works within ${user.getIn(['profile', 'distance'])} miles of`}
+        <Grid
+          container
+          className={classes.bottomSection}
+          alignItems="center"
+          justify="space-between"
+        >
+          <Grid item className={classes.nameSection}>
+            <Typography className={classes.username}>
+              {`${user.get('firstName') || ''} ${user.get('lastName') || ''}`}
             </Typography>
-          )}
-          {user.getIn(['profile', 'location']) && (
-            <Typography className={classes.location}>
-              {user.getIn(['profile', 'location'])}
-            </Typography>
-          )}
-        </div>
+            {user.getIn(['profile', 'distance']) && (
+              <Typography className={classes.distance}>
+                {`Works within ${user.getIn(['profile', 'distance'])} miles of`}
+              </Typography>
+            )}
+            {user.getIn(['profile', 'location']) && (
+              <Typography className={classes.location}>
+                {user.getIn(['profile', 'location'])}
+              </Typography>
+            )}
+          </Grid>
+          <Grid item className={classes.badgeSection} />
+        </Grid>
         <PhotoModal
           user={user}
           files={files}
