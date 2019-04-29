@@ -92,18 +92,6 @@ const styles = theme => ({
       padding: 15,
     },
   },
-  editButton: {
-    color: theme.palette.primary.main,
-    border: '1px solid #e5e5e5',
-    backgroundColor: theme.palette.common.white,
-    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.08)',
-    '&:hover': {
-      backgroundColor: theme.palette.common.white,
-    },
-    [theme.breakpoints.down('xs')]: {
-      width: '100%',
-    },
-  },
   bottomBannerContainer: {
     marginTop: 20,
     [theme.breakpoints.down('xs')]: {
