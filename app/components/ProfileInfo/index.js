@@ -166,11 +166,12 @@ const styles = theme => ({
     color: theme.palette.primary.main,
     textTransform: 'none',
     backgroundColor: theme.palette.common.white,
+    fontWeight: 600,
+    padding: '10px 38px',
+    borderRadius: 0,
     '&:hover': {
       backgroundColor: theme.palette.common.white,
     },
-    padding: '10px 38px',
-    borderRadius: 0,
     [theme.breakpoints.down('xs')]: {
       display: 'none',
     },
@@ -181,6 +182,7 @@ const styles = theme => ({
     backgroundColor: theme.palette.common.white,
     display: 'none',
     borderRadius: 0,
+    fontWeight: 600,
     '&:hover': {
       backgroundColor: theme.palette.common.white,
     },
