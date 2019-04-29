@@ -24,6 +24,7 @@ import JobCard from 'components/JobCard';
 import ShareProfileModal from 'components/ShareProfileModal';
 import ContactOptionModal from 'components/ContactOptionModal';
 import UserEndorsements from 'components/UserEndorsements';
+import Notification from 'components/Notification';
 
 import saga, {
   reducer,
@@ -32,6 +33,7 @@ import saga, {
   requestMemberFiles,
   requestMemberWorks,
   requestMemberEndorsements,
+  requestCreateConnection,
 } from 'containers/Member/sagas';
 import injectSagas from 'utils/injectSagas';
 
@@ -191,6 +193,8 @@ type Props = {
   roles: Object,
   works: Object,
   endorsements: Object,
+  isCreatingConnection: boolean,
+  createConnectionError: string,
   classes: Object,
   match: Object,
   requestMemberProfile: Function,
@@ -198,6 +202,7 @@ type Props = {
   requestMemberFiles: Function,
   requestMemberWorks: Function,
   requestMemberEndorsements: Function,
+  requestCreateConnection: Function,
 };
 
 type State = {
@@ -207,9 +212,41 @@ type State = {
   photos: Array<string>,
   photoIndex: number,
   isGalleryOpen: boolean,
+  isInviting: boolean,
+  showNotification: boolean,
+  isConnectionSent: boolean,
 };
 
 class Member extends Component<Props, State> {
+  static getDerivedStateFromProps(nextProps: Props, prevState: State) {
+    if (nextProps.isCreatingConnection) {
+      return {
+        isInviting: true,
+      };
+    }
+    if (
+      !nextProps.isCreatingConnection &&
+      !nextProps.createConnectionError &&
+      prevState.isInviting
+    ) {
+      return {
+        showNotification: true,
+        isInviting: false,
+        isConnectionSent: true,
+      };
+    }
+    if (
+      !nextProps.isCreatingConnection &&
+      nextProps.createConnectionError &&
+      prevState.isInviting
+    ) {
+      return {
+        showNotification: false,
+        isInviting: false,
+      };
+    }
+    return null;
+  }
   state = {
     isOpen: false,
     isContactOpen: false,
@@ -217,6 +254,9 @@ class Member extends Component<Props, State> {
     photos: [],
     photoIndex: 0,
     isGalleryOpen: false,
+    isInviting: false, // eslint-disable-line
+    showNotification: false,
+    isConnectionSent: false,
   };
   componentDidMount() {
     const {
@@ -269,6 +309,12 @@ class Member extends Component<Props, State> {
       this.setState({ fixedTopBanner: false });
     }
   };
+  closeNotification = () => {
+    this.setState({
+      isInviting: false, // eslint-disable-line
+      showNotification: false,
+    });
+  };
   render() {
     const {
       currentUser,
@@ -287,6 +333,8 @@ class Member extends Component<Props, State> {
       photos,
       photoIndex,
       isGalleryOpen,
+      showNotification,
+      isConnectionSent,
     } = this.state;
     const showContactOptions =
       member.getIn(['profile', 'receiveEmail']) ||
@@ -346,12 +394,20 @@ class Member extends Component<Props, State> {
               </Grid>
             </Grid>
           )}
+        {showNotification && (
+          <Notification
+            msg="Coworker connection request sent."
+            close={this.closeNotification}
+          />
+        )}
         <div className={classes.root}>
           <div className={classes.profileInfo}>
             <MemberProfileInfo
               user={member}
               files={files}
               openShareModal={this.openShareModal}
+              connect={this.props.requestCreateConnection}
+              isConnectionSent={isConnectionSent}
             />
           </div>
           <div className={classes.panel}>
@@ -481,6 +537,8 @@ const mapStateToProps = state => ({
   files: state.getIn(['member', 'files']),
   works: state.getIn(['member', 'works']),
   endorsements: state.getIn(['member', 'endorsements']),
+  isCreatingConnection: state.getIn(['member', 'isCreatingConnection']),
+  createConnectionError: state.getIn(['member', 'createConnectionError']),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -489,6 +547,8 @@ const mapDispatchToProps = dispatch => ({
   requestMemberFiles: slug => dispatch(requestMemberFiles(slug)),
   requestMemberWorks: slug => dispatch(requestMemberWorks(slug)),
   requestMemberEndorsements: slug => dispatch(requestMemberEndorsements(slug)),
+  requestCreateConnection: payload =>
+    dispatch(requestCreateConnection(payload)),
 });
 
 export default compose(

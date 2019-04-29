@@ -1,18 +1,30 @@
 // @flow
 
 import React, { Component, Fragment } from 'react';
+import { capitalize } from 'lodash-es';
+import cx from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import Popper from '@material-ui/core/Popper';
+import Fade from '@material-ui/core/Fade';
+import Paper from '@material-ui/core/Paper';
+import MenuList from '@material-ui/core/MenuList';
+import MenuItem from '@material-ui/core/MenuItem';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import ListItemText from '@material-ui/core/ListItemText';
 import ShareIcon from '@material-ui/icons/Share';
 import ImageIcon from '@material-ui/icons/Image';
 
 import { history } from 'components/ConnectedRouter';
 import PhotoModal from 'components/PhotoModal';
 import UserAvatar from 'components/UserAvatar';
+import Icon from 'components/Icon';
+import ConnectIcon from 'images/sprite/connect.svg';
+import ConnectSentIcon from 'images/sprite/connect_sent.svg';
 
 const styles = theme => ({
   root: {},
@@ -81,18 +93,31 @@ const styles = theme => ({
     },
   },
   connectButtonBox: {
-    marginRight: 10,
+    marginRight: 15,
   },
   connectButton: {
     color: theme.palette.primary.main,
     textTransform: 'none',
     backgroundColor: theme.palette.common.white,
-    padding: '10px 38px',
+    padding: '10px 30px 10px 20px',
     borderRadius: 0,
     boxShadow: '0 2px 11px 0 rgba(0, 0, 0, 0.14)',
+    fontWeight: 600,
     '&:hover': {
       backgroundColor: theme.palette.common.white,
     },
+  },
+  connectionSentButton: {
+    backgroundColor: '#14a384',
+    color: theme.palette.common.white,
+    '&:hover': {
+      backgroundColor: '#14a384',
+    },
+  },
+  connectIcon: {
+    marginRight: 5,
+    position: 'relative',
+    top: -1,
   },
   shareButton: {
     backgroundColor: theme.palette.common.white,
@@ -129,22 +154,51 @@ const styles = theme => ({
     color: '#696969',
     textAlign: 'center',
   },
+  menu: {
+    width: 190,
+    boxShadow: '0 10px 15px 5px rgba(0, 0, 0, 0.05)',
+  },
+  menuItem: {
+    paddingTop: 3,
+    paddingBottom: 3,
+  },
+  menuItemText: {
+    fontSize: 14,
+    fontWeight: 600,
+    color: '#0c74d4',
+  },
 });
 
 type Props = {
   user: Object,
   files: Object,
+  isConnectionSent: boolean,
   classes: Object,
   openShareModal: Function,
+  connect: Function,
 };
 
 type State = {
   isOpen: boolean,
+  isMenuOpen: boolean,
 };
 
 class MemberProfileInfo extends Component<Props, State> {
   state = {
     isOpen: false,
+    isMenuOpen: false,
+  };
+  handleToggle = () => {
+    const { isConnectionSent } = this.props;
+    if (!isConnectionSent) {
+      this.setState(state => ({ isMenuOpen: !state.isMenuOpen }));
+    }
+  };
+  handleClose = event => {
+    if (this.anchorEl.contains(event.target)) {
+      return;
+    }
+    this.setState({ isMenuOpen: false });
   };
   openUrl = url => {
     window.open(url, '_blank');
@@ -152,9 +206,14 @@ class MemberProfileInfo extends Component<Props, State> {
   closeModal = () => {
     this.setState({ isOpen: false });
   };
+  handleConnect = () => {
+    const { user } = this.props;
+    this.props.connect(user.get('id'));
+  };
+  anchorEl: HTMLElement;
   render() {
-    const { user, files, classes } = this.props;
-    const { isOpen } = this.state;
+    const { user, files, isConnectionSent, classes } = this.props;
+    const { isOpen, isMenuOpen } = this.state;
     const avatarImg = user.getIn(['profile', 'avatar']) || '';
     return (
       <div className={classes.root}>
@@ -193,7 +252,54 @@ class MemberProfileInfo extends Component<Props, State> {
             className={classes.buttonContainer}
           >
             <Grid item className={classes.connectButtonBox}>
-              <Button className={classes.connectButton}>Connect</Button>
+              <Button
+                className={cx(classes.connectButton, {
+                  [classes.connectionSentButton]: isConnectionSent,
+                })}
+                onClick={this.handleToggle}
+                buttonRef={node => {
+                  this.anchorEl = node;
+                }}
+              >
+                <Icon
+                  glyph={isConnectionSent ? ConnectSentIcon : ConnectIcon}
+                  width={23}
+                  height={13}
+                  className={classes.connectIcon}
+                />
+                {isConnectionSent ? 'Request Sent' : 'Connect'}
+              </Button>
+              <Popper
+                open={isMenuOpen}
+                anchorEl={this.anchorEl}
+                transition
+                placement="bottom-end"
+              >
+                {({ TransitionProps }) => (
+                  <Fade {...TransitionProps} timeout={350}>
+                    <Paper square classes={{ root: classes.menu }}>
+                      <ClickAwayListener onClickAway={this.handleClose}>
+                        <MenuList className={classes.menuList}>
+                          <MenuItem
+                            className={classes.menuItem}
+                            onClick={e => {
+                              this.handleClose(e);
+                              this.handleConnect();
+                            }}
+                          >
+                            <ListItemText
+                              classes={{ primary: classes.menuItemText }}
+                              primary={`I've worked with ${capitalize(
+                                user.get('firstName')
+                              )}`}
+                            />
+                          </MenuItem>
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Fade>
+                )}
+              </Popper>
             </Grid>
             <Grid item>
               <IconButton

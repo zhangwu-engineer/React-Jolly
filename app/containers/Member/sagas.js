@@ -18,6 +18,7 @@ const MEMBER_PROFILE = 'Jolly/Member/MEMBER_PROFILE';
 const FILES = 'Jolly/Member/FILES';
 const WORKS = 'Jolly/Member/WORKS';
 const ENDORSEMENTS = 'Jolly/Member/ENDORSEMENTS';
+const CREATE_CONNECTION = 'Jolly/Member/CREATE_CONNECTION';
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -105,6 +106,23 @@ const memberEndorsementsRequestError = (error: string) => ({
   type: ENDORSEMENTS + ERROR,
   payload: error,
 });
+
+export const requestCreateConnection = (to: string) => ({
+  type: CREATE_CONNECTION + REQUESTED,
+  payload: to,
+});
+const connectionCreateRequestSuccess = (payload: Object) => ({
+  type: CREATE_CONNECTION + SUCCEDED,
+  payload,
+});
+const connectionCreateRequestFailed = (error: string) => ({
+  type: CREATE_CONNECTION + FAILED,
+  payload: error,
+});
+const connectionCreateRequestError = (error: string) => ({
+  type: CREATE_CONNECTION + ERROR,
+  payload: error,
+});
 // ------------------------------------
 // Reducer
 // ------------------------------------
@@ -124,6 +142,8 @@ const initialState = fromJS({
   endorsements: fromJS([]),
   isEndorsementsLoading: false,
   endorsementsError: '',
+  isCreatingConnection: false,
+  createConnectionError: '',
 });
 
 export const reducer = (
@@ -234,6 +254,26 @@ export const reducer = (
         Please try again later or contact support and provide the following error information: ${payload}`
       );
 
+    case CREATE_CONNECTION + REQUESTED:
+      return state.set('isCreatingConnection', true);
+
+    case CREATE_CONNECTION + SUCCEDED:
+      return state
+        .set('isCreatingConnection', false)
+        .set('createConnectionError', '');
+
+    case CREATE_CONNECTION + FAILED:
+      return state
+        .set('isCreatingConnection', false)
+        .set('createConnectionError', payload.message);
+
+    case CREATE_CONNECTION + ERROR:
+      return state.set('isCreatingConnection', false).set(
+        'createConnectionError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
     default:
       return state;
   }
@@ -332,6 +372,27 @@ function* EndorsementsRequest({ payload }) {
   }
 }
 
+function* CreateConnectionRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/connection`,
+      data: {
+        to: payload,
+      },
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(connectionCreateRequestSuccess(response.data.response));
+    } else {
+      yield put(connectionCreateRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(connectionCreateRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(ROLES + REQUESTED, MemberRolesRequest),
@@ -339,5 +400,6 @@ export default function*(): Saga<void> {
     takeLatest(FILES + REQUESTED, MemberFilesRequest),
     takeLatest(WORKS + REQUESTED, MemberWorksRequest),
     takeLatest(ENDORSEMENTS + REQUESTED, EndorsementsRequest),
+    takeLatest(CREATE_CONNECTION + REQUESTED, CreateConnectionRequest),
   ]);
 }
