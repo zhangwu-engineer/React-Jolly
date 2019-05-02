@@ -9,7 +9,7 @@ import { history } from 'components/ConnectedRouter';
 const styles = theme => ({
   root: {
     position: 'fixed',
-    right: 'calc(50% - 400px)',
+    right: 'calc(50% - 532px)',
     bottom: 100,
     backgroundColor: '#01874b',
     color: theme.palette.common.white,
