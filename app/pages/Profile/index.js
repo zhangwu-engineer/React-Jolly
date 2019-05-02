@@ -197,11 +197,13 @@ class Profile extends Component<Props, State> {
     isGalleryOpen: false,
   };
   componentDidMount() {
-    this.props.requestUser();
-    this.props.requestUserFiles();
-    this.props.requestRoles();
-    this.props.requestWorks();
-    this.props.requestEndorsements();
+    const { user } = this.props;
+    history.push(`/f/${user.get('slug')}`);
+    // this.props.requestUser();
+    // this.props.requestUserFiles();
+    // this.props.requestRoles();
+    // this.props.requestWorks();
+    // this.props.requestEndorsements();
   }
   componentDidUpdate(prevProps: Props) {
     const { isUploading, uploadError } = this.props;
