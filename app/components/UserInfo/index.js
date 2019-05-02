@@ -320,7 +320,7 @@ class UserInfo extends Component<Props> {
                     onClick={this.onUploadClick}
                     className={classes.resume}
                   >
-                    Upload a resume
+                    Upload a resume (PDFs only)
                   </Typography>
                 )}
               </Grid>
