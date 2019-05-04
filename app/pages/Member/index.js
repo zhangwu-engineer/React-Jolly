@@ -29,12 +29,14 @@ import UserEndorsements from 'components/UserEndorsements';
 import Notification from 'components/Notification';
 import Icon from 'components/Icon';
 import FloatingAddButton from 'components/FloatingAddButton';
+import BadgeProgressBanner from 'components/BadgeProgressBanner';
 
 import AddPhotoIcon from 'images/sprite/add-photo-blue.svg';
 
 import saga, {
   reducer,
   requestMemberProfile,
+  requestMemberBadges,
   requestMemberFiles,
   requestMemberRoles,
   requestMemberWorks,
@@ -252,11 +254,18 @@ const styles = theme => ({
       display: 'flex',
     },
   },
+  badgeProgressBanner: {
+    marginBottom: 20,
+    [theme.breakpoints.down('xs')]: {
+      marginBottom: 0,
+    },
+  },
 });
 
 type Props = {
   currentUser: Object,
   member: Object,
+  badges: Object,
   files: Object,
   roles: Object,
   works: Object,
@@ -266,6 +275,7 @@ type Props = {
   classes: Object,
   match: Object,
   requestMemberProfile: Function,
+  requestMemberBadges: Function,
   requestMemberRoles: Function,
   requestMemberFiles: Function,
   requestMemberWorks: Function,
@@ -352,6 +362,7 @@ class Member extends Component<Props, State> {
       });
     }
     this.props.requestMemberProfile(slug);
+    this.props.requestMemberBadges(slug);
     this.props.requestMemberFiles(slug);
     this.props.requestMemberRoles(slug);
     this.props.requestMemberWorks(slug);
@@ -408,6 +419,7 @@ class Member extends Component<Props, State> {
     const {
       currentUser,
       member,
+      badges,
       files,
       roles,
       works,
@@ -439,6 +451,9 @@ class Member extends Component<Props, State> {
     });
     const isPrivate =
       currentUser && currentUser.get('slug') === slug && !isPublicViewMode;
+    const unearnedBadges =
+      badges && badges.filter(b => b.get('earned') === false);
+    const nextBadgeToEarn = unearnedBadges && unearnedBadges.get(0);
     return (
       <Fragment>
         <Waypoint onPositionChange={this.positionChange} />
@@ -500,6 +515,7 @@ class Member extends Component<Props, State> {
             {isPrivate ? (
               <ProfileInfo
                 user={currentUser}
+                badges={badges}
                 openShareModal={this.openShareModal}
                 openPhotoModal={this.openPhotoModal}
               />
@@ -513,6 +529,12 @@ class Member extends Component<Props, State> {
               />
             )}
           </div>
+          {isPrivate &&
+            nextBadgeToEarn && (
+              <div className={classes.badgeProgressBanner}>
+                <BadgeProgressBanner badge={nextBadgeToEarn} />
+              </div>
+            )}
           <div className={classes.panel}>
             <div className={classes.leftPanel}>
               <UserInfo
@@ -738,6 +760,7 @@ const mapStateToProps = state => ({
   member: state.getIn(['member', 'data']),
   isLoading: state.getIn(['member', 'isMemberLoading']),
   error: state.getIn(['member', 'memberError']),
+  badges: state.getIn(['member', 'badges']),
   roles: state.getIn(['member', 'roles']),
   files: state.getIn(['member', 'files']),
   works: state.getIn(['member', 'works']),
@@ -748,6 +771,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   requestMemberProfile: slug => dispatch(requestMemberProfile(slug)),
+  requestMemberBadges: slug => dispatch(requestMemberBadges(slug)),
   requestMemberRoles: slug => dispatch(requestMemberRoles(slug)),
   requestMemberFiles: slug => dispatch(requestMemberFiles(slug)),
   requestMemberWorks: slug => dispatch(requestMemberWorks(slug)),

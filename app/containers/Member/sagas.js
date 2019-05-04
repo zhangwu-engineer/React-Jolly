@@ -15,6 +15,7 @@ import { getToken } from 'containers/App/selectors';
 // ------------------------------------
 const ROLES = 'Jolly/Member/ROLES';
 const MEMBER_PROFILE = 'Jolly/Member/MEMBER_PROFILE';
+const MEMBER_BADGES = 'Jolly/Member/MEMBER_BADGES';
 const FILES = 'Jolly/Member/FILES';
 const WORKS = 'Jolly/Member/WORKS';
 const ENDORSEMENTS = 'Jolly/Member/ENDORSEMENTS';
@@ -36,6 +37,23 @@ const memberProfileRequestFailed = (error: string) => ({
 });
 const memberProfileRequestError = (error: string) => ({
   type: MEMBER_PROFILE + ERROR,
+  payload: error,
+});
+
+export const requestMemberBadges = (slug: string) => ({
+  type: MEMBER_BADGES + REQUESTED,
+  payload: slug,
+});
+const memberBadgesRequestSuccess = (payload: Object) => ({
+  type: MEMBER_BADGES + SUCCEDED,
+  payload,
+});
+const memberBadgesRequestFailed = (error: string) => ({
+  type: MEMBER_BADGES + FAILED,
+  payload: error,
+});
+const memberBadgesRequestError = (error: string) => ({
+  type: MEMBER_BADGES + ERROR,
   payload: error,
 });
 
@@ -133,6 +151,9 @@ const initialState = fromJS({
   data: fromJS({}),
   isMemberLoading: false,
   memberError: '',
+  badges: null,
+  isBadgesLoading: false,
+  badgesError: '',
   files: [],
   isFileLoading: false,
   fileError: '',
@@ -187,6 +208,27 @@ export const reducer = (
     case MEMBER_PROFILE + ERROR:
       return state.set('isMemberLoading', false).set(
         'memberError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case MEMBER_BADGES + REQUESTED:
+      return state.set('isBadgesLoading', true);
+
+    case MEMBER_BADGES + SUCCEDED:
+      return state
+        .set('isBadgesLoading', false)
+        .set('badges', fromJS(payload))
+        .set('badgesError', '');
+
+    case MEMBER_BADGES + FAILED:
+      return state
+        .set('isBadgesLoading', false)
+        .set('badgesError', payload.message);
+
+    case MEMBER_BADGES + ERROR:
+      return state.set('isBadgesLoading', false).set(
+        'badgesError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -322,6 +364,24 @@ function* MemberProfileRequest({ payload }) {
   }
 }
 
+function* MemberBadgesRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/user/${payload}/badges`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(memberBadgesRequestSuccess(response.data.response));
+    } else {
+      yield put(memberBadgesRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(memberBadgesRequestError(error));
+  }
+}
+
 function* MemberFilesRequest({ payload }) {
   const token = yield select(getToken);
   try {
@@ -397,6 +457,7 @@ export default function*(): Saga<void> {
   yield all([
     takeLatest(ROLES + REQUESTED, MemberRolesRequest),
     takeLatest(MEMBER_PROFILE + REQUESTED, MemberProfileRequest),
+    takeLatest(MEMBER_BADGES + REQUESTED, MemberBadgesRequest),
     takeLatest(FILES + REQUESTED, MemberFilesRequest),
     takeLatest(WORKS + REQUESTED, MemberWorksRequest),
     takeLatest(ENDORSEMENTS + REQUESTED, EndorsementsRequest),
