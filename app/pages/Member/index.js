@@ -300,6 +300,7 @@ type State = {
   type: string,
   isPhotoModalOpen: boolean,
   isPublicViewMode: boolean,
+  activeBadge: Object,
 };
 
 class Member extends Component<Props, State> {
@@ -345,6 +346,7 @@ class Member extends Component<Props, State> {
     type: '',
     isPhotoModalOpen: false,
     isPublicViewMode: false,
+    activeBadge: null,
   };
   componentDidMount() {
     const {
@@ -415,6 +417,9 @@ class Member extends Component<Props, State> {
       isPublicViewMode: !state.isPublicViewMode,
     }));
   };
+  viewBadgeProgress = badge => {
+    this.setState({ activeBadge: badge });
+  };
   render() {
     const {
       currentUser,
@@ -439,6 +444,7 @@ class Member extends Component<Props, State> {
       type,
       isPhotoModalOpen,
       isPublicViewMode,
+      activeBadge,
     } = this.state;
     const showContactOptions =
       member.getIn(['profile', 'receiveEmail']) ||
@@ -518,6 +524,7 @@ class Member extends Component<Props, State> {
                 badges={badges}
                 openShareModal={this.openShareModal}
                 openPhotoModal={this.openPhotoModal}
+                viewBadgeProgress={this.viewBadgeProgress}
               />
             ) : (
               <MemberProfileInfo
@@ -532,7 +539,7 @@ class Member extends Component<Props, State> {
           {isPrivate &&
             nextBadgeToEarn && (
               <div className={classes.badgeProgressBanner}>
-                <BadgeProgressBanner badge={nextBadgeToEarn} />
+                <BadgeProgressBanner badge={activeBadge || nextBadgeToEarn} />
               </div>
             )}
           <div className={classes.panel}>

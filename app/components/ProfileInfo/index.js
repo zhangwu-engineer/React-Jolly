@@ -1,6 +1,7 @@
 // @flow
 
 import React, { PureComponent } from 'react';
+import { generate } from 'shortid';
 import { withStyles } from '@material-ui/core/styles';
 
 import Grid from '@material-ui/core/Grid';
@@ -13,6 +14,7 @@ import ImageIcon from '@material-ui/icons/Image';
 
 import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
+import Badge from 'components/Badge';
 import UserAvatar from 'components/UserAvatar';
 
 const styles = theme => ({
@@ -205,28 +207,27 @@ const styles = theme => ({
     textAlign: 'center',
     color: '#2c2c2c',
   },
-  distance: {
-    fontSize: 14,
-    fontWeight: 600,
-    color: '#696969',
-    textAlign: 'center',
-  },
   location: {
     fontSize: 14,
     fontWeight: 600,
     color: '#696969',
     textAlign: 'center',
   },
+  badgeSection: {
+    width: 400,
+  },
 });
 
 type Props = {
   user: Object,
+  badges: Object,
   numberOfJobs: number,
   numberOfVerifications: number,
   numberOfEndorsements: number,
   classes: Object,
   openShareModal: Function,
   openPhotoModal: Function,
+  viewBadgeProgress: Function,
 };
 
 class ProfileInfo extends PureComponent<Props> {
@@ -234,7 +235,7 @@ class ProfileInfo extends PureComponent<Props> {
     window.open(url, '_blank');
   };
   render() {
-    const { user, classes } = this.props;
+    const { user, badges, classes } = this.props;
     const avatarImg = user.getIn(['profile', 'avatar']) || '';
     return (
       <div className={classes.root}>
@@ -342,18 +343,25 @@ class ProfileInfo extends PureComponent<Props> {
             <Typography className={classes.username}>
               {`${user.get('firstName') || ''} ${user.get('lastName') || ''}`}
             </Typography>
-            {user.getIn(['profile', 'distance']) && (
-              <Typography className={classes.distance}>
-                {`Works within ${user.getIn(['profile', 'distance'])} miles of`}
-              </Typography>
-            )}
             {user.getIn(['profile', 'location']) && (
               <Typography className={classes.location}>
                 {user.getIn(['profile', 'location'])}
               </Typography>
             )}
           </Grid>
-          <Grid item className={classes.badgeSection} />
+          <Grid item className={classes.badgeSection}>
+            <Grid container>
+              {badges &&
+                badges.map(badge => (
+                  <Grid item key={generate()} xs={6}>
+                    <Badge
+                      badge={badge}
+                      viewProgress={this.props.viewBadgeProgress}
+                    />
+                  </Grid>
+                ))}
+            </Grid>
+          </Grid>
         </Grid>
       </div>
     );
