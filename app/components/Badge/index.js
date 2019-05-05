@@ -16,6 +16,12 @@ const styles = theme => ({
     marginBottom: 15,
     cursor: 'pointer',
   },
+  icon: {
+    width: 40,
+    height: 40,
+    borderRadius: 40,
+    border: '1px dashed #9c3ff5',
+  },
   label: {
     fontWeight: 500,
     color: theme.palette.primary.main,
@@ -29,6 +35,7 @@ const styles = theme => ({
 type Props = {
   badge: Object,
   classes: Object,
+  viewProgress: ?Function,
 };
 
 class Badge extends Component<Props> {
@@ -56,17 +63,33 @@ class Badge extends Component<Props> {
     }
     return 'Connected';
   };
+  viewProgress = () => {
+    const { badge, viewProgress } = this.props;
+    if (viewProgress) {
+      viewProgress(badge);
+    }
+  };
   render() {
     const { badge, classes } = this.props;
+    const earned = badge.get('earned');
     return (
-      <Grid container className={classes.root} alignItems="center">
+      <Grid
+        container
+        className={classes.root}
+        alignItems="center"
+        onClick={this.viewProgress}
+      >
         <Grid item>
-          <Icon glyph={this.badgeIcon()} size={40} />
+          {earned ? (
+            <Icon glyph={this.badgeIcon()} size={40} />
+          ) : (
+            <div className={classes.icon} />
+          )}
         </Grid>
         <Grid item>
           <Typography
             className={cx(classes.label, {
-              [classes.earnedLabel]: badge.get('earned'),
+              [classes.earnedLabel]: earned,
             })}
           >
             {this.badgeLabel()}
