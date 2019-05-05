@@ -2,6 +2,7 @@
 
 import React, { Component, Fragment } from 'react';
 import { capitalize } from 'lodash-es';
+import { generate } from 'shortid';
 import cx from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -22,6 +23,7 @@ import ImageIcon from '@material-ui/icons/Image';
 import { history } from 'components/ConnectedRouter';
 import PhotoModal from 'components/PhotoModal';
 import UserAvatar from 'components/UserAvatar';
+import Badge from 'components/Badge';
 import Icon from 'components/Icon';
 import ConnectIcon from 'images/sprite/connect.svg';
 import ConnectSentIcon from 'images/sprite/connect_sent.svg';
@@ -142,12 +144,6 @@ const styles = theme => ({
     textAlign: 'center',
     color: '#2c2c2c',
   },
-  distance: {
-    fontSize: 14,
-    fontWeight: 600,
-    color: '#696969',
-    textAlign: 'center',
-  },
   location: {
     fontSize: 14,
     fontWeight: 600,
@@ -167,10 +163,14 @@ const styles = theme => ({
     fontWeight: 600,
     color: '#0c74d4',
   },
+  badgeSection: {
+    width: 400,
+  },
 });
 
 type Props = {
   user: Object,
+  badges: Object,
   files: Object,
   isConnectionSent: boolean,
   classes: Object,
@@ -212,7 +212,7 @@ class MemberProfileInfo extends Component<Props, State> {
   };
   anchorEl: HTMLElement;
   render() {
-    const { user, files, isConnectionSent, classes } = this.props;
+    const { user, badges, files, isConnectionSent, classes } = this.props;
     const { isOpen, isMenuOpen } = this.state;
     const avatarImg = user.getIn(['profile', 'avatar']) || '';
     return (
@@ -324,18 +324,25 @@ class MemberProfileInfo extends Component<Props, State> {
             <Typography className={classes.username}>
               {`${user.get('firstName') || ''} ${user.get('lastName') || ''}`}
             </Typography>
-            {user.getIn(['profile', 'distance']) && (
-              <Typography className={classes.distance}>
-                {`Works within ${user.getIn(['profile', 'distance'])} miles of`}
-              </Typography>
-            )}
             {user.getIn(['profile', 'location']) && (
               <Typography className={classes.location}>
                 {user.getIn(['profile', 'location'])}
               </Typography>
             )}
           </Grid>
-          <Grid item className={classes.badgeSection} />
+          <Grid item className={classes.badgeSection}>
+            <Grid container>
+              {badges &&
+                badges.map(
+                  badge =>
+                    badge.get('earned') ? (
+                      <Grid item key={generate()} xs={6}>
+                        <Badge badge={badge} />
+                      </Grid>
+                    ) : null
+                )}
+            </Grid>
+          </Grid>
         </Grid>
         <PhotoModal
           user={user}

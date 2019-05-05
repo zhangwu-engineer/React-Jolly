@@ -529,6 +529,7 @@ class Member extends Component<Props, State> {
             ) : (
               <MemberProfileInfo
                 user={member}
+                badges={badges}
                 files={files}
                 openShareModal={this.openShareModal}
                 connect={this.props.requestCreateConnection}
