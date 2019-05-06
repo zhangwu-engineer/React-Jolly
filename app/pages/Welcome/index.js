@@ -108,11 +108,19 @@ class Welcome extends Component<Props> {
             <p className="welcome__pp">
               By continuing, I agree to Jolly&apos;s
               <br />
-              <Link className="welcome__link">Terms of Use</Link>
+              <a
+                href="https://company.jollyhq.com/terms"
+                className="welcome__link"
+              >
+                Terms of Use
+              </a>
               &nbsp;&amp;&nbsp;
-              <Link to="/privacy-policy" className="welcome__link">
+              <a
+                href="https://company.jollyhq.com/privacy"
+                className="welcome__link"
+              >
                 Privacy Policy
-              </Link>
+              </a>
             </p>
           </div>
         </div>
