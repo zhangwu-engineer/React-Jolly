@@ -25,6 +25,9 @@ const styles = theme => ({
   root: {
     backgroundColor: theme.palette.common.white,
     padding: '30px 25px 25px 30px',
+    [theme.breakpoints.down('xs')]: {
+      padding: '30px 25px',
+    },
   },
   title: {
     fontWeight: 'bold',
