@@ -195,26 +195,38 @@ const styles = theme => ({
   bottomSection: {
     backgroundColor: theme.palette.common.white,
     height: 170,
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+      padding: '50px 25px 25px 25px',
+      height: 'auto',
+    },
   },
   nameSection: {
     paddingLeft: 80,
     paddingTop: 15,
+    textAlign: 'center',
+    [theme.breakpoints.down('xs')]: {
+      padding: 0,
+      textAlign: 'left',
+      marginBottom: 25,
+    },
   },
   username: {
     fontSize: 24,
     fontWeight: 'bold',
     textTransform: 'capitalize',
-    textAlign: 'center',
     color: '#2c2c2c',
   },
   location: {
     fontSize: 14,
     fontWeight: 600,
     color: '#696969',
-    textAlign: 'center',
   },
   badgeSection: {
     width: 400,
+    [theme.breakpoints.down('xs')]: {
+      width: '100%',
+    },
   },
 });
 
