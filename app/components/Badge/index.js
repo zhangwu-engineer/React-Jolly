@@ -16,6 +16,9 @@ const styles = theme => ({
     marginBottom: 15,
     cursor: 'pointer',
   },
+  iconWrapper: {
+    marginRight: 10,
+  },
   icon: {
     width: 40,
     height: 40,
@@ -25,7 +28,9 @@ const styles = theme => ({
   label: {
     fontWeight: 500,
     color: theme.palette.primary.main,
-    paddingLeft: 10,
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
   },
   earnedLabel: {
     color: '#363636',
@@ -79,7 +84,7 @@ class Badge extends Component<Props> {
         alignItems="center"
         onClick={this.viewProgress}
       >
-        <Grid item>
+        <Grid item className={classes.iconWrapper}>
           {earned ? (
             <Icon glyph={this.badgeIcon()} size={40} />
           ) : (
