@@ -178,12 +178,13 @@ class UserProfileForm extends Component<Props> {
               </Grid>
             </Grid>
             <EditableInput
-              label="Bio"
               id="bio"
               name="bio"
+              placeholder="This is where you introduce yourself to potential employers! Tell us about what event work you’ve done, how many years you’ve done it, and what you kind of gigs you’d like to continue to do."
               value={values.bio}
               multiline
               onChange={handleChange}
+              rows={5}
             />
             <Grid container>
               <Grid item lg={6} xs={12} className={classes.cityField}>

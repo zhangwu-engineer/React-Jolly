@@ -35,6 +35,7 @@ const styles = theme => ({
   },
   textInput: {
     paddingLeft: 18,
+    paddingRight: 18,
     marginTop: '23px !important',
     '&:before': {
       borderBottom: '2px solid #f1f1f1',
