@@ -21,11 +21,13 @@ import LinkedInIcon from 'images/sprite/linkedin.svg';
 
 const styles = theme => ({
   modal: {
-    padding: 15,
+    padding: '15px 30px',
     width: 380,
     textAlign: 'center',
     [theme.breakpoints.down('xs')]: {
       width: 'calc(100% - 30px)',
+      paddingLeft: 15,
+      paddingRight: 15,
     },
   },
   socialButtons: {
@@ -70,7 +72,6 @@ const styles = theme => ({
     borderBottomLeftRadius: 3,
     borderRight: 'none',
     border: '1px solid #ececec',
-    width: 215,
   },
   adornment: {
     marginLeft: 0,
@@ -171,6 +172,7 @@ class ShareProfileModal extends Component<Props, State> {
                   </Button>
                 </InputAdornment>
               }
+              fullWidth
             />
             <Typography
               className={classes.modalText}
