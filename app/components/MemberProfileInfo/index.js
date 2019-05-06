@@ -92,6 +92,7 @@ const styles = theme => ({
     padding: '20px 25px',
     [theme.breakpoints.down('xs')]: {
       padding: '20px',
+      bottom: -44,
     },
   },
   connectButtonBox: {
@@ -125,6 +126,7 @@ const styles = theme => ({
     backgroundColor: theme.palette.common.white,
     color: theme.palette.primary.main,
     boxShadow: '0 2px 11px 0 rgba(0, 0, 0, 0.15)',
+    padding: 11,
     '&:hover': {
       backgroundColor: theme.palette.common.white,
     },
@@ -132,23 +134,32 @@ const styles = theme => ({
   bottomSection: {
     backgroundColor: theme.palette.common.white,
     height: 170,
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+      padding: '50px 25px 25px 25px',
+      height: 'auto',
+    },
   },
   nameSection: {
     paddingLeft: 80,
     paddingTop: 15,
+    textAlign: 'center',
+    [theme.breakpoints.down('xs')]: {
+      padding: 0,
+      textAlign: 'left',
+      marginBottom: 25,
+    },
   },
   username: {
     fontSize: 24,
     fontWeight: 'bold',
     textTransform: 'capitalize',
-    textAlign: 'center',
     color: '#2c2c2c',
   },
   location: {
     fontSize: 14,
     fontWeight: 600,
     color: '#696969',
-    textAlign: 'center',
   },
   menu: {
     width: 190,
@@ -165,6 +176,9 @@ const styles = theme => ({
   },
   badgeSection: {
     width: 400,
+    [theme.breakpoints.down('xs')]: {
+      width: '100%',
+    },
   },
 });
 
@@ -336,7 +350,7 @@ class MemberProfileInfo extends Component<Props, State> {
                 badges.map(
                   badge =>
                     badge.get('earned') ? (
-                      <Grid item key={generate()} xs={6}>
+                      <Grid item key={generate()} md={6}>
                         <Badge badge={badge} />
                       </Grid>
                     ) : null
