@@ -85,6 +85,8 @@ const styles = theme => ({
   },
   shareButton: {
     backgroundColor: theme.palette.common.white,
+    boxShadow: '0 2px 11px 0 rgba(0, 0, 0, 0.15)',
+    padding: 11,
     '&:hover': {
       backgroundColor: theme.palette.common.white,
     },
@@ -159,6 +161,7 @@ const styles = theme => ({
     padding: '20px 25px',
     [theme.breakpoints.down('xs')]: {
       padding: '20px',
+      bottom: -44,
     },
   },
   editButtonBox: {
@@ -171,6 +174,7 @@ const styles = theme => ({
     fontWeight: 600,
     padding: '10px 38px',
     borderRadius: 0,
+    boxShadow: '0 2px 11px 0 rgba(0, 0, 0, 0.15)',
     '&:hover': {
       backgroundColor: theme.palette.common.white,
     },
@@ -185,6 +189,7 @@ const styles = theme => ({
     display: 'none',
     borderRadius: 0,
     fontWeight: 600,
+    boxShadow: '0 2px 11px 0 rgba(0, 0, 0, 0.15)',
     '&:hover': {
       backgroundColor: theme.palette.common.white,
     },
@@ -365,7 +370,7 @@ class ProfileInfo extends PureComponent<Props> {
             <Grid container>
               {badges &&
                 badges.map(badge => (
-                  <Grid item key={generate()} xs={6}>
+                  <Grid item key={generate()} md={6}>
                     <Badge
                       badge={badge}
                       viewProgress={this.props.viewBadgeProgress}
