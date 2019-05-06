@@ -528,6 +528,7 @@ class Member extends Component<Props, State> {
               />
             ) : (
               <MemberProfileInfo
+                currentUser={currentUser}
                 user={member}
                 badges={badges}
                 files={files}

@@ -183,6 +183,7 @@ const styles = theme => ({
 });
 
 type Props = {
+  currentUser: Object,
   user: Object,
   badges: Object,
   files: Object,
@@ -221,8 +222,12 @@ class MemberProfileInfo extends Component<Props, State> {
     this.setState({ isOpen: false });
   };
   handleConnect = () => {
-    const { user } = this.props;
-    this.props.connect(user.get('id'));
+    const { currentUser, user } = this.props;
+    if (currentUser && currentUser.get('id') !== user.get('id')) {
+      this.props.connect(user.get('id'));
+    } else {
+      history.push('/freelancer-signup');
+    }
   };
   anchorEl: HTMLElement;
   render() {
