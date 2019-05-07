@@ -21,7 +21,6 @@ import MemberProfileInfo from 'components/MemberProfileInfo';
 import UserInfo from 'components/UserInfo';
 import Link from 'components/Link';
 import RoleCard from 'components/RoleCard';
-import JobCard from 'components/JobCard';
 import ShareProfileModal from 'components/ShareProfileModal';
 import ContactOptionModal from 'components/ContactOptionModal';
 import PhotoModal from 'components/PhotoModal';
@@ -30,6 +29,7 @@ import Notification from 'components/Notification';
 import Icon from 'components/Icon';
 import FloatingAddButton from 'components/FloatingAddButton';
 import BadgeProgressBanner from 'components/BadgeProgressBanner';
+import UserWorkList from 'components/UserWorkList';
 
 import AddPhotoIcon from 'images/sprite/add-photo-blue.svg';
 
@@ -560,24 +560,11 @@ class Member extends Component<Props, State> {
                 endorsements={endorsements}
                 publicMode
               />
-              <div className={classes.section}>
-                <div className={classes.sectionHeader}>
-                  <Typography variant="h6">Past Event Gigs</Typography>
-                </div>
-                <div className={classes.sectionBody}>
-                  {works && works.size ? (
-                    works.map(work => (
-                      <JobCard
-                        key={generate()}
-                        job={work}
-                        openGallery={this.openGallery}
-                      />
-                    ))
-                  ) : (
-                    <JobCard />
-                  )}
-                </div>
-              </div>
+              <UserWorkList
+                works={works}
+                isPrivate={isPrivate}
+                openGallery={this.openGallery}
+              />
               <div className={classes.section}>
                 <div className={classes.sectionHeader}>
                   <Typography variant="h6">Roles</Typography>
