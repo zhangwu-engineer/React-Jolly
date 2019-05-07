@@ -8,8 +8,13 @@ import Grid from '@material-ui/core/Grid';
 import Link from 'components/Link';
 import JobCard from 'components/JobCard';
 
-const styles = () => ({
-  root: {},
+const styles = theme => ({
+  root: {
+    [theme.breakpoints.down('xs')]: {
+      paddingLeft: 25,
+      paddingRight: 25,
+    },
+  },
   header: {
     marginBottom: 30,
     paddingLeft: 5,
