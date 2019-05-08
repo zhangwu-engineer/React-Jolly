@@ -144,7 +144,7 @@ const styles = theme => ({
 });
 
 type Props = {
-  // user: Object,
+  user: Object,
   coworkers: List<Object>,
   isCreating: boolean, // eslint-disable-line
   createError: string, // eslint-disable-line
@@ -195,7 +195,8 @@ class CoworkersPage extends Component<Props, State> {
     showNotification: false,
   };
   componentDidMount() {
-    this.props.requestUserCoworkers();
+    const { user } = this.props;
+    this.props.requestUserCoworkers(user.get('slug'));
   }
   handleSendInvite = email => {
     this.setState(
@@ -293,7 +294,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
-  requestUserCoworkers: () => dispatch(requestUserCoworkers()),
+  requestUserCoworkers: slug => dispatch(requestUserCoworkers(slug)),
 });
 
 export default compose(

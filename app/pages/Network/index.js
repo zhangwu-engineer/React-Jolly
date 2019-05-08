@@ -269,17 +269,23 @@ class NetworkPage extends Component<Props, State> {
       this.props.requestCityUsers(user.getIn(['profile', 'location']), query);
     }
     this.props.requestConnections();
-    this.props.requestUserCoworkers();
+    this.props.requestUserCoworkers(user.get('slug'));
   }
   componentDidUpdate(prevProps: Props) {
-    const { isRemoving, removeError, isAccepting, acceptError } = this.props;
+    const {
+      user,
+      isRemoving,
+      removeError,
+      isAccepting,
+      acceptError,
+    } = this.props;
     if (prevProps.isRemoving && !isRemoving && !removeError) {
       this.props.requestConnections();
-      this.props.requestUserCoworkers();
+      this.props.requestUserCoworkers(user.get('slug'));
     }
     if (prevProps.isAccepting && !isAccepting && !acceptError) {
       this.props.requestConnections();
-      this.props.requestUserCoworkers();
+      this.props.requestUserCoworkers(user.get('slug'));
     }
   }
   closeFormModal = () => {
@@ -534,7 +540,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
-  requestUserCoworkers: () => dispatch(requestUserCoworkers()),
+  requestUserCoworkers: slug => dispatch(requestUserCoworkers(slug)),
   requestRemoveConnection: connectionId =>
     dispatch(requestRemoveConnection(connectionId)),
   requestAcceptConnection: connectionId =>
