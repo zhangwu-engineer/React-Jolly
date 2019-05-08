@@ -87,17 +87,22 @@ const styles = theme => ({
   },
   section: {},
   sectionHeader: {
-    paddingLeft: 15,
-    paddingTop: 20,
-    paddingBottom: 20,
-    paddingRight: 30,
+    paddingLeft: 5,
+    paddingTop: 25,
+    paddingBottom: 30,
+    paddingRight: 5,
     [theme.breakpoints.down('xs')]: {
-      padding: '25px 15px 0px 15px',
+      padding: '25px 30px 0px 30px',
     },
+  },
+  title: {
+    color: '#252525',
+    fontSize: 24,
+    fontWeight: 600,
   },
   sectionBody: {
     [theme.breakpoints.down('xs')]: {
-      padding: 15,
+      padding: 25,
     },
   },
   shareSection: {
@@ -105,7 +110,7 @@ const styles = theme => ({
     marginTop: 40,
     marginBottom: 20,
     [theme.breakpoints.down('xs')]: {
-      margin: '30px 10px',
+      margin: '0px 25px 30px',
       boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
     },
   },
@@ -202,7 +207,8 @@ const styles = theme => ({
     marginTop: 20,
     [theme.breakpoints.down('xs')]: {
       backgroundColor: '#f3faff',
-      padding: '30px 10px',
+      paddingLeft: 25,
+      paddingRight: 25,
       marginTop: 0,
     },
   },
@@ -581,7 +587,9 @@ class Member extends Component<Props, State> {
               />
               <div className={classes.section}>
                 <div className={classes.sectionHeader}>
-                  <Typography variant="h6">Roles</Typography>
+                  <Typography className={classes.title}>
+                    Positions for Hire
+                  </Typography>
                 </div>
                 <div className={classes.sectionBody}>
                   {roles.size ? (
