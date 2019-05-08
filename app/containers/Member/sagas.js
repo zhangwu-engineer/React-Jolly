@@ -18,6 +18,7 @@ const MEMBER_PROFILE = 'Jolly/Member/MEMBER_PROFILE';
 const MEMBER_BADGES = 'Jolly/Member/MEMBER_BADGES';
 const FILES = 'Jolly/Member/FILES';
 const WORKS = 'Jolly/Member/WORKS';
+const COWORKERS = 'Jolly/Member/COWORKERS';
 const ENDORSEMENTS = 'Jolly/Member/ENDORSEMENTS';
 const CREATE_CONNECTION = 'Jolly/Member/CREATE_CONNECTION';
 // ------------------------------------
@@ -108,6 +109,23 @@ const memberWorksRequestError = (error: string) => ({
   payload: error,
 });
 
+export const requestMemberCoworkers = (slug: string) => ({
+  type: COWORKERS + REQUESTED,
+  payload: slug,
+});
+const memberCoworkersRequestSuccess = (payload: Object) => ({
+  type: COWORKERS + SUCCEDED,
+  payload,
+});
+const memberCoworkersRequestFailed = (error: string) => ({
+  type: COWORKERS + FAILED,
+  payload: error,
+});
+const memberCoworkersRequestError = (error: string) => ({
+  type: COWORKERS + ERROR,
+  payload: error,
+});
+
 export const requestMemberEndorsements = (userSlug: string) => ({
   type: ENDORSEMENTS + REQUESTED,
   payload: userSlug,
@@ -163,6 +181,9 @@ const initialState = fromJS({
   endorsements: fromJS([]),
   isEndorsementsLoading: false,
   endorsementsError: '',
+  coworkers: null,
+  isCoworkersLoading: false,
+  coworkersError: '',
   isCreatingConnection: false,
   createConnectionError: '',
 });
@@ -274,6 +295,23 @@ export const reducer = (
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
+
+    case COWORKERS + REQUESTED:
+      return state.set('isCoworkersLoading', true);
+
+    case COWORKERS + SUCCEDED:
+      return state
+        .set('isCoworkersLoading', false)
+        .set('coworkers', fromJS(payload.coworkers))
+        .set('coworkersError', '');
+
+    case COWORKERS + FAILED:
+      return state
+        .set('isCoworkersLoading', false)
+        .set('coworkersError', payload);
+
+    case COWORKERS + ERROR:
+      return state.set('isFileLoading', false);
 
     case ENDORSEMENTS + REQUESTED:
       return state.set('isEndorsementsLoading', true);
@@ -416,6 +454,22 @@ function* MemberWorksRequest({ payload }) {
   }
 }
 
+function* MemberCoworkersRequest({ payload }) {
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/user/${payload}/coworkers`,
+    });
+    if (response.status === 200) {
+      yield put(memberCoworkersRequestSuccess(response.data.response));
+    } else {
+      yield put(memberCoworkersRequestFailed(response.data.error.message));
+    }
+  } catch (error) {
+    yield put(memberCoworkersRequestError(error));
+  }
+}
+
 function* EndorsementsRequest({ payload }) {
   try {
     const response = yield call(request, {
@@ -460,6 +514,7 @@ export default function*(): Saga<void> {
     takeLatest(MEMBER_BADGES + REQUESTED, MemberBadgesRequest),
     takeLatest(FILES + REQUESTED, MemberFilesRequest),
     takeLatest(WORKS + REQUESTED, MemberWorksRequest),
+    takeLatest(COWORKERS + REQUESTED, MemberCoworkersRequest),
     takeLatest(ENDORSEMENTS + REQUESTED, EndorsementsRequest),
     takeLatest(CREATE_CONNECTION + REQUESTED, CreateConnectionRequest),
   ]);

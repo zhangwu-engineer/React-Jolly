@@ -30,6 +30,7 @@ import Icon from 'components/Icon';
 import FloatingAddButton from 'components/FloatingAddButton';
 import BadgeProgressBanner from 'components/BadgeProgressBanner';
 import UserWorkList from 'components/UserWorkList';
+import UserCoworkers from 'components/UserCoworkers';
 
 import AddPhotoIcon from 'images/sprite/add-photo-blue.svg';
 
@@ -40,6 +41,7 @@ import saga, {
   requestMemberFiles,
   requestMemberRoles,
   requestMemberWorks,
+  requestMemberCoworkers,
   requestMemberEndorsements,
   requestCreateConnection,
 } from 'containers/Member/sagas';
@@ -269,6 +271,7 @@ type Props = {
   files: Object,
   roles: Object,
   works: Object,
+  coworkers: Object,
   endorsements: Object,
   isCreatingConnection: boolean, // eslint-disable-line
   createConnectionError: string, // eslint-disable-line
@@ -279,6 +282,7 @@ type Props = {
   requestMemberRoles: Function,
   requestMemberFiles: Function,
   requestMemberWorks: Function,
+  requestMemberCoworkers: Function,
   requestMemberEndorsements: Function,
   requestUserPhotoUpload: Function,
   requestUserResumeUpload: Function,
@@ -368,6 +372,7 @@ class Member extends Component<Props, State> {
     this.props.requestMemberFiles(slug);
     this.props.requestMemberRoles(slug);
     this.props.requestMemberWorks(slug);
+    this.props.requestMemberCoworkers(slug);
     this.props.requestMemberEndorsements(slug);
   }
   onCloseModal = () => {
@@ -428,6 +433,7 @@ class Member extends Component<Props, State> {
       files,
       roles,
       works,
+      coworkers,
       endorsements,
       classes,
       match: { url },
@@ -555,6 +561,14 @@ class Member extends Component<Props, State> {
               />
             </div>
             <div className={classes.rightPanel}>
+              <UserCoworkers
+                coworkers={coworkers}
+                currentUser={currentUser}
+                user={member}
+                isPrivate={isPrivate}
+                connect={this.props.requestCreateConnection}
+                isConnectionSent={isConnectionSent}
+              />
               <UserEndorsements
                 user={member}
                 endorsements={endorsements}
@@ -760,6 +774,7 @@ const mapStateToProps = state => ({
   roles: state.getIn(['member', 'roles']),
   files: state.getIn(['member', 'files']),
   works: state.getIn(['member', 'works']),
+  coworkers: state.getIn(['member', 'coworkers']),
   endorsements: state.getIn(['member', 'endorsements']),
   isCreatingConnection: state.getIn(['member', 'isCreatingConnection']),
   createConnectionError: state.getIn(['member', 'createConnectionError']),
@@ -771,6 +786,7 @@ const mapDispatchToProps = dispatch => ({
   requestMemberRoles: slug => dispatch(requestMemberRoles(slug)),
   requestMemberFiles: slug => dispatch(requestMemberFiles(slug)),
   requestMemberWorks: slug => dispatch(requestMemberWorks(slug)),
+  requestMemberCoworkers: slug => dispatch(requestMemberCoworkers(slug)),
   requestMemberEndorsements: slug => dispatch(requestMemberEndorsements(slug)),
   updateUser: payload => dispatch(requestUserDataUpdate(payload)),
   requestUserPhotoUpload: (photo, type) =>
