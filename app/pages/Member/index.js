@@ -24,7 +24,7 @@ import RoleCard from 'components/RoleCard';
 import ShareProfileModal from 'components/ShareProfileModal';
 import ContactOptionModal from 'components/ContactOptionModal';
 import PhotoModal from 'components/PhotoModal';
-import UserEndorsements from 'components/UserEndorsements';
+import UserRecommendations from 'components/UserRecommendations';
 import Notification from 'components/Notification';
 import Icon from 'components/Icon';
 import FloatingAddButton from 'components/FloatingAddButton';
@@ -569,10 +569,10 @@ class Member extends Component<Props, State> {
                 connect={this.props.requestCreateConnection}
                 isConnectionSent={isConnectionSent}
               />
-              <UserEndorsements
+              <UserRecommendations
                 user={member}
                 endorsements={endorsements}
-                publicMode
+                publicMode={!isPrivate}
               />
               <UserWorkList
                 works={works}
