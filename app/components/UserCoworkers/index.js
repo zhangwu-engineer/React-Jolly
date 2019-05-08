@@ -18,9 +18,11 @@ const styles = theme => ({
   root: {
     backgroundColor: theme.palette.common.white,
     padding: '25px 40px',
+    marginBottom: 20,
     [theme.breakpoints.down('xs')]: {
       padding: 25,
       borderTop: '1px solid #979797',
+      marginBottom: 0,
     },
   },
   title: {
@@ -30,6 +32,7 @@ const styles = theme => ({
     marginBottom: 30,
     [theme.breakpoints.down('xs')]: {
       fontSize: 14,
+      fontWeight: 700,
     },
   },
   count: {
