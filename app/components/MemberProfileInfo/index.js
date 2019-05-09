@@ -356,7 +356,7 @@ class MemberProfileInfo extends Component<Props, State> {
                   badge =>
                     badge.get('earned') ? (
                       <Grid item key={generate()} md={6}>
-                        <Badge badge={badge} />
+                        <Badge badge={badge} user={user} />
                       </Grid>
                     ) : null
                 )}

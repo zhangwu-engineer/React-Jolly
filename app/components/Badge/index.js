@@ -39,6 +39,7 @@ const styles = theme => ({
 
 type Props = {
   badge: Object,
+  user: Object,
   classes: Object,
   viewProgress: ?Function,
 };
@@ -57,9 +58,14 @@ class Badge extends Component<Props> {
     return ConnectedIcon;
   };
   badgeLabel = () => {
-    const { badge } = this.props;
+    const { badge, user } = this.props;
     const badgeName = badge.get('name');
+    const location = user.getIn(['profile', 'location']);
     if (badgeName === 'city_freelancer') {
+      if (location) {
+        const [city] = location && location.split(',');
+        return `${city} Freelancer`;
+      }
       return 'Freelancer';
     } else if (badgeName === 'active_freelancer') {
       return 'Active Freelancer';

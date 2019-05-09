@@ -373,6 +373,7 @@ class ProfileInfo extends PureComponent<Props> {
                   <Grid item key={generate()} md={6}>
                     <Badge
                       badge={badge}
+                      user={user}
                       viewProgress={this.props.viewBadgeProgress}
                     />
                   </Grid>
