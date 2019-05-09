@@ -403,7 +403,19 @@ class Member extends Component<Props, State> {
     }
   };
   openShareModal = location => {
-    const { member } = this.props;
+    const { currentUser, member } = this.props;
+    if (
+      currentUser &&
+      member &&
+      currentUser.get('id') === member.get('id') &&
+      !currentUser.getIn(['profile', 'openedShareModal'])
+    ) {
+      this.props.updateUser({
+        profile: {
+          openedShareModal: true,
+        },
+      });
+    }
     this.setState({ isOpen: true }, () => {
       analytics.track('Share Button Clicked', {
         userID: member.get('id'),
@@ -568,7 +580,10 @@ class Member extends Component<Props, State> {
           {isPrivate &&
             nextBadgeToEarn && (
               <div className={classes.badgeProgressBanner}>
-                <BadgeProgressBanner badge={activeBadge || nextBadgeToEarn} />
+                <BadgeProgressBanner
+                  badge={activeBadge || nextBadgeToEarn}
+                  openShareModal={this.openShareModal}
+                />
               </div>
             )}
           <div className={classes.panel}>

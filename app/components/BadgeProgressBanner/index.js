@@ -7,7 +7,9 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
+import { history } from 'components/ConnectedRouter';
 import Icon from 'components/Icon';
+import isMobile from 'utils/checkMobile';
 import TrophyIcon from 'images/sprite/trophy.svg';
 
 const styles = theme => ({
@@ -91,9 +93,41 @@ const styles = theme => ({
 type Props = {
   badge: Object,
   classes: Object,
+  openShareModal: Function,
 };
 
 class BadgeProgressBanner extends Component<Props> {
+  handleLabelClick = label => {
+    if (
+      label === 'Set your city' ||
+      label === 'Fill out your bio' ||
+      label === 'Set your contact options'
+    ) {
+      history.push('/settings#profile');
+    } else if (label === 'Add at least 1 Position for hire') {
+      history.push('/types-of-work');
+    } else if (label === 'Add a past job to your profile') {
+      history.push('/add');
+    } else if (label === 'Connect your phone number') {
+      history.push('/mobile');
+    } else if (label === 'Add a profile picture headshot') {
+      if (isMobile()) {
+        history.push('/profile-picture');
+      } else {
+        const editButton = document.getElementById('editAvatar');
+        if (editButton) {
+          editButton.click();
+        }
+      }
+    } else if (label === 'Upload your resume') {
+      const uploadResumeLink = document.getElementById('uploadResume');
+      if (uploadResumeLink) {
+        uploadResumeLink.click();
+      }
+    } else if (label === 'Get your profile sharing link') {
+      this.props.openShareModal('Top Profile');
+    }
+  };
   render() {
     const { badge, classes } = this.props;
     let badgeName = '';
@@ -129,7 +163,17 @@ class BadgeProgressBanner extends Component<Props> {
               </Typography>
               <Grid container>
                 {badge.get('actions').map(action => (
-                  <Grid item key={generate()} xs={12} md={6}>
+                  <Grid
+                    item
+                    key={generate()}
+                    xs={12}
+                    md={6}
+                    onClick={() => {
+                      if (!action.get('completed')) {
+                        this.handleLabelClick(action.get('name'));
+                      }
+                    }}
+                  >
                     <Typography
                       className={cx(classes.action, {
                         [classes.completedAction]: action.get('completed'),

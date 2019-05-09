@@ -331,6 +331,7 @@ class UserInfo extends Component<Props> {
                   <Typography
                     onClick={this.onUploadClick}
                     className={classes.resume}
+                    id="uploadResume"
                   >
                     Upload a resume (PDFs only)
                   </Typography>

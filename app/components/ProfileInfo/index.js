@@ -337,6 +337,7 @@ class ProfileInfo extends PureComponent<Props> {
               onClick={() => {
                 this.props.openPhotoModal('avatar');
               }}
+              id="editAvatar"
             >
               <EditIcon />
             </IconButton>
