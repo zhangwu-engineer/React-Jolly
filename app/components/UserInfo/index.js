@@ -95,6 +95,7 @@ type Props = {
   classes: Object,
   uploadResume: Function,
   deleteResume: Function,
+  onPositionClick: Function,
 };
 
 class UserInfo extends Component<Props> {
@@ -170,7 +171,15 @@ class UserInfo extends Component<Props> {
           </Grid>
           {roles && roles.size ? (
             roles.map(role => (
-              <PositionCard key={generate()} role={role.toJS()} />
+              <div
+                key={generate()}
+                onClick={() => {
+                  this.props.onPositionClick(role.get('id'));
+                }}
+                role="button"
+              >
+                <PositionCard role={role.toJS()} />
+              </div>
             ))
           ) : (
             <PositionCard />

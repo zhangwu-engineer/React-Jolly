@@ -393,6 +393,15 @@ class Member extends Component<Props, State> {
   onCloseContactModal = () => {
     this.setState({ isContactOpen: false });
   };
+  onPositionClick = id => {
+    const positionCardWrapper = document.getElementById(id);
+    if (positionCardWrapper) {
+      window.scrollTo({
+        top: positionCardWrapper.offsetTop,
+        behavior: 'smooth',
+      });
+    }
+  };
   openShareModal = location => {
     const { member } = this.props;
     this.setState({ isOpen: true }, () => {
@@ -570,6 +579,7 @@ class Member extends Component<Props, State> {
                 isPrivate={isPrivate}
                 uploadResume={this.props.requestUserResumeUpload}
                 deleteResume={this.props.requestUserResumeDelete}
+                onPositionClick={this.onPositionClick}
               />
             </div>
             <div className={classes.rightPanel}>
@@ -600,7 +610,9 @@ class Member extends Component<Props, State> {
                 <div className={classes.sectionBody}>
                   {roles.size ? (
                     roles.map(role => (
-                      <RoleCard key={generate()} role={role.toJS()} />
+                      <div key={generate()} id={role.get('id')}>
+                        <RoleCard role={role.toJS()} />
+                      </div>
                     ))
                   ) : (
                     <RoleCard />
