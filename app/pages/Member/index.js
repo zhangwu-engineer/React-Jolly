@@ -268,6 +268,12 @@ const styles = theme => ({
       marginBottom: 0,
     },
   },
+  editPosition: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    textDecoration: 'none',
+    textTransform: 'none',
+  },
 });
 
 type Props = {
@@ -598,6 +604,18 @@ class Member extends Component<Props, State> {
                     ))
                   ) : (
                     <RoleCard />
+                  )}
+                  {isPrivate && (
+                    <Grid container justify="center">
+                      <Grid item>
+                        <Link
+                          className={classes.editPosition}
+                          to="/types-of-work"
+                        >
+                          Edit Positions
+                        </Link>
+                      </Grid>
+                    </Grid>
                   )}
                 </div>
               </div>
