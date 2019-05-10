@@ -3,6 +3,7 @@
 import React, { Component, Fragment } from 'react';
 import cx from 'classnames';
 import { capitalize } from 'lodash-es';
+import { matchPath } from 'react-router';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -493,7 +494,13 @@ class Header extends Component<Props, State> {
             work.getIn(['user', 'lastName']).charAt(0)
           )}.`
         : '';
+    const match = matchPath(pathname, {
+      path: '/f/:slug',
+    });
+    const isPrivateProfile =
+      match && match.isExact && user.get('slug') === match.params.slug;
     const showFeedButton =
+      isPrivateProfile ||
       pathname.includes('/edit') ||
       pathname.includes('/network') ||
       pathname.includes('/feed');
