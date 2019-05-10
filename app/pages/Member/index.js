@@ -570,8 +570,8 @@ class Member extends Component<Props, State> {
                 currentUser={currentUser}
                 user={member}
                 badges={badges}
-                files={files}
                 openShareModal={this.openShareModal}
+                openPhotoModal={this.openPhotoModal}
                 connect={this.props.requestCreateConnection}
                 isConnectionSent={isConnectionSent}
               />

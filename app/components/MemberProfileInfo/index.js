@@ -20,7 +20,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ImageIcon from '@material-ui/icons/Image';
 
 import { history } from 'components/ConnectedRouter';
-import PhotoModal from 'components/PhotoModal';
 import UserAvatar from 'components/UserAvatar';
 import Badge from 'components/Badge';
 import Icon from 'components/Icon';
@@ -186,21 +185,19 @@ type Props = {
   currentUser: Object,
   user: Object,
   badges: Object,
-  files: Object,
   isConnectionSent: boolean,
   classes: Object,
   openShareModal: Function,
+  openPhotoModal: Function,
   connect: Function,
 };
 
 type State = {
-  isOpen: boolean,
   isMenuOpen: boolean,
 };
 
 class MemberProfileInfo extends Component<Props, State> {
   state = {
-    isOpen: false,
     isMenuOpen: false,
   };
   handleToggle = () => {
@@ -218,9 +215,6 @@ class MemberProfileInfo extends Component<Props, State> {
   openUrl = url => {
     window.open(url, '_blank');
   };
-  closeModal = () => {
-    this.setState({ isOpen: false });
-  };
   handleConnect = () => {
     const { currentUser, user } = this.props;
     if (currentUser && currentUser.get('id') !== user.get('id')) {
@@ -231,8 +225,8 @@ class MemberProfileInfo extends Component<Props, State> {
   };
   anchorEl: HTMLElement;
   render() {
-    const { user, badges, files, isConnectionSent, classes } = this.props;
-    const { isOpen, isMenuOpen } = this.state;
+    const { user, badges, isConnectionSent, classes } = this.props;
+    const { isMenuOpen } = this.state;
     const avatarImg = user.getIn(['profile', 'avatar']) || '';
     return (
       <div className={classes.root}>
@@ -252,7 +246,7 @@ class MemberProfileInfo extends Component<Props, State> {
             <Fragment>
               <IconButton
                 className={classes.imageButton}
-                onClick={() => this.setState({ isOpen: true })}
+                onClick={() => this.props.openPhotoModal('gallery')}
               >
                 <ImageIcon />
               </IconButton>
@@ -363,12 +357,6 @@ class MemberProfileInfo extends Component<Props, State> {
             </Grid>
           </Grid>
         </Grid>
-        <PhotoModal
-          user={user}
-          files={files}
-          isOpen={isOpen}
-          onCloseModal={this.closeModal}
-        />
       </div>
     );
   }
