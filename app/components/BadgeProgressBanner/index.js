@@ -11,6 +11,10 @@ import { history } from 'components/ConnectedRouter';
 import Icon from 'components/Icon';
 import isMobile from 'utils/checkMobile';
 import TrophyIcon from 'images/sprite/trophy.svg';
+import CityFreelancerIcon from 'images/sprite/city_freelancer.svg';
+import ActiveFreelancerIcon from 'images/sprite/active_freelancer.svg';
+import ReadyAndWillingIcon from 'images/sprite/ready_and_willing.svg';
+import ConnectedIcon from 'images/sprite/connected.svg';
 
 const styles = theme => ({
   root: {
@@ -33,13 +37,13 @@ const styles = theme => ({
   description: {
     flex: 1,
     paddingLeft: 20,
-    paddingRight: 75,
+    paddingRight: 25,
     [theme.breakpoints.down('xs')]: {
       display: 'none',
     },
   },
   todo: {
-    width: 526,
+    width: 650,
     backgroundColor: theme.palette.common.white,
     padding: '25px 20px 20px 30px',
     [theme.breakpoints.down('xs')]: {
@@ -97,6 +101,20 @@ type Props = {
 };
 
 class BadgeProgressBanner extends Component<Props> {
+  badgeIcon = () => {
+    const { badge } = this.props;
+    const badgeName = badge.get('name');
+    if (badgeName === 'city_freelancer') {
+      return CityFreelancerIcon;
+    } else if (badgeName === 'active_freelancer') {
+      return ActiveFreelancerIcon;
+    } else if (badgeName === 'ready_and_willing') {
+      return ReadyAndWillingIcon;
+    } else if (badgeName === 'connected') {
+      return ConnectedIcon;
+    }
+    return TrophyIcon;
+  };
   handleLabelClick = label => {
     if (
       label === 'Set your city' ||
@@ -126,6 +144,8 @@ class BadgeProgressBanner extends Component<Props> {
       }
     } else if (label === 'Get your profile sharing link') {
       this.props.openShareModal('Top Profile');
+    } else if (label === 'Get 10 total Coworker Connections') {
+      history.push('/network');
     }
   };
   render() {
@@ -154,7 +174,7 @@ class BadgeProgressBanner extends Component<Props> {
         <Grid item className={classes.todo}>
           <Grid container>
             <Grid item>
-              <Icon glyph={TrophyIcon} className={classes.trophy} />
+              <Icon glyph={this.badgeIcon()} className={classes.trophy} />
             </Grid>
             <Grid item className={classes.todoContent}>
               <Typography className={classes.badgeName}>{badgeName}</Typography>
