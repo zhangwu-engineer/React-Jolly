@@ -75,6 +75,7 @@ const styles = theme => ({
   avatar: {
     width: 44,
     height: 44,
+    cursor: 'pointer',
   },
   count: {
     position: 'absolute',
@@ -116,6 +117,9 @@ class UserRecommendations extends Component<Props, State> {
   };
   openModal = () => {
     this.setState({ isOpen: true });
+  };
+  openUrl = url => {
+    window.open(url, '_blank');
   };
   render() {
     const { endorsements, publicMode, classes } = this.props;
@@ -163,7 +167,11 @@ class UserRecommendations extends Component<Props, State> {
                   </Typography>
                   <Grid container className={classes.endorseUsers} spacing={8}>
                     {group.users.map(u => (
-                      <Grid item key={generate()}>
+                      <Grid
+                        item
+                        key={generate()}
+                        onClick={() => this.openUrl(`/f/${u.from.slug}`)}
+                      >
                         <UserAvatar
                           className={classes.avatar}
                           src={u.from.profile.avatar}
