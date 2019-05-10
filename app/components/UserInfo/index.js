@@ -53,6 +53,9 @@ const styles = theme => ({
       backgroundColor: theme.palette.common.white,
     },
   },
+  socialButtons: {
+    marginTop: 15,
+  },
   iconButton: {
     padding: 10,
     '&:hover svg': {
