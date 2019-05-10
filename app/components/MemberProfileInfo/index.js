@@ -17,7 +17,6 @@ import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import ListItemText from '@material-ui/core/ListItemText';
-import ShareIcon from '@material-ui/icons/Share';
 import ImageIcon from '@material-ui/icons/Image';
 
 import { history } from 'components/ConnectedRouter';
@@ -27,6 +26,7 @@ import Badge from 'components/Badge';
 import Icon from 'components/Icon';
 import ConnectIcon from 'images/sprite/connect.svg';
 import ConnectSentIcon from 'images/sprite/connect_sent.svg';
+import ShareIcon from 'images/sprite/share.svg';
 
 const styles = theme => ({
   root: {},
@@ -126,7 +126,7 @@ const styles = theme => ({
     backgroundColor: theme.palette.common.white,
     color: theme.palette.primary.main,
     boxShadow: '0 2px 11px 0 rgba(0, 0, 0, 0.15)',
-    padding: 11,
+    padding: 14,
     '&:hover': {
       backgroundColor: theme.palette.common.white,
     },
@@ -325,7 +325,7 @@ class MemberProfileInfo extends Component<Props, State> {
                 className={classes.shareButton}
                 onClick={() => this.props.openShareModal('Top Profile')}
               >
-                <ShareIcon />
+                <Icon glyph={ShareIcon} size={18} />
               </IconButton>
             </Grid>
           </Grid>

@@ -9,13 +9,14 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
-import ShareIcon from '@material-ui/icons/Share';
 import ImageIcon from '@material-ui/icons/Image';
 
 import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
 import Badge from 'components/Badge';
 import UserAvatar from 'components/UserAvatar';
+import Icon from 'components/Icon';
+import ShareIcon from 'images/sprite/share.svg';
 
 const styles = theme => ({
   root: {},
@@ -86,7 +87,7 @@ const styles = theme => ({
   shareButton: {
     backgroundColor: theme.palette.common.white,
     boxShadow: '0 2px 11px 0 rgba(0, 0, 0, 0.15)',
-    padding: 11,
+    padding: 14,
     '&:hover': {
       backgroundColor: theme.palette.common.white,
     },
@@ -326,7 +327,7 @@ class ProfileInfo extends PureComponent<Props> {
                 className={classes.shareButton}
                 onClick={() => this.props.openShareModal('Top Profile')}
               >
-                <ShareIcon />
+                <Icon glyph={ShareIcon} size={18} />
               </IconButton>
             </Grid>
           </Grid>
