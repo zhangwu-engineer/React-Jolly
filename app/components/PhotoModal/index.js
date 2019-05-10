@@ -8,7 +8,9 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import CameraIcon from '@material-ui/icons/CameraAlt';
+import CloseIcon from '@material-ui/icons/Close';
 
 import BaseModal from 'components/BaseModal';
 
@@ -68,6 +70,9 @@ class PhotoModal extends PureComponent<Props> {
   onAddClick = (e: Event) => {
     e.preventDefault();
     if (this.fileInput.current) this.fileInput.current.click();
+  };
+  onCloseClick = () => {
+    this.props.onCloseModal();
   };
   handleFileUpload = ({ target }: Event) => {
     const { type } = this.props;
@@ -141,6 +146,11 @@ class PhotoModal extends PureComponent<Props> {
                   />
                 </Fragment>
               )}
+            {type === 'gallery' && (
+              <IconButton onClick={this.onCloseClick}>
+                <CloseIcon />
+              </IconButton>
+            )}
           </Grid>
         </Grid>
         <div className={classes.contentWrapper}>
