@@ -8,6 +8,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+
 import UserCard from 'components/UserCard';
 import Icon from 'components/Icon';
 import Link from 'components/Link';
@@ -99,6 +100,9 @@ class UserCoworkers extends Component<Props> {
       history.push('/freelancer-signup');
     }
   };
+  openUrl = url => {
+    window.open(url, '_blank');
+  };
   render() {
     const {
       coworkers,
@@ -132,6 +136,7 @@ class UserCoworkers extends Component<Props> {
                 xs={12}
                 lg={6}
                 className={classes.user}
+                onClick={() => this.openUrl(`/f/${coworker.get('slug')}`)}
               >
                 <UserCard user={coworker} size="small" />
               </Grid>
