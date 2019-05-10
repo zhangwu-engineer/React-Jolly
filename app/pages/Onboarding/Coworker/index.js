@@ -320,7 +320,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
         perPage
       );
     } else {
-      history.push('/feed');
+      history.push(`/f/${user.get('slug')}`);
     }
   }
   componentDidUpdate(prevProps: Props) {

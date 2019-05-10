@@ -34,7 +34,7 @@ class SignIn extends Component<Props> {
     if (!prevProps.user && user) {
       storage.set('invite', null);
       if (user.getIn(['profile', 'location'])) {
-        const path = redirect || '/feed';
+        const path = redirect || `/f/${user.get('slug')}`;
         history.push(path);
       } else {
         history.push('/ob/1');

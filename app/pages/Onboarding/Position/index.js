@@ -218,7 +218,7 @@ const styles = theme => ({
 });
 
 type Props = {
-  // user: Object,
+  user: Object,
   roles: List,
   isSaving: boolean,
   saveError: string,
@@ -252,9 +252,9 @@ class OnboardingPositionPage extends Component<Props, State> {
     this.props.requestRoles();
   }
   componentDidUpdate(prevProps: Props) {
-    const { isSaving, saveError, isDeleting, deleteError } = this.props;
+    const { user, isSaving, saveError, isDeleting, deleteError } = this.props;
     if (prevProps.isSaving && !isSaving && !saveError) {
-      history.push('/feed');
+      history.push(`/f/${user.get('slug')}`);
     }
     if (prevProps.isDeleting && !isDeleting && !deleteError) {
       this.props.requestRoles();

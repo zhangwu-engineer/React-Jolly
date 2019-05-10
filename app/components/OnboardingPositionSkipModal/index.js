@@ -59,7 +59,7 @@ class OnboardingPositionSkipModal extends Component<Props> {
     analytics.track('Onboarding Step Skipped', {
       page: 'ob/3',
     });
-    history.push('/feed');
+    history.push('/edit');
   };
   closeModal = () => {
     this.props.onCloseModal();
