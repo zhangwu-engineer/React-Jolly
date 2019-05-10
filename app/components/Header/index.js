@@ -498,7 +498,7 @@ class Header extends Component<Props, State> {
       path: '/f/:slug',
     });
     const isPrivateProfile =
-      match && match.isExact && user.get('slug') === match.params.slug;
+      match && match.isExact && user && user.get('slug') === match.params.slug;
     const showFeedButton =
       isPrivateProfile ||
       pathname.includes('/edit') ||
