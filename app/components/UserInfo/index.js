@@ -333,7 +333,7 @@ class UserInfo extends Component<Props> {
                     className={classes.resume}
                     id="uploadResume"
                   >
-                    Upload a resume (PDFs only)
+                    Upload Resume (PDFs only)
                   </Typography>
                 )}
               </Grid>
