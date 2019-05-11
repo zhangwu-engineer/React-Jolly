@@ -215,7 +215,6 @@ const styles = theme => ({
   bottomBanner: {
     padding: '25px 30px',
     boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.08)',
-    borderRadius: 3,
     backgroundColor: theme.palette.common.white,
     [theme.breakpoints.down('xs')]: {
       padding: '15px 20px',
