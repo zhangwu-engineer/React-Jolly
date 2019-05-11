@@ -19,6 +19,7 @@ const styles = () => ({
     marginBottom: 20,
     padding: '20px 30px',
     boxShadow: '0 10px 20px 0 rgba(187, 187, 187, 0.5)',
+    borderRadius: 0,
   },
   content: {
     padding: 0,
