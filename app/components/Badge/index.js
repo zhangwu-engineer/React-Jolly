@@ -19,11 +19,8 @@ const styles = theme => ({
   iconWrapper: {
     marginRight: 10,
   },
-  icon: {
-    width: 40,
-    height: 40,
-    borderRadius: 40,
-    border: '1px dashed #9c3ff5',
+  unearned: {
+    opacity: 0.4,
   },
   label: {
     fontWeight: 500,
@@ -91,11 +88,13 @@ class Badge extends Component<Props> {
         onClick={this.viewProgress}
       >
         <Grid item className={classes.iconWrapper}>
-          {earned ? (
-            <Icon glyph={this.badgeIcon()} size={40} />
-          ) : (
-            <div className={classes.icon} />
-          )}
+          <Icon
+            glyph={this.badgeIcon()}
+            size={40}
+            className={cx({
+              [classes.unearned]: !earned,
+            })}
+          />
         </Grid>
         <Grid item>
           <Typography
