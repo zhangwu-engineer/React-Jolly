@@ -485,9 +485,7 @@ class Header extends Component<Props, State> {
     const { user, work, classes, pathname } = this.props;
     const { open, side } = this.state;
     const hideTopRightButtons =
-      pathname.includes('/settings') ||
-      pathname.includes('/types-of-work') ||
-      pathname.includes('/e/');
+      pathname.includes('/types-of-work') || pathname.includes('/e/');
     const workDetailBack =
       user && work && user.get('slug') !== work.getIn(['user', 'slug'])
         ? `${capitalize(work.getIn(['user', 'firstName']))} ${capitalize(
@@ -497,13 +495,18 @@ class Header extends Component<Props, State> {
     const match = matchPath(pathname, {
       path: '/f/:slug',
     });
-    const isPrivateProfile =
-      match && match.isExact && user && user.get('slug') === match.params.slug;
+    const isProfilePage = match && match.isExact && user;
+    const workDetailMatch = matchPath(pathname, {
+      path: '/f/:slug/e/:eventSlug',
+    });
+    const isWorkDetailPage = workDetailMatch && workDetailMatch.isExact;
     const showFeedButton =
-      isPrivateProfile ||
+      isProfilePage ||
+      isWorkDetailPage ||
       pathname.includes('/edit') ||
       pathname.includes('/network') ||
-      pathname.includes('/feed');
+      pathname.includes('/feed') ||
+      pathname.includes('/settings');
     return (
       <Grid
         className={classes.root}
