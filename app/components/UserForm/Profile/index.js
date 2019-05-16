@@ -180,7 +180,7 @@ class UserProfileForm extends Component<Props> {
             <EditableInput
               id="bio"
               name="bio"
-              placeholder="This is where you introduce yourself to potential employers! Tell us about what event work you’ve done, how many years you’ve done it, and what you kind of gigs you’d like to continue to do."
+              placeholder="This is where you introduce yourself to potential employers! Tell us about the event work you’ve done, how many years you’ve done it, and what kind of gigs you like to do."
               value={values.bio}
               multiline
               onChange={handleChange}
