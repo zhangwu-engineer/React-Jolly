@@ -465,7 +465,7 @@ class MobileWorkForm extends Component<Props, State> {
     } else if (model.role === '') {
       this.setState({ roleError: 'Required field' });
     } else if (ROLES.indexOf(model.role) === -1) {
-      this.setState({ roleError: 'Invalid role' });
+      this.setState({ roleError: 'Invalid position' });
     } else if (ROLES.indexOf(model.role) !== -1) {
       this.setState({ roleError: '' });
     }
@@ -672,7 +672,7 @@ class MobileWorkForm extends Component<Props, State> {
               </Grid>
               <Grid item className={classes.fullWidth}>
                 <Typography className={classes.formText}>
-                  {model.role ? model.role : 'Role worked'}
+                  {model.role ? model.role : 'Position worked'}
                 </Typography>
                 {roleError && (
                   <FormHelperText className={classes.error}>
@@ -903,13 +903,13 @@ class MobileWorkForm extends Component<Props, State> {
                   }}
                 >
                   <ArrowBackIcon />
-                  &nbsp;&nbsp;&nbsp;&nbsp;Role
+                  &nbsp;&nbsp;&nbsp;&nbsp;Position
                 </Button>
               </Grid>
             </Grid>
           </div>
           <div className={classes.roleSection}>
-            <Typography className={classes.roleLabel}>MY ROLES</Typography>
+            <Typography className={classes.roleLabel}>MY POSITIONS</Typography>
             {roles && roles.length ? (
               <React.Fragment>
                 {roles.map(r => (
@@ -939,7 +939,7 @@ class MobileWorkForm extends Component<Props, State> {
               <Grid container>
                 <Grid item xs={10}>
                   <CustomSelect
-                    placeholder="New Role"
+                    placeholder="New Position"
                     options={roleOptions}
                     value={null}
                     onChange={value => {
@@ -982,7 +982,7 @@ class MobileWorkForm extends Component<Props, State> {
               color="primary"
               onClick={() => this.setState({ isEditingRole: true })}
             >
-              + Add new role
+              + Add new position
             </Button>
           </div>
         </div>

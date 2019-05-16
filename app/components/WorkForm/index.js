@@ -363,7 +363,7 @@ class WorkForm extends Component<Props, State> {
     } else if (model.role === '') {
       this.setState({ roleError: 'Required field' });
     } else if (ROLES.indexOf(model.role) === -1) {
-      this.setState({ roleError: 'Invalid role' });
+      this.setState({ roleError: 'Invalid position' });
     } else if (ROLES.indexOf(model.role) !== -1) {
       this.setState({ roleError: '' });
     }
@@ -444,7 +444,7 @@ class WorkForm extends Component<Props, State> {
                 </Grid>
                 <Grid item className={classes.roleWrapper}>
                   <CustomSelect
-                    placeholder="Add Role"
+                    placeholder="Add Position"
                     options={roles}
                     value={
                       model.role
