@@ -499,10 +499,23 @@ class Member extends Component<Props, State> {
       path: '/f/:slug',
     });
     const isPrivate =
-      currentUser && currentUser.get('slug') === slug && !isPublicViewMode;
+      (currentUser && currentUser.get('slug') === slug && !isPublicViewMode) ||
+      false;
     const unearnedBadges =
       badges && badges.filter(b => b.get('earned') === false);
     const nextBadgeToEarn = unearnedBadges && unearnedBadges.get(0);
+    let isCoworker = false;
+    if (!isPrivate) {
+      if (currentUser && coworkers) {
+        const matchingCoworkers = coworkers.filter(
+          c => c.get('id') === currentUser.get('id')
+        );
+        if (matchingCoworkers && matchingCoworkers.size > 0) {
+          isCoworker = true;
+        }
+      }
+    }
+    const showResume = (currentUser && isCoworker) || false;
     return (
       <Fragment>
         <Waypoint onPositionChange={this.positionChange} />
@@ -599,6 +612,7 @@ class Member extends Component<Props, State> {
                 uploadResume={this.props.requestUserResumeUpload}
                 deleteResume={this.props.requestUserResumeDelete}
                 onPositionClick={this.onPositionClick}
+                showResume={isPrivate || showResume}
               />
             </div>
             <div className={classes.rightPanel}>

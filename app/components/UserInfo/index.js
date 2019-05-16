@@ -95,6 +95,7 @@ type Props = {
   user: Object,
   roles: Object,
   isPrivate: ?boolean,
+  showResume: boolean,
   classes: Object,
   uploadResume: Function,
   deleteResume: Function,
@@ -145,8 +146,9 @@ class UserInfo extends Component<Props> {
     this.props.deleteResume();
   };
   render() {
-    const { user, roles, isPrivate, classes } = this.props;
-    const hideResume = !isPrivate && !user.getIn(['profile', 'resume']);
+    const { user, roles, isPrivate, showResume, classes } = this.props;
+    const showIcon =
+      isPrivate || (user.getIn(['profile', 'resume']) && showResume);
     return (
       <div className={classes.root}>
         <div className={classes.position}>
@@ -303,22 +305,24 @@ class UserInfo extends Component<Props> {
             )}
           </Grid>
         </div>
-        {!hideResume && (
+        {showResume && (
           <Fragment>
             <Grid container alignItems="center">
               <Grid item>
-                <IconButton
-                  classes={{ root: classes.openButton }}
-                  onClick={() => {
-                    if (user && user.getIn(['profile', 'resume'])) {
-                      this.openResume();
-                    } else if (isPrivate) {
-                      this.onUploadClick();
-                    }
-                  }}
-                >
-                  <OpenIcon fontSize="small" />
-                </IconButton>
+                {showIcon && (
+                  <IconButton
+                    classes={{ root: classes.openButton }}
+                    onClick={() => {
+                      if (user && user.getIn(['profile', 'resume'])) {
+                        this.openResume();
+                      } else if (isPrivate) {
+                        this.onUploadClick();
+                      }
+                    }}
+                  >
+                    <OpenIcon fontSize="small" />
+                  </IconButton>
+                )}
               </Grid>
               <Grid item className={classes.resumeWrapper}>
                 {user && user.getIn(['profile', 'resume']) ? (
@@ -331,13 +335,17 @@ class UserInfo extends Component<Props> {
                       : `View ${capitalize(user.get('firstName'))}'s Resume`}
                   </Typography>
                 ) : (
-                  <Typography
-                    onClick={this.onUploadClick}
-                    className={classes.resume}
-                    id="uploadResume"
-                  >
-                    Upload Resume (PDFs only)
-                  </Typography>
+                  <Fragment>
+                    {isPrivate ? (
+                      <Typography
+                        onClick={this.onUploadClick}
+                        className={classes.resume}
+                        id="uploadResume"
+                      >
+                        Upload Resume (PDFs only)
+                      </Typography>
+                    ) : null}
+                  </Fragment>
                 )}
               </Grid>
               {isPrivate &&
