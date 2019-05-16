@@ -484,8 +484,6 @@ class Header extends Component<Props, State> {
   render() {
     const { user, work, classes, pathname } = this.props;
     const { open, side } = this.state;
-    const hideTopRightButtons =
-      pathname.includes('/types-of-work') || pathname.includes('/e/');
     const workDetailBack =
       user && work && user.get('slug') !== work.getIn(['user', 'slug'])
         ? `${capitalize(work.getIn(['user', 'firstName']))} ${capitalize(
@@ -507,6 +505,9 @@ class Header extends Component<Props, State> {
       pathname.includes('/network') ||
       pathname.includes('/feed') ||
       pathname.includes('/settings');
+    const hideTopRightButtons =
+      pathname.includes('/types-of-work') ||
+      (pathname.includes('/e/') && pathname.includes('work'));
     return (
       <Grid
         className={classes.root}
