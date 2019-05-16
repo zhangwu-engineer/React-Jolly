@@ -450,9 +450,14 @@ class Member extends Component<Props, State> {
     this.setState({ isPhotoModalOpen: false });
   };
   toggleViewMode = () => {
-    this.setState(state => ({
-      isPublicViewMode: !state.isPublicViewMode,
-    }));
+    this.setState(
+      state => ({
+        isPublicViewMode: !state.isPublicViewMode,
+      }),
+      () => {
+        window.scrollTo(0, 0);
+      }
+    );
   };
   viewBadgeProgress = badge => {
     this.setState({ activeBadge: badge });
