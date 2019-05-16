@@ -119,8 +119,8 @@ const styles = theme => ({
     },
   },
   mobileButtonWrapper: {
-    marginLeft: 20,
-    marginRight: 20,
+    marginLeft: 10,
+    marginRight: 10,
   },
   mobileButton: {
     fontWeight: 600,

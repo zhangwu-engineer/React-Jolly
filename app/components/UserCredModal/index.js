@@ -102,8 +102,8 @@ const styles = theme => ({
   descWrapper: {
     backgroundColor: '#f1f1f1',
     padding: '25px 20px',
-    marginTop: 70,
-    marginBottom: 70,
+    marginTop: 30,
+    marginBottom: 30,
   },
   text: {
     fontSize: 13,
@@ -170,10 +170,10 @@ class UserCredModal extends Component<Props> {
           <div className={classes.descWrapper}>
             <Typography className={classes.title}>What&apos;s this?</Typography>
             <Typography className={classes.text}>
-              Your cred goes pu when you help your fellow event freelancers:
-              share knowledge, answer questions, or comment in the feed. Soon,
-              you’ll be able to see how you stack up against other helpful
-              freelancers in your city.
+              Increase your cred by helping your fellow event freelancers: share
+              knowledge, answer questions, or comment in the feed. Soon, you’ll
+              be able to see how you stack up against other helpful freelancers
+              in your city.
             </Typography>
           </div>
           <Typography className={classes.desc} align="center">
