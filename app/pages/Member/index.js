@@ -365,7 +365,6 @@ class Member extends Component<Props, State> {
   };
   componentDidMount() {
     const {
-      currentUser,
       match: { url },
     } = this.props;
     const {
@@ -373,11 +372,6 @@ class Member extends Component<Props, State> {
     } = matchPath(url, {
       path: '/f/:slug',
     });
-    if (currentUser && currentUser.get('slug') === slug) {
-      analytics.track('Public Profile Viewed', {
-        userID: currentUser.get('id'),
-      });
-    }
     this.props.requestMemberProfile(slug);
     this.props.requestMemberBadges(slug);
     this.props.requestMemberFiles(slug);
@@ -450,12 +444,16 @@ class Member extends Component<Props, State> {
     this.setState({ isPhotoModalOpen: false });
   };
   toggleViewMode = () => {
+    const { currentUser } = this.props;
     this.setState(
       state => ({
         isPublicViewMode: !state.isPublicViewMode,
       }),
       () => {
         window.scrollTo(0, 0);
+        analytics.track('Public Profile Viewed', {
+          userID: currentUser.get('id'),
+        });
       }
     );
   };
