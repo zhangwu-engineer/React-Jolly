@@ -133,6 +133,7 @@ type Props = {
   isLoading: boolean,
   error: string,
   classes: Object,
+  location: Object,
   requestRegister: Function,
 };
 
@@ -192,6 +193,10 @@ class SignUp extends Component<Props, State> {
     this.setState(state => ({ showPassword: !state.showPassword }));
   };
   handleRegister = () => {
+    const {
+      location: { pathname },
+    } = this.props;
+    const isBusiness = pathname === '/business-signup-2';
     const { email, fullname, password } = cloneDeep(this.state.model);
     const [firstName, ...rest] = fullname.split(' ');
     this.setState({ isOpen: false }, () => {
@@ -201,6 +206,7 @@ class SignUp extends Component<Props, State> {
           firstName,
           lastName: rest.join(' '),
           password,
+          isBusiness,
         },
         storage.get('invite')
       );

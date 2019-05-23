@@ -153,12 +153,14 @@ const loginRequestError = (error: string) => ({
 export const requestSocialLogin = (
   payload: Object,
   type: string,
+  isBusiness: boolean,
   invite: ?Object
 ) => ({
   type: SOCIAL_LOGIN + REQUESTED,
   payload,
   meta: {
     type,
+    isBusiness,
     invite,
   },
 });
@@ -899,7 +901,7 @@ function* LoginRequest({ payload, meta }) {
   }
 }
 
-function* SocialLoginRequest({ payload, meta: { type, invite } }) {
+function* SocialLoginRequest({ payload, meta: { type, isBusiness, invite } }) {
   try {
     const response = yield call(request, {
       method: 'POST',
@@ -909,6 +911,7 @@ function* SocialLoginRequest({ payload, meta: { type, invite } }) {
           : `${API_URL}/auth/linkedin`,
       data: {
         ...payload,
+        isBusiness,
         invite,
       },
     });

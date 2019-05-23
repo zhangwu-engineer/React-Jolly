@@ -42,11 +42,11 @@ class Routes extends Component<{}> {
       <Switch>
         <Route exact path="/" render={props => <Home {...props} />} />
         <Route
-          path="/freelancer-signup-2"
+          path="/(freelancer-signup-2|business-signup-2)"
           render={props => <SignUp {...props} />}
         />
         <Route
-          path="/freelancer-signup"
+          path="/(freelancer-signup|business-signup)"
           render={props => <Welcome {...props} />}
         />
         <Route path="/sign-in" render={props => <SignIn {...props} />} />
