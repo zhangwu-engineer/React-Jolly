@@ -25,9 +25,9 @@ const GeneralSettings = load(() => import('pages/Settings/General'));
 const ProfileSettings = load(() => import('pages/Settings/Profile'));
 const Mobile = load(() => import('pages/Mobile'));
 const Roles = load(() => import('pages/Roles'));
-const OnboardingCity = load(() => import('pages/Onboarding/City'));
-const OnboardingCoworker = load(() => import('pages/Onboarding/Coworker'));
-const OnboardingPosition = load(() => import('pages/Onboarding/Position'));
+const ObPage1 = load(() => import('pages/Ob/Page1'));
+const ObPage2 = load(() => import('pages/Ob/Page2'));
+const ObPage3 = load(() => import('pages/Ob/Page3'));
 const Network = load(() => import('pages/Network'));
 const Coworkers = load(() => import('pages/Network/Coworkers'));
 const NetworkInvite = load(() => import('pages/Network/Invite'));
@@ -74,17 +74,17 @@ class Routes extends Component<{}> {
         <PrivateRoute
           exact
           path="/ob/1"
-          render={props => <OnboardingCity {...props} />}
+          render={props => <ObPage1 {...props} />}
         />
         <PrivateRoute
           exact
           path="/ob/2"
-          render={props => <OnboardingCoworker {...props} />}
+          render={props => <ObPage2 {...props} />}
         />
         <PrivateRoute
           exact
           path="/ob/3"
-          render={props => <OnboardingPosition {...props} />}
+          render={props => <ObPage3 {...props} />}
         />
         <PrivateRoute
           exact
