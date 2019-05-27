@@ -4,35 +4,16 @@ import React, { Component, Fragment } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { matchPath } from 'react-router';
-import { generate } from 'shortid';
 import cx from 'classnames';
-import Waypoint from 'react-waypoint';
-import Lightbox from 'react-image-lightbox';
 import 'react-image-lightbox/style.css';
 
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import ShareIcon from '@material-ui/icons/Share';
 
-import ProfileInfo from 'components/ProfileInfo';
+import BusinessProfileInfo from 'components/BusinessProfileInfo';
 import MemberProfileInfo from 'components/MemberProfileInfo';
-import UserInfo from 'components/UserInfo';
-import Link from 'components/Link';
-import RoleCard from 'components/RoleCard';
-import ShareProfileModal from 'components/ShareProfileModal';
-import ContactOptionModal from 'components/ContactOptionModal';
-import PhotoModal from 'components/PhotoModal';
-import UserRecommendations from 'components/UserRecommendations';
-import Notification from 'components/Notification';
-import Icon from 'components/Icon';
-import FloatingAddButton from 'components/FloatingAddButton';
-import BadgeProgressBanner from 'components/BadgeProgressBanner';
-import UserWorkList from 'components/UserWorkList';
-import UserCoworkers from 'components/UserCoworkers';
-
-import AddPhotoIcon from 'images/sprite/add-photo-blue.svg';
 
 import saga, {
   reducer,
@@ -45,12 +26,6 @@ import saga, {
   requestMemberEndorsements,
   requestCreateConnection,
 } from 'containers/Member/sagas';
-import {
-  requestUserPhotoUpload,
-  requestUserResumeUpload,
-  requestUserResumeDelete,
-  requestUserDataUpdate,
-} from 'containers/App/sagas';
 import injectSagas from 'utils/injectSagas';
 
 const styles = theme => ({
@@ -279,11 +254,6 @@ type Props = {
   currentUser: Object,
   member: Object,
   badges: Object,
-  files: Object,
-  roles: Object,
-  works: Object,
-  coworkers: Object,
-  endorsements: Object,
   isCreatingConnection: boolean, // eslint-disable-line
   createConnectionError: string, // eslint-disable-line
   classes: Object,
@@ -295,25 +265,14 @@ type Props = {
   requestMemberWorks: Function,
   requestMemberCoworkers: Function,
   requestMemberEndorsements: Function,
-  requestUserPhotoUpload: Function,
-  requestUserResumeUpload: Function,
-  requestUserResumeDelete: Function,
-  updateUser: Function,
   requestCreateConnection: Function,
 };
 
 type State = {
-  isOpen: boolean,
-  isContactOpen: boolean,
   fixedTopBanner: boolean,
-  photos: Array<string>,
-  photoIndex: number,
-  isGalleryOpen: boolean,
   isInviting: boolean,
   showNotification: boolean,
   isConnectionSent: boolean,
-  type: string,
-  isPhotoModalOpen: boolean,
   isPublicViewMode: boolean,
   activeBadge: Object,
 };
@@ -349,19 +308,10 @@ class BusinessMember extends Component<Props, State> {
     return null;
   }
   state = {
-    isOpen: false,
-    isContactOpen: false,
     fixedTopBanner: false,
-    photos: [],
-    photoIndex: 0,
-    isGalleryOpen: false,
     isInviting: false, // eslint-disable-line
-    showNotification: false,
     isConnectionSent: false,
-    type: '',
-    isPhotoModalOpen: false,
     isPublicViewMode: false,
-    activeBadge: null,
   };
   componentDidMount() {
     const {
@@ -380,49 +330,6 @@ class BusinessMember extends Component<Props, State> {
     this.props.requestMemberCoworkers(slug);
     this.props.requestMemberEndorsements(slug);
   }
-  onCloseModal = () => {
-    this.setState({ isOpen: false });
-  };
-  onCloseContactModal = () => {
-    this.setState({ isContactOpen: false });
-  };
-  onPositionClick = id => {
-    const positionCardWrapper = document.getElementById(id);
-    if (positionCardWrapper) {
-      window.scrollTo({
-        top: positionCardWrapper.offsetTop,
-        behavior: 'smooth',
-      });
-    }
-  };
-  openShareModal = location => {
-    const { currentUser, member } = this.props;
-    if (
-      currentUser &&
-      member &&
-      currentUser.get('id') === member.get('id') &&
-      !currentUser.getIn(['profile', 'openedShareModal'])
-    ) {
-      this.props.updateUser({
-        profile: {
-          openedShareModal: true,
-        },
-      });
-    }
-    this.setState({ isOpen: true }, () => {
-      analytics.track('Share Button Clicked', {
-        userID: member.get('id'),
-        location,
-      });
-    });
-  };
-  openGallery = (photos, index) => {
-    this.setState({
-      photos,
-      photoIndex: index,
-      isGalleryOpen: true,
-    });
-  };
   positionChange = ({ currentPosition, previousPosition }) => {
     if (currentPosition === 'above' && previousPosition === 'inside') {
       this.setState({ fixedTopBanner: true });
@@ -430,18 +337,6 @@ class BusinessMember extends Component<Props, State> {
     if (currentPosition === 'inside' && previousPosition === 'above') {
       this.setState({ fixedTopBanner: false });
     }
-  };
-  closeNotification = () => {
-    this.setState({
-      isInviting: false, // eslint-disable-line
-      showNotification: false,
-    });
-  };
-  openPhotoModal = type => {
-    this.setState({ type, isPhotoModalOpen: true });
-  };
-  closePhotoModal = () => {
-    this.setState({ isPhotoModalOpen: false });
   };
   toggleViewMode = () => {
     const { currentUser } = this.props;
@@ -457,40 +352,15 @@ class BusinessMember extends Component<Props, State> {
       }
     );
   };
-  viewBadgeProgress = badge => {
-    this.setState({ activeBadge: badge });
-  };
   render() {
     const {
       currentUser,
       member,
       badges,
-      files,
-      roles,
-      works,
-      coworkers,
-      endorsements,
       classes,
       match: { url },
     } = this.props;
-    const {
-      isOpen,
-      isContactOpen,
-      fixedTopBanner,
-      photos,
-      photoIndex,
-      isGalleryOpen,
-      showNotification,
-      isConnectionSent,
-      type,
-      isPhotoModalOpen,
-      isPublicViewMode,
-      activeBadge,
-    } = this.state;
-    const showContactOptions =
-      member.getIn(['profile', 'receiveEmail']) ||
-      member.getIn(['profile', 'receiveSMS']) ||
-      member.getIn(['profile', 'receiveCall']);
+    const { fixedTopBanner, isConnectionSent, isPublicViewMode } = this.state;
     const {
       params: { slug },
     } = matchPath(url, {
@@ -499,24 +369,8 @@ class BusinessMember extends Component<Props, State> {
     const isPrivate =
       (currentUser && currentUser.get('slug') === slug && !isPublicViewMode) ||
       false;
-    const unearnedBadges =
-      badges && badges.filter(b => b.get('earned') === false);
-    const nextBadgeToEarn = unearnedBadges && unearnedBadges.get(0);
-    let isCoworker = false;
-    if (!isPrivate) {
-      if (currentUser && coworkers) {
-        const matchingCoworkers = coworkers.filter(
-          c => c.get('id') === currentUser.get('id')
-        );
-        if (matchingCoworkers && matchingCoworkers.size > 0) {
-          isCoworker = true;
-        }
-      }
-    }
-    const showResume = (currentUser && isCoworker) || false;
     return (
       <Fragment>
-        <Waypoint onPositionChange={this.positionChange} />
         {currentUser &&
           currentUser.get('slug') === slug &&
           isPublicViewMode && (
@@ -553,30 +407,16 @@ class BusinessMember extends Component<Props, State> {
                 >
                   Back
                 </Button>
-                <Button
-                  className={classes.topBannerButton}
-                  onClick={() => {
-                    this.setState({ isOpen: true });
-                  }}
-                >
-                  Copy Link
-                </Button>
+                <Button className={classes.topBannerButton}>Copy Link</Button>
               </Grid>
             </Grid>
           )}
-        {showNotification && (
-          <Notification
-            msg="Coworker connection request sent."
-            close={this.closeNotification}
-          />
-        )}
         <div className={classes.root}>
           <div className={classes.profileInfo}>
             {isPrivate ? (
-              <ProfileInfo
+              <BusinessProfileInfo
                 user={currentUser}
                 badges={badges}
-                openShareModal={this.openShareModal}
                 openPhotoModal={this.openPhotoModal}
                 viewBadgeProgress={this.viewBadgeProgress}
               />
@@ -585,250 +425,16 @@ class BusinessMember extends Component<Props, State> {
                 currentUser={currentUser}
                 user={member}
                 badges={badges}
-                openShareModal={this.openShareModal}
                 openPhotoModal={this.openPhotoModal}
                 connect={this.props.requestCreateConnection}
                 isConnectionSent={isConnectionSent}
               />
             )}
           </div>
-          {isPrivate &&
-            nextBadgeToEarn && (
-              <div className={classes.badgeProgressBanner}>
-                <BadgeProgressBanner
-                  badge={activeBadge || nextBadgeToEarn}
-                  openShareModal={this.openShareModal}
-                />
-              </div>
-            )}
           <div className={classes.panel}>
-            <div className={classes.leftPanel}>
-              <UserInfo
-                user={isPrivate ? currentUser : member}
-                roles={roles}
-                isPrivate={isPrivate}
-                uploadResume={this.props.requestUserResumeUpload}
-                deleteResume={this.props.requestUserResumeDelete}
-                onPositionClick={this.onPositionClick}
-                showResume={isPrivate || showResume}
-              />
-            </div>
-            <div className={classes.rightPanel}>
-              <UserCoworkers
-                coworkers={coworkers}
-                currentUser={currentUser}
-                user={member}
-                isPrivate={isPrivate}
-                connect={this.props.requestCreateConnection}
-                isConnectionSent={isConnectionSent}
-              />
-              <UserRecommendations
-                user={member}
-                endorsements={endorsements}
-                publicMode={!isPrivate}
-              />
-              <UserWorkList
-                works={works}
-                isPrivate={isPrivate}
-                openGallery={this.openGallery}
-              />
-              <div className={classes.section}>
-                <div className={classes.sectionHeader}>
-                  <Typography className={classes.title}>
-                    Positions for Hire
-                  </Typography>
-                </div>
-                <div className={classes.sectionBody}>
-                  {roles.size ? (
-                    roles.map(role => (
-                      <div key={generate()} id={role.get('id')}>
-                        <RoleCard role={role.toJS()} />
-                      </div>
-                    ))
-                  ) : (
-                    <RoleCard />
-                  )}
-                  {isPrivate && (
-                    <Grid container justify="center">
-                      <Grid item>
-                        <Link
-                          className={classes.editPosition}
-                          to="/types-of-work"
-                        >
-                          Edit Positions
-                        </Link>
-                      </Grid>
-                    </Grid>
-                  )}
-                </div>
-              </div>
-              {isPrivate ? (
-                <div className={classes.bottomBannerContainer}>
-                  {currentUser.getIn(['profile', 'avatar']) ? (
-                    <Grid
-                      className={classes.bottomBanner}
-                      container
-                      justify="space-between"
-                      alignItems="center"
-                    >
-                      <Grid item xs={12} lg={6}>
-                        <Typography className={classes.bannerText}>
-                          {`Ready to share your profile? Grab the link here (`}
-                          <Link
-                            className={classes.link}
-                            onClick={this.toggleViewMode}
-                          >
-                            or view as public
-                          </Link>
-                          {'):'}
-                        </Typography>
-                      </Grid>
-                      <Grid
-                        item
-                        xs={12}
-                        lg={6}
-                        className={classes.bannerButtonContainer}
-                      >
-                        <Button
-                          color="primary"
-                          className={classes.bannerButton}
-                          onClick={() => this.openShareModal('Bottom Profile')}
-                        >
-                          <ShareIcon />
-                          &nbsp;&nbsp;Share my profile
-                        </Button>
-                      </Grid>
-                    </Grid>
-                  ) : (
-                    <Grid
-                      className={classes.bottomBanner}
-                      container
-                      justify="space-between"
-                      alignItems="center"
-                    >
-                      <Grid item xs={12} lg={6}>
-                        <Typography className={classes.bannerText}>
-                          {`Before you share your profile, you need to add a profile picture.`}
-                        </Typography>
-                      </Grid>
-                      <Grid
-                        item
-                        xs={12}
-                        lg={6}
-                        className={classes.bannerButtonContainer}
-                      >
-                        <Button
-                          color="primary"
-                          className={cx(
-                            classes.bannerButton,
-                            classes.addPictureButton
-                          )}
-                          onClick={() => this.openPhotoModal('avatar')}
-                        >
-                          <Icon glyph={AddPhotoIcon} size={20} />
-                          &nbsp;&nbsp;Add picture
-                        </Button>
-                        <Button
-                          color="primary"
-                          className={cx(
-                            classes.bannerButton,
-                            classes.smallAddPictureButton
-                          )}
-                          onClick={() => {
-                            history.push('/profile-picture');
-                          }}
-                        >
-                          <Icon glyph={AddPhotoIcon} size={20} />
-                          &nbsp;&nbsp;Add picture
-                        </Button>
-                      </Grid>
-                    </Grid>
-                  )}
-                </div>
-              ) : (
-                <div className={classes.shareSection}>
-                  <div className={classes.shareSectionBody}>
-                    <Grid container justify="space-between" alignItems="center">
-                      <Grid item lg={6}>
-                        <Typography className={classes.shareText}>
-                          Know someone who needs this freelancer’s talents?
-                        </Typography>
-                      </Grid>
-                      <Grid item>
-                        <Button
-                          className={classes.shareProfileButton}
-                          onClick={() => this.openShareModal('Bottom Profile')}
-                        >
-                          <ShareIcon />
-                          &nbsp;Share this profile
-                        </Button>
-                      </Grid>
-                    </Grid>
-                  </div>
-                </div>
-              )}
-            </div>
+            <div className={classes.leftPanel} />
           </div>
         </div>
-        {showContactOptions &&
-          !isPrivate && (
-            <Grid
-              className={classes.contactBanner}
-              container
-              justify="center"
-              alignItems="center"
-            >
-              <Grid item>
-                <Button
-                  className={classes.contactBannerButton}
-                  onClick={() => {
-                    this.setState({ isContactOpen: true });
-                  }}
-                  color="primary"
-                >
-                  Contact Me
-                </Button>
-              </Grid>
-            </Grid>
-          )}
-        <ShareProfileModal
-          isOpen={isOpen}
-          onCloseModal={this.onCloseModal}
-          shareURL={`/f/${member.get('slug')}`}
-        />
-        <ContactOptionModal
-          isOpen={isContactOpen}
-          onCloseModal={this.onCloseContactModal}
-          data={member}
-        />
-        <PhotoModal
-          user={isPrivate ? currentUser : member}
-          type={type}
-          files={files}
-          isOpen={isPhotoModalOpen}
-          onCloseModal={this.closePhotoModal}
-          uploadPhoto={this.props.requestUserPhotoUpload}
-          updateUser={this.props.updateUser}
-        />
-        {isGalleryOpen && (
-          <Lightbox
-            mainSrc={photos[photoIndex]}
-            nextSrc={photos[(photoIndex + 1) % photos.length]}
-            prevSrc={photos[(photoIndex + photos.length - 1) % photos.length]}
-            onCloseRequest={() => this.setState({ isGalleryOpen: false })}
-            onMovePrevRequest={() =>
-              this.setState({
-                photoIndex: (photoIndex + photos.length - 1) % photos.length,
-              })
-            }
-            onMoveNextRequest={() =>
-              this.setState({
-                photoIndex: (photoIndex + 1) % photos.length,
-              })
-            }
-          />
-        )}
-        <FloatingAddButton />
       </Fragment>
     );
   }
@@ -840,11 +446,7 @@ const mapStateToProps = state => ({
   isLoading: state.getIn(['member', 'isMemberLoading']),
   error: state.getIn(['member', 'memberError']),
   badges: state.getIn(['member', 'badges']),
-  roles: state.getIn(['member', 'roles']),
-  files: state.getIn(['member', 'files']),
-  works: state.getIn(['member', 'works']),
   coworkers: state.getIn(['member', 'coworkers']),
-  endorsements: state.getIn(['member', 'endorsements']),
   isCreatingConnection: state.getIn(['member', 'isCreatingConnection']),
   createConnectionError: state.getIn(['member', 'createConnectionError']),
 });
@@ -857,11 +459,6 @@ const mapDispatchToProps = dispatch => ({
   requestMemberWorks: slug => dispatch(requestMemberWorks(slug)),
   requestMemberCoworkers: slug => dispatch(requestMemberCoworkers(slug)),
   requestMemberEndorsements: slug => dispatch(requestMemberEndorsements(slug)),
-  updateUser: payload => dispatch(requestUserDataUpdate(payload)),
-  requestUserPhotoUpload: (photo, type) =>
-    dispatch(requestUserPhotoUpload(photo, type)),
-  requestUserResumeUpload: resume => dispatch(requestUserResumeUpload(resume)),
-  requestUserResumeDelete: () => dispatch(requestUserResumeDelete()),
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
 });
