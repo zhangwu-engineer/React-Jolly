@@ -254,7 +254,7 @@ class OnboardingPositionPage extends Component<Props, State> {
   componentDidUpdate(prevProps: Props) {
     const { user, isSaving, saveError, isDeleting, deleteError } = this.props;
     if (prevProps.isSaving && !isSaving && !saveError) {
-      history.push(`/f/${user.get('slug')}`);
+      history.push(`/b/${user.get('slug')}`);
     }
     if (prevProps.isDeleting && !isDeleting && !deleteError) {
       this.props.requestRoles();

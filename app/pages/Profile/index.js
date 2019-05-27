@@ -198,7 +198,12 @@ class Profile extends Component<Props, State> {
   };
   componentDidMount() {
     const { user } = this.props;
-    history.push(`/f/${user.get('slug')}`);
+    const isBusiness = user.get('role') === 'BUSINESS';
+    if (isBusiness) {
+      history.push(`/b/${user.get('slug')}`);
+    } else {
+      history.push(`/f/${user.get('slug')}`);
+    }
     // this.props.requestUser();
     // this.props.requestUserFiles();
     // this.props.requestRoles();

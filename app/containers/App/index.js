@@ -42,7 +42,12 @@ class App extends Component<Props> {
     }
     if (this.props.location.pathname === '/') {
       if (user) {
-        history.push(`/f/${user.get('slug')}`);
+        const isBusiness = user.get('role') === 'BUSINESS';
+        if (isBusiness) {
+          history.push(`/b/${user.get('slug')}`);
+        } else {
+          history.push(`/f/${user.get('slug')}`);
+        }
       } else {
         history.push('/freelancer-signup');
       }
@@ -53,7 +58,12 @@ class App extends Component<Props> {
     if (location.pathname === '/' && !user) {
       history.push('/sign-in');
     } else if (location.pathname === '/' && user) {
-      history.push(`/f/${user.get('slug')}`);
+      const isBusiness = user.get('role') === 'BUSINESS';
+      if (isBusiness) {
+        history.push(`/b/${user.get('slug')}`);
+      } else {
+        history.push(`/f/${user.get('slug')}`);
+      }
     }
     if (prevProps.location.pathname !== location.pathname) {
       analytics.page(location.pathname);
