@@ -227,6 +227,7 @@ class MemberProfileInfo extends Component<Props, State> {
   render() {
     const { user, badges, isConnectionSent, classes } = this.props;
     const { isMenuOpen } = this.state;
+    const isBusiness = user && user.get('role') === 'BUSINESS';
     const avatarImg = user.getIn(['profile', 'avatar']) || '';
     return (
       <div className={classes.root}>
@@ -343,19 +344,21 @@ class MemberProfileInfo extends Component<Props, State> {
               </Typography>
             )}
           </Grid>
-          <Grid item className={classes.badgeSection}>
-            <Grid container>
-              {badges &&
-                badges.map(
-                  badge =>
-                    badge.get('earned') ? (
-                      <Grid item key={generate()} md={6}>
-                        <Badge badge={badge} user={user} />
-                      </Grid>
-                    ) : null
-                )}
+          {!isBusiness && (
+            <Grid item className={classes.badgeSection}>
+              <Grid container>
+                {badges &&
+                  badges.map(
+                    badge =>
+                      badge.get('earned') ? (
+                        <Grid item key={generate()} md={6}>
+                          <Badge badge={badge} user={user} />
+                        </Grid>
+                      ) : null
+                  )}
+              </Grid>
             </Grid>
-          </Grid>
+          )}
         </Grid>
       </div>
     );
