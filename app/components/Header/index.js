@@ -24,6 +24,7 @@ import ContactIcon from '@material-ui/icons/ContactSupportOutlined';
 import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
 import Icon from 'components/Icon';
+import BusinessSidebar from 'components/BusinessSidebar';
 
 import LogoWhite from 'images/logo-white.png';
 import UserIcon from 'images/sprite/user.svg';
@@ -284,6 +285,12 @@ const styles = theme => ({
       marginRight: 5,
     },
   },
+  businessSidebarButton: {
+    display: 'none',
+    [theme.breakpoints.down('lg')]: {
+      display: 'block',
+    },
+  },
 });
 
 type Props = {
@@ -297,12 +304,14 @@ type Props = {
 type State = {
   open: boolean,
   side: boolean,
+  businessSide: boolean,
 };
 
 class Header extends Component<Props, State> {
   state = {
     open: false,
     side: false,
+    businessSide: false,
   };
   handleToggle = () => {
     this.setState(state => ({ open: !state.open }));
@@ -325,6 +334,11 @@ class Header extends Component<Props, State> {
   toggleDrawer = open => () => {
     this.setState({
       side: open,
+    });
+  };
+  toggleBusinessSideDrawer = open => () => {
+    this.setState({
+      businessSide: open,
     });
   };
   anchorEl: HTMLElement;
@@ -483,7 +497,8 @@ class Header extends Component<Props, State> {
   };
   render() {
     const { user, work, classes, pathname } = this.props;
-    const { open, side } = this.state;
+    const { open, side, businessSide } = this.state;
+    const isBusiness = user && user.get('role') === 'BUSINESS';
     const workDetailBack =
       user && work && user.get('slug') !== work.getIn(['user', 'slug'])
         ? `${capitalize(work.getIn(['user', 'firstName']))} ${capitalize(
@@ -515,6 +530,30 @@ class Header extends Component<Props, State> {
         justify="space-between"
         alignItems="center"
       >
+        {isBusiness && (
+          <Grid item>
+            <Button
+              onClick={this.toggleBusinessSideDrawer(true)}
+              color="inherit"
+              className={classes.businessSidebarButton}
+            >
+              {user ? (
+                <React.Fragment>
+                  {user.getIn(['profile', 'avatar']) ? (
+                    <Avatar
+                      src={user.getIn(['profile', 'avatar'])}
+                      className={classes.avatar}
+                    />
+                  ) : (
+                    <Icon glyph={EmptyAvatar} className={classes.emptyAvatar} />
+                  )}
+                </React.Fragment>
+              ) : (
+                <MenuIcon />
+              )}
+            </Button>
+          </Grid>
+        )}
         <Link
           className={classes.logoContainer}
           onClick={() => {
@@ -673,6 +712,20 @@ class Header extends Component<Props, State> {
                   onKeyDown={this.toggleDrawer(false)}
                 >
                   {this.renderMenu()}
+                </div>
+              </Drawer>
+              <Drawer
+                anchor="left"
+                open={businessSide}
+                onClose={this.toggleBusinessSideDrawer(false)}
+              >
+                <div
+                  tabIndex={0}
+                  role="button"
+                  onClick={this.toggleBusinessSideDrawer(false)}
+                  onKeyDown={this.toggleBusinessSideDrawer(false)}
+                >
+                  <BusinessSidebar user={user} />
                 </div>
               </Drawer>
             </Grid>

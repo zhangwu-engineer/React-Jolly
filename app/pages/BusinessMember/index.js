@@ -14,6 +14,7 @@ import Grid from '@material-ui/core/Grid';
 
 import BusinessProfileInfo from 'components/BusinessProfileInfo';
 import MemberProfileInfo from 'components/MemberProfileInfo';
+import BusinessSidebar from 'components/BusinessSidebar';
 
 import saga, {
   reducer,
@@ -35,6 +36,15 @@ const styles = theme => ({
     [theme.breakpoints.down('xs')]: {
       margin: 0,
       marginBottom: 120,
+    },
+  },
+  businessSidebar: {
+    position: 'fixed',
+    width: 291,
+    minHeight: '100vh',
+    background: theme.palette.common.white,
+    [theme.breakpoints.down('lg')]: {
+      display: 'none',
     },
   },
   profileInfo: {
@@ -411,6 +421,11 @@ class BusinessMember extends Component<Props, State> {
               </Grid>
             </Grid>
           )}
+        {isPrivate && (
+          <div className={classes.businessSidebar}>
+            <BusinessSidebar user={currentUser} />
+          </div>
+        )}
         <div className={classes.root}>
           <div className={classes.profileInfo}>
             {isPrivate ? (
