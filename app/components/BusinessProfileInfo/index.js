@@ -262,7 +262,7 @@ class BusinessProfileInfo extends PureComponent<Props> {
             className={classes.editButtonContainer}
           >
             <Grid item className={classes.editButtonBox}>
-              <Button className={classes.editButton}>Edit Profile</Button>
+              <Button className={classes.editButton}>Edit</Button>
               <Button className={classes.smallEditButton}>Edit</Button>
             </Grid>
             <Grid item>
@@ -283,7 +283,7 @@ class BusinessProfileInfo extends PureComponent<Props> {
         >
           <Grid item className={classes.nameSection}>
             <Typography className={classes.username}>
-              {`${user.get('firstName') || ''} ${user.get('lastName') || ''}`}
+              {user.getIn(['business', 'name']) || ''}
             </Typography>
             {user.getIn(['profile', 'location']) && (
               <Typography className={classes.location}>

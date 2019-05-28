@@ -93,11 +93,19 @@ class App extends Component<Props> {
       navbarOpen,
       location: { pathname },
     } = this.props;
-    const data = fromJS({
+    const isBusiness = user && user.get('role') === 'BUSINESS';
+    let data = fromJS({
       title: 'Jolly | The Event Freelancer Network',
       description:
         'Jolly is a new platform to help event freelancers grow their reputation, find work and network with fellow hustlers like them.',
     });
+    if (isBusiness) {
+      const businessName = user.getIn(['business', 'name']) || '';
+      data = fromJS({
+        title: `${businessName} | JollyHQ Network`,
+        description: `${businessName}’s profile on Jolly - the professional social network for events businesses and freelancers.`,
+      });
+    }
     const ogImage =
       'https://s3-us-west-2.amazonaws.com/jolly-images/preview.jpg';
     return (

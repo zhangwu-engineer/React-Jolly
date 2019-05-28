@@ -228,6 +228,9 @@ class MemberProfileInfo extends Component<Props, State> {
     const { user, badges, isConnectionSent, classes } = this.props;
     const { isMenuOpen } = this.state;
     const isBusiness = user && user.get('role') === 'BUSINESS';
+    const displayName = isBusiness
+      ? user.getIn(['business', 'name']) || ''
+      : `${user.get('firstName') || ''} ${user.get('lastName') || ''}`;
     const avatarImg = user.getIn(['profile', 'avatar']) || '';
     return (
       <div className={classes.root}>
@@ -245,18 +248,22 @@ class MemberProfileInfo extends Component<Props, State> {
           </div>
           {user.getIn(['profile', 'showImageLibrary']) && (
             <Fragment>
-              <IconButton
-                className={classes.imageButton}
-                onClick={() => this.props.openPhotoModal('gallery')}
-              >
-                <ImageIcon />
-              </IconButton>
-              <IconButton
-                className={classes.smallImageButton}
-                onClick={() => history.push(`/f/${user.get('slug')}/gallery`)}
-              >
-                <ImageIcon />
-              </IconButton>
+              {!isBusiness && (
+                <IconButton
+                  className={classes.imageButton}
+                  onClick={() => this.props.openPhotoModal('gallery')}
+                >
+                  <ImageIcon />
+                </IconButton>
+              )}
+              {!isBusiness && (
+                <IconButton
+                  className={classes.smallImageButton}
+                  onClick={() => history.push(`/f/${user.get('slug')}/gallery`)}
+                >
+                  <ImageIcon />
+                </IconButton>
+              )}
             </Fragment>
           )}
           <Grid
@@ -283,37 +290,39 @@ class MemberProfileInfo extends Component<Props, State> {
                 />
                 {isConnectionSent ? 'Request Sent' : 'Connect'}
               </Button>
-              <Popper
-                open={isMenuOpen}
-                anchorEl={this.anchorEl}
-                transition
-                placement="bottom-end"
-              >
-                {({ TransitionProps }) => (
-                  <Fade {...TransitionProps} timeout={350}>
-                    <Paper square classes={{ root: classes.menu }}>
-                      <ClickAwayListener onClickAway={this.handleClose}>
-                        <MenuList className={classes.menuList}>
-                          <MenuItem
-                            className={classes.menuItem}
-                            onClick={e => {
-                              this.handleClose(e);
-                              this.handleConnect();
-                            }}
-                          >
-                            <ListItemText
-                              classes={{ primary: classes.menuItemText }}
-                              primary={`I've worked with ${capitalize(
-                                user.get('firstName')
-                              )}`}
-                            />
-                          </MenuItem>
-                        </MenuList>
-                      </ClickAwayListener>
-                    </Paper>
-                  </Fade>
-                )}
-              </Popper>
+              {!isBusiness && (
+                <Popper
+                  open={isMenuOpen}
+                  anchorEl={this.anchorEl}
+                  transition
+                  placement="bottom-end"
+                >
+                  {({ TransitionProps }) => (
+                    <Fade {...TransitionProps} timeout={350}>
+                      <Paper square classes={{ root: classes.menu }}>
+                        <ClickAwayListener onClickAway={this.handleClose}>
+                          <MenuList className={classes.menuList}>
+                            <MenuItem
+                              className={classes.menuItem}
+                              onClick={e => {
+                                this.handleClose(e);
+                                this.handleConnect();
+                              }}
+                            >
+                              <ListItemText
+                                classes={{ primary: classes.menuItemText }}
+                                primary={`I've worked with ${capitalize(
+                                  user.get('firstName')
+                                )}`}
+                              />
+                            </MenuItem>
+                          </MenuList>
+                        </ClickAwayListener>
+                      </Paper>
+                    </Fade>
+                  )}
+                </Popper>
+              )}
             </Grid>
             <Grid item>
               <IconButton
@@ -335,9 +344,7 @@ class MemberProfileInfo extends Component<Props, State> {
           justify="space-between"
         >
           <Grid item className={classes.nameSection}>
-            <Typography className={classes.username}>
-              {`${user.get('firstName') || ''} ${user.get('lastName') || ''}`}
-            </Typography>
+            <Typography className={classes.username}>{displayName}</Typography>
             {user.getIn(['profile', 'location']) && (
               <Typography className={classes.location}>
                 {user.getIn(['profile', 'location'])}

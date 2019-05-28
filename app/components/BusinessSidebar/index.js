@@ -2,7 +2,6 @@
 
 import React, { PureComponent, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { capitalize } from 'lodash-es';
 
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -78,8 +77,7 @@ class BusinessSidebar extends PureComponent<Props> {
           </Grid>
           <Grid item>
             <Typography variant="h6" className={classes.greetings}>
-              {`${capitalize(user.get('firstName'))} 
-                ${capitalize(user.get('lastName'))}`}
+              {user.getIn(['business', 'name']) || ''}
             </Typography>
             <Link className={classes.link}>View Business Profile</Link>
           </Grid>
