@@ -50,6 +50,7 @@ const styles = theme => ({
     '&:hover': {
       color: '#999999',
     },
+    fontWeight: 500,
   },
   user: {
     marginBottom: 15,
@@ -78,6 +79,42 @@ const styles = theme => ({
     marginRight: 5,
     position: 'relative',
     top: -1,
+  },
+  findConnectionsButton: {
+    borderRadius: 0,
+    fontWeight: 600,
+    textTransform: 'none',
+    borderWidth: 2,
+    borderColor: theme.palette.primary.main,
+    paddingLeft: 46,
+    paddingRight: 46,
+    marginBottom: 25,
+    '&:hover': {
+      borderWidth: 2,
+    },
+  },
+  emptyText: {
+    marginBottom: 20,
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#6f6f73',
+    paddingLeft: 20,
+    paddingRight: 20,
+  },
+  moreButton: {
+    borderRadius: 0,
+    fontWeight: 600,
+    textTransform: 'none',
+    borderWidth: 2,
+    fontSize: 12,
+    paddingTop: 6,
+    paddingLeft: 12,
+    paddingRight: 12,
+    paddingBottom: 6,
+    borderColor: theme.palette.primary.main,
+    '&:hover': {
+      borderWidth: 2,
+    },
   },
 });
 
@@ -114,19 +151,63 @@ class UserCoworkers extends Component<Props> {
     const coworkersToShow = coworkers && coworkers.slice(0, 6);
     return (
       <div className={classes.root}>
-        <Typography className={classes.title}>
-          {isPrivate
-            ? `My Coworkers · `
-            : `${capitalize(user.get('firstName'))}'s Coworkers · `}
-          <Link
-            to={isPrivate ? '/network/coworkers' : ''}
-            className={cx(classes.count, {
-              [classes.emptyCount]: coworkers && coworkers.size === 0,
-            })}
-          >
-            {coworkers ? coworkers.size : ''}
-          </Link>
-        </Typography>
+        <Grid container justify="space-between" alignItems="baseline">
+          <Grid item>
+            <Typography className={classes.title}>
+              {isPrivate
+                ? `Coworkers · `
+                : `${capitalize(user.get('firstName'))}'s Coworkers · `}
+              <Link
+                to={isPrivate ? '/network/coworkers' : ''}
+                className={cx(classes.count, {
+                  [classes.emptyCount]: coworkers && coworkers.size === 0,
+                })}
+              >
+                {coworkers ? coworkers.size : ''}
+              </Link>
+            </Typography>
+          </Grid>
+          {coworkers &&
+            coworkers.size > 0 && (
+              <Grid item>
+                <Button
+                  className={classes.moreButton}
+                  variant="outlined"
+                  size="large"
+                  color="primary"
+                  component={props => <Link to="/network" {...props} />}
+                >
+                  Find More
+                </Button>
+              </Grid>
+            )}
+        </Grid>
+        {coworkers &&
+          coworkers.size === 0 && (
+            <Grid container justify="center">
+              <Grid item>
+                <Typography className={classes.emptyText} align="center">
+                  You haven’t connected with any coworkers
+                </Typography>
+              </Grid>
+            </Grid>
+          )}
+        {coworkers &&
+          coworkers.size === 0 && (
+            <Grid container justify="center">
+              <Grid item>
+                <Button
+                  className={classes.findConnectionsButton}
+                  variant="outlined"
+                  size="large"
+                  color="primary"
+                  component={props => <Link to="/network" {...props} />}
+                >
+                  Find Connections
+                </Button>
+              </Grid>
+            </Grid>
+          )}
         <Grid container spacing={8}>
           {coworkersToShow &&
             coworkersToShow.map(coworker => (
