@@ -725,7 +725,7 @@ class Header extends Component<Props, State> {
                   onClick={this.toggleBusinessSideDrawer(false)}
                   onKeyDown={this.toggleBusinessSideDrawer(false)}
                 >
-                  <BusinessSidebar user={user} />
+                  <BusinessSidebar user={user} colorfulSideTop />
                 </div>
               </Drawer>
             </Grid>

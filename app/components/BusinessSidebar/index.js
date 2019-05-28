@@ -20,7 +20,11 @@ const styles = () => ({
   sideTop: {
     width: 291,
     paddingTop: 15,
+    paddingBottom: 15,
     paddingLeft: 26,
+  },
+  sideTopColorful: {
+    backgroundColor: `#f2f9ff`,
   },
   avatar: {
     width: 60,
@@ -68,14 +72,23 @@ const styles = () => ({
 type Props = {
   user: Object,
   classes: Object,
+  colorfulSideTop: Boolean,
 };
 
 class BusinessSidebar extends PureComponent<Props> {
   render() {
-    const { user, classes } = this.props;
+    const { user, classes, colorfulSideTop } = this.props;
     return (
       <Fragment>
-        <Grid container alignItems="center" className={classes.sideTop}>
+        <Grid
+          container
+          alignItems="center"
+          className={
+            colorfulSideTop
+              ? [classes.sideTop, classes.sideTopColorful]
+              : classes.sideTop
+          }
+        >
           <Grid item>
             <UserAvatar
               className={classes.avatar}
@@ -128,7 +141,7 @@ class BusinessSidebar extends PureComponent<Props> {
             </ListItemIcon>
             <ListItemText
               classes={{ primary: classes.menuItemText }}
-              primary="My business network"
+              primary="Business settings"
             />
           </MenuItem>
         </MenuList>
