@@ -27,7 +27,6 @@ import Icon from 'components/Icon';
 import BusinessSidebar from 'components/BusinessSidebar';
 
 import LogoWhite from 'images/logo-white.png';
-import UserIcon from 'images/sprite/user.svg';
 import SettingsIcon from 'images/sprite/settings.svg';
 import LogoutIcon from 'images/sprite/logout.svg';
 import People from 'images/sprite/people_outline.svg';
@@ -247,6 +246,13 @@ const styles = theme => ({
     fontWeight: 600,
     color: '#343434',
   },
+  link: {
+    fontSize: 13,
+    fontWeight: 600,
+    letterSpacing: '0.3px',
+    textTransform: 'none',
+    textDecoration: 'none',
+  },
   hide: {
     display: 'none',
   },
@@ -375,9 +381,15 @@ class Header extends Component<Props, State> {
               </Typography>
             )}
             {user ? (
-              <Typography className={classes.location}>
-                {user.getIn(['profile', 'location'])}
-              </Typography>
+              <Link
+                className={classes.link}
+                onClick={e => {
+                  this.handleClose(e);
+                  history.push('/edit');
+                }}
+              >
+                View My Profile
+              </Link>
             ) : (
               <Button
                 color="primary"
@@ -391,21 +403,6 @@ class Header extends Component<Props, State> {
         </Grid>
         {user ? (
           <MenuList className={classes.menuList}>
-            <MenuItem
-              className={classes.menuItem}
-              onClick={e => {
-                this.handleClose(e);
-                history.push('/edit');
-              }}
-            >
-              <ListItemIcon className={classes.menuItemIcon}>
-                <Icon glyph={UserIcon} size={18} />
-              </ListItemIcon>
-              <ListItemText
-                classes={{ primary: classes.menuItemText }}
-                primary="Profile"
-              />
-            </MenuItem>
             <MenuItem
               className={classes.menuItem}
               onClick={e => {
