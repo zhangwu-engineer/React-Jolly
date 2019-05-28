@@ -9,6 +9,7 @@ import MenuList from '@material-ui/core/MenuList';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
+import Collapse from '@material-ui/core/Collapse';
 
 import Link from 'components/Link';
 import UserAvatar from 'components/UserAvatar';
@@ -75,9 +76,21 @@ type Props = {
   colorfulSideTop: Boolean,
 };
 
-class BusinessSidebar extends PureComponent<Props> {
+type State = {
+  isNested: boolean,
+};
+
+class BusinessSidebar extends PureComponent<Props, State> {
+  state = {
+    isNested: true,
+  };
+
+  toggleNestedMenu = () => {
+    this.setState(state => ({ isNested: !state.isNested }));
+  };
   render() {
     const { user, classes, colorfulSideTop } = this.props;
+    const { isNested } = this.state;
     return (
       <Fragment>
         <Grid
@@ -103,7 +116,10 @@ class BusinessSidebar extends PureComponent<Props> {
           </Grid>
         </Grid>
         <MenuList className={classes.menuList}>
-          <MenuItem className={classes.menuItem}>
+          <MenuItem
+            className={classes.menuItem}
+            onClick={this.toggleNestedMenu}
+          >
             <ListItemIcon className={classes.menuItemIcon}>
               <PeopleIcon />
             </ListItemIcon>
@@ -112,29 +128,31 @@ class BusinessSidebar extends PureComponent<Props> {
               primary="My business network"
             />
           </MenuItem>
-          <MenuItem className={classes.menuItemNoIcon}>
-            <ListItemText
-              classes={{ primary: classes.menuItemText }}
-              primary={
-                <Grid container alignItems="center">
-                  <span>Pending (6)</span>
-                  <Typography className={classes.unreadStatus} />
-                </Grid>
-              }
-            />
-          </MenuItem>
-          <MenuItem className={classes.menuItemNoIcon}>
-            <ListItemText
-              classes={{ primary: classes.menuItemText }}
-              primary="My connections"
-            />
-          </MenuItem>
-          <MenuItem className={classes.menuItemNoIcon}>
-            <ListItemText
-              classes={{ primary: classes.menuItemText }}
-              primary="Discover"
-            />
-          </MenuItem>
+          <Collapse in={isNested} timeout="auto" unmountOnExit>
+            <MenuItem className={classes.menuItemNoIcon}>
+              <ListItemText
+                classes={{ primary: classes.menuItemText }}
+                primary={
+                  <Grid container alignItems="center">
+                    <span>Pending (6)</span>
+                    <Typography className={classes.unreadStatus} />
+                  </Grid>
+                }
+              />
+            </MenuItem>
+            <MenuItem className={classes.menuItemNoIcon}>
+              <ListItemText
+                classes={{ primary: classes.menuItemText }}
+                primary="My connections"
+              />
+            </MenuItem>
+            <MenuItem className={classes.menuItemNoIcon}>
+              <ListItemText
+                classes={{ primary: classes.menuItemText }}
+                primary="Discover"
+              />
+            </MenuItem>
+          </Collapse>
           <MenuItem className={classes.menuItem}>
             <ListItemIcon className={classes.menuItemIcon}>
               <SettingsIcon />
