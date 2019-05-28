@@ -56,6 +56,13 @@ const styles = () => ({
     textAlign: 'center',
     height: 65,
   },
+  unreadStatus: {
+    width: 5,
+    height: 5,
+    backgroundColor: `#ea4545`,
+    borderRadius: '50%',
+    marginLeft: 10,
+  },
 });
 
 type Props = {
@@ -95,7 +102,12 @@ class BusinessSidebar extends PureComponent<Props> {
           <MenuItem className={classes.menuItemNoIcon}>
             <ListItemText
               classes={{ primary: classes.menuItemText }}
-              primary="Pending (6)"
+              primary={
+                <Grid container alignItems="center">
+                  <span>Pending (6)</span>
+                  <Typography className={classes.unreadStatus} />
+                </Grid>
+              }
             />
           </MenuItem>
           <MenuItem className={classes.menuItemNoIcon}>
