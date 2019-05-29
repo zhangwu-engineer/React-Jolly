@@ -20,7 +20,6 @@ import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
 import Drawer from '@material-ui/core/Drawer';
 import MenuIcon from '@material-ui/icons/Menu';
-import ContactIcon from '@material-ui/icons/ContactSupportOutlined';
 
 import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
@@ -32,6 +31,7 @@ import SettingsIcon from 'images/sprite/settings.svg';
 import LogoutIcon from 'images/sprite/logout.svg';
 import People from 'images/sprite/people_outline.svg';
 import HomeIcon from 'images/sprite/home.svg';
+import ContactIcon from 'images/sprite/contact.svg';
 import EmptyAvatar from 'images/sprite/empty_avatar.svg';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
@@ -446,7 +446,7 @@ class Header extends Component<Props, State> {
                 }}
               >
                 <ListItemIcon className={classes.menuItemIcon}>
-                  <ContactIcon />
+                  <Icon glyph={ContactIcon} size={18} />
                 </ListItemIcon>
                 <ListItemText
                   classes={{ primary: classes.menuItemText }}
