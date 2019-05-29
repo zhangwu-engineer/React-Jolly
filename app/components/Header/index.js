@@ -15,6 +15,7 @@ import MenuList from '@material-ui/core/MenuList';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
+import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
 import Drawer from '@material-ui/core/Drawer';
@@ -134,11 +135,15 @@ const styles = theme => ({
       margin: 0,
     },
   },
+  businessAvatar: {
+    width: 24,
+    height: 24,
+  },
   menu: {
     boxShadow: '0 5px 19px 0 rgba(0, 0, 0, 0.07)',
   },
   menuTop: {
-    padding: 25,
+    padding: '20px 25px',
     backgroundColor: '#f2f9ff',
   },
   menuAvatar: {
@@ -151,6 +156,15 @@ const styles = theme => ({
     fontWeight: 600,
     color: '#343434',
     textTransform: 'capitalize',
+  },
+  menuDivider: {
+    height: 1,
+  },
+  dividedSection: {
+    padding: '16px 0px',
+  },
+  dividedBusinesses: {
+    padding: '15px 30px 5px 30px',
   },
   createAccountButton: {
     fontSize: 14,
@@ -297,6 +311,10 @@ const styles = theme => ({
       display: 'block',
     },
   },
+  businessInfo: {
+    marginTop: 10,
+    marginBottom: 10,
+  },
 });
 
 type Props = {
@@ -350,6 +368,7 @@ class Header extends Component<Props, State> {
   anchorEl: HTMLElement;
   renderMenu = () => {
     const { user, classes } = this.props;
+    const isBusiness = user && user.get('role') === 'BUSINESS';
     const nameLength = user
       ? user.get('firstName').length + user.get('lastName').length
       : 0;
@@ -402,48 +421,84 @@ class Header extends Component<Props, State> {
           </Grid>
         </Grid>
         {user ? (
-          <MenuList className={classes.menuList}>
-            <MenuItem
-              className={classes.menuItem}
-              onClick={e => {
-                this.handleClose(e);
-                history.push('/settings');
-              }}
-            >
-              <ListItemIcon className={classes.menuItemIcon}>
-                <Icon glyph={SettingsIcon} size={18} />
-              </ListItemIcon>
-              <ListItemText
-                classes={{ primary: classes.menuItemText }}
-                primary="Edit Profile &amp; Settings"
-              />
-            </MenuItem>
-            <MenuItem
-              className={classes.menuItem}
-              onClick={e => {
-                this.handleClose(e);
-                window.open('https://www.joinjolly.com/contact', '_blank');
-              }}
-            >
-              <ListItemIcon className={classes.menuItemIcon}>
-                <ContactIcon />
-              </ListItemIcon>
-              <ListItemText
-                classes={{ primary: classes.menuItemText }}
-                primary="Contact"
-              />
-            </MenuItem>
-            <MenuItem className={classes.menuItem} onClick={this.handleLogout}>
-              <ListItemIcon className={classes.menuItemIcon}>
-                <Icon glyph={LogoutIcon} size={18} />
-              </ListItemIcon>
-              <ListItemText
-                classes={{ primary: classes.menuItemText }}
-                inset
-                primary="Log out"
-              />
-            </MenuItem>
-          </MenuList>
+          <div>
+            <MenuList className={classes.menuList}>
+              <MenuItem
+                className={classes.menuItem}
+                onClick={e => {
+                  this.handleClose(e);
+                  history.push('/settings');
+                }}
+              >
+                <ListItemIcon className={classes.menuItemIcon}>
+                  <Icon glyph={SettingsIcon} size={18} />
+                </ListItemIcon>
+                <ListItemText
+                  classes={{ primary: classes.menuItemText }}
+                  primary="Edit Profile &amp; Settings"
+                />
+              </MenuItem>
+              <MenuItem
+                className={classes.menuItem}
+                onClick={e => {
+                  this.handleClose(e);
+                  window.open('https://www.joinjolly.com/contact', '_blank');
+                }}
+              >
+                <ListItemIcon className={classes.menuItemIcon}>
+                  <ContactIcon />
+                </ListItemIcon>
+                <ListItemText
+                  classes={{ primary: classes.menuItemText }}
+                  primary="Contact"
+                />
+              </MenuItem>
+              <MenuItem
+                className={classes.menuItem}
+                onClick={this.handleLogout}
+              >
+                <ListItemIcon className={classes.menuItemIcon}>
+                  <Icon glyph={LogoutIcon} size={18} />
+                </ListItemIcon>
+                <ListItemText
+                  classes={{ primary: classes.menuItemText }}
+                  inset
+                  primary="Log out"
+                />
+              </MenuItem>
+            </MenuList>
+            {isBusiness && (
+              <Grid className={classes.dividedSection}>
+                <Divider className={classes.menuDivider} />
+                <Grid className={classes.dividedBusinesses}>
+                  <Typography
+                    classes={{ primary: classes.menuItemText }}
+                    color="textSecondary"
+                    display="block"
+                    variant="caption"
+                  >
+                    Businesses
+                  </Typography>
+                </Grid>
+                <MenuItem
+                  className={classes.menuItem}
+                  onClick={e => {
+                    this.handleClose(e);
+                    history.push('/edit');
+                  }}
+                >
+                  <ListItemIcon className={classes.menuItemIcon}>
+                    <Icon glyph={EmptyAvatar} size={24} />
+                  </ListItemIcon>
+                  <ListItemText
+                    classes={{ primary: classes.menuItemText }}
+                    inset
+                    primary={user.getIn(['business', 'name']) || ''}
+                  />
+                </MenuItem>
+              </Grid>
+            )}
+          </div>
         ) : (
           <div className={classes.menuBottom}>
             <Grid container>
