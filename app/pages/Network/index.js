@@ -15,6 +15,7 @@ import FormControl from '@material-ui/core/FormControl';
 import SearchIcon from '@material-ui/icons/Search';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import Button from '@material-ui/core/Button';
 
 import Link from 'components/Link';
 import EditableInput from 'components/EditableInput';
@@ -37,6 +38,7 @@ import saga, {
 } from 'containers/Network/sagas';
 import injectSagas from 'utils/injectSagas';
 
+const perPage = 16;
 const styles = theme => ({
   content: {
     maxWidth: 1064,
@@ -247,6 +249,7 @@ type State = {
   selectedTab: number,
   filter: Object,
   query: string,
+  page: number,
 };
 
 class NetworkPage extends Component<Props, State> {
@@ -293,16 +296,17 @@ class NetworkPage extends Component<Props, State> {
       selectedRole: '',
       filteredRole: '',
     },
+    page: 1,
   };
   componentDidMount() {
     const { user } = this.props;
-    const { query, filter } = this.state;
+    const { query, filter, page } = this.state;
     if (user.getIn(['profile', 'location'])) {
       this.props.requestCityUsers(
         filter.location,
         query,
-        0,
-        20,
+        page,
+        perPage,
         filter.selectedRole
       );
     }
@@ -394,12 +398,12 @@ class NetworkPage extends Component<Props, State> {
     }
   };
   debouncedSearch = debounce(() => {
-    const { query, filter } = this.state;
+    const { query, filter, page } = this.state;
     this.props.requestCityUsers(
       filter.location,
       query,
-      0,
-      20,
+      page,
+      perPage,
       filter.selectedRole
     );
   }, 500);
@@ -425,7 +429,7 @@ class NetworkPage extends Component<Props, State> {
     );
   };
   render() {
-    const { coworkers, connections, cityUsers, classes } = this.props;
+    const { coworkers, connections, cityUsers, classes, total } = this.props;
     const {
       isFormOpen,
       selectedUser,
@@ -437,11 +441,13 @@ class NetworkPage extends Component<Props, State> {
       selectedTab,
       query,
       filter,
+      page,
     } = this.state;
     const pendingConnections =
       connections &&
       connections.filter(connection => connection.get('status') === 'PENDING');
     const coworkerIds = coworkers ? coworkers.map(c => c.get('id')).toJS() : [];
+    const loadMore = total > page * perPage;
     return (
       <React.Fragment>
         <NetworkNav />
@@ -587,7 +593,6 @@ class NetworkPage extends Component<Props, State> {
                 </FormControl>
               </Grid>
             </Grid>
-
             {selectedTab === 0 && (
               <Grid container spacing={8}>
                 {cityUsers.map(
@@ -602,6 +607,26 @@ class NetworkPage extends Component<Props, State> {
                       </Grid>
                     ) : null
                 )}
+              </Grid>
+            )}
+            {loadMore && (
+              <Grid item xs={12} lg={12}>
+                <Button
+                  fullWidth
+                  color="primary"
+                  className={classes.loadMoreButton}
+                  onClick={() =>
+                    this.setState(
+                      state => ({
+                        ...state,
+                        page: state.page + 1,
+                      }),
+                      () => this.debouncedSearch()
+                    )
+                  }
+                >
+                  See More
+                </Button>
               </Grid>
             )}
           </div>
