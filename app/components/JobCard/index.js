@@ -14,6 +14,7 @@ import Button from '@material-ui/core/Button';
 
 import { history } from 'components/ConnectedRouter';
 import Icon from 'components/Icon';
+import Link from 'components/Link';
 
 import RoleIcon from 'images/sprite/role.svg';
 import PeopleIcon from 'images/sprite/people.svg';
@@ -95,6 +96,27 @@ const styles = theme => ({
     textAlign: 'center',
     fontWeight: 'bold',
   },
+  emptyText: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#6f6f73',
+    marginTop: 28,
+    paddingLeft: 20,
+    paddingRight: 20,
+  },
+  addPastGigButton: {
+    borderRadius: 0,
+    fontWeight: 600,
+    textTransform: 'none',
+    borderWidth: 2,
+    borderColor: theme.palette.primary.main,
+    paddingLeft: 46,
+    paddingRight: 46,
+    marginTop: 30,
+    '&:hover': {
+      borderWidth: 2,
+    },
+  },
 });
 
 type Props = {
@@ -117,12 +139,22 @@ class JobCard extends Component<Props> {
       return (
         <Card className={classes.root}>
           <CardContent className={classes.content}>
-            <Typography variant="h6" className={classes.title}>
-              No Jobs added yet
+            <Typography className={classes.emptyText} align="center">
+              You haven’t added any past gig experience—yet!
             </Typography>
-            <Typography className={classes.date}>
-              Add your first job now
-            </Typography>
+            <Grid container justify="center">
+              <Grid item>
+                <Button
+                  className={classes.addPastGigButton}
+                  variant="outlined"
+                  size="large"
+                  color="primary"
+                  component={props => <Link to="/add" {...props} />}
+                >
+                  Add Past Gig
+                </Button>
+              </Grid>
+            </Grid>
           </CardContent>
         </Card>
       );

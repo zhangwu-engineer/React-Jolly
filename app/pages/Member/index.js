@@ -634,9 +634,28 @@ class Member extends Component<Props, State> {
               />
               <div className={classes.section}>
                 <div className={classes.sectionHeader}>
-                  <Typography className={classes.title}>
-                    Positions for Hire
-                  </Typography>
+                  <Grid
+                    container
+                    justify="space-between"
+                    alignItems="center"
+                    className={classes.header}
+                  >
+                    <Grid item>
+                      <Typography className={classes.title}>
+                        Positions for Hire
+                      </Typography>
+                    </Grid>
+                    <Grid item>
+                      {isPrivate && (
+                        <Link
+                          className={classes.editPosition}
+                          to="/types-of-work"
+                        >
+                          Edit Positions
+                        </Link>
+                      )}
+                    </Grid>
+                  </Grid>
                 </div>
                 <div className={classes.sectionBody}>
                   {roles.size ? (
@@ -647,18 +666,6 @@ class Member extends Component<Props, State> {
                     ))
                   ) : (
                     <RoleCard />
-                  )}
-                  {isPrivate && (
-                    <Grid container justify="center">
-                      <Grid item>
-                        <Link
-                          className={classes.editPosition}
-                          to="/types-of-work"
-                        >
-                          Edit Positions
-                        </Link>
-                      </Grid>
-                    </Grid>
                   )}
                 </div>
               </div>

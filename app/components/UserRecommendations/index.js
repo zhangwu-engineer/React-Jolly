@@ -7,7 +7,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-
+import cx from 'classnames';
 import { history } from 'components/ConnectedRouter';
 import BaseModal from 'components/BaseModal';
 import Icon from 'components/Icon';
@@ -78,23 +78,57 @@ const styles = theme => ({
     cursor: 'pointer',
   },
   count: {
-    position: 'absolute',
-    textAlign: 'center',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    fontSize: 14,
-    color: '#0d0d0d',
+    fontSize: 20,
     fontWeight: 600,
+    textDecoration: 'none',
+    color: theme.palette.primary.main,
+    [theme.breakpoints.down('xs')]: {
+      fontSize: 14,
+    },
   },
   emptyText: {
+    marginBottom: 20,
     fontSize: 14,
+    fontWeight: 500,
+    color: '#6f6f73',
+    marginTop: 31,
+    paddingLeft: 40,
+    paddingRight: 40,
+  },
+  getEndorsedButton: {
+    borderRadius: 0,
     fontWeight: 600,
-    color: '#0d0d0d',
-    position: 'absolute',
-    left: '50%',
-    top: '50%',
-    transform: 'translate(-50%, -50%)',
-    textAlign: 'center',
+    textTransform: 'none',
+    borderWidth: 2,
+    borderColor: theme.palette.primary.main,
+    paddingLeft: 46,
+    paddingRight: 46,
+    marginBottom: 25,
+    '&:hover': {
+      borderWidth: 2,
+    },
+  },
+  emptyCount: {
+    color: '#999999',
+    '&:hover': {
+      color: '#999999',
+    },
+    fontWeight: 500,
+  },
+  moreButton: {
+    borderRadius: 0,
+    fontWeight: 600,
+    textTransform: 'none',
+    borderWidth: 2,
+    fontSize: 12,
+    paddingTop: 6,
+    paddingLeft: 12,
+    paddingRight: 12,
+    paddingBottom: 6,
+    borderColor: theme.palette.primary.main,
+    '&:hover': {
+      borderWidth: 2,
+    },
   },
 });
 
@@ -136,22 +170,60 @@ class UserRecommendations extends Component<Props, State> {
     );
     return (
       <div className={classes.root}>
-        <Typography className={classes.title}>
-          {`${endorsements ? endorsements.size : 0} Coworker Recommendations`}
-        </Typography>
+        <Grid container justify="space-between" alignItems="baseline">
+          <Grid item>
+            <Typography inline className={classes.title}>
+              Coworker Recommendations ·
+            </Typography>
+            &nbsp;
+            <Typography
+              inline
+              // eslint-disable-next-line no-undef
+              className={cx(classes.count, {
+                [classes.emptyCount]: endorsements && endorsements.size === 0,
+              })}
+            >
+              {endorsements ? endorsements.size : 0}
+            </Typography>
+          </Grid>
+          {endorsements &&
+            endorsements.size > 0 && (
+              <Grid item>
+                <Button
+                  className={classes.moreButton}
+                  variant="outlined"
+                  size="large"
+                  color="primary"
+                  onClick={this.openModal}
+                >
+                  Get More
+                </Button>
+              </Grid>
+            )}
+        </Grid>
+        {endorsements &&
+          endorsements.size === 0 && (
+            <Grid container justify="center">
+              <Grid item>
+                <Typography className={classes.emptyText} align="center">
+                  You haven’t been recommended by any coworkers
+                </Typography>
+              </Grid>
+            </Grid>
+          )}
         {endorsements && endorsements.size === 0 ? (
           <React.Fragment>
             {!publicMode && (
               <Grid container justify="center">
                 <Grid item>
                   <Button
+                    className={classes.getEndorsedButton}
+                    variant="outlined"
+                    size="large"
                     color="primary"
-                    classes={{
-                      label: classes.buttonLabel,
-                    }}
                     onClick={this.openModal}
                   >
-                    + Get Endorsed
+                    Get Endorsed
                   </Button>
                 </Grid>
               </Grid>
