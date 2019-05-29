@@ -9,20 +9,23 @@ import update from 'immutability-helper';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Input from '@material-ui/core/Input';
 import FormControl from '@material-ui/core/FormControl';
 import SearchIcon from '@material-ui/icons/Search';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 
 import Link from 'components/Link';
+import EditableInput from 'components/EditableInput';
 import UserCard from 'components/UserCard';
 import ConnectionCard from 'components/ConnectionCard';
 import VouchInviteFormModal from 'components/VouchInviteFormModal';
 import InviteForm from 'components/InviteForm';
 import Notification from 'components/Notification';
 import NetworkNav from 'components/NetworkNav';
+
+import ROLES from 'enum/roles';
 
 import { requestCityUsers, requestUserCoworkers } from 'containers/App/sagas';
 import saga, {
@@ -153,6 +156,7 @@ const styles = theme => ({
     marginBottom: 10,
   },
   textInput: {
+    top: '25px',
     fontSize: 14,
     fontWeight: 500,
     color: '#484848',
@@ -180,6 +184,28 @@ const styles = theme => ({
     display: 'none',
     [theme.breakpoints.down('xs')]: {
       display: 'inline-flex',
+    },
+  },
+  searchInputWrapper: {
+    position: 'relative',
+  },
+  searchResultList: {
+    backgroundColor: theme.palette.common.white,
+    border: '1px solid #e5e5e5',
+    position: 'absolute',
+    maxHeight: 200,
+    top: '60px',
+    zIndex: 10,
+    overflowY: 'scroll',
+    '&::-webkit-scrollbar-track': {
+      backgroundColor: '#F5F5F5',
+    },
+    '&::-webkit-scrollbar': {
+      width: 6,
+      backgroundColor: '#F5F5F5',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#a4acb3',
     },
   },
 });
@@ -219,6 +245,7 @@ type State = {
   connectedTo: ?string,
   invitedUserIds: Array<string>,
   selectedTab: number,
+  filter: Object,
   query: string,
 };
 
@@ -261,12 +288,23 @@ class NetworkPage extends Component<Props, State> {
     showNotification: false,
     selectedTab: 0,
     query: '',
+    filter: {
+      location: this.props.user.get('profile').get('location'),
+      selectedRole: '',
+      filteredRole: '',
+    },
   };
   componentDidMount() {
     const { user } = this.props;
-    const { query } = this.state;
+    const { query, filter } = this.state;
     if (user.getIn(['profile', 'location'])) {
-      this.props.requestCityUsers(user.getIn(['profile', 'location']), query);
+      this.props.requestCityUsers(
+        filter.location,
+        query,
+        0,
+        20,
+        filter.selectedRole
+      );
     }
     this.props.requestConnections();
     this.props.requestUserCoworkers(user.get('slug'));
@@ -331,15 +369,60 @@ class NetworkPage extends Component<Props, State> {
   handleChangeTab = (e, value) => {
     this.setState({ selectedTab: value });
   };
-  debouncedSearch = debounce(query => {
-    const { user } = this.props;
-    this.props.requestCityUsers(user.getIn(['profile', 'location']), query);
+  filterRole = e => {
+    const { id, value } = e.target;
+    if (id) {
+      this.setState(state => ({
+        ...state,
+        filter: {
+          ...state.filter,
+          [id]: value,
+        },
+      }));
+    }
+    if (value) {
+      const filteredRoles = ROLES.filter(
+        r => r.toLowerCase().indexOf(value.toLowerCase()) !== -1
+      );
+      this.setState(state => ({
+        ...state,
+        filter: {
+          ...state.filter,
+          filteredRole: filteredRoles,
+        },
+      }));
+    }
+  };
+  debouncedSearch = debounce(() => {
+    const { query, filter } = this.state;
+    this.props.requestCityUsers(
+      filter.location,
+      query,
+      0,
+      20,
+      filter.selectedRole
+    );
   }, 500);
   handleChange = e => {
     e.persist();
     this.setState({ query: e.target.value }, () => {
-      this.debouncedSearch(e.target.value);
+      this.debouncedSearch();
     });
+  };
+  handleFilterChange = e => {
+    const { id, value } = e.target;
+    this.setState(
+      state => ({
+        ...state,
+        filter: {
+          ...state.filter,
+          [id]: value,
+        },
+      }),
+      () => {
+        this.debouncedSearch();
+      }
+    );
   };
   render() {
     const { coworkers, connections, cityUsers, classes } = this.props;
@@ -353,6 +436,7 @@ class NetworkPage extends Component<Props, State> {
       connectedTo,
       selectedTab,
       query,
+      filter,
     } = this.state;
     const pendingConnections =
       connections &&
@@ -417,10 +501,56 @@ class NetworkPage extends Component<Props, State> {
               )}
 
             <Grid container spacing={8}>
-              <Grid item xs={8} lg={8}>
-                <Typography className={classes.title}>
-                  Find coworkers
-                </Typography>
+              <Grid item xs={6} lg={4}>
+                <EditableInput
+                  label="City"
+                  id="location"
+                  name="location"
+                  value={filter.location}
+                  onChange={this.handleFilterChange}
+                />
+              </Grid>
+              <Grid item xs={6} lg={4} className={classes.searchInputWrapper}>
+                <EditableInput
+                  autoComplete="off"
+                  id="selectedRole"
+                  name="selectedRole"
+                  label="Position"
+                  value={filter.selectedRole}
+                  onChange={this.filterRole}
+                  onFocus={() => this.filterRole}
+                  classes={classes.inputWhite}
+                  fullWidth
+                  autoFocus
+                />
+                {filter.filteredRole ? (
+                  <div className={classes.searchResultList}>
+                    {filter.filteredRole.map(r => (
+                      <ListItem
+                        className={classes.resultItem}
+                        key={generate()}
+                        onClick={() =>
+                          this.setState(
+                            state => ({
+                              ...state,
+                              filter: {
+                                ...state.filter,
+                                selectedRole: r,
+                                filteredRole: [],
+                              },
+                            }),
+                            () => this.debouncedSearch()
+                          )
+                        }
+                      >
+                        <ListItemText
+                          classes={{ primary: classes.resultText }}
+                          primary={r}
+                        />
+                      </ListItem>
+                    ))}
+                  </div>
+                ) : null}
               </Grid>
               <Grid item xs={4} lg={4}>
                 <FormControl classes={{ root: classes.formControl }} fullWidth>
@@ -457,40 +587,7 @@ class NetworkPage extends Component<Props, State> {
                 </FormControl>
               </Grid>
             </Grid>
-            <Grid container spacing={8}>
-              <Grid item xs={12} lg={12}>
-                <Tabs
-                  value={selectedTab}
-                  onChange={this.handleChangeTab}
-                  classes={{
-                    root: classes.tabs,
-                    indicator: classes.tabIndicator,
-                  }}
-                >
-                  <Tab
-                    label="Nearby"
-                    classes={{
-                      root: classes.tab,
-                      selected: classes.selectedTab,
-                    }}
-                  />
-                  {/* <Tab
-                    label="Recommended"
-                    classes={{
-                      root: classes.tab,
-                      selected: classes.selectedTab,
-                    }}
-                  />
-                  <Tab
-                    label="Facebook Friends"
-                    classes={{
-                      root: classes.tab,
-                      selected: classes.selectedTab,
-                    }}
-                  /> */}
-                </Tabs>
-              </Grid>
-            </Grid>
+
             {selectedTab === 0 && (
               <Grid container spacing={8}>
                 {cityUsers.map(
@@ -546,8 +643,8 @@ const mapDispatchToProps = dispatch => ({
   requestAcceptConnection: connectionId =>
     dispatch(requestAcceptConnection(connectionId)),
   requestConnections: () => dispatch(requestConnections()),
-  requestCityUsers: (city, query, page, usersPerPage) =>
-    dispatch(requestCityUsers(city, query, page, usersPerPage)),
+  requestCityUsers: (city, query, page, usersPerPage, role) =>
+    dispatch(requestCityUsers(city, query, page, usersPerPage, role)),
 });
 
 export default compose(
