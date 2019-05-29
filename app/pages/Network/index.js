@@ -491,8 +491,13 @@ class NetworkPage extends Component<Props, State> {
         <div className={classes.content}>
           <div className={classes.leftPanel}>
             <div className={classes.coworkersBox}>
+              <Link to="/network/" className={classes.coworkersTitle}>
+                Find Connections
+              </Link>
+            </div>
+            <div className={classes.coworkersBox}>
               <Link to="/network/coworkers" className={classes.coworkersTitle}>
-                {`My Coworkers ${coworkers ? `(${coworkers.size})` : ''}`}
+                {`My Connections ${coworkers ? `(${coworkers.size})` : ''}`}
               </Link>
             </div>
             <div className={classes.inviteBox}>
