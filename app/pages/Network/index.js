@@ -116,6 +116,7 @@ const styles = theme => ({
     letterSpacing: 0.3,
     paddingTop: 20,
     paddingBottom: 20,
+    marginTop: 10,
     [theme.breakpoints.down('xs')]: {
       paddingTop: 15,
       paddingBottom: 15,
@@ -378,6 +379,7 @@ class NetworkPage extends Component<Props, State> {
     if (id) {
       this.setState(state => ({
         ...state,
+        page: 1,
         filter: {
           ...state.filter,
           [id]: value,
@@ -409,7 +411,7 @@ class NetworkPage extends Component<Props, State> {
   }, 500);
   handleChange = e => {
     e.persist();
-    this.setState({ query: e.target.value }, () => {
+    this.setState({ query: e.target.value, page: 1 }, () => {
       this.debouncedSearch();
     });
   };
@@ -539,6 +541,7 @@ class NetworkPage extends Component<Props, State> {
                           this.setState(
                             state => ({
                               ...state,
+                              page: 1,
                               filter: {
                                 ...state.filter,
                                 selectedRole: r,
@@ -613,8 +616,9 @@ class NetworkPage extends Component<Props, State> {
               <Grid item xs={12} lg={12}>
                 <Button
                   fullWidth
-                  color="primary"
-                  className={classes.loadMoreButton}
+                  color="raisedPrimary"
+                  className={`${classes.loadMoreButton}`}
+                  mt={1}
                   onClick={() =>
                     this.setState(
                       state => ({
