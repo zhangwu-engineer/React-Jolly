@@ -415,7 +415,7 @@ class NetworkPage extends Component<Props, State> {
       this.debouncedSearch();
     });
   };
-  handleFilterChange = e => {
+  handleLocationChange = e => {
     const { id, value } = e.target;
     this.setState(
       state => ({
@@ -428,6 +428,29 @@ class NetworkPage extends Component<Props, State> {
       () => {
         this.debouncedSearch();
       }
+    );
+  };
+  handleRoleChange = role => {
+    this.setState(
+      state => ({
+        ...state,
+        page: 1,
+        filter: {
+          ...state.filter,
+          selectedRole: role,
+          filteredRole: [],
+        },
+      }),
+      () => this.debouncedSearch()
+    );
+  };
+  loadMoreData = () => {
+    this.setState(
+      state => ({
+        ...state,
+        page: state.page + 1,
+      }),
+      () => this.debouncedSearch()
     );
   };
   render() {
@@ -515,7 +538,7 @@ class NetworkPage extends Component<Props, State> {
                   id="location"
                   name="location"
                   value={filter.location}
-                  onChange={this.handleFilterChange}
+                  onChange={this.handleLocationChange}
                 />
               </Grid>
               <Grid item xs={6} lg={4} className={classes.searchInputWrapper}>
@@ -537,20 +560,7 @@ class NetworkPage extends Component<Props, State> {
                       <ListItem
                         className={classes.resultItem}
                         key={generate()}
-                        onClick={() =>
-                          this.setState(
-                            state => ({
-                              ...state,
-                              page: 1,
-                              filter: {
-                                ...state.filter,
-                                selectedRole: r,
-                                filteredRole: [],
-                              },
-                            }),
-                            () => this.debouncedSearch()
-                          )
-                        }
+                        onClick={() => this.handleRoleChange(r)}
                       >
                         <ListItemText
                           classes={{ primary: classes.resultText }}
@@ -619,15 +629,7 @@ class NetworkPage extends Component<Props, State> {
                   color="raisedPrimary"
                   className={`${classes.loadMoreButton}`}
                   mt={1}
-                  onClick={() =>
-                    this.setState(
-                      state => ({
-                        ...state,
-                        page: state.page + 1,
-                      }),
-                      () => this.debouncedSearch()
-                    )
-                  }
+                  onClick={() => this.loadMoreData()}
                 >
                   See More
                 </Button>
