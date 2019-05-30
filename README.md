@@ -141,3 +141,4 @@ When you add/remove/edit routes, be sure to adjust `/server/middlewares/sitemap.
 # Other notes
 
 Our app is based on [react-boilerplate](https://github.com/react-boilerplate/react-boilerplate) v3.5.0. Take a look at its [documentation](https://github.com/react-boilerplate/react-boilerplate#documentation), it is very good and covers most of tools and techniques used in the project.
+
