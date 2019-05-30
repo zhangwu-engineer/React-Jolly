@@ -46,7 +46,7 @@ const styles = theme => ({
     color: theme.palette.common.white,
     fontSize: 14,
     textTransform: 'none',
-    '&:focus': {
+    '&:hover, &:focus': {
       color: theme.palette.common.white,
     },
   },
