@@ -173,6 +173,10 @@ const styles = theme => ({
         opacity: 1,
       },
     },
+    [theme.breakpoints.down('xs')]: {
+      top: 0,
+      width: '100%',
+    },
   },
   adornment: {
     position: 'relative',
@@ -588,7 +592,7 @@ class NetworkPage extends Component<Props, State> {
                   </div>
                 ) : null}
               </Grid>
-              <Grid item xs={4} lg={4}>
+              <Grid item xs={12} lg={4}>
                 <FormControl classes={{ root: classes.formControl }} fullWidth>
                   <Input
                     value={query}
