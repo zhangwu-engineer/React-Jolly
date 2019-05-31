@@ -124,7 +124,7 @@ type Props = {
   classes: Object,
   openGallery: Function,
   isPrivate: Boolean,
-  firstName: String,
+  user: Object,
 };
 
 class JobCard extends Component<Props> {
@@ -133,7 +133,7 @@ class JobCard extends Component<Props> {
     history.push(`/f/${job.getIn(['user', 'slug'])}/e/${job.get('slug')}`);
   };
   render() {
-    const { job, classes, isPrivate, firstName } = this.props;
+    const { job, classes, isPrivate, user } = this.props;
     const photo1 = job && job.getIn(['photos', 0]);
     const photo2 = job && job.getIn(['photos', 1]);
     const photo3 = job && job.getIn(['photos', 2]);
@@ -144,7 +144,7 @@ class JobCard extends Component<Props> {
             <Typography className={classes.emptyText} align="center">
               {!isPrivate
                 ? `${capitalize(
-                    firstName
+                    user.get('firstName')
                   )} Hasn't added any past gig experience—yet!`
                 : `You haven’t added any past gig experience—yet!`}
             </Typography>
