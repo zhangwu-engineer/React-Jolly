@@ -22,12 +22,12 @@ type Props = {
 
 class BusinessPage extends React.Component<Props> {
   componentDidMount() {
-    const {
-      match: {
-        params: { slug },
-      },
-    } = this.props;
-    this.props.requestMember(slug);
+    // const {
+    //   match: {
+    //     params: { slug },
+    //   },
+    // } = this.props;
+    // this.props.requestMember(slug);
   }
   componentDidUpdate(prevProps: Props) {
     const {

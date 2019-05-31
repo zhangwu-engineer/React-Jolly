@@ -42,12 +42,7 @@ class App extends Component<Props> {
     }
     if (this.props.location.pathname === '/') {
       if (user) {
-        const isBusiness = user.get('role') === 'BUSINESS';
-        if (isBusiness) {
-          history.push(`/b/${user.get('slug')}`);
-        } else {
-          history.push(`/f/${user.get('slug')}`);
-        }
+        history.push(`/f/${user.get('slug')}`);
       } else {
         history.push('/freelancer-signup');
       }
@@ -58,12 +53,7 @@ class App extends Component<Props> {
     if (location.pathname === '/' && !user) {
       history.push('/sign-in');
     } else if (location.pathname === '/' && user) {
-      const isBusiness = user.get('role') === 'BUSINESS';
-      if (isBusiness) {
-        history.push(`/b/${user.get('slug')}`);
-      } else {
-        history.push(`/f/${user.get('slug')}`);
-      }
+      history.push(`/f/${user.get('slug')}`);
     }
     if (prevProps.location.pathname !== location.pathname) {
       analytics.page(location.pathname);
@@ -93,7 +83,7 @@ class App extends Component<Props> {
       navbarOpen,
       location: { pathname },
     } = this.props;
-    const isBusiness = user && user.get('role') === 'BUSINESS';
+    const isBusiness = user && user.get('isBusiness');
     let data = fromJS({
       title: 'Jolly | The Event Freelancer Network',
       description:

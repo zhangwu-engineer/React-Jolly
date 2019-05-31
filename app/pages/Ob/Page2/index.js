@@ -12,7 +12,7 @@ type Props = {
 class ObPage2 extends Component<Props> {
   render() {
     const { user } = this.props;
-    const isBusiness = user.get('role') === 'BUSINESS';
+    const isBusiness = user && user.get('isBusiness');
     if (isBusiness) {
       return <BusinessOnboardingPosition />;
     }

@@ -146,13 +146,7 @@ class EmailSignIn extends Component<Props, State> {
     if (prevProps.isLoading && !isLoading && !error && user) {
       storage.set('invite', null);
       if (user.getIn(['profile', 'location'])) {
-        const isBusiness = user.get('role') === 'BUSINESS';
-        let path;
-        if (isBusiness) {
-          path = history.push(`/b/${user.get('slug')}`);
-        } else {
-          path = redirect || `/f/${user.get('slug')}`;
-        }
+        const path = redirect || `/f/${user.get('slug')}`;
         history.push(path);
       } else {
         history.push('/ob/1');

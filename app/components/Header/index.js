@@ -323,6 +323,7 @@ type Props = {
   classes: Object,
   pathname: string,
   logout: Function,
+  match: Object,
 };
 
 type State = {
@@ -368,7 +369,8 @@ class Header extends Component<Props, State> {
   anchorEl: HTMLElement;
   renderMenu = () => {
     const { user, classes } = this.props;
-    const isBusiness = user && user.get('role') === 'BUSINESS';
+    const isBusiness = user && user.get('isBusiness');
+    const businesses = user && user.get('businesses');
     const nameLength = user
       ? user.get('firstName').length + user.get('lastName').length
       : 0;
@@ -480,22 +482,9 @@ class Header extends Component<Props, State> {
                     Businesses
                   </Typography>
                 </Grid>
-                <MenuItem
-                  className={classes.menuItem}
-                  onClick={e => {
-                    this.handleClose(e);
-                    history.push('/edit');
-                  }}
-                >
-                  <ListItemIcon className={classes.menuItemIcon}>
-                    <Icon glyph={EmptyAvatar} size={24} />
-                  </ListItemIcon>
-                  <ListItemText
-                    classes={{ primary: classes.menuItemText }}
-                    inset
-                    primary={user.getIn(['business', 'name']) || ''}
-                  />
-                </MenuItem>
+                <MenuList id="menu-list">
+                  {this.renderBusinesses(businesses, classes)}
+                </MenuList>
               </Grid>
             )}
           </div>
@@ -547,10 +536,30 @@ class Header extends Component<Props, State> {
       </Fragment>
     );
   };
+  renderBusinesses(businesses, classes) {
+    let items = null;
+    if (businesses)
+      items = businesses.toJSON().map(item => (
+        <MenuItem
+          className={classes.menuItem}
+          onClick={() => history.push(`/b/${item.slug}`)}
+          key={item.id}
+        >
+          <ListItemIcon className={classes.menuItemIcon}>
+            <Icon glyph={EmptyAvatar} size={24} />
+          </ListItemIcon>
+          <ListItemText
+            className={classes.menuItemText}
+            inset
+            primary={item.name}
+          />
+        </MenuItem>
+      ));
+    return items;
+  }
   render() {
     const { user, work, classes, pathname } = this.props;
     const { open, side, businessSide } = this.state;
-    const isBusiness = user && user.get('role') === 'BUSINESS';
     const workDetailBack =
       user && work && user.get('slug') !== work.getIn(['user', 'slug'])
         ? `${capitalize(work.getIn(['user', 'firstName']))} ${capitalize(
@@ -564,6 +573,26 @@ class Header extends Component<Props, State> {
     const workDetailMatch = matchPath(pathname, {
       path: '/f/:slug/e/:eventSlug',
     });
+
+    const matchBusiness = matchPath(pathname, {
+      path: '/b/:slug',
+    });
+
+    let isPrivateBusinessPage = false;
+    if (matchBusiness) {
+      const {
+        params: { slug },
+      } = matchBusiness;
+      const isBusinessUser = user && user.get('isBusiness');
+      const businesses = user && user.get('businesses');
+      const isBusinessPage = matchBusiness && matchBusiness.isExact;
+      const currentBusiness = businesses
+        .toJSON()
+        .find(element => element.slug === slug);
+      isPrivateBusinessPage =
+        isBusinessUser && isBusinessPage && currentBusiness;
+    }
+
     const isWorkDetailPage = workDetailMatch && workDetailMatch.isExact;
     const showFeedButton =
       isProfilePage ||
@@ -582,7 +611,7 @@ class Header extends Component<Props, State> {
         justify="space-between"
         alignItems="center"
       >
-        {isBusiness && (
+        {isPrivateBusinessPage && (
           <Grid item>
             <Button
               onClick={this.toggleBusinessSideDrawer(true)}

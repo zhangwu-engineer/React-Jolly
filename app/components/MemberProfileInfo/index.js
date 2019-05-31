@@ -227,7 +227,7 @@ class MemberProfileInfo extends Component<Props, State> {
   render() {
     const { user, badges, isConnectionSent, classes } = this.props;
     const { isMenuOpen } = this.state;
-    const isBusiness = user && user.get('role') === 'BUSINESS';
+    const isBusiness = user && user.get('isBusiness');
     const displayName = isBusiness
       ? user.getIn(['business', 'name']) || ''
       : `${user.get('firstName') || ''} ${user.get('lastName') || ''}`;
