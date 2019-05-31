@@ -642,6 +642,7 @@ class Member extends Component<Props, State> {
               />
               <UserWorkList
                 works={works}
+                user={member}
                 isPrivate={isPrivate}
                 openGallery={this.openGallery}
               />
@@ -686,7 +687,7 @@ class Member extends Component<Props, State> {
                       </div>
                     ))
                   ) : (
-                    <RoleCard />
+                    <RoleCard isPrivate={isPrivate} user={member} />
                   )}
                 </div>
               </div>

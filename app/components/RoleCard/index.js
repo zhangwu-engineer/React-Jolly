@@ -10,6 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import CheckCircle from '@material-ui/icons/CheckCircleOutline';
 import Grid from '@material-ui/core/Grid';
+import { capitalize } from 'lodash-es';
 import Icon from 'components/Icon';
 import Link from 'components/Link';
 import EndorsementIcon from 'images/sprite/endorsement.svg';
@@ -75,11 +76,13 @@ const styles = theme => ({
 type Props = {
   role?: Object,
   classes: Object,
+  isPrivate: Boolean,
+  user: Object,
 };
 
 class RoleCard extends Component<Props> {
   render() {
-    const { role, classes } = this.props;
+    const { role, classes, isPrivate, user } = this.props;
     if (!role) {
       return (
         <Card className={classes.root}>
@@ -89,21 +92,29 @@ class RoleCard extends Component<Props> {
               className={classes.emptyText}
               align="center"
             >
-              You haven’t added any positions you’re ready and willing to work
+              {!isPrivate
+                ? `${capitalize(
+                    user.get('firstName')
+                  )} hasn't added any positions. ${capitalize(
+                    user.get('firstName')
+                  )} is ready and willing to work`
+                : `You haven’t added any positions you’re ready and willing to work`}
             </Typography>
-            <Grid container justify="center">
-              <Grid item>
-                <Button
-                  className={classes.addPositionButton}
-                  variant="outlined"
-                  size="large"
-                  color="primary"
-                  component={props => <Link to="/types-of-work" {...props} />}
-                >
-                  Add Position
-                </Button>
+            {isPrivate && (
+              <Grid container justify="center">
+                <Grid item>
+                  <Button
+                    className={classes.addPositionButton}
+                    variant="outlined"
+                    size="large"
+                    color="primary"
+                    component={props => <Link to="/types-of-work" {...props} />}
+                  >
+                    Add Position
+                  </Button>
+                </Grid>
               </Grid>
-            </Grid>
+            )}
           </CardContent>
         </Card>
       );
