@@ -11,7 +11,7 @@ import CardActions from '@material-ui/core/CardActions';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-
+import { capitalize } from 'lodash-es';
 import { history } from 'components/ConnectedRouter';
 import Icon from 'components/Icon';
 import Link from 'components/Link';
@@ -123,6 +123,8 @@ type Props = {
   job?: Object,
   classes: Object,
   openGallery: Function,
+  isPrivate: Boolean,
+  firstName: String,
 };
 
 class JobCard extends Component<Props> {
@@ -131,7 +133,7 @@ class JobCard extends Component<Props> {
     history.push(`/f/${job.getIn(['user', 'slug'])}/e/${job.get('slug')}`);
   };
   render() {
-    const { job, classes } = this.props;
+    const { job, classes, isPrivate, firstName } = this.props;
     const photo1 = job && job.getIn(['photos', 0]);
     const photo2 = job && job.getIn(['photos', 1]);
     const photo3 = job && job.getIn(['photos', 2]);
@@ -140,21 +142,27 @@ class JobCard extends Component<Props> {
         <Card className={classes.root}>
           <CardContent className={classes.content}>
             <Typography className={classes.emptyText} align="center">
-              You haven’t added any past gig experience—yet!
+              {!isPrivate
+                ? `${capitalize(
+                    firstName
+                  )} Hasn't added any past gig experience—yet!`
+                : `You haven’t added any past gig experience—yet!`}
             </Typography>
-            <Grid container justify="center">
-              <Grid item>
-                <Button
-                  className={classes.addPastGigButton}
-                  variant="outlined"
-                  size="large"
-                  color="primary"
-                  component={props => <Link to="/add" {...props} />}
-                >
-                  Add Past Gig
-                </Button>
+            {isPrivate && (
+              <Grid container justify="center">
+                <Grid item>
+                  <Button
+                    className={classes.addPastGigButton}
+                    variant="outlined"
+                    size="large"
+                    color="primary"
+                    component={props => <Link to="/add" {...props} />}
+                  >
+                    Add Past Gig
+                  </Button>
+                </Grid>
               </Grid>
-            </Grid>
+            )}
           </CardContent>
         </Card>
       );
