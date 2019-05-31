@@ -87,7 +87,7 @@ class UserWorkList extends Component<Props, State> {
               ) : null
           )
         ) : (
-          <JobCard isPrivate={isPrivate} firstName={user.get('firstName')} />
+          <JobCard isPrivate={isPrivate} user={user} />
         )}
         {works &&
           jobCountToShow < works.size && (
