@@ -7,8 +7,8 @@
  */
 function defineOperationHour(isActive, timeFrom, timeTo) {
   return {
-    isActive: isActive,
-    timeFrom: timeFrom || '',
+    isActive,
+    timeFrom,
     timeTill: timeTo || '',
   };
 }

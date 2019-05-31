@@ -38,6 +38,7 @@ type Props = {
   isPrivate: boolean,
   classes: Object,
   openGallery: Function,
+  user: Object,
 };
 
 type State = {
@@ -52,7 +53,7 @@ class UserWorkList extends Component<Props, State> {
     this.setState(state => ({ page: state.page + 1 }));
   };
   render() {
-    const { isPrivate, works, classes } = this.props;
+    const { isPrivate, works, classes, user } = this.props;
     const { page } = this.state;
     const jobCountToShow = (page - 1) * 3 + 2;
     return (
@@ -86,7 +87,7 @@ class UserWorkList extends Component<Props, State> {
               ) : null
           )
         ) : (
-          <JobCard />
+          <JobCard isPrivate={isPrivate} user={user} />
         )}
         {works &&
           jobCountToShow < works.size && (

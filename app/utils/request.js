@@ -1,7 +1,7 @@
 // @flow
 
-import CONFIG from '../../app/conf';
 import axios from 'axios';
+import CONFIG from '../../app/conf';
 
 /**
  * Returns the data returned by axios request

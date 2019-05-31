@@ -141,6 +141,15 @@ const styles = theme => ({
     textAlign: 'center',
     marginBottom: 20,
   },
+  active: {
+    backgroundColor: '#1575d9',
+  },
+  activeLink: {
+    color: theme.palette.common.white,
+    '&:hover, &:focus': {
+      color: theme.palette.common.white,
+    },
+  },
 });
 
 type Props = {
@@ -234,8 +243,11 @@ class CoworkersPage extends Component<Props, State> {
                 Find Connections
               </Link>
             </div>
-            <div className={classes.coworkersBox}>
-              <Link to="/network/coworkers" className={classes.coworkersTitle}>
+            <div className={`${classes.coworkersBox} ${classes.active}`}>
+              <Link
+                to="/network/coworkers"
+                className={`${classes.activeLink} ${classes.coworkersTitle}`}
+              >
                 {`My Connections ${coworkers ? `(${coworkers.size})` : ''}`}
               </Link>
             </div>

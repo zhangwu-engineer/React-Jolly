@@ -2,12 +2,13 @@
 
 import React, { Component } from 'react';
 import { generate } from 'shortid';
-import { groupBy, toPairs, fromPairs, zip } from 'lodash-es';
+import { groupBy, toPairs, fromPairs, zip, capitalize } from 'lodash-es';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import cx from 'classnames';
+
 import { history } from 'components/ConnectedRouter';
 import BaseModal from 'components/BaseModal';
 import Icon from 'components/Icon';
@@ -130,12 +131,23 @@ const styles = theme => ({
       borderWidth: 2,
     },
   },
+  endorsedButton: {
+    textTransform: 'none',
+    padding: '10px 45px 10px 40px',
+    borderRadius: 0,
+    fontWeight: 600,
+    boxShadow: 'none',
+    '&:hover': {
+      backgroundColor: theme.palette.primary.main,
+    },
+  },
 });
 
 type Props = {
   endorsements: Object,
   classes: Object,
   publicMode?: boolean,
+  user: Object,
 };
 
 type State = {
@@ -156,7 +168,7 @@ class UserRecommendations extends Component<Props, State> {
     window.open(url, '_blank');
   };
   render() {
-    const { endorsements, publicMode, classes } = this.props;
+    const { endorsements, user, publicMode, classes } = this.props;
     const { isOpen } = this.state;
     const qualityNames = {
       hardest_worker: 'Hardest Worker',
@@ -196,25 +208,41 @@ class UserRecommendations extends Component<Props, State> {
                   color="primary"
                   onClick={this.openModal}
                 >
-                  Get More
+                  {!publicMode ? `Get More` : `Endorse`}
                 </Button>
               </Grid>
             )}
         </Grid>
-        {endorsements &&
-          endorsements.size === 0 && (
-            <Grid container justify="center">
-              <Grid item>
-                <Typography className={classes.emptyText} align="center">
-                  You haven’t been recommended by any coworkers
-                </Typography>
-              </Grid>
-            </Grid>
-          )}
         {endorsements && endorsements.size === 0 ? (
           <React.Fragment>
-            {!publicMode && (
+            {publicMode ? (
               <Grid container justify="center">
+                <Grid item xs={12}>
+                  <Typography className={classes.emptyText} align="center">
+                    {`Did you enjoy working with ${capitalize(
+                      user.get('firstName')
+                    )}?`}
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Button
+                    className={classes.endorsedButton}
+                    variant="contained"
+                    size="large"
+                    color="primary"
+                    onClick={this.openModal}
+                  >
+                    {`Endorse ${capitalize(user.get('firstName'))}`}
+                  </Button>
+                </Grid>
+              </Grid>
+            ) : (
+              <Grid container justify="center">
+                <Grid item xs={12}>
+                  <Typography className={classes.emptyText} align="center">
+                    You haven’t been recommended by any coworkers
+                  </Typography>
+                </Grid>
                 <Grid item>
                   <Button
                     className={classes.getEndorsedButton}
@@ -230,31 +258,52 @@ class UserRecommendations extends Component<Props, State> {
             )}
           </React.Fragment>
         ) : (
-          <React.Fragment>
-            <div className={classes.endorsersSection}>
-              {groupedEndorsers.map(group => (
-                <div key={generate()} className={classes.endorserGroup}>
-                  <Typography className={classes.endorseQuality}>
-                    {qualityNames[group.quality]}
+          <div className={classes.endorsersSection}>
+            {groupedEndorsers.map(group => (
+              <div key={generate()} className={classes.endorserGroup}>
+                <Typography className={classes.endorseQuality}>
+                  {qualityNames[group.quality]}
+                </Typography>
+                <Grid container className={classes.endorseUsers} spacing={8}>
+                  {group.users.map(u => (
+                    <Grid
+                      item
+                      key={generate()}
+                      onClick={() => this.openUrl(`/f/${u.from.slug}`)}
+                    >
+                      <UserAvatar
+                        className={classes.avatar}
+                        src={u.from.profile.avatar}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </div>
+            ))}
+            {publicMode && (
+              <Grid container justify="center">
+                <Grid item>
+                  <Typography className={classes.emptyText} align="center">
+                    {`Did you enjoy working with ${capitalize(
+                      user.get('firstName')
+                    )}?`}
                   </Typography>
-                  <Grid container className={classes.endorseUsers} spacing={8}>
-                    {group.users.map(u => (
-                      <Grid
-                        item
-                        key={generate()}
-                        onClick={() => this.openUrl(`/f/${u.from.slug}`)}
-                      >
-                        <UserAvatar
-                          className={classes.avatar}
-                          src={u.from.profile.avatar}
-                        />
-                      </Grid>
-                    ))}
-                  </Grid>
-                </div>
-              ))}
-            </div>
-          </React.Fragment>
+                </Grid>
+                <Grid item>
+                  <Button
+                    className={classes.endorsedButton}
+                    variant="contained"
+                    size="large"
+                    color="primary"
+                    onClick={this.openModal}
+                  >
+                    {`Endorse ${capitalize(user.get('firstName'))}`}
+                    {user.get('role') !== 'USER' ? ' Again' : ''}
+                  </Button>
+                </Grid>
+              </Grid>
+            )}
+          </div>
         )}
         <BaseModal
           className={classes.modal}

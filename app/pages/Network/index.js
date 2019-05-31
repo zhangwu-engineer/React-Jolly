@@ -173,6 +173,10 @@ const styles = theme => ({
         opacity: 1,
       },
     },
+    [theme.breakpoints.down('xs')]: {
+      top: 0,
+      width: '100%',
+    },
   },
   adornment: {
     position: 'relative',
@@ -209,6 +213,15 @@ const styles = theme => ({
     },
     '&::-webkit-scrollbar-thumb': {
       backgroundColor: '#a4acb3',
+    },
+  },
+  active: {
+    backgroundColor: '#1575d9',
+  },
+  activeLink: {
+    color: theme.palette.common.white,
+    '&:hover, &:focus': {
+      color: theme.palette.common.white,
     },
   },
 });
@@ -293,7 +306,7 @@ class NetworkPage extends Component<Props, State> {
     selectedTab: 0,
     query: '',
     filter: {
-      location: this.props.user.get('profile').get('location'),
+      location: '',
       selectedRole: '',
       filteredRole: '',
     },
@@ -490,8 +503,11 @@ class NetworkPage extends Component<Props, State> {
         )}
         <div className={classes.content}>
           <div className={classes.leftPanel}>
-            <div className={classes.coworkersBox}>
-              <Link to="/network/" className={classes.coworkersTitle}>
+            <div className={`${classes.coworkersBox} ${classes.active}`}>
+              <Link
+                to="/network/"
+                className={`${classes.activeLink} ${classes.coworkersTitle}`}
+              >
                 Find Connections
               </Link>
             </div>
@@ -576,7 +592,7 @@ class NetworkPage extends Component<Props, State> {
                   </div>
                 ) : null}
               </Grid>
-              <Grid item xs={4} lg={4}>
+              <Grid item xs={12} lg={4}>
                 <FormControl classes={{ root: classes.formControl }} fullWidth>
                   <Input
                     value={query}
