@@ -32,7 +32,6 @@ import FloatingAddButton from 'components/FloatingAddButton';
 import BadgeProgressBanner from 'components/BadgeProgressBanner';
 import UserWorkList from 'components/UserWorkList';
 import UserCoworkers from 'components/UserCoworkers';
-
 import AddPhotoIcon from 'images/sprite/add-photo-blue.svg';
 
 import saga, {
