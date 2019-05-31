@@ -15,6 +15,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import ShareIcon from '@material-ui/icons/Share';
+import PenIcon from '@material-ui/icons/CreateOutlined';
 
 import ProfileInfo from 'components/ProfileInfo';
 import MemberProfileInfo from 'components/MemberProfileInfo';
@@ -272,6 +273,19 @@ const styles = theme => ({
     fontWeight: 'bold',
     textDecoration: 'none',
     textTransform: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+  },
+  editPositionIcon: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    textDecoration: 'none',
+    textTransform: 'none',
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+    },
   },
 });
 
@@ -629,6 +643,7 @@ class Member extends Component<Props, State> {
               />
               <UserWorkList
                 works={works}
+                user={member}
                 isPrivate={isPrivate}
                 openGallery={this.openGallery}
               />
@@ -647,12 +662,20 @@ class Member extends Component<Props, State> {
                     </Grid>
                     <Grid item>
                       {isPrivate && (
-                        <Link
-                          className={classes.editPosition}
-                          to="/types-of-work"
-                        >
-                          Edit Positions
-                        </Link>
+                        <React.Fragment>
+                          <Link
+                            className={classes.editPosition}
+                            to="/types-of-work"
+                          >
+                            Edit Positions
+                          </Link>
+                          <Link
+                            className={classes.editPositionIcon}
+                            to="/types-of-work"
+                          >
+                            <PenIcon fontSize="small" />
+                          </Link>
+                        </React.Fragment>
                       )}
                     </Grid>
                   </Grid>
@@ -665,7 +688,7 @@ class Member extends Component<Props, State> {
                       </div>
                     ))
                   ) : (
-                    <RoleCard />
+                    <RoleCard isPrivate={isPrivate} user={member} />
                   )}
                 </div>
               </div>
