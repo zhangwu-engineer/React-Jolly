@@ -24,6 +24,9 @@ const styles = theme => ({
     backgroundColor: '#f1f1f1',
     marginBottom: 15,
   },
+  rootSelect: {
+    backgroundColor: '#FFFFFF',
+  },
   disabledRoot: {
     backgroundColor: 'rgba(241, 241, 241, 0.45)',
   },
@@ -116,6 +119,7 @@ type Props = {
   startWith?: string,
   onChange: Function,
   onBlur: Function,
+  select: boolean,
 };
 
 class EditableInput extends Component<Props> {
@@ -289,14 +293,21 @@ class EditableInput extends Component<Props> {
     );
   };
   render() {
-    const { label, id, disabled, classes } = this.props;
+    const { label, id, disabled, classes, select } = this.props;
+    let cssStyles = {};
+
+    if (select) {
+      cssStyles = {
+        root: cx(classes.rootSelect),
+      };
+    } else {
+      cssStyles = {
+        root: cx(classes.root, { [classes.disabledRoot]: disabled }),
+      };
+    }
+
     return (
-      <FormControl
-        classes={{
-          root: cx(classes.root, { [classes.disabledRoot]: disabled }),
-        }}
-        fullWidth
-      >
+      <FormControl classes={cssStyles} fullWidth>
         {label && (
           <InputLabel
             htmlFor={id}

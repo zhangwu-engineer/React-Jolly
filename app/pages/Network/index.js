@@ -547,6 +547,7 @@ class NetworkPage extends Component<Props, State> {
                   name="location"
                   value={filter.location}
                   onChange={this.handleLocationChange}
+                  select
                 />
               </Grid>
               <Grid item xs={6} lg={4} className={classes.searchInputWrapper}>
