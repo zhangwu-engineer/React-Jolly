@@ -231,6 +231,7 @@ const styles = theme => ({
 
 type Props = {
   user: Object,
+  business: Object,
   classes: Object,
 };
 
@@ -239,7 +240,7 @@ class BusinessProfileInfo extends PureComponent<Props> {
     window.open(url, '_blank');
   };
   render() {
-    const { user, classes } = this.props;
+    const { user, business, classes } = this.props;
     const avatarImg = user.getIn(['profile', 'avatar']) || '';
     return (
       <div className={classes.root}>
@@ -283,10 +284,12 @@ class BusinessProfileInfo extends PureComponent<Props> {
         >
           <Grid item className={classes.nameSection}>
             <Typography className={classes.username}>
-              {user.getIn(['business', 'name']) || ''}
+              {business && business.name}
             </Typography>
             {user.getIn(['profile', 'location']) && (
               <Typography className={classes.location}>
+                {business && business.category}
+                &nbsp;&sdot;&nbsp;
                 {user.getIn(['profile', 'location'])}
               </Typography>
             )}

@@ -579,6 +579,7 @@ class Header extends Component<Props, State> {
     });
 
     let isPrivateBusinessPage = false;
+    let currentBusiness = null;
     if (matchBusiness) {
       const {
         params: { slug },
@@ -586,7 +587,7 @@ class Header extends Component<Props, State> {
       const isBusinessUser = user && user.get('isBusiness');
       const businesses = user && user.get('businesses');
       const isBusinessPage = matchBusiness && matchBusiness.isExact;
-      const currentBusiness = businesses
+      currentBusiness = businesses
         .toJSON()
         .find(element => element.slug === slug);
       isPrivateBusinessPage =
@@ -802,7 +803,7 @@ class Header extends Component<Props, State> {
                 open={businessSide}
                 onClose={this.toggleBusinessSideDrawer(false)}
               >
-                <BusinessSidebar user={user} colorfulSideTop />
+                <BusinessSidebar business={currentBusiness} colorfulSideTop />
               </Drawer>
             </Grid>
           </Grid>

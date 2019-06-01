@@ -71,7 +71,7 @@ const styles = () => ({
 });
 
 type Props = {
-  user: Object,
+  business: Object,
   classes: Object,
   colorfulSideTop: Boolean,
 };
@@ -89,7 +89,7 @@ class BusinessSidebar extends PureComponent<Props, State> {
     this.setState(state => ({ isNested: !state.isNested }));
   };
   render() {
-    const { user, classes, colorfulSideTop } = this.props;
+    const { business, classes, colorfulSideTop } = this.props;
     const { isNested } = this.state;
     return (
       <Fragment>
@@ -103,14 +103,11 @@ class BusinessSidebar extends PureComponent<Props, State> {
           }
         >
           <Grid item>
-            <UserAvatar
-              className={classes.avatar}
-              src={user.getIn(['profile', 'avatar'])}
-            />
+            <UserAvatar className={classes.avatar} />
           </Grid>
           <Grid item>
             <Typography variant="h6" className={classes.greetings}>
-              {user.getIn(['business', 'name']) || ''}
+              {business.name}
             </Typography>
             <Link className={classes.link}>View Business Profile</Link>
           </Grid>

@@ -184,6 +184,7 @@ const styles = theme => ({
 type Props = {
   currentUser: Object,
   user: Object,
+  business: Object,
   badges: Object,
   isConnectionSent: boolean,
   classes: Object,
@@ -225,11 +226,11 @@ class MemberProfileInfo extends Component<Props, State> {
   };
   anchorEl: HTMLElement;
   render() {
-    const { user, badges, isConnectionSent, classes } = this.props;
+    const { user, business, badges, isConnectionSent, classes } = this.props;
     const { isMenuOpen } = this.state;
     const isBusiness = user && user.get('isBusiness');
     const displayName = isBusiness
-      ? user.getIn(['business', 'name']) || ''
+      ? business && business.name
       : `${user.get('firstName') || ''} ${user.get('lastName') || ''}`;
     const avatarImg = user.getIn(['profile', 'avatar']) || '';
     return (
