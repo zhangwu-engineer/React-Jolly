@@ -80,7 +80,7 @@ module.exports = {
     PORT: ENV.PORT || 3000,
 
     /** Application Id */
-    ID: 'lkedu906',
+    ID: isDev ? 'lkedu906' : 'lkedu906',
   },
 
   FACEBOOK: {
