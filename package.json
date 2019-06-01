@@ -93,6 +93,7 @@
     "html-to-draftjs": "^1.1.2",
     "immutability-helper": "^2.8.1",
     "immutable": "3.8.2",
+    "intercom-react": "^1.0.0-alpha.6",
     "ip": "1.1.4",
     "lodash-es": "^4.17.11",
     "marked": "^0.3.6",

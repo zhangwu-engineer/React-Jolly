@@ -86,7 +86,7 @@ class App extends Component<Props> {
     if (user) {
       return {
         email: user.get('email'),
-        created_at: moment(user.get('date_created')).unix(),
+        created_at: (+new Date(user.get('date_created')) / 1000).toFixed(0),
         name: capitalize(`${user.get('firstName')} ${user.get('lastName')}`),
       };
     }
