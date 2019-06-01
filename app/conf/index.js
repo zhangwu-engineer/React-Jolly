@@ -79,7 +79,7 @@ module.exports = {
     /** Port Number To Listen To */
     PORT: ENV.PORT || 3000,
 
-    /** Application Name */
+    /** Application Id */
     ID: 'lkedu906',
   },
 
