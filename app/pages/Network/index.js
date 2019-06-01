@@ -13,8 +13,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Input from '@material-ui/core/Input';
 import FormControl from '@material-ui/core/FormControl';
 import SearchIcon from '@material-ui/icons/Search';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+
 import Button from '@material-ui/core/Button';
 
 import Link from 'components/Link';
@@ -25,6 +24,7 @@ import VouchInviteFormModal from 'components/VouchInviteFormModal';
 import InviteForm from 'components/InviteForm';
 import Notification from 'components/Notification';
 import NetworkNav from 'components/NetworkNav';
+import CustomSelect from 'components/CustomSelect';
 
 import ROLES from 'enum/roles';
 
@@ -38,6 +38,7 @@ import saga, {
 } from 'containers/Network/sagas';
 import injectSagas from 'utils/injectSagas';
 
+const roles = ROLES.sort().map(role => ({ value: role, label: role }));
 const perPage = 16;
 const styles = theme => ({
   content: {
@@ -308,7 +309,6 @@ class NetworkPage extends Component<Props, State> {
     filter: {
       location: '',
       selectedRole: '',
-      filteredRole: '',
     },
     page: 1,
   };
@@ -399,18 +399,6 @@ class NetworkPage extends Component<Props, State> {
         },
       }));
     }
-    if (value) {
-      const filteredRoles = ROLES.filter(
-        r => r.toLowerCase().indexOf(value.toLowerCase()) !== -1
-      );
-      this.setState(state => ({
-        ...state,
-        filter: {
-          ...state.filter,
-          filteredRole: filteredRoles,
-        },
-      }));
-    }
   };
   debouncedSearch = debounce(() => {
     const { query, filter, page } = this.state;
@@ -451,7 +439,6 @@ class NetworkPage extends Component<Props, State> {
         filter: {
           ...state.filter,
           selectedRole: role,
-          filteredRole: [],
         },
       }),
       () => this.debouncedSearch()
@@ -563,34 +550,26 @@ class NetworkPage extends Component<Props, State> {
                 />
               </Grid>
               <Grid item xs={6} lg={4} className={classes.searchInputWrapper}>
-                <EditableInput
-                  autoComplete="off"
-                  id="selectedRole"
-                  name="selectedRole"
-                  label="Position"
-                  value={filter.selectedRole}
-                  onChange={this.filterRole}
-                  onFocus={() => this.filterRole}
-                  classes={classes.inputWhite}
-                  fullWidth
-                  autoFocus
+                <CustomSelect
+                  placeholder="All Positions"
+                  options={roles}
+                  value={
+                    filter.selectedRole
+                      ? {
+                          value: filter.selectedRole,
+                          label: filter.selectedRole,
+                        }
+                      : null
+                  }
+                  onChange={value => this.handleRoleChange(value.value)}
+                  isMulti={false}
+                  isClearable={false}
+                  stylesOverride={{
+                    container: () => ({
+                      backgroundColor: 'white',
+                    }),
+                  }}
                 />
-                {filter.filteredRole ? (
-                  <div className={classes.searchResultList}>
-                    {filter.filteredRole.map(r => (
-                      <ListItem
-                        className={classes.resultItem}
-                        key={generate()}
-                        onClick={() => this.handleRoleChange(r)}
-                      >
-                        <ListItemText
-                          classes={{ primary: classes.resultText }}
-                          primary={r}
-                        />
-                      </ListItem>
-                    ))}
-                  </div>
-                ) : null}
               </Grid>
               <Grid item xs={12} lg={4}>
                 <FormControl classes={{ root: classes.formControl }} fullWidth>
@@ -647,7 +626,7 @@ class NetworkPage extends Component<Props, State> {
               <Grid item xs={12} lg={12}>
                 <Button
                   fullWidth
-                  color="raisedPrimary"
+                  color="primary"
                   className={`${classes.loadMoreButton}`}
                   mt={1}
                   onClick={() => this.loadMoreData()}
