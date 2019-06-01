@@ -24,13 +24,15 @@ const CREATE_CONNECTION = 'Jolly/Member/CREATE_CONNECTION';
 // ------------------------------------
 // Actions
 // ------------------------------------
-export const requestMemberProfile = (slug: string) => ({
+export const requestMemberProfile = (slug: string, currentUser: Object) => ({
   type: MEMBER_PROFILE + REQUESTED,
   payload: slug,
+  meta: currentUser,
 });
-const memberProfileRequestSuccess = (payload: Object) => ({
+const memberProfileRequestSuccess = (payload: Object, meta: Object) => ({
   type: MEMBER_PROFILE + SUCCEDED,
   payload,
+  meta,
 });
 const memberProfileRequestFailed = (error: string) => ({
   type: MEMBER_PROFILE + FAILED,
@@ -190,7 +192,7 @@ const initialState = fromJS({
 
 export const reducer = (
   state: State = initialState,
-  { type, payload }: Action
+  { type, payload, meta }: Action
 ) => {
   switch (type) {
     case ROLES + REQUESTED:
@@ -216,6 +218,13 @@ export const reducer = (
       return state.set('isMemberLoading', true);
 
     case MEMBER_PROFILE + SUCCEDED:
+      if (meta !== undefined) {
+        analytics.track('User Profile', {
+          userID: meta && meta.get('id'),
+          viewer:
+            meta && meta.get('id') === payload.id ? 'this-user' : 'other-user',
+        });
+      }
       return state
         .set('isMemberLoading', false)
         .set('data', fromJS(payload))
@@ -384,7 +393,7 @@ function* MemberRolesRequest({ payload }) {
   }
 }
 
-function* MemberProfileRequest({ payload }) {
+function* MemberProfileRequest({ payload, meta }) {
   const token = yield select(getToken);
   try {
     const response = yield call(request, {
@@ -393,7 +402,7 @@ function* MemberProfileRequest({ payload }) {
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
-      yield put(memberProfileRequestSuccess(response.data.response));
+      yield put(memberProfileRequestSuccess(response.data.response, meta));
     } else {
       yield put(memberProfileRequestFailed(response.data.error));
     }

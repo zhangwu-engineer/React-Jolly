@@ -366,13 +366,14 @@ class Member extends Component<Props, State> {
   componentDidMount() {
     const {
       match: { url },
+      currentUser,
     } = this.props;
     const {
       params: { slug },
     } = matchPath(url, {
       path: '/f/:slug',
     });
-    this.props.requestMemberProfile(slug);
+    this.props.requestMemberProfile(slug, currentUser);
     this.props.requestMemberBadges(slug);
     this.props.requestMemberFiles(slug);
     this.props.requestMemberRoles(slug);
@@ -850,7 +851,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  requestMemberProfile: slug => dispatch(requestMemberProfile(slug)),
+  requestMemberProfile: (slug, currentUser) =>
+    dispatch(requestMemberProfile(slug, currentUser)),
   requestMemberBadges: slug => dispatch(requestMemberBadges(slug)),
   requestMemberRoles: slug => dispatch(requestMemberRoles(slug)),
   requestMemberFiles: slug => dispatch(requestMemberFiles(slug)),
