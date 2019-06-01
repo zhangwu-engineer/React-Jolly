@@ -564,6 +564,11 @@ class NetworkPage extends Component<Props, State> {
                   onChange={value => this.handleRoleChange(value.value)}
                   isMulti={false}
                   isClearable={false}
+                  stylesOverride={{
+                    container: () => ({
+                      backgroundColor: 'white',
+                    }),
+                  }}
                 />
               </Grid>
               <Grid item xs={12} lg={4}>

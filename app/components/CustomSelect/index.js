@@ -183,6 +183,7 @@ type Props = {
   theme: Object,
   classes: Object,
   onChange: Function,
+  stylesOverride: Object,
 };
 
 class CustomSelect extends React.Component<Props> {
@@ -195,6 +196,7 @@ class CustomSelect extends React.Component<Props> {
       isMulti,
       classes,
       theme,
+      stylesOverride,
     } = this.props;
 
     const selectStyles = {
@@ -211,7 +213,10 @@ class CustomSelect extends React.Component<Props> {
       <div className={classes.root}>
         <Select
           classes={classes}
-          styles={selectStyles}
+          styles={{
+            ...selectStyles,
+            ...stylesOverride,
+          }}
           options={options}
           components={components}
           value={value}
