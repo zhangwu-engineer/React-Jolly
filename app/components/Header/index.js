@@ -616,7 +616,9 @@ class Header extends Component<Props, State> {
             <Button
               onClick={this.toggleBusinessSideDrawer(true)}
               color="inherit"
-              className={classes.businessSidebarButton}
+              className={`${classes.businessSidebarButton} ${
+                classes.menuButton
+              }`}
             >
               {user ? (
                 <React.Fragment>
