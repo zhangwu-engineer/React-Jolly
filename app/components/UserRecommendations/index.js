@@ -131,6 +131,17 @@ const styles = theme => ({
       borderWidth: 2,
     },
   },
+  moreButtonMobile: {
+    [theme.breakpoints.down('sm')]: {
+      display: 'none',
+    },
+  },
+  moreButtonDesktop: {
+    display: 'none',
+    [theme.breakpoints.down('sm')]: {
+      display: 'block',
+    },
+  },
   endorsedButton: {
     textTransform: 'none',
     padding: '10px 45px 10px 40px',
@@ -139,6 +150,11 @@ const styles = theme => ({
     boxShadow: 'none',
     '&:hover': {
       backgroundColor: theme.palette.primary.main,
+    },
+  },
+  endorsersSection: {
+    [theme.breakpoints.down('sm')]: {
+      marginTop: 20,
     },
   },
 });
@@ -221,7 +237,7 @@ class UserRecommendations extends Component<Props, State> {
                   <Typography className={classes.emptyText} align="center">
                     {`Did you enjoy working with ${capitalize(
                       user.get('firstName')
-                    )} ?`}
+                    )}?`}
                   </Typography>
                 </Grid>
                 <Grid item>
@@ -258,54 +274,66 @@ class UserRecommendations extends Component<Props, State> {
             )}
           </React.Fragment>
         ) : (
-          <React.Fragment>
-            <div className={classes.endorsersSection}>
-              {groupedEndorsers.map(group => (
-                <div key={generate()} className={classes.endorserGroup}>
-                  <Typography className={classes.endorseQuality}>
-                    {qualityNames[group.quality]}
-                  </Typography>
-                  <Grid container className={classes.endorseUsers} spacing={8}>
-                    {group.users.map(u => (
-                      <Grid
-                        item
-                        key={generate()}
-                        onClick={() => this.openUrl(`/f/${u.from.slug}`)}
-                      >
-                        <UserAvatar
-                          className={classes.avatar}
-                          src={u.from.profile.avatar}
-                        />
-                      </Grid>
-                    ))}
-                  </Grid>
-                </div>
-              ))}
-            </div>
-            {publicMode &&
-              user.get('role') !== 'USER' && (
-                <Grid container justify="center">
-                  <Grid item>
-                    <Typography className={classes.emptyText} align="center">
-                      {`Did you enjoy working with ${capitalize(
-                        user.get('firstName')
-                      )} ?`}
-                    </Typography>
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      className={classes.endorsedButton}
-                      variant="contained"
-                      size="large"
-                      color="primary"
-                      onClick={this.openModal}
+          <div className={classes.endorsersSection}>
+            {groupedEndorsers.map(group => (
+              <div key={generate()} className={classes.endorserGroup}>
+                <Typography className={classes.endorseQuality}>
+                  {qualityNames[group.quality]}
+                </Typography>
+                <Grid container className={classes.endorseUsers} spacing={8}>
+                  {group.users.map(u => (
+                    <Grid
+                      item
+                      key={generate()}
+                      onClick={() => this.openUrl(`/f/${u.from.slug}`)}
                     >
-                      {`Endorse ${capitalize(user.get('firstName'))} Again`}
-                    </Button>
-                  </Grid>
+                      <UserAvatar
+                        className={classes.avatar}
+                        src={u.from.profile.avatar}
+                      />
+                    </Grid>
+                  ))}
                 </Grid>
-              )}
-          </React.Fragment>
+              </div>
+            ))}
+            {publicMode ? (
+              <Grid container justify="center">
+                <Grid item xs={12}>
+                  <Typography className={classes.emptyText} align="center">
+                    {`Did you enjoy working with ${capitalize(
+                      user.get('firstName')
+                    )}?`}
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Button
+                    className={classes.endorsedButton}
+                    variant="contained"
+                    size="large"
+                    color="primary"
+                    onClick={this.openModal}
+                  >
+                    {`Endorse ${capitalize(user.get('firstName'))}`}
+                    {user.get('role') === 'USER' ? ' Again' : ''}
+                  </Button>
+                </Grid>
+              </Grid>
+            ) : (
+              <Grid container justify="center">
+                <Grid item className={classes.moreButtonDesktop}>
+                  <Button
+                    className={classes.moreButton}
+                    variant="outlined"
+                    size="large"
+                    color="primary"
+                    onClick={this.openModal}
+                  >
+                    Get More
+                  </Button>
+                </Grid>
+              </Grid>
+            )}
+          </div>
         )}
         <BaseModal
           className={classes.modal}
