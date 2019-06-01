@@ -78,6 +78,9 @@ module.exports = {
 
     /** Port Number To Listen To */
     PORT: ENV.PORT || 3000,
+
+    /** Application Name */
+    ID: 'lkedu906',
   },
 
   FACEBOOK: {
