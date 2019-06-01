@@ -171,7 +171,6 @@ const components = {
   Placeholder,
   SingleValue,
   ValueContainer,
-  DropdownIndicator: () => null,
   IndicatorSeparator: () => null,
 };
 
