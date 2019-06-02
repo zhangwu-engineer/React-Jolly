@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { replace } from 'react-router-redux';
-import { withRouter } from 'react-router';
+import { withRouter, matchPath } from 'react-router';
 import { Switch } from 'react-router-dom';
 import { fromJS } from 'immutable';
 import { capitalize } from 'lodash-es';
@@ -98,14 +98,21 @@ class App extends Component<Props> {
       navbarOpen,
       location: { pathname },
     } = this.props;
-    const isBusiness = user && user.get('isBusiness');
+
+    const matchBusiness = matchPath(pathname, {
+      path: '/b/:slug',
+    });
+
     let data = fromJS({
       title: 'Jolly | The Event Freelancer Network',
       description:
         'Jolly is a new platform to help event freelancers grow their reputation, find work and network with fellow hustlers like them.',
     });
-    if (isBusiness) {
-      const businessName = user.getIn(['business', 'name']) || '';
+    if (matchBusiness) {
+      const isBusiness = user && user.get('isBusiness');
+      const businesses =
+        isBusiness && user.get('businesses') && user.get('businesses').toJSON();
+      const businessName = businesses && businesses[0].name;
       data = fromJS({
         title: `${businessName} | JollyHQ Network`,
         description: `${businessName}’s profile on Jolly - the professional social network for events businesses and freelancers.`,

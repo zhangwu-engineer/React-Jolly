@@ -17,7 +17,7 @@ import UserAvatar from 'components/UserAvatar';
 import PeopleIcon from '@material-ui/icons/People';
 import SettingsIcon from '@material-ui/icons/SettingsOutlined';
 
-const styles = () => ({
+const styles = theme => ({
   sideTop: {
     width: 291,
     paddingTop: 15,
@@ -31,6 +31,9 @@ const styles = () => ({
     width: 60,
     height: 60,
     marginRight: 20,
+    paddingTop: 2,
+    backgroundColor: theme.palette.primary.main,
+    fontWeight: 600,
   },
   greetings: {
     fontSize: 16,
@@ -71,7 +74,7 @@ const styles = () => ({
 });
 
 type Props = {
-  user: Object,
+  business: Object,
   classes: Object,
   colorfulSideTop: Boolean,
 };
@@ -89,7 +92,7 @@ class BusinessSidebar extends PureComponent<Props, State> {
     this.setState(state => ({ isNested: !state.isNested }));
   };
   render() {
-    const { user, classes, colorfulSideTop } = this.props;
+    const { business, classes, colorfulSideTop } = this.props;
     const { isNested } = this.state;
     return (
       <Fragment>
@@ -105,12 +108,12 @@ class BusinessSidebar extends PureComponent<Props, State> {
           <Grid item>
             <UserAvatar
               className={classes.avatar}
-              src={user.getIn(['profile', 'avatar'])}
+              content={business && business.name}
             />
           </Grid>
           <Grid item>
             <Typography variant="h6" className={classes.greetings}>
-              {user.getIn(['business', 'name']) || ''}
+              {business && business.name}
             </Typography>
             <Link className={classes.link}>View Business Profile</Link>
           </Grid>

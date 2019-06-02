@@ -425,7 +425,7 @@ class BusinessMember extends Component<Props, State> {
           )}
         {isPrivate && (
           <div className={classes.businessSidebar}>
-            <BusinessSidebar user={currentUser} />
+            <BusinessSidebar business={currentBusiness} />
           </div>
         )}
         <div className={classes.root}>
@@ -433,6 +433,7 @@ class BusinessMember extends Component<Props, State> {
             {isPrivate ? (
               <BusinessProfileInfo
                 user={currentUser}
+                business={currentBusiness}
                 badges={badges}
                 openPhotoModal={this.openPhotoModal}
                 viewBadgeProgress={this.viewBadgeProgress}
@@ -441,6 +442,7 @@ class BusinessMember extends Component<Props, State> {
               <MemberProfileInfo
                 currentUser={currentUser}
                 user={member}
+                business={currentBusiness}
                 badges={badges}
                 openPhotoModal={this.openPhotoModal}
                 connect={this.props.requestCreateConnection}

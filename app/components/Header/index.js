@@ -22,6 +22,7 @@ import Drawer from '@material-ui/core/Drawer';
 import MenuIcon from '@material-ui/icons/Menu';
 
 import { history } from 'components/ConnectedRouter';
+import UserAvatar from 'components/UserAvatar';
 import Link from 'components/Link';
 import Icon from 'components/Icon';
 import BusinessSidebar from 'components/BusinessSidebar';
@@ -122,6 +123,26 @@ const styles = theme => ({
       margin: 0,
     },
   },
+  businessAvatar: {
+    width: 40,
+    height: 40,
+    margin: '0 auto',
+    backgroundColor: theme.palette.primary.main,
+    border: '2px solid #ffffff',
+    [theme.breakpoints.down('xs')]: {
+      width: 30,
+      height: 30,
+      paddingTop: 1,
+      fontSize: 14,
+    },
+  },
+  topMenuAvatar: {
+    width: 30,
+    height: 30,
+    paddingTop: 1,
+    fontWeight: 600,
+    fontSize: 13,
+  },
   emptyAvatar: {
     marginRight: 10,
     width: 40,
@@ -134,10 +155,6 @@ const styles = theme => ({
       height: 30,
       margin: 0,
     },
-  },
-  businessAvatar: {
-    width: 24,
-    height: 24,
   },
   menu: {
     boxShadow: '0 5px 19px 0 rgba(0, 0, 0, 0.07)',
@@ -290,6 +307,22 @@ const styles = theme => ({
       width: 48,
     },
   },
+  businessButton: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 0,
+    height: 70,
+    width: 70,
+    '&:hover': {
+      backgroundColor: 'rgba(255, 255, 255, 0.16)',
+    },
+    [theme.breakpoints.down('xs')]: {
+      height: 48,
+      width: 48,
+      marginRight: 5,
+    },
+  },
   networkButton: {
     display: 'flex',
     justifyContent: 'center',
@@ -406,7 +439,7 @@ class Header extends Component<Props, State> {
                 className={classes.link}
                 onClick={e => {
                   this.handleClose(e);
-                  history.push('/edit');
+                  history.push(`/f/${user.get('slug')}`);
                 }}
               >
                 View My Profile
@@ -539,19 +572,22 @@ class Header extends Component<Props, State> {
   renderBusinesses(businesses, classes) {
     let items = null;
     if (businesses)
-      items = businesses.toJSON().map(item => (
+      items = businesses.toJSON().map(b => (
         <MenuItem
           className={classes.menuItem}
-          onClick={() => history.push(`/b/${item.slug}`)}
-          key={item.id}
+          onClick={() => history.push(`/b/${b.slug}`)}
+          key={b.id}
         >
           <ListItemIcon className={classes.menuItemIcon}>
-            <Icon glyph={EmptyAvatar} size={24} />
+            <UserAvatar
+              className={`${classes.businessAvatar} ${classes.topMenuAvatar}`}
+              content={b && b.name}
+            />
           </ListItemIcon>
           <ListItemText
             className={classes.menuItemText}
             inset
-            primary={item.name}
+            primary={b.name}
           />
         </MenuItem>
       ));
@@ -579,6 +615,7 @@ class Header extends Component<Props, State> {
     });
 
     let isPrivateBusinessPage = false;
+    let currentBusiness = null;
     if (matchBusiness) {
       const {
         params: { slug },
@@ -586,7 +623,7 @@ class Header extends Component<Props, State> {
       const isBusinessUser = user && user.get('isBusiness');
       const businesses = user && user.get('businesses');
       const isBusinessPage = matchBusiness && matchBusiness.isExact;
-      const currentBusiness = businesses
+      currentBusiness = businesses
         .toJSON()
         .find(element => element.slug === slug);
       isPrivateBusinessPage =
@@ -616,22 +653,16 @@ class Header extends Component<Props, State> {
             <Button
               onClick={this.toggleBusinessSideDrawer(true)}
               color="inherit"
-              className={classes.businessSidebarButton}
+              className={`${classes.businessSidebarButton} ${
+                classes.businessButton
+              }`}
             >
-              {user ? (
-                <React.Fragment>
-                  {user.getIn(['profile', 'avatar']) ? (
-                    <Avatar
-                      src={user.getIn(['profile', 'avatar'])}
-                      className={classes.avatar}
-                    />
-                  ) : (
-                    <Icon glyph={EmptyAvatar} className={classes.emptyAvatar} />
-                  )}
-                </React.Fragment>
-              ) : (
-                <MenuIcon />
-              )}
+              <Fragment>
+                <UserAvatar
+                  className={classes.businessAvatar}
+                  content={currentBusiness && currentBusiness.name}
+                />
+              </Fragment>
             </Button>
           </Grid>
         )}
@@ -800,7 +831,7 @@ class Header extends Component<Props, State> {
                 open={businessSide}
                 onClose={this.toggleBusinessSideDrawer(false)}
               >
-                <BusinessSidebar user={user} colorfulSideTop />
+                <BusinessSidebar business={currentBusiness} colorfulSideTop />
               </Drawer>
             </Grid>
           </Grid>
