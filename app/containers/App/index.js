@@ -8,10 +8,9 @@ import { withRouter, matchPath } from 'react-router';
 import { Switch } from 'react-router-dom';
 import { fromJS } from 'immutable';
 import { capitalize } from 'lodash-es';
-import * as moment from 'moment';
 import Intercom from 'intercom-react';
-import CONFIG from '../../conf';
 
+import CONFIG from 'conf';
 import { Route } from 'components/Routes';
 import { history } from 'components/ConnectedRouter';
 import injectSagas from 'utils/injectSagas';
