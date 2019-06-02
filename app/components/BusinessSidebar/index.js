@@ -17,7 +17,7 @@ import UserAvatar from 'components/UserAvatar';
 import PeopleIcon from '@material-ui/icons/People';
 import SettingsIcon from '@material-ui/icons/SettingsOutlined';
 
-const styles = () => ({
+const styles = theme => ({
   sideTop: {
     width: 291,
     paddingTop: 15,
@@ -31,6 +31,9 @@ const styles = () => ({
     width: 60,
     height: 60,
     marginRight: 20,
+    paddingTop: 2,
+    backgroundColor: theme.palette.primary.main,
+    fontWeight: 600,
   },
   greetings: {
     fontSize: 16,
@@ -103,11 +106,14 @@ class BusinessSidebar extends PureComponent<Props, State> {
           }
         >
           <Grid item>
-            <UserAvatar className={classes.avatar} />
+            <UserAvatar
+              className={classes.avatar}
+              content={business && business.name}
+            />
           </Grid>
           <Grid item>
             <Typography variant="h6" className={classes.greetings}>
-              {business.name}
+              {business && business.name}
             </Typography>
             <Link className={classes.link}>View Business Profile</Link>
           </Grid>
