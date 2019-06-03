@@ -215,10 +215,13 @@ class MemberProfileInfo extends Component<Props, State> {
   openUrl = url => {
     window.open(url, '_blank');
   };
-  handleConnect = () => {
+  handleConnect = params => {
     const { currentUser, user } = this.props;
     if (currentUser && currentUser.get('id') !== user.get('id')) {
-      this.props.connect(user.get('id'));
+      this.props.connect(
+        user.get('id'),
+        params.isCoworker
+      );
     } else {
       history.push('/freelancer-signup');
     }
@@ -297,7 +300,25 @@ class MemberProfileInfo extends Component<Props, State> {
                             className={classes.menuItem}
                             onClick={e => {
                               this.handleClose(e);
-                              this.handleConnect();
+                              this.handleConnect({
+                                isCoworker: false,
+                              });
+                            }}
+                          >
+                            <ListItemText
+                              classes={{ primary: classes.menuItemText }}
+                              primary={`Connect with ${capitalize(
+                                user.get('firstName')
+                              )}`}
+                            />
+                          </MenuItem>
+                          <MenuItem
+                            className={classes.menuItem}
+                            onClick={e => {
+                              this.handleClose(e);
+                              this.handleConnect({
+                                isCoworker: true,
+                              });
                             }}
                           >
                             <ListItemText

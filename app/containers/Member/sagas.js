@@ -143,9 +143,12 @@ const memberEndorsementsRequestError = (error: string) => ({
   payload: error,
 });
 
-export const requestCreateConnection = (to: string) => ({
+export const requestCreateConnection = (to: string, isCoworker: boolean) => ({
   type: CREATE_CONNECTION + REQUESTED,
   payload: to,
+  metadata: {
+    isCoworker,
+  },
 });
 const connectionCreateRequestSuccess = (payload: Object) => ({
   type: CREATE_CONNECTION + SUCCEDED,
@@ -486,7 +489,7 @@ function* EndorsementsRequest({ payload }) {
   }
 }
 
-function* CreateConnectionRequest({ payload }) {
+function* CreateConnectionRequest({ payload, metadata }) {
   const token = yield select(getToken);
   try {
     const response = yield call(request, {
@@ -494,6 +497,7 @@ function* CreateConnectionRequest({ payload }) {
       url: `${API_URL}/connection`,
       data: {
         to: payload,
+        isCoworker: metadata.isCoworker,
       },
       headers: { 'x-access-token': token },
     });

@@ -862,8 +862,8 @@ const mapDispatchToProps = dispatch => ({
     dispatch(requestUserPhotoUpload(photo, type)),
   requestUserResumeUpload: resume => dispatch(requestUserResumeUpload(resume)),
   requestUserResumeDelete: () => dispatch(requestUserResumeDelete()),
-  requestCreateConnection: payload =>
-    dispatch(requestCreateConnection(payload)),
+  requestCreateConnection: (user, isCoworker) =>
+    dispatch(requestCreateConnection(user, isCoworker)),
 });
 
 export default compose(
