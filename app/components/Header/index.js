@@ -439,7 +439,7 @@ class Header extends Component<Props, State> {
                 className={classes.link}
                 onClick={e => {
                   this.handleClose(e);
-                  history.push(`/f/${user.get('slug')}`);
+                  history.push(`/edit`);
                 }}
               >
                 View My Profile
