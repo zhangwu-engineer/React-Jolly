@@ -337,21 +337,33 @@ class Member extends Component<Props, State> {
         isDeleting: true,
       };
     }
-    if (!nextProps.isDeletingConnection && !nextProps.deleteConnectionError && prevState.isDeleting) {
+    if (
+      !nextProps.isDeletingConnection &&
+      !nextProps.deleteConnectionError &&
+      prevState.isDeleting
+    ) {
       return {
         showNotification: true,
         isDeleting: false,
         isConnectionDeleted: true,
       };
     }
-    if (!nextProps.isCreatingConnection && !nextProps.createConnectionError && prevState.isInviting) {
+    if (
+      !nextProps.isCreatingConnection &&
+      !nextProps.createConnectionError &&
+      prevState.isInviting
+    ) {
       return {
         showNotification: true,
         isInviting: false,
         isConnectionSent: true,
       };
     }
-    if (!nextProps.isCreatingConnection && nextProps.createConnectionError && prevState.isInviting) {
+    if (
+      !nextProps.isCreatingConnection &&
+      nextProps.createConnectionError &&
+      prevState.isInviting
+    ) {
       return {
         showNotification: false,
         isInviting: false,
@@ -511,13 +523,18 @@ class Member extends Component<Props, State> {
     } = matchPath(url, {
       path: '/f/:slug',
     });
-    const isPrivate = (currentUser && currentUser.get('slug') === slug && !isPublicViewMode) || false;
-    const unearnedBadges = badges && badges.filter(b => b.get('earned') === false);
+    const isPrivate =
+      (currentUser && currentUser.get('slug') === slug && !isPublicViewMode) ||
+      false;
+    const unearnedBadges =
+      badges && badges.filter(b => b.get('earned') === false);
     const nextBadgeToEarn = unearnedBadges && unearnedBadges.get(0);
     let isCoworker = false;
     if (!isPrivate) {
       if (currentUser && coworkers) {
-        const matchingCoworkers = coworkers.filter(c => c.get('id') === currentUser.get('id'));
+        const matchingCoworkers = coworkers.filter(
+          c => c.get('id') === currentUser.get('id')
+        );
         if (matchingCoworkers && matchingCoworkers.size > 0) {
           isCoworker = true;
         }
@@ -538,13 +555,29 @@ class Member extends Component<Props, State> {
               justify="space-between"
               alignItems="center"
             >
-              <Grid item xs={12} md={8} lg={8} className={classes.topBannerTextContainer}>
+              <Grid
+                item
+                xs={12}
+                md={8}
+                lg={8}
+                className={classes.topBannerTextContainer}
+              >
                 <Typography className={classes.topBannerText}>
                   You&apos;re currently viewing your public profile.
                 </Typography>
               </Grid>
-              <Grid item xs={12} md={4} lg={4} className={classes.topBannerButtonsContainer}>
-                <Button className={classes.backButton} color="primary" onClick={this.toggleViewMode}>
+              <Grid
+                item
+                xs={12}
+                md={4}
+                lg={4}
+                className={classes.topBannerButtonsContainer}
+              >
+                <Button
+                  className={classes.backButton}
+                  color="primary"
+                  onClick={this.toggleViewMode}
+                >
                   Back
                 </Button>
                 <Button
@@ -559,9 +592,19 @@ class Member extends Component<Props, State> {
             </Grid>
           )}
         {showNotification &&
-          isConnectionSent && <Notification msg="Coworker connection request sent." close={this.closeNotification} />}
+          isConnectionSent && (
+            <Notification
+              msg="Coworker connection request sent."
+              close={this.closeNotification}
+            />
+          )}
         {showNotification &&
-          isConnectionDeleted && <Notification msg="You've been disconnected!" close={this.closeNotification} />}
+          isConnectionDeleted && (
+            <Notification
+              msg="You've been disconnected!"
+              close={this.closeNotification}
+            />
+          )}
         <div className={classes.root}>
           <div className={classes.profileInfo}>
             {isPrivate ? (
@@ -589,7 +632,10 @@ class Member extends Component<Props, State> {
           {isPrivate &&
             nextBadgeToEarn && (
               <div className={classes.badgeProgressBanner}>
-                <BadgeProgressBanner badge={activeBadge || nextBadgeToEarn} openShareModal={this.openShareModal} />
+                <BadgeProgressBanner
+                  badge={activeBadge || nextBadgeToEarn}
+                  openShareModal={this.openShareModal}
+                />
               </div>
             )}
           <div className={classes.panel}>
@@ -613,11 +659,21 @@ class Member extends Component<Props, State> {
                 connect={this.props.requestCreateConnection}
                 isConnectionSent={isConnectionSent}
               />
-              <UserRecommendations user={member} endorsements={endorsements} publicMode={!isPrivate} />
-              <UserWorkList works={works} isPrivate={isPrivate} openGallery={this.openGallery} />
+              <UserRecommendations
+                user={member}
+                endorsements={endorsements}
+                publicMode={!isPrivate}
+              />
+              <UserWorkList
+                works={works}
+                isPrivate={isPrivate}
+                openGallery={this.openGallery}
+              />
               <div className={classes.section}>
                 <div className={classes.sectionHeader}>
-                  <Typography className={classes.title}>Positions for Hire</Typography>
+                  <Typography className={classes.title}>
+                    Positions for Hire
+                  </Typography>
                 </div>
                 <div className={classes.sectionBody}>
                   {roles.size ? (
@@ -632,7 +688,10 @@ class Member extends Component<Props, State> {
                   {isPrivate && (
                     <Grid container justify="center">
                       <Grid item>
-                        <Link className={classes.editPosition} to="/types-of-work">
+                        <Link
+                          className={classes.editPosition}
+                          to="/types-of-work"
+                        >
                           Edit Positions
                         </Link>
                       </Grid>
@@ -643,17 +702,30 @@ class Member extends Component<Props, State> {
               {isPrivate ? (
                 <div className={classes.bottomBannerContainer}>
                   {currentUser.getIn(['profile', 'avatar']) ? (
-                    <Grid className={classes.bottomBanner} container justify="space-between" alignItems="center">
+                    <Grid
+                      className={classes.bottomBanner}
+                      container
+                      justify="space-between"
+                      alignItems="center"
+                    >
                       <Grid item xs={12} lg={6}>
                         <Typography className={classes.bannerText}>
                           {`Ready to share your profile? Grab the link here (`}
-                          <Link className={classes.link} onClick={this.toggleViewMode}>
+                          <Link
+                            className={classes.link}
+                            onClick={this.toggleViewMode}
+                          >
                             or view as public
                           </Link>
                           {'):'}
                         </Typography>
                       </Grid>
-                      <Grid item xs={12} lg={6} className={classes.bannerButtonContainer}>
+                      <Grid
+                        item
+                        xs={12}
+                        lg={6}
+                        className={classes.bannerButtonContainer}
+                      >
                         <Button
                           color="primary"
                           className={classes.bannerButton}
@@ -665,16 +737,29 @@ class Member extends Component<Props, State> {
                       </Grid>
                     </Grid>
                   ) : (
-                    <Grid className={classes.bottomBanner} container justify="space-between" alignItems="center">
+                    <Grid
+                      className={classes.bottomBanner}
+                      container
+                      justify="space-between"
+                      alignItems="center"
+                    >
                       <Grid item xs={12} lg={6}>
                         <Typography className={classes.bannerText}>
                           {`Before you share your profile, you need to add a profile picture.`}
                         </Typography>
                       </Grid>
-                      <Grid item xs={12} lg={6} className={classes.bannerButtonContainer}>
+                      <Grid
+                        item
+                        xs={12}
+                        lg={6}
+                        className={classes.bannerButtonContainer}
+                      >
                         <Button
                           color="primary"
-                          className={cx(classes.bannerButton, classes.addPictureButton)}
+                          className={cx(
+                            classes.bannerButton,
+                            classes.addPictureButton
+                          )}
                           onClick={() => this.openPhotoModal('avatar')}
                         >
                           <Icon glyph={AddPhotoIcon} size={20} />
@@ -682,7 +767,10 @@ class Member extends Component<Props, State> {
                         </Button>
                         <Button
                           color="primary"
-                          className={cx(classes.bannerButton, classes.smallAddPictureButton)}
+                          className={cx(
+                            classes.bannerButton,
+                            classes.smallAddPictureButton
+                          )}
                           onClick={() => {
                             history.push('/profile-picture');
                           }}
@@ -721,7 +809,12 @@ class Member extends Component<Props, State> {
         </div>
         {showContactOptions &&
           !isPrivate && (
-            <Grid className={classes.contactBanner} container justify="center" alignItems="center">
+            <Grid
+              className={classes.contactBanner}
+              container
+              justify="center"
+              alignItems="center"
+            >
               <Grid item>
                 <Button
                   className={classes.contactBannerButton}
@@ -735,8 +828,16 @@ class Member extends Component<Props, State> {
               </Grid>
             </Grid>
           )}
-        <ShareProfileModal isOpen={isOpen} onCloseModal={this.onCloseModal} shareURL={`/f/${member.get('slug')}`} />
-        <ContactOptionModal isOpen={isContactOpen} onCloseModal={this.onCloseContactModal} data={member} />
+        <ShareProfileModal
+          isOpen={isOpen}
+          onCloseModal={this.onCloseModal}
+          shareURL={`/f/${member.get('slug')}`}
+        />
+        <ContactOptionModal
+          isOpen={isContactOpen}
+          onCloseModal={this.onCloseContactModal}
+          data={member}
+        />
         <PhotoModal
           user={isPrivate ? currentUser : member}
           type={type}
@@ -797,10 +898,12 @@ const mapDispatchToProps = dispatch => ({
   requestMemberCoworkers: slug => dispatch(requestMemberCoworkers(slug)),
   requestMemberEndorsements: slug => dispatch(requestMemberEndorsements(slug)),
   updateUser: payload => dispatch(requestUserDataUpdate(payload)),
-  requestUserPhotoUpload: (photo, type) => dispatch(requestUserPhotoUpload(photo, type)),
+  requestUserPhotoUpload: (photo, type) =>
+    dispatch(requestUserPhotoUpload(photo, type)),
   requestUserResumeUpload: resume => dispatch(requestUserResumeUpload(resume)),
   requestUserResumeDelete: () => dispatch(requestUserResumeDelete()),
-  requestCreateConnection: (user, isCoworker) => dispatch(requestCreateConnection(user, isCoworker)),
+  requestCreateConnection: (user, isCoworker) =>
+    dispatch(requestCreateConnection(user, isCoworker)),
   requestDeleteConnection: userId => dispatch(requestDeleteConnection(userId)),
 });
 

@@ -231,7 +231,10 @@ const initialState = fromJS({
   requestingConnectionInformationError: '',
 });
 
-export const reducer = (state: State = initialState, { type, payload }: Action) => {
+export const reducer = (
+  state: State = initialState,
+  { type, payload }: Action
+) => {
   switch (type) {
     case ROLES + REQUESTED:
       return state.set('isLoading', true);
@@ -262,7 +265,9 @@ export const reducer = (state: State = initialState, { type, payload }: Action) 
         .set('memberError', '');
 
     case MEMBER_PROFILE + FAILED:
-      return state.set('isMemberLoading', false).set('memberError', payload.message);
+      return state
+        .set('isMemberLoading', false)
+        .set('memberError', payload.message);
 
     case MEMBER_PROFILE + ERROR:
       return state.set('isMemberLoading', false).set(
@@ -281,7 +286,9 @@ export const reducer = (state: State = initialState, { type, payload }: Action) 
         .set('badgesError', '');
 
     case MEMBER_BADGES + FAILED:
-      return state.set('isBadgesLoading', false).set('badgesError', payload.message);
+      return state
+        .set('isBadgesLoading', false)
+        .set('badgesError', payload.message);
 
     case MEMBER_BADGES + ERROR:
       return state.set('isBadgesLoading', false).set(
@@ -300,7 +307,9 @@ export const reducer = (state: State = initialState, { type, payload }: Action) 
         .set('fileError', '');
 
     case FILES + FAILED:
-      return state.set('isFileLoading', false).set('fileError', payload.message);
+      return state
+        .set('isFileLoading', false)
+        .set('fileError', payload.message);
 
     case FILES + ERROR:
       return state.set('isFileLoading', false).set(
@@ -319,7 +328,9 @@ export const reducer = (state: State = initialState, { type, payload }: Action) 
         .set('worksError', '');
 
     case WORKS + FAILED:
-      return state.set('isWorksLoading', false).set('worksError', payload.message);
+      return state
+        .set('isWorksLoading', false)
+        .set('worksError', payload.message);
 
     case WORKS + ERROR:
       return state.set('isWorksLoading', false).set(
@@ -338,7 +349,9 @@ export const reducer = (state: State = initialState, { type, payload }: Action) 
         .set('coworkersError', '');
 
     case COWORKERS + FAILED:
-      return state.set('isCoworkersLoading', false).set('coworkersError', payload);
+      return state
+        .set('isCoworkersLoading', false)
+        .set('coworkersError', payload);
 
     case COWORKERS + ERROR:
       return state.set('isFileLoading', false);
@@ -353,7 +366,9 @@ export const reducer = (state: State = initialState, { type, payload }: Action) 
         .set('endorsementsError', '');
 
     case ENDORSEMENTS + FAILED:
-      return state.set('isEndorsementsLoading', false).set('endorsementsError', payload.message);
+      return state
+        .set('isEndorsementsLoading', false)
+        .set('endorsementsError', payload.message);
 
     case ENDORSEMENTS + ERROR:
       return state.set('isEndorsementsLoading', false).set(
@@ -366,10 +381,14 @@ export const reducer = (state: State = initialState, { type, payload }: Action) 
       return state.set('isCreatingConnection', true);
 
     case CREATE_CONNECTION + SUCCEDED:
-      return state.set('isCreatingConnection', false).set('createConnectionError', '');
+      return state
+        .set('isCreatingConnection', false)
+        .set('createConnectionError', '');
 
     case CREATE_CONNECTION + FAILED:
-      return state.set('isCreatingConnection', false).set('createConnectionError', payload.message);
+      return state
+        .set('isCreatingConnection', false)
+        .set('createConnectionError', payload.message);
 
     case CREATE_CONNECTION + ERROR:
       return state.set('isCreatingConnection', false).set(
@@ -381,10 +400,14 @@ export const reducer = (state: State = initialState, { type, payload }: Action) 
       return state.set('isDeletingConnection', true);
 
     case DELETE_CONNECTION + SUCCEDED:
-      return state.set('isDeletingConnection', false).set('deleteConnectionError', '');
+      return state
+        .set('isDeletingConnection', false)
+        .set('deleteConnectionError', '');
 
     case DELETE_CONNECTION + FAILED:
-      return state.set('isDeletingConnection', false).set('deleteConnectionError', payload.message);
+      return state
+        .set('isDeletingConnection', false)
+        .set('deleteConnectionError', payload.message);
 
     case DELETE_CONNECTION + ERROR:
       return state.set('isDeletingConnection', false).set(
@@ -621,6 +644,9 @@ export default function*(): Saga<void> {
     takeLatest(ENDORSEMENTS + REQUESTED, EndorsementsRequest),
     takeLatest(CREATE_CONNECTION + REQUESTED, CreateConnectionRequest),
     takeLatest(DELETE_CONNECTION + REQUESTED, DeleteConnectionRequest),
-    takeLatest(CONNECTION_INFORMATION + REQUESTED, CreateConnectionInformationRequest),
+    takeLatest(
+      CONNECTION_INFORMATION + REQUESTED,
+      CreateConnectionInformationRequest
+    ),
   ]);
 }
