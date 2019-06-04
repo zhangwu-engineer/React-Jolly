@@ -292,11 +292,12 @@ class Profile extends Component<Props, State> {
                       <JobCard
                         key={generate()}
                         job={work}
+                        user={user}
                         openGallery={this.openGallery}
                       />
                     ))
                   ) : (
-                    <JobCard />
+                    <JobCard user={user} />
                   )}
                   <Grid container justify="center">
                     <Grid item>
@@ -320,10 +321,14 @@ class Profile extends Component<Props, State> {
                 <div className={classes.sectionBody}>
                   {roles && roles.size ? (
                     roles.map(role => (
-                      <RoleCard key={generate()} role={role.toJS()} />
+                      <RoleCard
+                        key={generate()}
+                        role={role.toJS()}
+                        user={user}
+                      />
                     ))
                   ) : (
-                    <RoleCard />
+                    <RoleCard user={user} />
                   )}
                   <Grid container justify="center">
                     <Grid item>

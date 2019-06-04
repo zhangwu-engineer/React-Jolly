@@ -684,7 +684,7 @@ class Member extends Component<Props, State> {
                   {roles.size ? (
                     roles.map(role => (
                       <div key={generate()} id={role.get('id')}>
-                        <RoleCard role={role.toJS()} />
+                        <RoleCard role={role.toJS()} user={member} />
                       </div>
                     ))
                   ) : (
