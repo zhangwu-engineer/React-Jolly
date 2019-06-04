@@ -376,10 +376,10 @@ class BusinessMember extends Component<Props, State> {
     } = matchPath(url, {
       path: '/b/:slug',
     });
-    const businesses = currentUser && currentUser.get('businesses');
-    const currentBusiness = businesses
-      .toJSON()
-      .find(element => element.slug === slug);
+    const businesses =
+      currentUser.get('businesses') && currentUser.get('businesses').toJSON();
+    const currentBusiness =
+      businesses && businesses.find(element => element.slug === slug);
     const isPrivate = (currentBusiness && !isPublicViewMode) || false;
     return (
       <Fragment>
