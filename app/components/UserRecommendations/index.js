@@ -132,6 +132,19 @@ const styles = theme => ({
     },
   },
   moreButtonMobile: {
+    borderRadius: 0,
+    fontWeight: 600,
+    textTransform: 'none',
+    borderWidth: 2,
+    fontSize: 12,
+    paddingTop: 6,
+    paddingLeft: 12,
+    paddingRight: 12,
+    paddingBottom: 6,
+    borderColor: theme.palette.primary.main,
+    '&:hover': {
+      borderWidth: 2,
+    },
     [theme.breakpoints.down('sm')]: {
       display: 'none',
     },
@@ -218,7 +231,7 @@ class UserRecommendations extends Component<Props, State> {
             endorsements.size > 0 && (
               <Grid item>
                 <Button
-                  className={classes.moreButton}
+                  className={(classes.moreButton, classes.moreButtonMobile)}
                   variant="outlined"
                   size="large"
                   color="primary"
