@@ -11,9 +11,10 @@ import CardActions from '@material-ui/core/CardActions';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-
+import { capitalize } from 'lodash-es';
 import { history } from 'components/ConnectedRouter';
 import Icon from 'components/Icon';
+import Link from 'components/Link';
 
 import RoleIcon from 'images/sprite/role.svg';
 import PeopleIcon from 'images/sprite/people.svg';
@@ -95,12 +96,35 @@ const styles = theme => ({
     textAlign: 'center',
     fontWeight: 'bold',
   },
+  emptyText: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#6f6f73',
+    marginTop: 28,
+    paddingLeft: 20,
+    paddingRight: 20,
+  },
+  addPastGigButton: {
+    borderRadius: 0,
+    fontWeight: 600,
+    textTransform: 'none',
+    borderWidth: 2,
+    borderColor: theme.palette.primary.main,
+    paddingLeft: 46,
+    paddingRight: 46,
+    marginTop: 30,
+    '&:hover': {
+      borderWidth: 2,
+    },
+  },
 });
 
 type Props = {
   job?: Object,
   classes: Object,
   openGallery: Function,
+  isPrivate: Boolean,
+  user: Object,
 };
 
 class JobCard extends Component<Props> {
@@ -109,7 +133,7 @@ class JobCard extends Component<Props> {
     history.push(`/f/${job.getIn(['user', 'slug'])}/e/${job.get('slug')}`);
   };
   render() {
-    const { job, classes } = this.props;
+    const { job, classes, isPrivate, user } = this.props;
     const photo1 = job && job.getIn(['photos', 0]);
     const photo2 = job && job.getIn(['photos', 1]);
     const photo3 = job && job.getIn(['photos', 2]);
@@ -117,12 +141,28 @@ class JobCard extends Component<Props> {
       return (
         <Card className={classes.root}>
           <CardContent className={classes.content}>
-            <Typography variant="h6" className={classes.title}>
-              No Jobs added yet
+            <Typography className={classes.emptyText} align="center">
+              {!isPrivate
+                ? `${capitalize(
+                    user.get('firstName')
+                  )} Hasn't added any past gig experience—yet!`
+                : `You haven’t added any past gig experience—yet!`}
             </Typography>
-            <Typography className={classes.date}>
-              Add your first job now
-            </Typography>
+            {isPrivate && (
+              <Grid container justify="center">
+                <Grid item>
+                  <Button
+                    className={classes.addPastGigButton}
+                    variant="outlined"
+                    size="large"
+                    color="primary"
+                    component={props => <Link to="/add" {...props} />}
+                  >
+                    Add Past Gig
+                  </Button>
+                </Grid>
+              </Grid>
+            )}
           </CardContent>
         </Card>
       );

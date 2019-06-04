@@ -15,6 +15,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import ShareIcon from '@material-ui/icons/Share';
+import PenIcon from '@material-ui/icons/CreateOutlined';
 
 import ProfileInfo from 'components/ProfileInfo';
 import MemberProfileInfo from 'components/MemberProfileInfo';
@@ -31,7 +32,6 @@ import FloatingAddButton from 'components/FloatingAddButton';
 import BadgeProgressBanner from 'components/BadgeProgressBanner';
 import UserWorkList from 'components/UserWorkList';
 import UserCoworkers from 'components/UserCoworkers';
-
 import AddPhotoIcon from 'images/sprite/add-photo-blue.svg';
 
 import saga, {
@@ -272,6 +272,19 @@ const styles = theme => ({
     fontWeight: 'bold',
     textDecoration: 'none',
     textTransform: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+  },
+  editPositionIcon: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    textDecoration: 'none',
+    textTransform: 'none',
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+    },
   },
 });
 
@@ -630,14 +643,42 @@ class Member extends Component<Props, State> {
               />
               <UserWorkList
                 works={works}
+                user={member}
                 isPrivate={isPrivate}
                 openGallery={this.openGallery}
               />
               <div className={classes.section}>
                 <div className={classes.sectionHeader}>
-                  <Typography className={classes.title}>
-                    Positions for Hire
-                  </Typography>
+                  <Grid
+                    container
+                    justify="space-between"
+                    alignItems="center"
+                    className={classes.header}
+                  >
+                    <Grid item>
+                      <Typography className={classes.title}>
+                        Positions for Hire
+                      </Typography>
+                    </Grid>
+                    <Grid item>
+                      {isPrivate && (
+                        <React.Fragment>
+                          <Link
+                            className={classes.editPosition}
+                            to="/types-of-work"
+                          >
+                            Edit Positions
+                          </Link>
+                          <Link
+                            className={classes.editPositionIcon}
+                            to="/types-of-work"
+                          >
+                            <PenIcon fontSize="small" />
+                          </Link>
+                        </React.Fragment>
+                      )}
+                    </Grid>
+                  </Grid>
                 </div>
                 <div className={classes.sectionBody}>
                   {roles.size ? (
@@ -647,19 +688,7 @@ class Member extends Component<Props, State> {
                       </div>
                     ))
                   ) : (
-                    <RoleCard />
-                  )}
-                  {isPrivate && (
-                    <Grid container justify="center">
-                      <Grid item>
-                        <Link
-                          className={classes.editPosition}
-                          to="/types-of-work"
-                        >
-                          Edit Positions
-                        </Link>
-                      </Grid>
-                    </Grid>
+                    <RoleCard isPrivate={isPrivate} user={member} />
                   )}
                 </div>
               </div>
