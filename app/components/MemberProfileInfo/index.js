@@ -79,8 +79,7 @@ const styles = theme => ({
   overlay: {
     height: '258px',
     opacity: 0.5,
-    backgroundImage:
-      'linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7))',
+    backgroundImage: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7))',
     [theme.breakpoints.down('xs')]: {
       height: '168px',
     },
@@ -190,6 +189,7 @@ type Props = {
   openShareModal: Function,
   openPhotoModal: Function,
   connect: Function,
+  connectionInformation: string,
 };
 
 type State = {
@@ -227,30 +227,32 @@ class MemberProfileInfo extends Component<Props, State> {
     }
   };
   anchorEl: HTMLElement;
+  displayConnectionState = () => {
+    const { isConnectionSent, connectionInformation } = this.props;
+    if (connectionInformation === 'coworker') return 'Coworker';
+    if (connectionInformation === 'generic') return 'Connected';
+    if (isConnectionSent) return 'Request Sent';
+    return '';
+  };
   render() {
-    const { user, badges, isConnectionSent, classes } = this.props;
+    const { user, badges, isConnectionSent, classes, connectionInformation } = this.props;
     const { isMenuOpen } = this.state;
     const avatarImg = user.getIn(['profile', 'avatar']) || '';
+    const connected = ['coworker', 'generic'].includes(connectionInformation) || isConnectionSent;
     return (
       <div className={classes.root}>
         <div className={classes.topSection}>
           <div
             className={classes.backgroundImage}
             style={{
-              backgroundImage: `url('${user.getIn([
-                'profile',
-                'backgroundImage',
-              ])}')`,
+              backgroundImage: `url('${user.getIn(['profile', 'backgroundImage'])}')`,
             }}
           >
             <div className={classes.overlay} />
           </div>
           {user.getIn(['profile', 'showImageLibrary']) && (
             <Fragment>
-              <IconButton
-                className={classes.imageButton}
-                onClick={() => this.props.openPhotoModal('gallery')}
-              >
+              <IconButton className={classes.imageButton} onClick={() => this.props.openPhotoModal('gallery')}>
                 <ImageIcon />
               </IconButton>
               <IconButton
@@ -261,16 +263,11 @@ class MemberProfileInfo extends Component<Props, State> {
               </IconButton>
             </Fragment>
           )}
-          <Grid
-            container
-            justify="flex-end"
-            alignItems="center"
-            className={classes.buttonContainer}
-          >
+          <Grid container justify="flex-end" alignItems="center" className={classes.buttonContainer}>
             <Grid item className={classes.connectButtonBox}>
               <Button
                 className={cx(classes.connectButton, {
-                  [classes.connectionSentButton]: isConnectionSent,
+                  [classes.connectionSentButton]: connected,
                 })}
                 onClick={this.handleToggle}
                 buttonRef={node => {
@@ -278,19 +275,14 @@ class MemberProfileInfo extends Component<Props, State> {
                 }}
               >
                 <Icon
-                  glyph={isConnectionSent ? ConnectSentIcon : ConnectIcon}
+                  glyph={connected ? ConnectSentIcon : ConnectIcon}
                   width={23}
                   height={13}
                   className={classes.connectIcon}
                 />
-                {isConnectionSent ? 'Request Sent' : 'Connect'}
+                {connected ? this.displayConnectionState() : 'Connect'}
               </Button>
-              <Popper
-                open={isMenuOpen}
-                anchorEl={this.anchorEl}
-                transition
-                placement="bottom-end"
-              >
+              <Popper open={isMenuOpen} anchorEl={this.anchorEl} transition placement="bottom-end">
                 {({ TransitionProps }) => (
                   <Fade {...TransitionProps} timeout={350}>
                     <Paper square classes={{ root: classes.menu }}>
@@ -307,9 +299,7 @@ class MemberProfileInfo extends Component<Props, State> {
                           >
                             <ListItemText
                               classes={{ primary: classes.menuItemText }}
-                              primary={`Connect with ${capitalize(
-                                user.get('firstName')
-                              )}`}
+                              primary={`Connect with ${capitalize(user.get('firstName'))}`}
                             />
                           </MenuItem>
                           <MenuItem
@@ -323,9 +313,7 @@ class MemberProfileInfo extends Component<Props, State> {
                           >
                             <ListItemText
                               classes={{ primary: classes.menuItemText }}
-                              primary={`I've worked with ${capitalize(
-                                user.get('firstName')
-                              )}`}
+                              primary={`I've worked with ${capitalize(user.get('firstName'))}`}
                             />
                           </MenuItem>
                         </MenuList>
@@ -336,10 +324,7 @@ class MemberProfileInfo extends Component<Props, State> {
               </Popper>
             </Grid>
             <Grid item>
-              <IconButton
-                className={classes.shareButton}
-                onClick={() => this.props.openShareModal('Top Profile')}
-              >
+              <IconButton className={classes.shareButton} onClick={() => this.props.openShareModal('Top Profile')}>
                 <Icon glyph={ShareIcon} size={18} />
               </IconButton>
             </Grid>
@@ -348,20 +333,13 @@ class MemberProfileInfo extends Component<Props, State> {
             <UserAvatar className={classes.avatar} src={avatarImg} />
           </div>
         </div>
-        <Grid
-          container
-          className={classes.bottomSection}
-          alignItems="center"
-          justify="space-between"
-        >
+        <Grid container className={classes.bottomSection} alignItems="center" justify="space-between">
           <Grid item className={classes.nameSection}>
             <Typography className={classes.username}>
               {`${user.get('firstName') || ''} ${user.get('lastName') || ''}`}
             </Typography>
             {user.getIn(['profile', 'location']) && (
-              <Typography className={classes.location}>
-                {user.getIn(['profile', 'location'])}
-              </Typography>
+              <Typography className={classes.location}>{user.getIn(['profile', 'location'])}</Typography>
             )}
           </Grid>
           <Grid item className={classes.badgeSection}>

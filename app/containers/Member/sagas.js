@@ -21,6 +21,7 @@ const WORKS = 'Jolly/Member/WORKS';
 const COWORKERS = 'Jolly/Member/COWORKERS';
 const ENDORSEMENTS = 'Jolly/Member/ENDORSEMENTS';
 const CREATE_CONNECTION = 'Jolly/Member/CREATE_CONNECTION';
+const CONNECTION_INFORMATION = 'Jolly/Member/CONNECTION_INFORMATION';
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -162,6 +163,23 @@ const connectionCreateRequestError = (error: string) => ({
   type: CREATE_CONNECTION + ERROR,
   payload: error,
 });
+
+export const getConnectionInformation = (userProfile: Object) => ({
+  type: CONNECTION_INFORMATION + REQUESTED,
+  payload: userProfile,
+});
+const getConnectionInformationSuccess = (payload: Object) => ({
+  type: CONNECTION_INFORMATION + SUCCEDED,
+  payload,
+});
+const getConnectionInformationFailed = (error: string) => ({
+  type: CONNECTION_INFORMATION + FAILED,
+  payload: error,
+});
+const getConnectionInformationError = (error: string) => ({
+  type: CONNECTION_INFORMATION + ERROR,
+  payload: error,
+});
 // ------------------------------------
 // Reducer
 // ------------------------------------
@@ -189,12 +207,11 @@ const initialState = fromJS({
   coworkersError: '',
   isCreatingConnection: false,
   createConnectionError: '',
+  isRequestingConnectionInformation: false,
+  requestingConnectionInformationError: '',
 });
 
-export const reducer = (
-  state: State = initialState,
-  { type, payload }: Action
-) => {
+export const reducer = (state: State = initialState, { type, payload }: Action) => {
   switch (type) {
     case ROLES + REQUESTED:
       return state.set('isLoading', true);
@@ -225,9 +242,7 @@ export const reducer = (
         .set('memberError', '');
 
     case MEMBER_PROFILE + FAILED:
-      return state
-        .set('isMemberLoading', false)
-        .set('memberError', payload.message);
+      return state.set('isMemberLoading', false).set('memberError', payload.message);
 
     case MEMBER_PROFILE + ERROR:
       return state.set('isMemberLoading', false).set(
@@ -246,9 +261,7 @@ export const reducer = (
         .set('badgesError', '');
 
     case MEMBER_BADGES + FAILED:
-      return state
-        .set('isBadgesLoading', false)
-        .set('badgesError', payload.message);
+      return state.set('isBadgesLoading', false).set('badgesError', payload.message);
 
     case MEMBER_BADGES + ERROR:
       return state.set('isBadgesLoading', false).set(
@@ -267,9 +280,7 @@ export const reducer = (
         .set('fileError', '');
 
     case FILES + FAILED:
-      return state
-        .set('isFileLoading', false)
-        .set('fileError', payload.message);
+      return state.set('isFileLoading', false).set('fileError', payload.message);
 
     case FILES + ERROR:
       return state.set('isFileLoading', false).set(
@@ -288,9 +299,7 @@ export const reducer = (
         .set('worksError', '');
 
     case WORKS + FAILED:
-      return state
-        .set('isWorksLoading', false)
-        .set('worksError', payload.message);
+      return state.set('isWorksLoading', false).set('worksError', payload.message);
 
     case WORKS + ERROR:
       return state.set('isWorksLoading', false).set(
@@ -309,9 +318,7 @@ export const reducer = (
         .set('coworkersError', '');
 
     case COWORKERS + FAILED:
-      return state
-        .set('isCoworkersLoading', false)
-        .set('coworkersError', payload);
+      return state.set('isCoworkersLoading', false).set('coworkersError', payload);
 
     case COWORKERS + ERROR:
       return state.set('isFileLoading', false);
@@ -326,9 +333,7 @@ export const reducer = (
         .set('endorsementsError', '');
 
     case ENDORSEMENTS + FAILED:
-      return state
-        .set('isEndorsementsLoading', false)
-        .set('endorsementsError', payload.message);
+      return state.set('isEndorsementsLoading', false).set('endorsementsError', payload.message);
 
     case ENDORSEMENTS + ERROR:
       return state.set('isEndorsementsLoading', false).set(
@@ -341,18 +346,35 @@ export const reducer = (
       return state.set('isCreatingConnection', true);
 
     case CREATE_CONNECTION + SUCCEDED:
-      return state
-        .set('isCreatingConnection', false)
-        .set('createConnectionError', '');
+      return state.set('isCreatingConnection', false).set('createConnectionError', '');
 
     case CREATE_CONNECTION + FAILED:
-      return state
-        .set('isCreatingConnection', false)
-        .set('createConnectionError', payload.message);
+      return state.set('isCreatingConnection', false).set('createConnectionError', payload.message);
 
     case CREATE_CONNECTION + ERROR:
       return state.set('isCreatingConnection', false).set(
         'createConnectionError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case CONNECTION_INFORMATION + REQUESTED:
+      return state.set('isRequestingConnectionInformation', true);
+
+    case CONNECTION_INFORMATION + SUCCEDED:
+      return state
+        .set('isRequestingConnectionInformation', false)
+        .set('requestingConnectionInformationError', '')
+        .set('connectionInformation', payload.connectionType);
+
+    case CONNECTION_INFORMATION + FAILED:
+      return state
+        .set('isRequestingConnectionInformation', false)
+        .set('requestingConnectionInformationError', payload.message);
+
+    case CONNECTION_INFORMATION + ERROR:
+      return state.set('isRequestingConnectionInformation', false).set(
+        'requestingConnectionInformationError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -396,7 +418,10 @@ function* MemberProfileRequest({ payload }) {
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
-      yield put(memberProfileRequestSuccess(response.data.response));
+      yield all([
+        put(memberProfileRequestSuccess(response.data.response)),
+        put(getConnectionInformation(response.data.response)),
+      ]);
     } else {
       yield put(memberProfileRequestFailed(response.data.error));
     }
@@ -511,6 +536,24 @@ function* CreateConnectionRequest({ payload, metadata }) {
   }
 }
 
+function* CreateConnectionInformationRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/connection/${payload.id}/info`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(getConnectionInformationSuccess(response.data.response));
+    } else {
+      yield put(getConnectionInformationFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(getConnectionInformationError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(ROLES + REQUESTED, MemberRolesRequest),
@@ -521,5 +564,6 @@ export default function*(): Saga<void> {
     takeLatest(COWORKERS + REQUESTED, MemberCoworkersRequest),
     takeLatest(ENDORSEMENTS + REQUESTED, EndorsementsRequest),
     takeLatest(CREATE_CONNECTION + REQUESTED, CreateConnectionRequest),
+    takeLatest(CONNECTION_INFORMATION + REQUESTED, CreateConnectionInformationRequest),
   ]);
 }
