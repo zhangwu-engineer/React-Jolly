@@ -190,6 +190,7 @@ type Props = {
   openPhotoModal: Function,
   connect: Function,
   connectionInformation: string,
+  requestDeleteConnection: Function,
 };
 
 type State = {
@@ -226,6 +227,10 @@ class MemberProfileInfo extends Component<Props, State> {
       history.push('/freelancer-signup');
     }
   };
+  handleDisconnect = () => {
+    const { user } = this.props;
+    this.props.requestDeleteConnection(user.get('id'));
+  };
   anchorEl: HTMLElement;
   displayConnectionState = () => {
     const { isConnectionSent, connectionInformation } = this.props;
@@ -238,7 +243,9 @@ class MemberProfileInfo extends Component<Props, State> {
     const { user, badges, isConnectionSent, classes, connectionInformation } = this.props;
     const { isMenuOpen } = this.state;
     const avatarImg = user.getIn(['profile', 'avatar']) || '';
-    const connected = ['coworker', 'generic'].includes(connectionInformation) || isConnectionSent;
+    const connectionEstablished = ['coworker', 'generic'].includes(connectionInformation);
+    const isCoWorker = connectionInformation === 'coworker';
+    const connected = connectionEstablished || isConnectionSent;
     return (
       <div className={classes.root}>
         <div className={classes.topSection}>
@@ -287,36 +294,69 @@ class MemberProfileInfo extends Component<Props, State> {
                   <Fade {...TransitionProps} timeout={350}>
                     <Paper square classes={{ root: classes.menu }}>
                       <ClickAwayListener onClickAway={this.handleClose}>
-                        <MenuList className={classes.menuList}>
-                          <MenuItem
-                            className={classes.menuItem}
-                            onClick={e => {
-                              this.handleClose(e);
-                              this.handleConnect({
-                                isCoworker: false,
-                              });
-                            }}
-                          >
-                            <ListItemText
-                              classes={{ primary: classes.menuItemText }}
-                              primary={`Connect with ${capitalize(user.get('firstName'))}`}
-                            />
-                          </MenuItem>
-                          <MenuItem
-                            className={classes.menuItem}
-                            onClick={e => {
-                              this.handleClose(e);
-                              this.handleConnect({
-                                isCoworker: true,
-                              });
-                            }}
-                          >
-                            <ListItemText
-                              classes={{ primary: classes.menuItemText }}
-                              primary={`I've worked with ${capitalize(user.get('firstName'))}`}
-                            />
-                          </MenuItem>
-                        </MenuList>
+                        {connectionEstablished &&
+                          isCoWorker && (
+                            <MenuList className={classes.menuList}>
+                              <MenuItem className={classes.menuItem} onClick={() => this.handleDisconnect()}>
+                                <ListItemText
+                                  classes={{ primary: classes.menuItemText }}
+                                  primary={`Disconnect from ${capitalize(user.get('firstName'))}`}
+                                />
+                              </MenuItem>
+                            </MenuList>
+                          )}
+                        {connectionEstablished &&
+                          !isCoWorker && (
+                            <MenuList className={classes.menuList}>
+                              <MenuItem
+                                className={classes.menuItem}
+                                onClick={e => {
+                                  this.handleClose(e);
+                                  this.handleConnect({
+                                    isCoworker: true,
+                                  });
+                                }}
+                              >
+                                <ListItemText
+                                  classes={{ primary: classes.menuItemText }}
+                                  primary={`I've worked with ${capitalize(user.get('firstName'))}`}
+                                />
+                              </MenuItem>
+                            </MenuList>
+                          )}
+                        {!connectionEstablished &&
+                          !isConnectionSent && (
+                            <MenuList className={classes.menuList}>
+                              <MenuItem
+                                className={classes.menuItem}
+                                onClick={e => {
+                                  this.handleClose(e);
+                                  this.handleConnect({
+                                    isCoworker: false,
+                                  });
+                                }}
+                              >
+                                <ListItemText
+                                  classes={{ primary: classes.menuItemText }}
+                                  primary={`Connect with ${capitalize(user.get('firstName'))}`}
+                                />
+                              </MenuItem>
+                              <MenuItem
+                                className={classes.menuItem}
+                                onClick={e => {
+                                  this.handleClose(e);
+                                  this.handleConnect({
+                                    isCoworker: true,
+                                  });
+                                }}
+                              >
+                                <ListItemText
+                                  classes={{ primary: classes.menuItemText }}
+                                  primary={`I've worked with ${capitalize(user.get('firstName'))}`}
+                                />
+                              </MenuItem>
+                            </MenuList>
+                          )}
                       </ClickAwayListener>
                     </Paper>
                   </Fade>

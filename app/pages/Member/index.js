@@ -44,6 +44,7 @@ import saga, {
   requestMemberCoworkers,
   requestMemberEndorsements,
   requestCreateConnection,
+  requestDeleteConnection,
 } from 'containers/Member/sagas';
 import {
   requestUserPhotoUpload,
@@ -287,6 +288,8 @@ type Props = {
   connectionInformation: string,
   isCreatingConnection: boolean, // eslint-disable-line
   createConnectionError: string, // eslint-disable-line
+  isDeletingConnection: boolean, // eslint-disable-line
+  deleteConnectionError: string, // eslint-disable-line
   classes: Object,
   match: Object,
   requestMemberProfile: Function,
@@ -301,6 +304,7 @@ type Props = {
   requestUserResumeDelete: Function,
   updateUser: Function,
   requestCreateConnection: Function,
+  requestDeleteConnection: Function,
 };
 
 type State = {
@@ -311,6 +315,8 @@ type State = {
   photoIndex: number,
   isGalleryOpen: boolean,
   isInviting: boolean,
+  isDeleting: boolean,
+  isConnectionDeleted: boolean,
   showNotification: boolean,
   isConnectionSent: boolean,
   type: string,
@@ -324,6 +330,18 @@ class Member extends Component<Props, State> {
     if (nextProps.isCreatingConnection) {
       return {
         isInviting: true,
+      };
+    }
+    if (nextProps.isDeletingConnection) {
+      return {
+        isDeleting: true,
+      };
+    }
+    if (!nextProps.isDeletingConnection && !nextProps.deleteConnectionError && prevState.isDeleting) {
+      return {
+        showNotification: true,
+        isDeleting: false,
+        isConnectionDeleted: true,
       };
     }
     if (!nextProps.isCreatingConnection && !nextProps.createConnectionError && prevState.isInviting) {
@@ -349,8 +367,10 @@ class Member extends Component<Props, State> {
     photoIndex: 0,
     isGalleryOpen: false,
     isInviting: false, // eslint-disable-line
+    isDeleting: false, // eslint-disable-line
     showNotification: false,
     isConnectionSent: false,
+    isConnectionDeleted: false,
     type: '',
     isPhotoModalOpen: false,
     isPublicViewMode: false,
@@ -476,6 +496,7 @@ class Member extends Component<Props, State> {
       isGalleryOpen,
       showNotification,
       isConnectionSent,
+      isConnectionDeleted,
       type,
       isPhotoModalOpen,
       isPublicViewMode,
@@ -537,7 +558,10 @@ class Member extends Component<Props, State> {
               </Grid>
             </Grid>
           )}
-        {showNotification && <Notification msg="Coworker connection request sent." close={this.closeNotification} />}
+        {showNotification &&
+          isConnectionSent && <Notification msg="Coworker connection request sent." close={this.closeNotification} />}
+        {showNotification &&
+          isConnectionDeleted && <Notification msg="You've been disconnected!" close={this.closeNotification} />}
         <div className={classes.root}>
           <div className={classes.profileInfo}>
             {isPrivate ? (
@@ -558,6 +582,7 @@ class Member extends Component<Props, State> {
                 connect={this.props.requestCreateConnection}
                 isConnectionSent={isConnectionSent}
                 connectionInformation={connectionInformation}
+                requestDeleteConnection={this.props.requestDeleteConnection}
               />
             )}
           </div>
@@ -759,6 +784,8 @@ const mapStateToProps = state => ({
   connectionInformation: state.getIn(['member', 'connectionInformation']),
   isCreatingConnection: state.getIn(['member', 'isCreatingConnection']),
   createConnectionError: state.getIn(['member', 'createConnectionError']),
+  isDeletingConnection: state.getIn(['member', 'isDeletingConnection']),
+  deleteConnectionError: state.getIn(['member', 'deleteConnectionError']),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -774,6 +801,7 @@ const mapDispatchToProps = dispatch => ({
   requestUserResumeUpload: resume => dispatch(requestUserResumeUpload(resume)),
   requestUserResumeDelete: () => dispatch(requestUserResumeDelete()),
   requestCreateConnection: (user, isCoworker) => dispatch(requestCreateConnection(user, isCoworker)),
+  requestDeleteConnection: userId => dispatch(requestDeleteConnection(userId)),
 });
 
 export default compose(

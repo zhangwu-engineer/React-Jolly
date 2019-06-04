@@ -21,6 +21,7 @@ const WORKS = 'Jolly/Member/WORKS';
 const COWORKERS = 'Jolly/Member/COWORKERS';
 const ENDORSEMENTS = 'Jolly/Member/ENDORSEMENTS';
 const CREATE_CONNECTION = 'Jolly/Member/CREATE_CONNECTION';
+const DELETE_CONNECTION = 'Jolly/Member/DELETE_CONNECTION';
 const CONNECTION_INFORMATION = 'Jolly/Member/CONNECTION_INFORMATION';
 // ------------------------------------
 // Actions
@@ -180,6 +181,23 @@ const getConnectionInformationError = (error: string) => ({
   type: CONNECTION_INFORMATION + ERROR,
   payload: error,
 });
+
+export const requestDeleteConnection = (userId: string) => ({
+  type: DELETE_CONNECTION + REQUESTED,
+  payload: userId,
+});
+const connectionDeleteRequestSuccess = (payload: Object) => ({
+  type: DELETE_CONNECTION + SUCCEDED,
+  payload,
+});
+const connectionDeleteRequestFailed = (error: string) => ({
+  type: DELETE_CONNECTION + FAILED,
+  payload: error,
+});
+const connectionDeleteRequestError = (error: string) => ({
+  type: DELETE_CONNECTION + ERROR,
+  payload: error,
+});
 // ------------------------------------
 // Reducer
 // ------------------------------------
@@ -207,6 +225,8 @@ const initialState = fromJS({
   coworkersError: '',
   isCreatingConnection: false,
   createConnectionError: '',
+  isDeletingConnection: false,
+  deleteConnectionError: '',
   isRequestingConnectionInformation: false,
   requestingConnectionInformationError: '',
 });
@@ -353,6 +373,21 @@ export const reducer = (state: State = initialState, { type, payload }: Action) 
 
     case CREATE_CONNECTION + ERROR:
       return state.set('isCreatingConnection', false).set(
+        'createConnectionError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+    case DELETE_CONNECTION + REQUESTED:
+      return state.set('isDeletingConnection', true);
+
+    case DELETE_CONNECTION + SUCCEDED:
+      return state.set('isDeletingConnection', false).set('deleteConnectionError', '');
+
+    case DELETE_CONNECTION + FAILED:
+      return state.set('isDeletingConnection', false).set('deleteConnectionError', payload.message);
+
+    case DELETE_CONNECTION + ERROR:
+      return state.set('isDeletingConnection', false).set(
         'createConnectionError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
@@ -536,6 +571,27 @@ function* CreateConnectionRequest({ payload, metadata }) {
   }
 }
 
+function* DeleteConnectionRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/connection/${payload}/disconnect`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield all([
+        put(connectionDeleteRequestSuccess(response.data.response)),
+        put(getConnectionInformation(response.data.response)),
+      ]);
+    } else {
+      yield put(connectionDeleteRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(connectionDeleteRequestError(error));
+  }
+}
+
 function* CreateConnectionInformationRequest({ payload }) {
   const token = yield select(getToken);
   try {
@@ -564,6 +620,7 @@ export default function*(): Saga<void> {
     takeLatest(COWORKERS + REQUESTED, MemberCoworkersRequest),
     takeLatest(ENDORSEMENTS + REQUESTED, EndorsementsRequest),
     takeLatest(CREATE_CONNECTION + REQUESTED, CreateConnectionRequest),
+    takeLatest(DELETE_CONNECTION + REQUESTED, DeleteConnectionRequest),
     takeLatest(CONNECTION_INFORMATION + REQUESTED, CreateConnectionInformationRequest),
   ]);
 }
