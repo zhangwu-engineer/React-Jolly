@@ -403,7 +403,7 @@ class Header extends Component<Props, State> {
   renderMenu = () => {
     const { user, classes } = this.props;
     const isBusiness = user && user.get('isBusiness');
-    const businesses = user && user.get('businesses');
+    const businesses = isBusiness && user.get('businesses');
     const nameLength = user
       ? user.get('firstName').length + user.get('lastName').length
       : 0;
@@ -621,7 +621,7 @@ class Header extends Component<Props, State> {
         params: { slug },
       } = matchBusiness;
       const isBusinessUser = user && user.get('isBusiness');
-      const businesses = user && user.get('businesses');
+      const businesses = isBusinessUser && user.get('businesses');
       const isBusinessPage = matchBusiness && matchBusiness.isExact;
       currentBusiness = businesses
         .toJSON()

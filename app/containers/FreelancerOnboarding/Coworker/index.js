@@ -389,7 +389,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
         isFormOpen: { $set: false },
       }),
       () => {
-        this.props.requestCreateConnection(user.get('id'));
+        this.props.requestCreateConnection({ toUserId: user.get('id') });
       }
     );
   };

@@ -184,10 +184,10 @@ const styles = theme => ({
 type Props = {
   currentUser: Object,
   user: Object,
-  business: Object,
   badges: Object,
   isConnectionSent: boolean,
   classes: Object,
+  connectionStatus: Object,
   openShareModal: Function,
   openPhotoModal: Function,
   connect: Function,
@@ -219,20 +219,45 @@ class MemberProfileInfo extends Component<Props, State> {
   handleConnect = () => {
     const { currentUser, user } = this.props;
     if (currentUser && currentUser.get('id') !== user.get('id')) {
-      this.props.connect(user.get('id'));
+      const isCurrentBusiness = currentUser && currentUser.get('isBusiness');
+      const businesses =
+        currentUser.get('businesses') && currentUser.get('businesses').toJSON();
+      const from = isCurrentBusiness
+        ? businesses.length > 0 && businesses[0].id
+        : currentUser.get('id');
+      const isUserBusiness = user && user.get('isBusiness');
+
+      const toUserId = user.get('id');
+      const connectionType = `${isCurrentBusiness ? 'b' : 'f'}2${
+        isUserBusiness ? 'b' : 'f'
+      }`;
+      this.props.connect({ from, toUserId, connectionType });
     } else {
       history.push('/freelancer-signup');
     }
   };
   anchorEl: HTMLElement;
   render() {
-    const { user, business, badges, isConnectionSent, classes } = this.props;
+    const {
+      user,
+      badges,
+      isConnectionSent,
+      classes,
+      connectionStatus,
+    } = this.props;
     const { isMenuOpen } = this.state;
     const isBusiness = user && user.get('isBusiness');
+    const businesses = isBusiness && user.get('businesses').toJSON();
     const displayName = isBusiness
-      ? business && business.name
+      ? businesses.length > 0 && businesses[0].name
       : `${user.get('firstName') || ''} ${user.get('lastName') || ''}`;
     const avatarImg = user.getIn(['profile', 'avatar']) || '';
+    let status =
+      connectionStatus && connectionStatus.connection
+        ? connectionStatus.connection.status
+        : 'Connect';
+    const isConnectingButton = connectionStatus && connectionStatus.connection;
+    status = isConnectionSent ? 'Request Sent' : status;
     return (
       <div className={classes.root}>
         <div className={classes.topSection}>
@@ -276,7 +301,8 @@ class MemberProfileInfo extends Component<Props, State> {
             <Grid item className={classes.connectButtonBox}>
               <Button
                 className={cx(classes.connectButton, {
-                  [classes.connectionSentButton]: isConnectionSent,
+                  [classes.connectionSentButton]:
+                    isConnectionSent || isConnectingButton,
                 })}
                 onClick={this.handleToggle}
                 buttonRef={node => {
@@ -284,46 +310,48 @@ class MemberProfileInfo extends Component<Props, State> {
                 }}
               >
                 <Icon
-                  glyph={isConnectionSent ? ConnectSentIcon : ConnectIcon}
+                  glyph={
+                    isConnectionSent || isConnectingButton
+                      ? ConnectSentIcon
+                      : ConnectIcon
+                  }
                   width={23}
                   height={13}
                   className={classes.connectIcon}
                 />
-                {isConnectionSent ? 'Request Sent' : 'Connect'}
+                {status}
               </Button>
-              {!isBusiness && (
-                <Popper
-                  open={isMenuOpen}
-                  anchorEl={this.anchorEl}
-                  transition
-                  placement="bottom-end"
-                >
-                  {({ TransitionProps }) => (
-                    <Fade {...TransitionProps} timeout={350}>
-                      <Paper square classes={{ root: classes.menu }}>
-                        <ClickAwayListener onClickAway={this.handleClose}>
-                          <MenuList className={classes.menuList}>
-                            <MenuItem
-                              className={classes.menuItem}
-                              onClick={e => {
-                                this.handleClose(e);
-                                this.handleConnect();
-                              }}
-                            >
-                              <ListItemText
-                                classes={{ primary: classes.menuItemText }}
-                                primary={`I've worked with ${capitalize(
-                                  user.get('firstName')
-                                )}`}
-                              />
-                            </MenuItem>
-                          </MenuList>
-                        </ClickAwayListener>
-                      </Paper>
-                    </Fade>
-                  )}
-                </Popper>
-              )}
+              <Popper
+                open={isMenuOpen}
+                anchorEl={this.anchorEl}
+                transition
+                placement="bottom-end"
+              >
+                {({ TransitionProps }) => (
+                  <Fade {...TransitionProps} timeout={350}>
+                    <Paper square classes={{ root: classes.menu }}>
+                      <ClickAwayListener onClickAway={this.handleClose}>
+                        <MenuList className={classes.menuList}>
+                          <MenuItem
+                            className={classes.menuItem}
+                            onClick={e => {
+                              this.handleClose(e);
+                              this.handleConnect();
+                            }}
+                          >
+                            <ListItemText
+                              classes={{ primary: classes.menuItemText }}
+                              primary={`I've worked with ${capitalize(
+                                user.get('firstName')
+                              )}`}
+                            />
+                          </MenuItem>
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Fade>
+                )}
+              </Popper>
             </Grid>
             <Grid item>
               <IconButton

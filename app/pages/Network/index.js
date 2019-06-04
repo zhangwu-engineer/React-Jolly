@@ -358,7 +358,7 @@ class NetworkPage extends Component<Props, State> {
         isFormOpen: { $set: false },
       }),
       () => {
-        this.props.requestCreateConnection(user.get('id'));
+        this.props.requestCreateConnection({ toUserId: user.get('id') });
       }
     );
   };
@@ -368,7 +368,7 @@ class NetworkPage extends Component<Props, State> {
         sentTo: { $set: email },
       }),
       () => {
-        this.props.requestCreateConnection(email);
+        this.props.requestCreateConnection({ email });
       }
     );
   };

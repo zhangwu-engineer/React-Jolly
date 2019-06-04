@@ -21,6 +21,8 @@ const WORKS = 'Jolly/Member/WORKS';
 const COWORKERS = 'Jolly/Member/COWORKERS';
 const ENDORSEMENTS = 'Jolly/Member/ENDORSEMENTS';
 const CREATE_CONNECTION = 'Jolly/Member/CREATE_CONNECTION';
+const CHECK_CONNECTION = 'Jolly/Network/CHECK_CONNECTION';
+
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -161,6 +163,23 @@ const connectionCreateRequestError = (error: string) => ({
   type: CREATE_CONNECTION + ERROR,
   payload: error,
 });
+
+export const requestCheckConnection = (payload: Object) => ({
+  type: CHECK_CONNECTION + REQUESTED,
+  payload,
+});
+const connectionCheckRequestSuccess = (payload: Object) => ({
+  type: CHECK_CONNECTION + SUCCEDED,
+  payload,
+});
+const connectionCheckRequestFailed = (error: string) => ({
+  type: CHECK_CONNECTION + FAILED,
+  payload: error,
+});
+const connectionCheckRequestError = (error: string) => ({
+  type: CHECK_CONNECTION + ERROR,
+  payload: error,
+});
 // ------------------------------------
 // Reducer
 // ------------------------------------
@@ -188,6 +207,9 @@ const initialState = fromJS({
   coworkersError: '',
   isCreatingConnection: false,
   createConnectionError: '',
+  isChecking: false,
+  checkError: '',
+  connectionStatus: fromJS({}),
 });
 
 export const reducer = (
@@ -363,6 +385,25 @@ export const reducer = (
         Please try again later or contact support and provide the following error information: ${payload}`
       );
 
+    case CHECK_CONNECTION + REQUESTED:
+      return state.set('isChecking', true);
+
+    case CHECK_CONNECTION + SUCCEDED:
+      return state
+        .set('isChecking', false)
+        .set('connectionStatus', fromJS(payload))
+        .set('checkError', '');
+
+    case CHECK_CONNECTION + FAILED:
+      return state.set('isChecking', false).set('checkError', payload.message);
+
+    case CHECK_CONNECTION + ERROR:
+      return state.set('isChecking', false).set(
+        'checkError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
     default:
       return state;
   }
@@ -501,9 +542,7 @@ function* CreateConnectionRequest({ payload }) {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/connection`,
-      data: {
-        to: payload,
-      },
+      data: payload,
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
@@ -513,6 +552,29 @@ function* CreateConnectionRequest({ payload }) {
     }
   } catch (error) {
     yield put(connectionCreateRequestError(error));
+  }
+}
+
+function* CheckConnectionRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/connection/check`,
+      data: {
+        toSlug: payload.toSlug,
+        from: payload.from,
+      },
+      headers: { 'x-access-token': token },
+    });
+
+    if (response.status === 200) {
+      yield put(connectionCheckRequestSuccess(response.data.response));
+    } else {
+      yield put(connectionCheckRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(connectionCheckRequestError(error));
   }
 }
 
@@ -526,5 +588,6 @@ export default function*(): Saga<void> {
     takeLatest(COWORKERS + REQUESTED, MemberCoworkersRequest),
     takeLatest(ENDORSEMENTS + REQUESTED, EndorsementsRequest),
     takeLatest(CREATE_CONNECTION + REQUESTED, CreateConnectionRequest),
+    takeLatest(CHECK_CONNECTION + REQUESTED, CheckConnectionRequest),
   ]);
 }
