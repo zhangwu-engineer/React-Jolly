@@ -21,9 +21,9 @@ const CONNECTION = 'Jolly/Network/CONNECTION';
 // ------------------------------------
 // Actions
 // ------------------------------------
-export const requestCreateConnection = (to: string) => ({
+export const requestCreateConnection = (payload: Object) => ({
   type: CREATE_CONNECTION + REQUESTED,
-  payload: to,
+  payload,
 });
 const connectionCreateRequestSuccess = (payload: Object) => ({
   type: CREATE_CONNECTION + SUCCEDED,
@@ -189,14 +189,16 @@ export const reducer = (
 // ------------------------------------
 // Sagas
 // ------------------------------------
-function* CreateConnectionRequest({ payload }) {
+function* CreateConnectionRequest(payload) {
   const token = yield select(getToken);
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/connection`,
       data: {
-        to: payload,
+        from: payload.from,
+        to: payload.to,
+        connectionType: payload.connectionType,
       },
       headers: { 'x-access-token': token },
     });

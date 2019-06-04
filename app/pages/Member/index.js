@@ -32,6 +32,7 @@ import FloatingAddButton from 'components/FloatingAddButton';
 import BadgeProgressBanner from 'components/BadgeProgressBanner';
 import UserWorkList from 'components/UserWorkList';
 import UserCoworkers from 'components/UserCoworkers';
+
 import AddPhotoIcon from 'images/sprite/add-photo-blue.svg';
 
 import saga, {
@@ -44,6 +45,7 @@ import saga, {
   requestMemberCoworkers,
   requestMemberEndorsements,
   requestCreateConnection,
+  requestCheckConnection,
 } from 'containers/Member/sagas';
 import {
   requestUserPhotoUpload,
@@ -299,6 +301,7 @@ type Props = {
   endorsements: Object,
   isCreatingConnection: boolean, // eslint-disable-line
   createConnectionError: string, // eslint-disable-line
+  connectionStatus: Object,
   classes: Object,
   match: Object,
   requestMemberProfile: Function,
@@ -313,6 +316,7 @@ type Props = {
   requestUserResumeDelete: Function,
   updateUser: Function,
   requestCreateConnection: Function,
+  requestCheckConnection: Function,
 };
 
 type State = {
@@ -386,13 +390,22 @@ class Member extends Component<Props, State> {
     } = matchPath(url, {
       path: '/f/:slug',
     });
-    this.props.requestMemberProfile(slug, currentUser);
+
+    const isBusiness = currentUser && currentUser.get('isBusiness');
+    const businesses = isBusiness && currentUser.get('businesses').toJSON();
+    const from = isBusiness
+      ? businesses.length > 0 && businesses[0].id
+      : currentUser.get('id');
+    const connectionType = isBusiness ? 'b2f' : 'f2f';
+
+    this.props.requestMemberProfile(slug);
     this.props.requestMemberBadges(slug);
     this.props.requestMemberFiles(slug);
     this.props.requestMemberRoles(slug);
     this.props.requestMemberWorks(slug);
     this.props.requestMemberCoworkers(slug);
     this.props.requestMemberEndorsements(slug);
+    this.props.requestCheckConnection({ toSlug: slug, from, connectionType });
   }
   onCloseModal = () => {
     this.setState({ isOpen: false });
@@ -478,6 +491,7 @@ class Member extends Component<Props, State> {
     const {
       currentUser,
       member,
+      connectionStatus,
       badges,
       files,
       roles,
@@ -602,6 +616,7 @@ class Member extends Component<Props, State> {
                 openShareModal={this.openShareModal}
                 openPhotoModal={this.openPhotoModal}
                 connect={this.props.requestCreateConnection}
+                connectionStatus={connectionStatus.toJSON()}
                 isConnectionSent={isConnectionSent}
               />
             )}
@@ -877,11 +892,11 @@ const mapStateToProps = state => ({
   endorsements: state.getIn(['member', 'endorsements']),
   isCreatingConnection: state.getIn(['member', 'isCreatingConnection']),
   createConnectionError: state.getIn(['member', 'createConnectionError']),
+  connectionStatus: state.getIn(['member', 'connectionStatus']),
 });
 
 const mapDispatchToProps = dispatch => ({
-  requestMemberProfile: (slug, currentUser) =>
-    dispatch(requestMemberProfile(slug, currentUser)),
+  requestMemberProfile: slug => dispatch(requestMemberProfile(slug)),
   requestMemberBadges: slug => dispatch(requestMemberBadges(slug)),
   requestMemberRoles: slug => dispatch(requestMemberRoles(slug)),
   requestMemberFiles: slug => dispatch(requestMemberFiles(slug)),
@@ -895,6 +910,7 @@ const mapDispatchToProps = dispatch => ({
   requestUserResumeDelete: () => dispatch(requestUserResumeDelete()),
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
+  requestCheckConnection: payload => dispatch(requestCheckConnection(payload)),
 });
 
 export default compose(
