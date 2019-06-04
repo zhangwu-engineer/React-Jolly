@@ -82,14 +82,6 @@ class CoworkerCard extends Component<Props> {
             )}`}
           </Typography>
         </div>
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.viewProfileButton}
-          onClick={this.viewProfile}
-        >
-          View Profile
-        </Button>
       </div>
     );
   }

@@ -119,7 +119,7 @@ class UserCoworkers extends Component<Props> {
             ? `My Coworkers · `
             : `${capitalize(user.get('firstName'))}'s Coworkers · `}
           <Link
-            to={isPrivate ? '/network/coworkers' : ''}
+            to={isPrivate ? '/network/connections' : ''}
             className={cx(classes.count, {
               [classes.emptyCount]: coworkers && coworkers.size === 0,
             })}
