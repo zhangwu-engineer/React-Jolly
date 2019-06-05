@@ -177,6 +177,8 @@ type Props = {
   classes: Object,
   publicMode?: boolean,
   user: Object,
+  currentUser: Object,
+  coworkers: Object,
 };
 
 type State = {
@@ -197,7 +199,14 @@ class UserRecommendations extends Component<Props, State> {
     window.open(url, '_blank');
   };
   render() {
-    const { endorsements, user, publicMode, classes } = this.props;
+    const {
+      endorsements,
+      user,
+      publicMode,
+      classes,
+      currentUser,
+      coworkers,
+    } = this.props;
     const { isOpen } = this.state;
     const qualityNames = {
       hardest_worker: 'Hardest Worker',
@@ -327,7 +336,10 @@ class UserRecommendations extends Component<Props, State> {
                     onClick={this.openModal}
                   >
                     {`Endorse ${capitalize(user.get('firstName'))}`}
-                    {user.get('role') === 'USER' ? ' Again' : ''}
+                    {coworkers &&
+                      currentUser && (
+                      coworkers.some(el => el.get('id') === currentUser.get('id')) ? ' Again' : ''
+                    )}
                   </Button>
                 </Grid>
               </Grid>

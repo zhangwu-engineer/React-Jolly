@@ -657,6 +657,8 @@ class Member extends Component<Props, State> {
                 user={member}
                 endorsements={endorsements}
                 publicMode={!isPrivate}
+                currentUser={currentUser}
+                coworkers={coworkers}
               />
               <UserWorkList
                 works={works}
