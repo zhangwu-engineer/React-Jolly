@@ -87,7 +87,7 @@ module.exports = {
     APP_ID: isDev ? '862j54unk910vg' : '78qrisch5bmx23',
   },
   INTERCOM: {
-    APP_ID: isDev ? 'wz8qfqtl' : 'lkedu906',
+    APP_ID: isDev ? 'wz8qfqtl' : 'wz8qfqtl',
   },
   /** Application API */
   API: {
