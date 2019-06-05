@@ -7,10 +7,6 @@ import { replace } from 'react-router-redux';
 import { withRouter } from 'react-router';
 import { Switch } from 'react-router-dom';
 import { fromJS } from 'immutable';
-import { capitalize } from 'lodash-es';
-import Intercom from 'intercom-react';
-
-import CONFIG from 'conf';
 import { Route } from 'components/Routes';
 import { history } from 'components/ConnectedRouter';
 import injectSagas from 'utils/injectSagas';
@@ -81,16 +77,6 @@ class App extends Component<Props> {
       });
     }
   }
-  intercomUserParams = user => {
-    if (user) {
-      return {
-        email: user.get('email'),
-        created_at: (+new Date(user.get('date_created')) / 1000).toFixed(0),
-        name: capitalize(`${user.get('firstName')} ${user.get('lastName')}`),
-      };
-    }
-    return {};
-  };
   render() {
     const {
       user,
@@ -106,7 +92,6 @@ class App extends Component<Props> {
       'https://s3-us-west-2.amazonaws.com/jolly-images/preview.jpg';
     return (
       <React.Fragment>
-        <Intercom appId={CONFIG.APP.ID} user={this.intercomUserParams(user)} />
         <PageMeta data={data} ogImage={ogImage} />
         <Switch>
           <Route path="/freelancer-signup" />
