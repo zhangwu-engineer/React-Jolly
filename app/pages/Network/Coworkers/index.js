@@ -516,6 +516,7 @@ class CoworkersPage extends Component<Props, State> {
                       name="location"
                       value={filter.location}
                       onChange={this.handleLocationChange}
+                      select
                     />
                   </Grid>
                   <Grid
