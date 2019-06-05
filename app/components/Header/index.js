@@ -136,17 +136,19 @@ const styles = theme => ({
       fontSize: 14,
     },
   },
-  topMenuAvatar: {
-    width: 30,
-    height: 30,
-    paddingTop: 1,
+  businessTopMenuAvatar: {
+    width: 24,
+    height: 24,
     fontWeight: 600,
-    fontSize: 13,
+    fontSize: 9,
+    border: 0,
+    margin: '0 auto',
+    backgroundColor: theme.palette.primary.main,
   },
   emptyAvatar: {
     marginRight: 10,
     width: 40,
-    height: 40,
+    height: 39.7,
     backgroundColor: theme.palette.common.white,
     border: '2px solid #ffffff',
     borderRadius: 40,
@@ -160,28 +162,29 @@ const styles = theme => ({
     boxShadow: '0 5px 19px 0 rgba(0, 0, 0, 0.07)',
   },
   menuTop: {
-    padding: '20px 25px',
+    padding: '26px 25px 24px 25px',
     backgroundColor: '#f2f9ff',
   },
   menuAvatar: {
     width: 40,
     height: 40,
-    marginRight: 15,
+    marginRight: 14,
   },
   menuName: {
     fontSize: 16,
     fontWeight: 600,
+    lineHeight: 1,
+    height: 22,
+    fontFamily: 'Avenir Next, Demi Bold',
     color: '#343434',
     textTransform: 'capitalize',
   },
   menuDivider: {
     height: 1,
   },
-  dividedSection: {
-    padding: '16px 0px',
-  },
+  dividedSection: {},
   dividedBusinesses: {
-    padding: '15px 30px 5px 30px',
+    padding: '12px 25px 5px 25px',
   },
   createAccountButton: {
     fontSize: 14,
@@ -264,18 +267,44 @@ const styles = theme => ({
     padding: 0,
   },
   menuList: {
-    padding: 0,
+    paddingTop: 7,
+    paddingBottom: 16,
+  },
+  menuBusinessList: {
+    paddingTop: 0,
+    paddingBottom: 24,
   },
   menuItem: {
-    paddingLeft: 30,
+    paddingLeft: 25,
+  },
+  menuSubItem: {
+    lineHeight: 1,
   },
   menuItemIcon: {
     margin: 0,
+    width: 24,
+    height: 24,
+    paddingTop: 2,
+  },
+  businessMenuItemIcon: {
+    margin: 0,
+    width: 24,
+    height: 24,
   },
   menuItemText: {
     fontSize: 14,
+    fontFamily: 'Avenir Next, Demi Bold',
     fontWeight: 600,
+    lineHeight: 1,
     color: '#343434',
+    marginLeft: -4,
+  },
+  menuItemCaption: {
+    fontSize: 12,
+    fontFamily: 'Avenir Next, Demi Bold',
+    fontWeight: 500,
+    lineHeight: 2.67,
+    color: '#595959',
   },
   link: {
     fontSize: 13,
@@ -421,7 +450,7 @@ class Header extends Component<Props, State> {
               <Icon glyph={EmptyAvatar} className={classes.menuAvatar} />
             )}
           </Grid>
-          <Grid item>
+          <Grid item className={classes.menuSubItem}>
             {user ? (
               <Typography variant="h6" className={classes.menuName}>
                 {nameLength > 10
@@ -467,7 +496,7 @@ class Header extends Component<Props, State> {
                 }}
               >
                 <ListItemIcon className={classes.menuItemIcon}>
-                  <Icon glyph={SettingsIcon} size={18} />
+                  <Icon glyph={SettingsIcon} size={20} />
                 </ListItemIcon>
                 <ListItemText
                   classes={{ primary: classes.menuItemText }}
@@ -482,7 +511,7 @@ class Header extends Component<Props, State> {
                 }}
               >
                 <ListItemIcon className={classes.menuItemIcon}>
-                  <Icon glyph={ContactIcon} size={18} />
+                  <Icon glyph={ContactIcon} size={20} />
                 </ListItemIcon>
                 <ListItemText
                   classes={{ primary: classes.menuItemText }}
@@ -494,7 +523,7 @@ class Header extends Component<Props, State> {
                 onClick={this.handleLogout}
               >
                 <ListItemIcon className={classes.menuItemIcon}>
-                  <Icon glyph={LogoutIcon} size={18} />
+                  <Icon glyph={LogoutIcon} size={20} />
                 </ListItemIcon>
                 <ListItemText
                   classes={{ primary: classes.menuItemText }}
@@ -508,15 +537,14 @@ class Header extends Component<Props, State> {
                 <Divider className={classes.menuDivider} />
                 <Grid className={classes.dividedBusinesses}>
                   <Typography
-                    classes={{ primary: classes.menuItemText }}
-                    color="textSecondary"
+                    className={classes.menuItemCaption}
                     display="block"
                     variant="caption"
                   >
                     Businesses
                   </Typography>
                 </Grid>
-                <MenuList id="menu-list">
+                <MenuList className={classes.menuBusinessList}>
                   {this.renderBusinesses(businesses, classes)}
                 </MenuList>
               </Grid>
@@ -579,15 +607,14 @@ class Header extends Component<Props, State> {
           onClick={() => history.push(`/b/${b.slug}`)}
           key={b.id}
         >
-          <ListItemIcon className={classes.menuItemIcon}>
+          <ListItemIcon className={classes.businessMenuItemIcon}>
             <UserAvatar
-              className={`${classes.businessAvatar} ${classes.topMenuAvatar}`}
+              className={classes.businessTopMenuAvatar}
               content={b && b.name}
             />
           </ListItemIcon>
           <ListItemText
-            className={classes.menuItemText}
-            inset
+            classes={{ primary: classes.menuItemText }}
             primary={b.name}
           />
         </MenuItem>
