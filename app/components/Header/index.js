@@ -267,8 +267,8 @@ const styles = theme => ({
     padding: 0,
   },
   menuList: {
-    paddingTop: 7,
-    paddingBottom: 16,
+    paddingTop: 15,
+    paddingBottom: 25,
   },
   menuBusinessList: {
     paddingTop: 0,
@@ -284,7 +284,7 @@ const styles = theme => ({
     margin: 0,
     width: 24,
     height: 24,
-    paddingTop: 2,
+    paddingTop: 3,
   },
   businessMenuItemIcon: {
     margin: 0,
