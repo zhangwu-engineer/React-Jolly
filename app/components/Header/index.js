@@ -644,11 +644,13 @@ class Header extends Component<Props, State> {
 
     let isPrivateBusinessPage = false;
     let currentBusiness = null;
+    let isFreelancer = user && true;
     if (matchBusiness) {
       const {
         params: { slug },
       } = matchBusiness;
       const isBusinessUser = user && user.get('isBusiness');
+      isFreelancer = !isBusinessUser;
       const businesses =
         isBusinessUser &&
         user.get('businesses') &&
@@ -764,7 +766,7 @@ class Header extends Component<Props, State> {
           })}
         >
           <Grid container alignItems="center">
-            {user && (
+            {isFreelancer && (
               <Grid item>
                 <Link to="/network" className={classes.networkButton}>
                   <Icon glyph={People} size={30} />
