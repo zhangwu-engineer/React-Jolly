@@ -8,12 +8,12 @@ import { withRouter, matchPath } from 'react-router';
 import { Switch } from 'react-router-dom';
 import { fromJS } from 'immutable';
 import { capitalize } from 'lodash-es';
-import Intercom from 'intercom-react';
 
-import CONFIG from 'conf';
 import { Route } from 'components/Routes';
 import { history } from 'components/ConnectedRouter';
 import injectSagas from 'utils/injectSagas';
+import Intercom from 'react-intercom';
+import CONFIG from 'conf';
 
 import Header from 'components/Header';
 import Routes from 'routes';
@@ -121,7 +121,6 @@ class App extends Component<Props> {
       'https://s3-us-west-2.amazonaws.com/jolly-images/preview.jpg';
     return (
       <React.Fragment>
-        <Intercom appId={CONFIG.APP.ID} user={this.intercomUserParams(user)} />
         <PageMeta data={data} ogImage={ogImage} />
         <Switch>
           <Route path="/freelancer-signup" />
@@ -147,6 +146,10 @@ class App extends Component<Props> {
             )}
           />
         </Switch>
+        <Intercom
+          appID={CONFIG.INTERCOM.APP_ID}
+          {...this.intercomUserParams(user)}
+        />
         <Routes />
       </React.Fragment>
     );

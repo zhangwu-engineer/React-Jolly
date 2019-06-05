@@ -82,6 +82,7 @@ class UserWorkList extends Component<Props, State> {
                 <JobCard
                   key={generate()}
                   job={work}
+                  user={user}
                   openGallery={this.props.openGallery}
                 />
               ) : null
