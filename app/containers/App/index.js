@@ -10,6 +10,9 @@ import { fromJS } from 'immutable';
 import { Route } from 'components/Routes';
 import { history } from 'components/ConnectedRouter';
 import injectSagas from 'utils/injectSagas';
+import Intercom from 'react-intercom';
+import CONFIG from 'conf';
+import { capitalize } from 'lodash-es';
 
 import Header from 'components/Header';
 import Routes from 'routes';
@@ -77,6 +80,16 @@ class App extends Component<Props> {
       });
     }
   }
+  intercomUserParams = user => {
+    if (user) {
+      return {
+        email: user.get('email'),
+        created_at: (+new Date(user.get('date_created')) / 1000).toFixed(0),
+        name: capitalize(`${user.get('firstName')} ${user.get('lastName')}`),
+      };
+    }
+    return {};
+  };
   render() {
     const {
       user,
@@ -117,6 +130,10 @@ class App extends Component<Props> {
             )}
           />
         </Switch>
+        <Intercom
+          appID={CONFIG.INTERCOM.APP_ID}
+          {...this.intercomUserParams(user)}
+        />
         <Routes />
       </React.Fragment>
     );

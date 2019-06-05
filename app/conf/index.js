@@ -86,6 +86,9 @@ module.exports = {
   LINKEDIN: {
     APP_ID: isDev ? '862j54unk910vg' : '78qrisch5bmx23',
   },
+  INTERCOM: {
+    APP_ID: isDev ? 'wz8qfqtl' : 'lkedu906',
+  },
   /** Application API */
   API: {
     /** Application API Base Url */
