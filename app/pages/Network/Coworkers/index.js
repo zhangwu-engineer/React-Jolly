@@ -535,6 +535,7 @@ class CoworkersPage extends Component<Props, State> {
                       onChange={value => this.handleConnectionsChange(value.value)}
                       isMulti={false}
                       isClearable={false}
+                      isSearchable={false}
                       stylesOverride={{
                         container: () => ({
                           backgroundColor: 'white',
