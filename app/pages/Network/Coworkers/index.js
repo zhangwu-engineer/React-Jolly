@@ -23,18 +23,17 @@ import CustomSelect from 'components/CustomSelect';
 import EditableInput from 'components/EditableInput';
 
 import ROLES from 'enum/roles';
+import CONNECTIONS from 'enum/connections';
 
 import { requestUserCoworkers } from 'containers/App/sagas';
 import saga, {
   reducer,
   requestCreateConnection,
-  requestRemoveConnection,
-  requestAcceptConnection,
-  requestConnections,
 } from 'containers/Network/sagas';
 import injectSagas from 'utils/injectSagas';
 
 const roles = ROLES.sort().map(role => ({ value: role, label: role }));
+const connections = CONNECTIONS.sort().map(connection => ({ value: connection, label: connection }));
 const styles = theme => ({
   content: {
     maxWidth: 1064,
@@ -196,8 +195,6 @@ const styles = theme => ({
 
 type Props = {
   user: Object, // eslint-disable-line
-  isCityUsersLoading: boolean, // eslint-disable-line
-  cityUsersError: string, // eslint-disable-line
   coworkers: List<Object>,
   isCreating: boolean, // eslint-disable-line
   createError: string, // eslint-disable-line
@@ -212,9 +209,6 @@ type Props = {
 
 type State = {
   isFormOpen: boolean,
-  selectedUser: ?Object,
-  initialValues: Object,
-  jobs: Array<Object>,
   sentTo: ?string,
   isInviting: boolean,
   showNotification: boolean,
@@ -380,6 +374,18 @@ class CoworkersPage extends Component<Props, State> {
       () => this.debouncedSearch()
     );
   };
+  handleConnectionsChange = connection => {
+    this.setState(
+      state => ({
+        ...state,
+        filter: {
+          ...state.filter,
+          connections: connection,
+        },
+      }),
+      () => this.debouncedSearch()
+    );
+  };
 
   render() {
     const { coworkers, classes } = this.props;
@@ -409,19 +415,17 @@ class CoworkersPage extends Component<Props, State> {
         )}
         <div className={classes.content}>
           <div className={classes.leftPanel}>
-            <div className={classes.coworkersBox}>
-              <Link to="/network" className={classes.coworkersTitle}>
-                Find Connections
-              </Link>
-            </div>
-            <div className={`${classes.coworkersBox} ${classes.active}`}>
-              <Link
-                to="/network/connections"
-                className={`${classes.activeLink} ${classes.coworkersTitle}`}
-              >
+            <Link to="/network" className={classes.coworkersTitle}>
+              <div className={classes.coworkersBox}>Find Connections</div>
+            </Link>
+            <Link
+              to="/network/connections"
+              className={`${classes.activeLink} ${classes.coworkersTitle}`}
+            >
+              <div className={`${classes.coworkersBox} ${classes.active}`}>
                 My Connections
-              </Link>
-            </div>
+              </div>
+            </Link>
             <div className={classes.inviteBox}>
               <InviteForm
                 sendInvite={this.handleSendInvite}
@@ -511,6 +515,33 @@ class CoworkersPage extends Component<Props, State> {
                       }}
                     />
                   </Grid>
+                  <Grid
+                    item
+                    xs={12}
+                    lg={4}
+                    className={classes.searchInputWrapper}
+                  >
+                    <CustomSelect
+                      placeholder="All Connections"
+                      options={connections}
+                      value={
+                        filter.connections
+                          ? {
+                              value: filter.connections,
+                              label: filter.connections,
+                            }
+                          : null
+                      }
+                      onChange={value => this.handleConnectionsChange(value.value)}
+                      isMulti={false}
+                      isClearable={false}
+                      stylesOverride={{
+                        container: () => ({
+                          backgroundColor: 'white',
+                        }),
+                      }}
+                    />
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
@@ -552,7 +583,6 @@ class CoworkersPage extends Component<Props, State> {
 const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
   coworkers: state.getIn(['app', 'coworkers']),
-  connections: state.getIn(['network', 'connections']),
   isCreating: state.getIn(['network', 'isCreating']),
   createError: state.getIn(['network', 'createError']),
   isRemoving: state.getIn(['network', 'isRemoving']),
@@ -566,11 +596,6 @@ const mapDispatchToProps = dispatch => ({
     dispatch(requestCreateConnection(payload)),
   requestUserCoworkers: (slug, city, query, role) =>
     dispatch(requestUserCoworkers(slug, city, query, role)),
-  requestRemoveConnection: connectionId =>
-    dispatch(requestRemoveConnection(connectionId)),
-  requestAcceptConnection: connectionId =>
-    dispatch(requestAcceptConnection(connectionId)),
-  requestConnections: () => dispatch(requestConnections()),
 });
 
 export default compose(
