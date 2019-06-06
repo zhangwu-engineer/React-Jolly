@@ -23,18 +23,20 @@ import CustomSelect from 'components/CustomSelect';
 import EditableInput from 'components/EditableInput';
 
 import ROLES from 'enum/roles';
+import CONNECTIONS from 'enum/connections';
 
 import { requestUserCoworkers } from 'containers/App/sagas';
 import saga, {
   reducer,
   requestCreateConnection,
-  requestRemoveConnection,
-  requestAcceptConnection,
-  requestConnections,
 } from 'containers/Network/sagas';
 import injectSagas from 'utils/injectSagas';
 
 const roles = ROLES.sort().map(role => ({ value: role, label: role }));
+const connections = CONNECTIONS.sort().map(connection => ({
+  value: connection,
+  label: connection,
+}));
 const styles = theme => ({
   content: {
     maxWidth: 1064,
@@ -331,7 +333,7 @@ class CoworkersPage extends Component<Props, State> {
         sentTo: { $set: email },
       }),
       () => {
-        this.props.requestCreateConnection({ email });
+        this.props.requestCreateConnection(email);
       }
     );
   };
@@ -417,7 +419,7 @@ class CoworkersPage extends Component<Props, State> {
               className={`${classes.activeLink} ${classes.coworkersTitle}`}
             >
               <div className={`${classes.coworkersBox} ${classes.active}`}>
-                {`My Connections`}
+                My Connections
               </div>
             </Link>
             <div className={classes.inviteBox}>
@@ -509,6 +511,36 @@ class CoworkersPage extends Component<Props, State> {
                       }}
                     />
                   </Grid>
+                  <Grid
+                    item
+                    xs={12}
+                    lg={4}
+                    className={classes.searchInputWrapper}
+                  >
+                    <CustomSelect
+                      placeholder="All Connections"
+                      options={connections}
+                      value={
+                        filter.connections
+                          ? {
+                              value: filter.connections,
+                              label: filter.connections,
+                            }
+                          : null
+                      }
+                      onChange={value =>
+                        this.handleConnectionsChange(value.value)
+                      }
+                      isMulti={false}
+                      isClearable={false}
+                      isSearchable={false}
+                      stylesOverride={{
+                        container: () => ({
+                          backgroundColor: 'white',
+                        }),
+                      }}
+                    />
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
@@ -550,7 +582,6 @@ class CoworkersPage extends Component<Props, State> {
 const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
   coworkers: state.getIn(['app', 'coworkers']),
-  connections: state.getIn(['network', 'connections']),
   isCreating: state.getIn(['network', 'isCreating']),
   createError: state.getIn(['network', 'createError']),
   isRemoving: state.getIn(['network', 'isRemoving']),
@@ -564,11 +595,6 @@ const mapDispatchToProps = dispatch => ({
     dispatch(requestCreateConnection(payload)),
   requestUserCoworkers: (slug, city, query, role) =>
     dispatch(requestUserCoworkers(slug, city, query, role)),
-  requestRemoveConnection: connectionId =>
-    dispatch(requestRemoveConnection(connectionId)),
-  requestAcceptConnection: connectionId =>
-    dispatch(requestAcceptConnection(connectionId)),
-  requestConnections: () => dispatch(requestConnections()),
 });
 
 export default compose(

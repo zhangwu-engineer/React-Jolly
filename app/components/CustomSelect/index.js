@@ -185,6 +185,7 @@ type Props = {
   classes: Object,
   onChange: Function,
   stylesOverride: Object,
+  isSearchable: boolean,
 };
 
 class CustomSelect extends React.Component<Props> {
@@ -198,6 +199,7 @@ class CustomSelect extends React.Component<Props> {
       classes,
       theme,
       stylesOverride,
+      isSearchable,
     } = this.props;
 
     const selectStyles = {
@@ -225,6 +227,7 @@ class CustomSelect extends React.Component<Props> {
           placeholder={placeholder}
           isClearable={isClearable}
           isMulti={isMulti}
+          isSearchable={isSearchable}
         />
       </div>
     );
