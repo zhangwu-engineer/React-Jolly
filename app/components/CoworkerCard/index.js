@@ -4,7 +4,6 @@ import React, { Component } from 'react';
 import { capitalize } from 'lodash-es';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 
 import UserAvatar from 'components/UserAvatar';
 
@@ -82,14 +81,6 @@ class CoworkerCard extends Component<Props> {
             )}`}
           </Typography>
         </div>
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.viewProfileButton}
-          onClick={this.viewProfile}
-        >
-          View Profile
-        </Button>
       </div>
     );
   }

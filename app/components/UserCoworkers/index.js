@@ -65,8 +65,8 @@ const styles = theme => ({
     marginBottom: 15,
   },
   connectBox: {
-    paddingTop: 30,
-    paddingBottom: 30,
+    paddingTop: 60,
+    paddingBottom: 60,
   },
   desc: {
     fontSize: 20,
@@ -195,7 +195,7 @@ class UserCoworkers extends Component<Props, State> {
             <Typography className={classes.title}>
               Coworkers ·&nbsp;
               <Link
-                to={isPrivate ? '/network/coworkers' : ''}
+                to={isPrivate ? '/network/connections' : ''}
                 className={cx(classes.count, {
                   [classes.emptyCount]: coworkers && coworkers.size === 0,
                 })}
@@ -221,8 +221,11 @@ class UserCoworkers extends Component<Props, State> {
                   </Grid>
                 ) : (
                   <Grid item className={classes.connectButtonBox}>
-
-                    {coworkers && currentUser && coworkers.some(el => el.get('id') === currentUser.get('id')) ? (
+                    {coworkers &&
+                    currentUser &&
+                    coworkers.some(
+                      el => el.get('id') === currentUser.get('id')
+                    ) ? (
                       <Button
                         className={
                           (classes.moreButton, classes.connectSentButton)
