@@ -335,6 +335,9 @@ type State = {
   activeBadge: Object,
 };
 
+const B2F_CONNECTION_REQUEST_MSG = 'Connection Request Sent';
+const COWORKER_CONNECTION_REQUEST_MSG = 'Coworker Connection Request Sent';
+
 class Member extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State) {
     if (nextProps.isCreatingConnection) {
@@ -531,6 +534,9 @@ class Member extends Component<Props, State> {
     const isPrivate =
       (currentUser && currentUser.get('slug') === slug && !isPublicViewMode) ||
       false;
+    const isCurrentBusiness =
+      (currentUser && currentUser.get('isBusiness')) || false;
+
     const unearnedBadges =
       badges && badges.filter(b => b.get('earned') === false);
     const nextBadgeToEarn = unearnedBadges && unearnedBadges.get(0);
@@ -598,7 +604,11 @@ class Member extends Component<Props, State> {
           )}
         {showNotification && (
           <Notification
-            msg="Coworker connection request sent."
+            msg={
+              isCurrentBusiness
+                ? B2F_CONNECTION_REQUEST_MSG
+                : COWORKER_CONNECTION_REQUEST_MSG
+            }
             close={this.closeNotification}
           />
         )}
