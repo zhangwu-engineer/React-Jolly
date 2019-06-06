@@ -54,9 +54,10 @@ const styles = theme => ({
   placeholder: {
     fontSize: 14,
     fontWeight: 500,
-    color: '#434343',
+    color: '#212121',
     boxSizing: 'border-box',
-    opacity: 0.5,
+    opacity: 1,
+    position: 'absolute',
   },
   paper: {
     position: 'absolute',
