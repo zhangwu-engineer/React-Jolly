@@ -23,7 +23,7 @@ import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import { history } from 'components/ConnectedRouter';
 import ConnectIconBlue from 'images/sprite/connect.svg';
-
+import ConnectedIcon from 'images/sprite/connected_white.svg';
 const styles = theme => ({
   root: {
     backgroundColor: theme.palette.common.white,
@@ -232,7 +232,7 @@ class UserCoworkers extends Component<Props, State> {
                         color="primary"
                       >
                         <Icon
-                          glyph={ConnectSentIcon}
+                          glyph={ConnectedIcon}
                           width={23}
                           height={13}
                           className={classes.connectIcon}
