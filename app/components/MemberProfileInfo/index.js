@@ -219,7 +219,8 @@ class MemberProfileInfo extends Component<Props, State> {
   handleConnect = () => {
     const { currentUser, user } = this.props;
     if (currentUser && currentUser.get('id') !== user.get('id')) {
-      const isCurrentBusiness = currentUser && currentUser.get('isBusiness');
+      const isCurrentBusiness =
+        (currentUser && currentUser.get('isBusiness')) || false;
       const businesses =
         currentUser.get('businesses') && currentUser.get('businesses').toJSON();
       const from = isCurrentBusiness
@@ -233,13 +234,15 @@ class MemberProfileInfo extends Component<Props, State> {
       }`;
       this.props.connect({ from, toUserId, connectionType });
     } else {
-      history.push('/freelancer-signup');
+      window.localStorage.setItem('ProfileToConnect', user && user.get('slug'));
+      history.push('/email-sign-in');
     }
   };
   anchorEl: HTMLElement;
   render() {
     const {
       user,
+      currentUser,
       badges,
       isConnectionSent,
       classes,
@@ -247,6 +250,7 @@ class MemberProfileInfo extends Component<Props, State> {
     } = this.props;
     const { isMenuOpen } = this.state;
     const isBusiness = user && user.get('isBusiness');
+    const isCurrentBusiness = currentUser && currentUser.get('isBusiness');
     const businesses = isBusiness && user.get('businesses').toJSON();
     const displayName = isBusiness
       ? businesses.length > 0 && businesses[0].name
@@ -299,28 +303,56 @@ class MemberProfileInfo extends Component<Props, State> {
             className={classes.buttonContainer}
           >
             <Grid item className={classes.connectButtonBox}>
-              <Button
-                className={cx(classes.connectButton, {
-                  [classes.connectionSentButton]:
-                    isConnectionSent || isConnectingButton,
-                })}
-                onClick={this.handleToggle}
-                buttonRef={node => {
-                  this.anchorEl = node;
-                }}
-              >
-                <Icon
-                  glyph={
-                    isConnectionSent || isConnectingButton
-                      ? ConnectSentIcon
-                      : ConnectIcon
-                  }
-                  width={23}
-                  height={13}
-                  className={classes.connectIcon}
-                />
-                {status}
-              </Button>
+              {isCurrentBusiness ? (
+                <Button
+                  className={cx(classes.connectButton, {
+                    [classes.connectionSentButton]:
+                      isConnectionSent || isConnectingButton,
+                  })}
+                  buttonRef={node => {
+                    this.anchorEl = node;
+                  }}
+                  onClick={e => {
+                    this.handleClose(e);
+                    this.handleConnect();
+                  }}
+                >
+                  <Icon
+                    glyph={
+                      isConnectionSent || isConnectingButton
+                        ? ConnectSentIcon
+                        : ConnectIcon
+                    }
+                    width={23}
+                    height={13}
+                    className={classes.connectIcon}
+                  />
+                  {status}
+                </Button>
+              ) : (
+                <Button
+                  className={cx(classes.connectButton, {
+                    [classes.connectionSentButton]:
+                      isConnectionSent || isConnectingButton,
+                  })}
+                  onClick={this.handleToggle}
+                  buttonRef={node => {
+                    this.anchorEl = node;
+                  }}
+                >
+                  <Icon
+                    glyph={
+                      isConnectionSent || isConnectingButton
+                        ? ConnectSentIcon
+                        : ConnectIcon
+                    }
+                    width={23}
+                    height={13}
+                    className={classes.connectIcon}
+                  />
+                  {status}
+                </Button>
+              )}
               <Popper
                 open={isMenuOpen}
                 anchorEl={this.anchorEl}
