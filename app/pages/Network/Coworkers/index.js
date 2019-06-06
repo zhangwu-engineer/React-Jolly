@@ -109,6 +109,7 @@ const styles = theme => ({
     height: 356,
     display: 'flex',
     alignItems: 'center',
+    marginTop: 5,
     justifyContent: 'center',
     [theme.breakpoints.down('xs')]: {
       height: 190,
