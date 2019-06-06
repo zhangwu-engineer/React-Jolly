@@ -13,20 +13,10 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 
 import BusinessProfileInfo from 'components/BusinessProfileInfo';
-import MemberProfileInfo from 'components/MemberProfileInfo';
+import BusinessMemberProfileInfo from 'components/BusinessMemberProfileInfo';
 import BusinessSidebar from 'components/BusinessSidebar';
 
-import saga, {
-  reducer,
-  requestMemberProfile,
-  requestMemberBadges,
-  requestMemberFiles,
-  requestMemberRoles,
-  requestMemberWorks,
-  requestMemberCoworkers,
-  requestMemberEndorsements,
-  requestCreateConnection,
-} from 'containers/Member/sagas';
+import saga, { reducer } from 'containers/Member/sagas';
 import injectSagas from 'utils/injectSagas';
 
 const styles = theme => ({
@@ -263,19 +253,10 @@ const styles = theme => ({
 type Props = {
   currentUser: Object,
   member: Object,
-  badges: Object,
   isCreatingConnection: boolean, // eslint-disable-line
   createConnectionError: string, // eslint-disable-line
   classes: Object,
   match: Object,
-  requestMemberProfile: Function,
-  requestMemberBadges: Function,
-  requestMemberRoles: Function,
-  requestMemberFiles: Function,
-  requestMemberWorks: Function,
-  requestMemberCoworkers: Function,
-  requestMemberEndorsements: Function,
-  requestCreateConnection: Function,
 };
 
 type State = {
@@ -323,23 +304,6 @@ class BusinessMember extends Component<Props, State> {
     isConnectionSent: false,
     isPublicViewMode: false,
   };
-  componentDidMount() {
-    const {
-      match: { url },
-    } = this.props;
-    const {
-      params: { slug },
-    } = matchPath(url, {
-      path: '/b/:slug',
-    });
-    this.props.requestMemberProfile(slug);
-    this.props.requestMemberBadges(slug);
-    this.props.requestMemberFiles(slug);
-    this.props.requestMemberRoles(slug);
-    this.props.requestMemberWorks(slug);
-    this.props.requestMemberCoworkers(slug);
-    this.props.requestMemberEndorsements(slug);
-  }
   positionChange = ({ currentPosition, previousPosition }) => {
     if (currentPosition === 'above' && previousPosition === 'inside') {
       this.setState({ fixedTopBanner: true });
@@ -366,7 +330,6 @@ class BusinessMember extends Component<Props, State> {
     const {
       currentUser,
       member,
-      badges,
       classes,
       match: { url },
     } = this.props;
@@ -377,7 +340,9 @@ class BusinessMember extends Component<Props, State> {
       path: '/b/:slug',
     });
     const businesses =
-      currentUser.get('businesses') && currentUser.get('businesses').toJSON();
+      currentUser &&
+      currentUser.get('businesses') &&
+      currentUser.get('businesses').toJSON();
     const currentBusiness =
       businesses && businesses.find(element => element.slug === slug);
     const isPrivate = (currentBusiness && !isPublicViewMode) || false;
@@ -434,18 +399,15 @@ class BusinessMember extends Component<Props, State> {
               <BusinessProfileInfo
                 user={currentUser}
                 business={currentBusiness}
-                badges={badges}
                 openPhotoModal={this.openPhotoModal}
                 viewBadgeProgress={this.viewBadgeProgress}
               />
             ) : (
-              <MemberProfileInfo
+              <BusinessMemberProfileInfo
                 currentUser={currentUser}
                 user={member}
                 business={currentBusiness}
-                badges={badges}
                 openPhotoModal={this.openPhotoModal}
-                connect={this.props.requestCreateConnection}
                 isConnectionSent={isConnectionSent}
               />
             )}
@@ -470,23 +432,8 @@ const mapStateToProps = state => ({
   createConnectionError: state.getIn(['member', 'createConnectionError']),
 });
 
-const mapDispatchToProps = dispatch => ({
-  requestMemberProfile: slug => dispatch(requestMemberProfile(slug)),
-  requestMemberBadges: slug => dispatch(requestMemberBadges(slug)),
-  requestMemberRoles: slug => dispatch(requestMemberRoles(slug)),
-  requestMemberFiles: slug => dispatch(requestMemberFiles(slug)),
-  requestMemberWorks: slug => dispatch(requestMemberWorks(slug)),
-  requestMemberCoworkers: slug => dispatch(requestMemberCoworkers(slug)),
-  requestMemberEndorsements: slug => dispatch(requestMemberEndorsements(slug)),
-  requestCreateConnection: payload =>
-    dispatch(requestCreateConnection(payload)),
-});
-
 export default compose(
   injectSagas({ key: 'member', saga, reducer }),
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  ),
+  connect(mapStateToProps),
   withStyles(styles)
 )(BusinessMember);
