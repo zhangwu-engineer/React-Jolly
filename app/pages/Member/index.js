@@ -396,7 +396,7 @@ class Member extends Component<Props, State> {
     const businesses = isBusiness && currentUser.get('businesses').toJSON();
     const from = isBusiness
       ? businesses.length > 0 && businesses[0].id
-      : currentUser.get('id');
+      : currentUser && currentUser.get('id');
     const connectionType = isBusiness ? 'b2f' : 'f2f';
 
     this.props.requestMemberProfile(slug);
@@ -407,7 +407,9 @@ class Member extends Component<Props, State> {
     this.props.requestMemberWorks(slug);
     this.props.requestMemberCoworkers(slug);
     this.props.requestMemberEndorsements(slug);
-    this.props.requestCheckConnection({ toSlug: slug, from, connectionType });
+    if (from) {
+      this.props.requestCheckConnection({ toSlug: slug, from, connectionType });
+    }
   }
   onCloseModal = () => {
     this.setState({ isOpen: false });
