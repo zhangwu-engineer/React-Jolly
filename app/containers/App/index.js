@@ -58,7 +58,16 @@ class App extends Component<Props> {
     } else if (location.pathname === '/' && user) {
       history.push(`/f/${user.get('slug')}`);
     }
-    if (prevProps.location.pathname !== location.pathname) {
+    if (location.pathname.startsWith('/f/')) {
+      analytics.page('User Profile', {
+        viewer:
+          user &&
+          user.get('slug') ===
+            prevProps.location.pathname.split('/').slice(-1)[0]
+            ? 'this-user'
+            : 'other-user',
+      });
+    } else if (prevProps.location.pathname !== location.pathname) {
       analytics.page(location.pathname);
     }
     if (user) {
