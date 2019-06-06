@@ -55,8 +55,7 @@ class App extends Component<Props> {
     } else if (location.pathname === '/' && user) {
       history.push(`/f/${user.get('slug')}`);
     }
-
-    if (prevProps.location.pathname.startsWith('/f/')) {
+    if (location.pathname.startsWith('/f/')) {
       analytics.page('User Profile', {
         viewer:
           user &&
