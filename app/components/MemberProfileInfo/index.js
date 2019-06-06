@@ -235,7 +235,7 @@ class MemberProfileInfo extends Component<Props, State> {
       this.props.connect({ from, toUserId, connectionType });
     } else {
       window.localStorage.setItem('ProfileToConnect', user && user.get('slug'));
-      history.push('/email-sign-in');
+      history.push('/sign-in');
     }
   };
   anchorEl: HTMLElement;
