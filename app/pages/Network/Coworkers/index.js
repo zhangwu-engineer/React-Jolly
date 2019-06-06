@@ -11,9 +11,8 @@ import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
-import Button from '@material-ui/core/Button';
 import cx from 'classnames';
-import { debounce } from 'lodash-es';
+import { capitalize, debounce } from 'lodash-es';
 
 import Link from 'components/Link';
 import CoworkerCard from 'components/CoworkerCard';
@@ -36,7 +35,6 @@ import saga, {
 import injectSagas from 'utils/injectSagas';
 
 const roles = ROLES.sort().map(role => ({ value: role, label: role }));
-const perPage = 16;
 const styles = theme => ({
   content: {
     maxWidth: 1064,
@@ -80,21 +78,6 @@ const styles = theme => ({
       paddingRight: 25,
     },
   },
-  pendingConnectionsTitle: {
-    fontSize: 16,
-    fontWeight: 500,
-    letterSpacing: 0.4,
-    color: '#272727',
-    paddingTop: 30,
-    paddingBottom: 15,
-    [theme.breakpoints.down('xs')]: {
-      fontWeight: 600,
-      letterSpacing: 0.3,
-    },
-  },
-  pendingConnections: {
-    marginBottom: 50,
-  },
   title: {
     fontSize: 16,
     fontWeight: 500,
@@ -105,20 +88,6 @@ const styles = theme => ({
     [theme.breakpoints.down('xs')]: {
       fontWeight: 600,
       letterSpacing: 0.3,
-    },
-  },
-  loadMoreButton: {
-    backgroundColor: theme.palette.common.white,
-    textTransform: 'none',
-    borderRadius: 0,
-    fontSize: 14,
-    fontWeight: 600,
-    letterSpacing: 0.3,
-    paddingTop: 20,
-    paddingBottom: 20,
-    [theme.breakpoints.down('xs')]: {
-      paddingTop: 15,
-      paddingBottom: 15,
     },
   },
   emailCard: {
@@ -226,8 +195,6 @@ const styles = theme => ({
 
 type Props = {
   user: Object, // eslint-disable-line
-  total: number, // eslint-disable-line
-  page: number, // eslint-disable-line
   isCityUsersLoading: boolean, // eslint-disable-line
   cityUsersError: string, // eslint-disable-line
   coworkers: List<Object>,
@@ -255,7 +222,6 @@ type State = {
   selectedTab: number,
   filter: Object,
   query: string,
-  page: number,
 };
 
 class CoworkersPage extends Component<Props, State> {
@@ -299,22 +265,19 @@ class CoworkersPage extends Component<Props, State> {
       selectedRole: '',
       connections: '',
     },
-    page: 1,
   };
   componentDidMount() {
     const { user } = this.props;
-    const { query, filter, page } = this.state;
+    const { query, filter } = this.state;
     this.props.requestUserCoworkers(
       user.get('slug'),
       filter.location,
       query,
-      page,
-      perPage,
       filter.selectedRole
     );
   }
   componentDidUpdate(prevProps: Props) {
-    const { query, filter, page } = this.state;
+    const { query, filter } = this.state;
     const {
       user,
       isRemoving,
@@ -327,8 +290,6 @@ class CoworkersPage extends Component<Props, State> {
         user.get('slug'),
         filter.location,
         query,
-        page,
-        perPage,
         filter.selectedRole
       );
     }
@@ -337,24 +298,32 @@ class CoworkersPage extends Component<Props, State> {
         user.get('slug'),
         filter.location,
         query,
-        page,
-        perPage,
         filter.selectedRole
       );
     }
   }
   debouncedSearch = debounce(() => {
-    const { query, filter, page } = this.state;
+    const { query, filter } = this.state;
     const { user } = this.props;
     this.props.requestUserCoworkers(
       user.get('slug'),
       filter.location,
       query,
-      page,
-      perPage,
       filter.selectedRole
     );
   }, 500);
+  handleConnectionInvite = user => {
+    this.setState(
+      update(this.state, {
+        invitedUserIds: { $push: [user.get('id')] },
+        connectedTo: { $set: capitalize(user.get('firstName')) },
+        isFormOpen: { $set: false },
+      }),
+      () => {
+        this.props.requestCreateConnection(user.get('id'));
+      }
+    );
+  };
   handleSendInvite = email => {
     this.setState(
       update(this.state, {
@@ -379,7 +348,7 @@ class CoworkersPage extends Component<Props, State> {
   };
   handleChange = e => {
     e.persist();
-    this.setState({ query: e.target.value, page: 1 }, () => {
+    this.setState({ query: e.target.value }, () => {
       this.debouncedSearch();
     });
   };
@@ -402,7 +371,6 @@ class CoworkersPage extends Component<Props, State> {
     this.setState(
       state => ({
         ...state,
-        page: 1,
         filter: {
           ...state.filter,
           selectedRole: role,
@@ -411,28 +379,18 @@ class CoworkersPage extends Component<Props, State> {
       () => this.debouncedSearch()
     );
   };
-  loadMoreData = () => {
-    this.setState(
-      state => ({
-        ...state,
-        page: state.page + 1,
-      }),
-      () => this.debouncedSearch()
-    );
-  };
 
   render() {
-    const { coworkers, classes, total } = this.props;
+    const { coworkers, classes } = this.props;
     const {
       sentTo,
       isInviting,
       showNotification,
       selectedTab,
+      connectedTo,
       query,
       filter,
-      page,
     } = this.state;
-    const loadMore = total > page * perPage;
     return (
       <React.Fragment>
         <NetworkNav />
@@ -440,6 +398,12 @@ class CoworkersPage extends Component<Props, State> {
           <Notification
             msg={`Invite sent to ${sentTo}`}
             close={this.closeNotification}
+          />
+        )}
+        {connectedTo && (
+          <Notification
+            msg={`Coworker connection request sent to ${connectedTo}`}
+            close={this.closeConnectionNotification}
           />
         )}
         <div className={classes.content}>
@@ -559,19 +523,6 @@ class CoworkersPage extends Component<Props, State> {
                   ))}
               </Grid>
             )}
-            {loadMore && (
-              <Grid item xs={12} lg={12}>
-                <Button
-                  fullWidth
-                  color="primary"
-                  className={`${classes.loadMoreButton}`}
-                  mt={1}
-                  onClick={() => this.loadMoreData()}
-                >
-                  See More
-                </Button>
-              </Grid>
-            )}
             {coworkers &&
               coworkers.size === 0 && (
                 <Grid container spacing={8}>
@@ -599,8 +550,6 @@ class CoworkersPage extends Component<Props, State> {
 
 const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
-  total: state.getIn(['app', 'cityUsers', 'total']),
-  page: state.getIn(['app', 'cityUsers', 'page']),
   coworkers: state.getIn(['app', 'coworkers']),
   connections: state.getIn(['network', 'connections']),
   isCreating: state.getIn(['network', 'isCreating']),
@@ -614,8 +563,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
-  requestUserCoworkers: (slug, city, query, page, usersPerPage, role) =>
-    dispatch(requestUserCoworkers(slug, city, query, page, usersPerPage, role)),
+  requestUserCoworkers: (slug, city, query, role) =>
+    dispatch(requestUserCoworkers(slug, city, query, role)),
   requestRemoveConnection: connectionId =>
     dispatch(requestRemoveConnection(connectionId)),
   requestAcceptConnection: connectionId =>

@@ -215,8 +215,6 @@ export const requestUserCoworkers = (
   slug: string,
   city: string,
   query: string,
-  page: Number,
-  perPage: Number,
   role: string
 ) => ({
   type: USER_COWORKERS + REQUESTED,
@@ -225,8 +223,6 @@ export const requestUserCoworkers = (
     city,
     query,
     role,
-    page,
-    perPage,
   },
 });
 const userCoworkersRequestSuccess = (payload: Object) => ({
