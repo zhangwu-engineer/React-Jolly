@@ -87,6 +87,7 @@ class App extends Component<Props> {
         source: user.get('source'),
         cred_count: user.getIn(['profile', 'cred']),
         returning_user: user.get('loginCount') > 0 ? 1 : 0,
+        created_at: user.get('date_created'),
       });
     }
   }
