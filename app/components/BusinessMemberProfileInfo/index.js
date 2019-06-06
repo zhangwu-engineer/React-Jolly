@@ -224,7 +224,7 @@ class BusinessMemberProfileInfo extends Component<Props, State> {
         >
           <Grid item className={classes.nameSection}>
             <Typography className={classes.username}>
-              {business.name}
+              {business && business.name}
             </Typography>
             {user.getIn(['profile', 'location']) && (
               <Typography className={classes.location}>
