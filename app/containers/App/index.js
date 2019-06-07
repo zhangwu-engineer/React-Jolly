@@ -87,8 +87,8 @@ class App extends Component<Props> {
         profile_picture: user.getIn(['profile', 'avatar']),
         source: user.get('source'),
         cred_count: user.getIn(['profile', 'cred']),
-        created_at: user.get('date_created'),
         returning_user: user.get('loginCount') > 0 ? 1 : 0,
+        created_at: user.get('date_created'),
       });
     }
   }
