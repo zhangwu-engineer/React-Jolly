@@ -189,17 +189,13 @@ export const reducer = (
 // ------------------------------------
 // Sagas
 // ------------------------------------
-function* CreateConnectionRequest(payload) {
+function* CreateConnectionRequest({ payload }) {
   const token = yield select(getToken);
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/connection`,
-      data: {
-        from: payload.from,
-        to: payload.to,
-        connectionType: payload.connectionType,
-      },
+      data: payload,
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
