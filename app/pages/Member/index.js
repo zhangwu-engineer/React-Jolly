@@ -32,7 +32,6 @@ import FloatingAddButton from 'components/FloatingAddButton';
 import BadgeProgressBanner from 'components/BadgeProgressBanner';
 import UserWorkList from 'components/UserWorkList';
 import UserCoworkers from 'components/UserCoworkers';
-
 import AddPhotoIcon from 'images/sprite/add-photo-blue.svg';
 
 import saga, {
@@ -665,6 +664,8 @@ class Member extends Component<Props, State> {
                 user={member}
                 endorsements={endorsements}
                 publicMode={!isPrivate}
+                currentUser={currentUser}
+                coworkers={coworkers}
               />
               <UserWorkList
                 works={works}
@@ -709,7 +710,7 @@ class Member extends Component<Props, State> {
                   {roles.size ? (
                     roles.map(role => (
                       <div key={generate()} id={role.get('id')}>
-                        <RoleCard role={role.toJS()} />
+                        <RoleCard role={role.toJS()} user={member} />
                       </div>
                     ))
                   ) : (

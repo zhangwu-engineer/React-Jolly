@@ -131,6 +131,30 @@ const styles = theme => ({
       borderWidth: 2,
     },
   },
+  moreButtonMobile: {
+    borderRadius: 0,
+    fontWeight: 600,
+    textTransform: 'none',
+    borderWidth: 2,
+    fontSize: 12,
+    paddingTop: 6,
+    paddingLeft: 12,
+    paddingRight: 12,
+    paddingBottom: 6,
+    borderColor: theme.palette.primary.main,
+    '&:hover': {
+      borderWidth: 2,
+    },
+    [theme.breakpoints.down('sm')]: {
+      display: 'none',
+    },
+  },
+  moreButtonDesktop: {
+    display: 'none',
+    [theme.breakpoints.down('sm')]: {
+      display: 'block',
+    },
+  },
   endorsedButton: {
     textTransform: 'none',
     padding: '10px 45px 10px 40px',
@@ -141,6 +165,11 @@ const styles = theme => ({
       backgroundColor: theme.palette.primary.main,
     },
   },
+  endorsersSection: {
+    [theme.breakpoints.down('sm')]: {
+      marginTop: 20,
+    },
+  },
 });
 
 type Props = {
@@ -148,6 +177,8 @@ type Props = {
   classes: Object,
   publicMode?: boolean,
   user: Object,
+  currentUser: Object,
+  coworkers: Object,
 };
 
 type State = {
@@ -168,7 +199,14 @@ class UserRecommendations extends Component<Props, State> {
     window.open(url, '_blank');
   };
   render() {
-    const { endorsements, user, publicMode, classes } = this.props;
+    const {
+      endorsements,
+      user,
+      publicMode,
+      classes,
+      currentUser,
+      coworkers,
+    } = this.props;
     const { isOpen } = this.state;
     const qualityNames = {
       hardest_worker: 'Hardest Worker',
@@ -202,7 +240,7 @@ class UserRecommendations extends Component<Props, State> {
             endorsements.size > 0 && (
               <Grid item>
                 <Button
-                  className={classes.moreButton}
+                  className={(classes.moreButton, classes.moreButtonMobile)}
                   variant="outlined"
                   size="large"
                   color="primary"
@@ -280,9 +318,9 @@ class UserRecommendations extends Component<Props, State> {
                 </Grid>
               </div>
             ))}
-            {publicMode && (
+            {publicMode ? (
               <Grid container justify="center">
-                <Grid item>
+                <Grid item xs={12}>
                   <Typography className={classes.emptyText} align="center">
                     {`Did you enjoy working with ${capitalize(
                       user.get('firstName')
@@ -298,7 +336,27 @@ class UserRecommendations extends Component<Props, State> {
                     onClick={this.openModal}
                   >
                     {`Endorse ${capitalize(user.get('firstName'))}`}
-                    {user.get('role') !== 'USER' ? ' Again' : ''}
+                    {coworkers &&
+                      currentUser &&
+                      (coworkers.some(
+                        el => el.get('id') === currentUser.get('id')
+                      )
+                        ? ' Again'
+                        : '')}
+                  </Button>
+                </Grid>
+              </Grid>
+            ) : (
+              <Grid container justify="center">
+                <Grid item className={classes.moreButtonDesktop}>
+                  <Button
+                    className={classes.moreButton}
+                    variant="outlined"
+                    size="large"
+                    color="primary"
+                    onClick={this.openModal}
+                  >
+                    Get More
                   </Button>
                 </Grid>
               </Grid>

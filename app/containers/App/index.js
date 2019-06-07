@@ -8,13 +8,12 @@ import { withRouter, matchPath } from 'react-router';
 import { Switch } from 'react-router-dom';
 import { fromJS } from 'immutable';
 import { capitalize } from 'lodash-es';
-import * as moment from 'moment';
-import Intercom from 'intercom-react';
-import CONFIG from '../../conf';
 
 import { Route } from 'components/Routes';
 import { history } from 'components/ConnectedRouter';
 import injectSagas from 'utils/injectSagas';
+import Intercom from 'react-intercom';
+import CONFIG from 'conf';
 
 import Header from 'components/Header';
 import Routes from 'routes';
@@ -60,7 +59,16 @@ class App extends Component<Props> {
     } else if (location.pathname === '/' && user) {
       history.push(`/f/${user.get('slug')}`);
     }
-    if (prevProps.location.pathname !== location.pathname) {
+    if (location.pathname.startsWith('/f/')) {
+      analytics.page('User Profile', {
+        viewer:
+          user &&
+          user.get('slug') ===
+            prevProps.location.pathname.split('/').slice(-1)[0]
+            ? 'this-user'
+            : 'other-user',
+      });
+    } else if (prevProps.location.pathname !== location.pathname) {
       analytics.page(location.pathname);
     }
     if (user) {
@@ -79,6 +87,8 @@ class App extends Component<Props> {
         profile_picture: user.getIn(['profile', 'avatar']),
         source: user.get('source'),
         cred_count: user.getIn(['profile', 'cred']),
+        returning_user: user.get('loginCount') > 0 ? 1 : 0,
+        created_at: user.get('date_created'),
       });
     }
   }
@@ -148,6 +158,10 @@ class App extends Component<Props> {
             )}
           />
         </Switch>
+        <Intercom
+          appID={CONFIG.INTERCOM.APP_ID}
+          {...this.intercomUserParams(user)}
+        />
         <Routes />
       </React.Fragment>
     );
