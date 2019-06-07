@@ -590,6 +590,9 @@ export const reducer = (
         full_name: `${payload.user.firstName} ${payload.user.lastName}`,
         email: payload.user.email,
       });
+      analytics.track('Sign In', {
+        signin_method: 'email',
+      });
       return state
         .set('isLoading', false)
         .set('token', payload.auth_token)
@@ -623,6 +626,9 @@ export const reducer = (
           signup_method: payload.type,
         });
       }
+      analytics.track('Sign In', {
+        signin_method: 'social',
+      });
       return state
         .set('isSocialLoading', false)
         .set('token', payload.auth_token)
