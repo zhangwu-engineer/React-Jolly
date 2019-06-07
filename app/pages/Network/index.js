@@ -350,7 +350,7 @@ class NetworkPage extends Component<Props, State> {
   openFormModal = user => {
     this.setState({ selectedUser: user, isFormOpen: true });
   };
-  handleConnectionInvite = user => {
+  handleConnectionInvite = (user, isCoworker) => {
     this.setState(
       update(this.state, {
         invitedUserIds: { $push: [user.get('id')] },
@@ -358,7 +358,10 @@ class NetworkPage extends Component<Props, State> {
         isFormOpen: { $set: false },
       }),
       () => {
-        this.props.requestCreateConnection({ toUserId: user.get('id') });
+        this.props.requestCreateConnection({
+          toUserId: user.get('id'),
+          isCoworker,
+        });
       }
     );
   };

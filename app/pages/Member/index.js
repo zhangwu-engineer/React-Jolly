@@ -45,6 +45,7 @@ import saga, {
   requestMemberCoworkers,
   requestMemberEndorsements,
   requestCreateConnection,
+  requestDeleteConnection,
   requestCheckConnection,
 } from 'containers/Member/sagas';
 import {
@@ -299,8 +300,11 @@ type Props = {
   works: Object,
   coworkers: Object,
   endorsements: Object,
+  connectionInformation: string,
   isCreatingConnection: boolean, // eslint-disable-line
   createConnectionError: string, // eslint-disable-line
+  isDeletingConnection: boolean, // eslint-disable-line
+  deleteConnectionError: string, // eslint-disable-line
   connectionStatus: Object,
   classes: Object,
   match: Object,
@@ -316,6 +320,7 @@ type Props = {
   requestUserResumeDelete: Function,
   updateUser: Function,
   requestCreateConnection: Function,
+  requestDeleteConnection: Function,
   requestCheckConnection: Function,
 };
 
@@ -327,6 +332,8 @@ type State = {
   photoIndex: number,
   isGalleryOpen: boolean,
   isInviting: boolean,
+  isDeleting: boolean,
+  isConnectionDeleted: boolean,
   showNotification: boolean,
   isConnectionSent: boolean,
   type: string,
@@ -343,6 +350,22 @@ class Member extends Component<Props, State> {
     if (nextProps.isCreatingConnection) {
       return {
         isInviting: true,
+      };
+    }
+    if (nextProps.isDeletingConnection) {
+      return {
+        isDeleting: true,
+      };
+    }
+    if (
+      !nextProps.isDeletingConnection &&
+      !nextProps.deleteConnectionError &&
+      prevState.isDeleting
+    ) {
+      return {
+        showNotification: true,
+        isDeleting: false,
+        isConnectionDeleted: true,
       };
     }
     if (
@@ -376,8 +399,10 @@ class Member extends Component<Props, State> {
     photoIndex: 0,
     isGalleryOpen: false,
     isInviting: false, // eslint-disable-line
+    isDeleting: false, // eslint-disable-line
     showNotification: false,
     isConnectionSent: false,
+    isConnectionDeleted: false,
     type: '',
     isPhotoModalOpen: false,
     isPublicViewMode: false,
@@ -506,6 +531,7 @@ class Member extends Component<Props, State> {
       coworkers,
       endorsements,
       classes,
+      connectionInformation,
       match: { url },
     } = this.props;
     const {
@@ -517,6 +543,7 @@ class Member extends Component<Props, State> {
       isGalleryOpen,
       showNotification,
       isConnectionSent,
+      isConnectionDeleted,
       type,
       isPhotoModalOpen,
       isPublicViewMode,
@@ -602,16 +629,24 @@ class Member extends Component<Props, State> {
               </Grid>
             </Grid>
           )}
-        {showNotification && (
-          <Notification
-            msg={
-              isCurrentBusiness
-                ? B2F_CONNECTION_REQUEST_MSG
-                : COWORKER_CONNECTION_REQUEST_MSG
-            }
-            close={this.closeNotification}
-          />
-        )}
+        {showNotification &&
+          isConnectionSent && (
+            <Notification
+              msg={
+                isCurrentBusiness
+                  ? B2F_CONNECTION_REQUEST_MSG
+                  : COWORKER_CONNECTION_REQUEST_MSG
+              }
+              close={this.closeNotification}
+            />
+          )}
+        {showNotification &&
+          isConnectionDeleted && (
+            <Notification
+              msg="You've been disconnected!"
+              close={this.closeNotification}
+            />
+          )}
         <div className={classes.root}>
           <div className={classes.profileInfo}>
             {isPrivate ? (
@@ -632,6 +667,8 @@ class Member extends Component<Props, State> {
                 connect={this.props.requestCreateConnection}
                 connectionStatus={connectionStatus.toJSON()}
                 isConnectionSent={isConnectionSent}
+                connectionInformation={connectionInformation}
+                requestDeleteConnection={this.props.requestDeleteConnection}
               />
             )}
           </div>
@@ -906,8 +943,11 @@ const mapStateToProps = state => ({
   works: state.getIn(['member', 'works']),
   coworkers: state.getIn(['member', 'coworkers']),
   endorsements: state.getIn(['member', 'endorsements']),
+  connectionInformation: state.getIn(['member', 'connectionInformation']),
   isCreatingConnection: state.getIn(['member', 'isCreatingConnection']),
   createConnectionError: state.getIn(['member', 'createConnectionError']),
+  isDeletingConnection: state.getIn(['member', 'isDeletingConnection']),
+  deleteConnectionError: state.getIn(['member', 'deleteConnectionError']),
   connectionStatus: state.getIn(['member', 'connectionStatus']),
 });
 
@@ -924,6 +964,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(requestUserPhotoUpload(photo, type)),
   requestUserResumeUpload: resume => dispatch(requestUserResumeUpload(resume)),
   requestUserResumeDelete: () => dispatch(requestUserResumeDelete()),
+  requestDeleteConnection: userId => dispatch(requestDeleteConnection(userId)),
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
   requestCheckConnection: payload => dispatch(requestCheckConnection(payload)),

@@ -337,9 +337,12 @@ class UserRecommendations extends Component<Props, State> {
                   >
                     {`Endorse ${capitalize(user.get('firstName'))}`}
                     {coworkers &&
-                      currentUser && (
-                      coworkers.some(el => el.get('id') === currentUser.get('id')) ? ' Again' : ''
-                    )}
+                      currentUser &&
+                      (coworkers.some(
+                        el => el.get('id') === currentUser.get('id')
+                      )
+                        ? ' Again'
+                        : '')}
                   </Button>
                 </Grid>
               </Grid>

@@ -168,7 +168,6 @@ const styles = theme => ({
 });
 
 type Props = {
-  user: Object,
   classes: Object,
   business: Object,
 };
@@ -181,20 +180,11 @@ class BusinessMemberProfileInfo extends Component<Props, State> {
   };
   anchorEl: HTMLElement;
   render() {
-    const { user, classes, business } = this.props;
-    const avatarImg = user.getIn(['profile', 'avatar']) || '';
+    const { classes, business } = this.props;
     return (
       <div className={classes.root}>
         <div className={classes.topSection}>
-          <div
-            className={classes.backgroundImage}
-            style={{
-              backgroundImage: `url('${user.getIn([
-                'profile',
-                'backgroundImage',
-              ])}')`,
-            }}
-          >
+          <div className={classes.backgroundImage}>
             <div className={classes.overlay} />
           </div>
           <Grid
@@ -213,7 +203,7 @@ class BusinessMemberProfileInfo extends Component<Props, State> {
             </Grid>
           </Grid>
           <div className={classes.avatarContainer}>
-            <UserAvatar className={classes.avatar} src={avatarImg} />
+            <UserAvatar className={classes.avatar} />
           </div>
         </div>
         <Grid
@@ -224,11 +214,13 @@ class BusinessMemberProfileInfo extends Component<Props, State> {
         >
           <Grid item className={classes.nameSection}>
             <Typography className={classes.username}>
-              {business && business.name}
+              {business && business.get('name')}
             </Typography>
-            {user.getIn(['profile', 'location']) && (
+            {business.getIn(['user', 'profile', 'location']) && (
               <Typography className={classes.location}>
-                {user.getIn(['profile', 'location'])}
+                {business && business.get('category')}
+                &nbsp;&sdot;&nbsp;
+                {business.getIn(['user', 'profile', 'location'])}
               </Typography>
             )}
           </Grid>
