@@ -16,9 +16,6 @@ import BusinessProfileInfo from 'components/BusinessProfileInfo';
 import BusinessMemberProfileInfo from 'components/BusinessMemberProfileInfo';
 import BusinessSidebar from 'components/BusinessSidebar';
 
-import saga, { reducer } from 'containers/Member/sagas';
-import injectSagas from 'utils/injectSagas';
-
 const styles = theme => ({
   root: {
     maxWidth: '1064px',
@@ -252,9 +249,7 @@ const styles = theme => ({
 
 type Props = {
   currentUser: Object,
-  member: Object,
-  isCreatingConnection: boolean, // eslint-disable-line
-  createConnectionError: string, // eslint-disable-line
+  business: Object,
   classes: Object,
   match: Object,
 };
@@ -304,14 +299,6 @@ class BusinessMember extends Component<Props, State> {
     isConnectionSent: false,
     isPublicViewMode: false,
   };
-  positionChange = ({ currentPosition, previousPosition }) => {
-    if (currentPosition === 'above' && previousPosition === 'inside') {
-      this.setState({ fixedTopBanner: true });
-    }
-    if (currentPosition === 'inside' && previousPosition === 'above') {
-      this.setState({ fixedTopBanner: false });
-    }
-  };
   toggleViewMode = () => {
     const { currentUser } = this.props;
     this.setState(
@@ -329,7 +316,7 @@ class BusinessMember extends Component<Props, State> {
   render() {
     const {
       currentUser,
-      member,
+      business,
       classes,
       match: { url },
     } = this.props;
@@ -405,8 +392,7 @@ class BusinessMember extends Component<Props, State> {
             ) : (
               <BusinessMemberProfileInfo
                 currentUser={currentUser}
-                user={member}
-                business={currentBusiness}
+                business={business}
                 openPhotoModal={this.openPhotoModal}
                 isConnectionSent={isConnectionSent}
               />
@@ -423,17 +409,11 @@ class BusinessMember extends Component<Props, State> {
 
 const mapStateToProps = state => ({
   currentUser: state.getIn(['app', 'user']),
-  member: state.getIn(['member', 'data']),
-  isLoading: state.getIn(['member', 'isMemberLoading']),
-  error: state.getIn(['member', 'memberError']),
-  badges: state.getIn(['member', 'badges']),
-  coworkers: state.getIn(['member', 'coworkers']),
-  isCreatingConnection: state.getIn(['member', 'isCreatingConnection']),
-  createConnectionError: state.getIn(['member', 'createConnectionError']),
+  business: state.getIn(['app', 'businessData']),
+  error: state.getIn(['business', 'businessError']),
 });
 
 export default compose(
-  injectSagas({ key: 'member', saga, reducer }),
   connect(mapStateToProps),
   withStyles(styles)
 )(BusinessMember);

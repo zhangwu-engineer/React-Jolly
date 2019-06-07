@@ -8,39 +8,45 @@ import { withRouter, matchPath } from 'react-router';
 import { Switch } from 'react-router-dom';
 import { fromJS } from 'immutable';
 import { capitalize } from 'lodash-es';
-
+import Intercom from 'intercom-react';
 import { Route } from 'components/Routes';
 import { history } from 'components/ConnectedRouter';
 import injectSagas from 'utils/injectSagas';
-import Intercom from 'react-intercom';
-import CONFIG from 'conf';
 
 import Header from 'components/Header';
 import Routes from 'routes';
 import PageMeta from 'components/PageMeta';
-
 import saga, {
   reducer,
   logout,
   requestUser,
   openNavbar,
   closeNavbar,
+  requestBusinessProfile,
 } from 'containers/App/sagas';
+
+import CONFIG from '../../conf';
 
 type Props = {
   user: Object,
+  business: Object,
   logout: Function,
   replace: Function,
   requestUser: Function,
   openNavbar: Function,
   closeNavbar: Function,
+  requestBusinessProfile: Function,
   navbarOpen: boolean,
   location: Object,
 };
 
 class App extends Component<Props> {
   componentDidMount() {
-    const { user } = this.props;
+    const {
+      user,
+      location: { pathname },
+    } = this.props;
+
     if (user) {
       this.props.requestUser();
     }
@@ -50,6 +56,16 @@ class App extends Component<Props> {
       } else {
         history.push('/freelancer-signup');
       }
+    }
+
+    const matchBusiness = matchPath(pathname, {
+      path: '/b/:slug',
+    });
+    if (matchBusiness) {
+      const {
+        params: { slug },
+      } = matchBusiness;
+      this.props.requestBusinessProfile(slug);
     }
   }
   componentDidUpdate(prevProps: Props) {
@@ -105,6 +121,7 @@ class App extends Component<Props> {
   render() {
     const {
       user,
+      business,
       navbarOpen,
       location: { pathname },
     } = this.props;
@@ -118,11 +135,9 @@ class App extends Component<Props> {
       description:
         'Jolly is a new platform to help event freelancers grow their reputation, find work and network with fellow hustlers like them.',
     });
+
     if (matchBusiness) {
-      const isBusiness = user && user.get('isBusiness');
-      const businesses =
-        isBusiness && user.get('businesses') && user.get('businesses').toJSON();
-      const businessName = businesses && businesses[0].name;
+      const businessName = business && business.get('name');
       data = fromJS({
         title: `${businessName} | JollyHQ Network`,
         description: `${businessName}’s profile on Jolly - the professional social network for events businesses and freelancers.`,
@@ -170,6 +185,7 @@ class App extends Component<Props> {
 
 const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
+  business: state.getIn(['app', 'businessData']),
   navbarOpen: state.getIn(['app', 'navbarOpen']),
 });
 
@@ -179,6 +195,7 @@ const mapDispatchToProps = dispatch => ({
   requestUser: () => dispatch(requestUser()),
   openNavbar: () => dispatch(openNavbar()),
   closeNavbar: () => dispatch(closeNavbar()),
+  requestBusinessProfile: slug => dispatch(requestBusinessProfile(slug)),
 });
 
 export default compose(
