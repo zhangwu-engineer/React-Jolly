@@ -21,9 +21,9 @@ const CONNECTION = 'Jolly/Network/CONNECTION';
 // ------------------------------------
 // Actions
 // ------------------------------------
-export const requestCreateConnection = (payload: Object) => ({
+export const requestCreateConnection = (to: string) => ({
   type: CREATE_CONNECTION + REQUESTED,
-  payload,
+  payload: to,
 });
 const connectionCreateRequestSuccess = (payload: Object) => ({
   type: CREATE_CONNECTION + SUCCEDED,

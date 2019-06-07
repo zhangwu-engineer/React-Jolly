@@ -190,6 +190,8 @@ type Props = {
   openShareModal: Function,
   openPhotoModal: Function,
   connect: Function,
+  connectionInformation: string,
+  requestDeleteConnection: Function,
 };
 
 type State = {
@@ -215,19 +217,44 @@ class MemberProfileInfo extends Component<Props, State> {
   openUrl = url => {
     window.open(url, '_blank');
   };
-  handleConnect = () => {
+  handleConnect = params => {
     const { currentUser, user } = this.props;
     if (currentUser && currentUser.get('id') !== user.get('id')) {
-      this.props.connect(user.get('id'));
+      this.props.connect(
+        user.get('id'),
+        params.isCoworker
+      );
     } else {
       history.push('/freelancer-signup');
     }
   };
+  handleDisconnect = () => {
+    const { user } = this.props;
+    this.props.requestDeleteConnection(user.get('id'));
+  };
   anchorEl: HTMLElement;
+  displayConnectionState = () => {
+    const { isConnectionSent, connectionInformation } = this.props;
+    if (connectionInformation === 'coworker') return 'Coworker';
+    if (connectionInformation === 'generic') return 'Connected';
+    if (isConnectionSent) return 'Request Sent';
+    return '';
+  };
   render() {
-    const { user, badges, isConnectionSent, classes } = this.props;
+    const {
+      user,
+      badges,
+      isConnectionSent,
+      classes,
+      connectionInformation,
+    } = this.props;
     const { isMenuOpen } = this.state;
     const avatarImg = user.getIn(['profile', 'avatar']) || '';
+    const connectionEstablished = ['coworker', 'generic'].includes(
+      connectionInformation
+    );
+    const isCoWorker = connectionInformation === 'coworker';
+    const connected = connectionEstablished || isConnectionSent;
     return (
       <div className={classes.root}>
         <div className={classes.topSection}>
@@ -267,7 +294,7 @@ class MemberProfileInfo extends Component<Props, State> {
             <Grid item className={classes.connectButtonBox}>
               <Button
                 className={cx(classes.connectButton, {
-                  [classes.connectionSentButton]: isConnectionSent,
+                  [classes.connectionSentButton]: connected,
                 })}
                 onClick={this.handleToggle}
                 buttonRef={node => {
@@ -275,12 +302,12 @@ class MemberProfileInfo extends Component<Props, State> {
                 }}
               >
                 <Icon
-                  glyph={isConnectionSent ? ConnectSentIcon : ConnectIcon}
+                  glyph={connected ? ConnectSentIcon : ConnectIcon}
                   width={23}
                   height={13}
                   className={classes.connectIcon}
                 />
-                {isConnectionSent ? 'Request Sent' : 'Connect'}
+                {connected ? this.displayConnectionState() : 'Connect'}
               </Button>
               <Popper
                 open={isMenuOpen}
@@ -292,22 +319,80 @@ class MemberProfileInfo extends Component<Props, State> {
                   <Fade {...TransitionProps} timeout={350}>
                     <Paper square classes={{ root: classes.menu }}>
                       <ClickAwayListener onClickAway={this.handleClose}>
-                        <MenuList className={classes.menuList}>
-                          <MenuItem
-                            className={classes.menuItem}
-                            onClick={e => {
-                              this.handleClose(e);
-                              this.handleConnect();
-                            }}
-                          >
-                            <ListItemText
-                              classes={{ primary: classes.menuItemText }}
-                              primary={`I've worked with ${capitalize(
-                                user.get('firstName')
-                              )}`}
-                            />
-                          </MenuItem>
-                        </MenuList>
+                        {connectionEstablished &&
+                          isCoWorker && (
+                            <MenuList className={classes.menuList}>
+                              <MenuItem
+                                className={classes.menuItem}
+                                onClick={() => this.handleDisconnect()}
+                              >
+                                <ListItemText
+                                  classes={{ primary: classes.menuItemText }}
+                                  primary={`Disconnect from ${capitalize(
+                                    user.get('firstName')
+                                  )}`}
+                                />
+                              </MenuItem>
+                            </MenuList>
+                          )}
+                        {connectionEstablished &&
+                          !isCoWorker && (
+                            <MenuList className={classes.menuList}>
+                              <MenuItem
+                                className={classes.menuItem}
+                                onClick={e => {
+                                  this.handleClose(e);
+                                  this.handleConnect({
+                                    isCoworker: true,
+                                  });
+                                }}
+                              >
+                                <ListItemText
+                                  classes={{ primary: classes.menuItemText }}
+                                  primary={`I've worked with ${capitalize(
+                                    user.get('firstName')
+                                  )}`}
+                                />
+                              </MenuItem>
+                            </MenuList>
+                          )}
+                        {!connectionEstablished &&
+                          !isConnectionSent && (
+                            <MenuList className={classes.menuList}>
+                              <MenuItem
+                                className={classes.menuItem}
+                                onClick={e => {
+                                  this.handleClose(e);
+                                  this.handleConnect({
+                                    isCoworker: false,
+                                  });
+                                }}
+                              >
+                                <ListItemText
+                                  classes={{ primary: classes.menuItemText }}
+                                  primary={`Connect with ${capitalize(
+                                    user.get('firstName')
+                                  )}`}
+                                />
+                              </MenuItem>
+                              <MenuItem
+                                className={classes.menuItem}
+                                onClick={e => {
+                                  this.handleClose(e);
+                                  this.handleConnect({
+                                    isCoworker: true,
+                                  });
+                                }}
+                              >
+                                <ListItemText
+                                  classes={{ primary: classes.menuItemText }}
+                                  primary={`I've worked with ${capitalize(
+                                    user.get('firstName')
+                                  )}`}
+                                />
+                              </MenuItem>
+                            </MenuList>
+                          )}
                       </ClickAwayListener>
                     </Paper>
                   </Fade>
