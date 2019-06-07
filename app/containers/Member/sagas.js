@@ -442,7 +442,7 @@ export const reducer = (
       return state
         .set('isRequestingConnectionInformation', false)
         .set('requestingConnectionInformationError', '')
-        .set('connectionInformation', payload.connectionType);
+        .set('connectionInformation', fromJS(payload));
 
     case CONNECTION_INFORMATION + FAILED:
       return state
@@ -659,7 +659,9 @@ function* CreateConnectionInformationRequest({ payload }) {
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
-      yield put(getConnectionInformationSuccess(response.data.response));
+      yield put(
+        getConnectionInformationSuccess(response.data.response.connections[0])
+      );
     } else {
       yield put(getConnectionInformationFailed(response.data.error));
     }
