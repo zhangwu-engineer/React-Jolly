@@ -305,7 +305,6 @@ type Props = {
   createConnectionError: string, // eslint-disable-line
   isDeletingConnection: boolean, // eslint-disable-line
   deleteConnectionError: string, // eslint-disable-line
-  connectionStatus: Object,
   classes: Object,
   match: Object,
   requestMemberProfile: Function,
@@ -523,7 +522,6 @@ class Member extends Component<Props, State> {
     const {
       currentUser,
       member,
-      connectionStatus,
       badges,
       files,
       roles,
@@ -660,12 +658,11 @@ class Member extends Component<Props, State> {
             ) : (
               <MemberProfileInfo
                 currentUser={currentUser}
-                user={member}
+                member={member}
                 badges={badges}
                 openShareModal={this.openShareModal}
                 openPhotoModal={this.openPhotoModal}
                 connect={this.props.requestCreateConnection}
-                connectionStatus={connectionStatus.toJSON()}
                 isConnectionSent={isConnectionSent}
                 connectionInformation={connectionInformation}
                 requestDeleteConnection={this.props.requestDeleteConnection}

@@ -183,14 +183,14 @@ const styles = theme => ({
 
 type Props = {
   currentUser: Object,
-  user: Object,
+  member: Object,
   badges: Object,
-  isConnectionSent: boolean,
-  classes: Object,
   openShareModal: Function,
   openPhotoModal: Function,
   connect: Function,
-  connectionInformation: string,
+  isConnectionSent: boolean,
+  classes: Object,
+  connectionInformation: Object,
   requestDeleteConnection: Function,
 };
 
@@ -218,42 +218,67 @@ class MemberProfileInfo extends Component<Props, State> {
     window.open(url, '_blank');
   };
   handleConnect = params => {
-    const { currentUser, user } = this.props;
-    if (currentUser && currentUser.get('id') !== user.get('id')) {
-      this.props.connect(
-        user.get('id'),
-        params.isCoworker
-      );
+    const { currentUser, member } = this.props;
+    const connectParams = {};
+
+    connectParams.toUserId = member.get('id');
+    connectParams.isCoworker = params.isCoworker;
+
+    if (currentUser && currentUser.get('isBusiness')) {
+      connectParams.connectionType = 'b2f';
+      const businesses =
+        currentUser.get('businesses') && currentUser.get('businesses').toJSON();
+      connectParams.from = businesses[0].id;
+    }
+
+    if (currentUser && currentUser.get('id') !== member.get('id')) {
+      this.props.connect(connectParams);
     } else {
       history.push('/freelancer-signup');
     }
   };
   handleDisconnect = () => {
-    const { user } = this.props;
-    this.props.requestDeleteConnection(user.get('id'));
+    const { member } = this.props;
+    this.props.requestDeleteConnection(member.get('id'));
   };
   anchorEl: HTMLElement;
   displayConnectionState = () => {
+    let status;
     const { isConnectionSent, connectionInformation } = this.props;
-    if (connectionInformation === 'coworker') return 'Coworker';
-    if (connectionInformation === 'generic') return 'Connected';
-    if (isConnectionSent) return 'Request Sent';
-    return '';
+    if (
+      connectionInformation &&
+      connectionInformation.get('connectionType') === 'f2f'
+    ) {
+      if (connectionInformation.get('status') === 'CONNECTED') {
+        if (connectionInformation.get('isCoworker') === true) {
+          status = 'Coworker';
+        } else {
+          status = 'Connected';
+        }
+      } else if (connectionInformation.get('status') === 'PENDING') {
+        status = 'Request Sent';
+      }
+    }
+    if (isConnectionSent) status = 'Request Sent';
+    return status;
   };
   render() {
     const {
-      user,
+      currentUser,
+      member,
       badges,
       isConnectionSent,
       classes,
       connectionInformation,
     } = this.props;
     const { isMenuOpen } = this.state;
-    const avatarImg = user.getIn(['profile', 'avatar']) || '';
-    const connectionEstablished = ['coworker', 'generic'].includes(
-      connectionInformation
-    );
-    const isCoWorker = connectionInformation === 'coworker';
+    const avatarImg = member.getIn(['profile', 'avatar']) || '';
+    const isBusiness = (currentUser && currentUser.get('isBusiness')) || false;
+    const connectionEstablished =
+      connectionInformation &&
+      ['CONNECTED', 'PENDING'].includes(connectionInformation.get('status'));
+    const isCoWorker =
+      connectionInformation && connectionInformation.get('isCoworker');
     const connected = connectionEstablished || isConnectionSent;
     return (
       <div className={classes.root}>
@@ -261,7 +286,7 @@ class MemberProfileInfo extends Component<Props, State> {
           <div
             className={classes.backgroundImage}
             style={{
-              backgroundImage: `url('${user.getIn([
+              backgroundImage: `url('${member.getIn([
                 'profile',
                 'backgroundImage',
               ])}')`,
@@ -269,7 +294,7 @@ class MemberProfileInfo extends Component<Props, State> {
           >
             <div className={classes.overlay} />
           </div>
-          {user.getIn(['profile', 'showImageLibrary']) && (
+          {member.getIn(['profile', 'showImageLibrary']) && (
             <Fragment>
               <IconButton
                 className={classes.imageButton}
@@ -279,7 +304,7 @@ class MemberProfileInfo extends Component<Props, State> {
               </IconButton>
               <IconButton
                 className={classes.smallImageButton}
-                onClick={() => history.push(`/f/${user.get('slug')}/gallery`)}
+                onClick={() => history.push(`/f/${member.get('slug')}/gallery`)}
               >
                 <ImageIcon />
               </IconButton>
@@ -329,14 +354,15 @@ class MemberProfileInfo extends Component<Props, State> {
                                 <ListItemText
                                   classes={{ primary: classes.menuItemText }}
                                   primary={`Disconnect from ${capitalize(
-                                    user.get('firstName')
+                                    member.get('firstName')
                                   )}`}
                                 />
                               </MenuItem>
                             </MenuList>
                           )}
                         {connectionEstablished &&
-                          !isCoWorker && (
+                          !isCoWorker &&
+                          !isBusiness && (
                             <MenuList className={classes.menuList}>
                               <MenuItem
                                 className={classes.menuItem}
@@ -350,7 +376,34 @@ class MemberProfileInfo extends Component<Props, State> {
                                 <ListItemText
                                   classes={{ primary: classes.menuItemText }}
                                   primary={`I've worked with ${capitalize(
-                                    user.get('firstName')
+                                    member.get('firstName')
+                                  )}`}
+                                />
+                              </MenuItem>
+                              <MenuItem
+                                className={classes.menuItem}
+                                onClick={() => this.handleDisconnect()}
+                              >
+                                <ListItemText
+                                  classes={{ primary: classes.menuItemText }}
+                                  primary={`Disconnect from ${capitalize(
+                                    member.get('firstName')
+                                  )}`}
+                                />
+                              </MenuItem>
+                            </MenuList>
+                          )}
+                        {connectionEstablished &&
+                          isBusiness && (
+                            <MenuList className={classes.menuList}>
+                              <MenuItem
+                                className={classes.menuItem}
+                                onClick={() => this.handleDisconnect()}
+                              >
+                                <ListItemText
+                                  classes={{ primary: classes.menuItemText }}
+                                  primary={`Disconnect from ${capitalize(
+                                    member.get('firstName')
                                   )}`}
                                 />
                               </MenuItem>
@@ -371,26 +424,28 @@ class MemberProfileInfo extends Component<Props, State> {
                                 <ListItemText
                                   classes={{ primary: classes.menuItemText }}
                                   primary={`Connect with ${capitalize(
-                                    user.get('firstName')
+                                    member.get('firstName')
                                   )}`}
                                 />
                               </MenuItem>
-                              <MenuItem
-                                className={classes.menuItem}
-                                onClick={e => {
-                                  this.handleClose(e);
-                                  this.handleConnect({
-                                    isCoworker: true,
-                                  });
-                                }}
-                              >
-                                <ListItemText
-                                  classes={{ primary: classes.menuItemText }}
-                                  primary={`I've worked with ${capitalize(
-                                    user.get('firstName')
-                                  )}`}
-                                />
-                              </MenuItem>
+                              {!isBusiness && (
+                                <MenuItem
+                                  className={classes.menuItem}
+                                  onClick={e => {
+                                    this.handleClose(e);
+                                    this.handleConnect({
+                                      isCoworker: true,
+                                    });
+                                  }}
+                                >
+                                  <ListItemText
+                                    classes={{ primary: classes.menuItemText }}
+                                    primary={`I've worked with ${capitalize(
+                                      member.get('firstName')
+                                    )}`}
+                                  />
+                                </MenuItem>
+                              )}
                             </MenuList>
                           )}
                       </ClickAwayListener>
@@ -420,11 +475,12 @@ class MemberProfileInfo extends Component<Props, State> {
         >
           <Grid item className={classes.nameSection}>
             <Typography className={classes.username}>
-              {`${user.get('firstName') || ''} ${user.get('lastName') || ''}`}
+              {`${member.get('firstName') || ''} ${member.get('lastName') ||
+                ''}`}
             </Typography>
-            {user.getIn(['profile', 'location']) && (
+            {member.getIn(['profile', 'location']) && (
               <Typography className={classes.location}>
-                {user.getIn(['profile', 'location'])}
+                {member.getIn(['profile', 'location'])}
               </Typography>
             )}
           </Grid>
@@ -435,7 +491,7 @@ class MemberProfileInfo extends Component<Props, State> {
                   badge =>
                     badge.get('earned') ? (
                       <Grid item key={generate()} md={6}>
-                        <Badge badge={badge} user={user} />
+                        <Badge badge={badge} user={member} />
                       </Grid>
                     ) : null
                 )}
