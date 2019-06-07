@@ -158,7 +158,13 @@ class EmailSignIn extends Component<Props, State> {
         } else {
           path = redirect || `/f/${user.get('slug')}`;
         }
-        history.push(path);
+        const slugToConnect = window.localStorage.getItem('ProfileToConnect');
+        if (slugToConnect === undefined || slugToConnect === 'null') {
+          history.push(path);
+        } else {
+          window.localStorage.setItem('ProfileToConnect', null);
+          history.push(`/f/${slugToConnect}`);
+        }
       } else {
         history.push('/ob/1');
       }
