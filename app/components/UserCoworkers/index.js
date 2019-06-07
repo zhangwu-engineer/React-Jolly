@@ -23,7 +23,7 @@ import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import { history } from 'components/ConnectedRouter';
 import ConnectIconBlue from 'images/sprite/connect.svg';
-
+import ConnectedIcon from 'images/sprite/connected_white.svg';
 const styles = theme => ({
   root: {
     backgroundColor: theme.palette.common.white,
@@ -129,6 +129,10 @@ const styles = theme => ({
     backgroundColor: '#14a384',
     borderColor: '#14a384',
     borderRadius: 0,
+    '&:hover': {
+      backgroundColor: '#14a384',
+      borderColor: '#14a384',
+    },
   },
 });
 
@@ -181,6 +185,7 @@ class UserCoworkers extends Component<Props, State> {
       isPrivate,
       isConnectionSent,
       classes,
+      currentUser,
     } = this.props;
     const coworkersToShow = coworkers && coworkers.slice(0, 6);
     return (
@@ -216,31 +221,42 @@ class UserCoworkers extends Component<Props, State> {
                   </Grid>
                 ) : (
                   <Grid item className={classes.connectButtonBox}>
-                    <Button
-                      onClick={this.handleToggle}
-                      buttonRef={node => {
-                        this.anchorEl = node;
-                      }}
-                      className={
-                        user.get('role') === 'USER'
-                          ? classes.moreButton
-                          : (classes.moreButton, classes.connectSentButton)
-                      }
-                      variant="outlined"
-                      size="large"
-                      color="primary"
-                    >
-                      <Icon
-                        glyph={
-                          user.get('role') === 'USER'
-                            ? ConnectIconBlue
-                            : ConnectSentIcon
+
+                    {coworkers && currentUser && coworkers.some(el => el.get('id') === currentUser.get('id')) ? (
+                      <Button
+                        className={
+                          (classes.moreButton, classes.connectSentButton)
                         }
-                        width={23}
-                        height={13}
-                        className={classes.connectIcon}
-                      />
-                    </Button>
+                        variant="outlined"
+                        size="large"
+                        color="primary"
+                      >
+                        <Icon
+                          glyph={ConnectedIcon}
+                          width={23}
+                          height={13}
+                          className={classes.connectIcon}
+                        />
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={this.handleToggle}
+                        buttonRef={node => {
+                          this.anchorEl = node;
+                        }}
+                        className={classes.moreButton}
+                        variant="outlined"
+                        size="large"
+                        color="primary"
+                      >
+                        <Icon
+                          glyph={ConnectIconBlue}
+                          width={23}
+                          height={13}
+                          className={classes.connectIcon}
+                        />
+                      </Button>
+                    )}
                     <Popper
                       open={this.state.isMenuOpen}
                       anchorEl={this.anchorEl}
