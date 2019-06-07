@@ -219,11 +219,20 @@ class MemberProfileInfo extends Component<Props, State> {
   };
   handleConnect = params => {
     const { currentUser, member } = this.props;
+    const connectParams = {};
+
+    connectParams.toUserId = member.get('id');
+    connectParams.isCoworker = params.isCoworker;
+
+    if (currentUser && currentUser.get('isBusiness')) {
+      connectParams.connectionType = 'b2f';
+      const businesses =
+        currentUser.get('businesses') && currentUser.get('businesses').toJSON();
+      connectParams.from = businesses[0].id;
+    }
+
     if (currentUser && currentUser.get('id') !== member.get('id')) {
-      this.props.connect({
-        toUserId: member.get('id'),
-        isCoworker: params.isCoworker,
-      });
+      this.props.connect(connectParams);
     } else {
       history.push('/freelancer-signup');
     }
@@ -255,6 +264,7 @@ class MemberProfileInfo extends Component<Props, State> {
   };
   render() {
     const {
+      currentUser,
       member,
       badges,
       isConnectionSent,
@@ -263,6 +273,7 @@ class MemberProfileInfo extends Component<Props, State> {
     } = this.props;
     const { isMenuOpen } = this.state;
     const avatarImg = member.getIn(['profile', 'avatar']) || '';
+    const isBusiness = (currentUser && currentUser.get('isBusiness')) || false;
     const connectionEstablished =
       connectionInformation &&
       ['CONNECTED', 'PENDING'].includes(connectionInformation.get('status'));
@@ -350,7 +361,8 @@ class MemberProfileInfo extends Component<Props, State> {
                             </MenuList>
                           )}
                         {connectionEstablished &&
-                          !isCoWorker && (
+                          !isCoWorker &&
+                          !isBusiness && (
                             <MenuList className={classes.menuList}>
                               <MenuItem
                                 className={classes.menuItem}
@@ -368,6 +380,22 @@ class MemberProfileInfo extends Component<Props, State> {
                                   )}`}
                                 />
                               </MenuItem>
+                              <MenuItem
+                                className={classes.menuItem}
+                                onClick={() => this.handleDisconnect()}
+                              >
+                                <ListItemText
+                                  classes={{ primary: classes.menuItemText }}
+                                  primary={`Disconnect from ${capitalize(
+                                    member.get('firstName')
+                                  )}`}
+                                />
+                              </MenuItem>
+                            </MenuList>
+                          )}
+                        {connectionEstablished &&
+                          isBusiness && (
+                            <MenuList className={classes.menuList}>
                               <MenuItem
                                 className={classes.menuItem}
                                 onClick={() => this.handleDisconnect()}
@@ -400,22 +428,24 @@ class MemberProfileInfo extends Component<Props, State> {
                                   )}`}
                                 />
                               </MenuItem>
-                              <MenuItem
-                                className={classes.menuItem}
-                                onClick={e => {
-                                  this.handleClose(e);
-                                  this.handleConnect({
-                                    isCoworker: true,
-                                  });
-                                }}
-                              >
-                                <ListItemText
-                                  classes={{ primary: classes.menuItemText }}
-                                  primary={`I've worked with ${capitalize(
-                                    member.get('firstName')
-                                  )}`}
-                                />
-                              </MenuItem>
+                              {!isBusiness && (
+                                <MenuItem
+                                  className={classes.menuItem}
+                                  onClick={e => {
+                                    this.handleClose(e);
+                                    this.handleConnect({
+                                      isCoworker: true,
+                                    });
+                                  }}
+                                >
+                                  <ListItemText
+                                    classes={{ primary: classes.menuItemText }}
+                                    primary={`I've worked with ${capitalize(
+                                      member.get('firstName')
+                                    )}`}
+                                  />
+                                </MenuItem>
+                              )}
                             </MenuList>
                           )}
                       </ClickAwayListener>
