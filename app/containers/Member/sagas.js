@@ -22,7 +22,6 @@ const COWORKERS = 'Jolly/Member/COWORKERS';
 const ENDORSEMENTS = 'Jolly/Member/ENDORSEMENTS';
 const CREATE_CONNECTION = 'Jolly/Member/CREATE_CONNECTION';
 const DELETE_CONNECTION = 'Jolly/Member/DELETE_CONNECTION';
-const CONNECTION_INFORMATION = 'Jolly/Member/CONNECTION_INFORMATION';
 const CHECK_CONNECTION = 'Jolly/Network/CHECK_CONNECTION';
 
 // ------------------------------------
@@ -181,23 +180,6 @@ const connectionCheckRequestError = (error: string) => ({
   payload: error,
 });
 
-export const getConnectionInformation = (userProfile: Object) => ({
-  type: CONNECTION_INFORMATION + REQUESTED,
-  payload: userProfile,
-});
-const getConnectionInformationSuccess = (payload: Object) => ({
-  type: CONNECTION_INFORMATION + SUCCEDED,
-  payload,
-});
-const getConnectionInformationFailed = (error: string) => ({
-  type: CONNECTION_INFORMATION + FAILED,
-  payload: error,
-});
-const getConnectionInformationError = (error: string) => ({
-  type: CONNECTION_INFORMATION + ERROR,
-  payload: error,
-});
-
 export const requestDeleteConnection = (userId: string) => ({
   type: DELETE_CONNECTION + REQUESTED,
   payload: userId,
@@ -247,7 +229,6 @@ const initialState = fromJS({
   requestingConnectionInformationError: '',
   isChecking: false,
   checkError: '',
-  connectionStatus: fromJS({}),
 });
 
 export const reducer = (
@@ -435,34 +416,13 @@ export const reducer = (
         Please try again later or contact support and provide the following error information: ${payload}`
       );
 
-    case CONNECTION_INFORMATION + REQUESTED:
-      return state.set('isRequestingConnectionInformation', true);
-
-    case CONNECTION_INFORMATION + SUCCEDED:
-      return state
-        .set('isRequestingConnectionInformation', false)
-        .set('requestingConnectionInformationError', '')
-        .set('connectionInformation', fromJS(payload));
-
-    case CONNECTION_INFORMATION + FAILED:
-      return state
-        .set('isRequestingConnectionInformation', false)
-        .set('requestingConnectionInformationError', payload.message);
-
-    case CONNECTION_INFORMATION + ERROR:
-      return state.set('isRequestingConnectionInformation', false).set(
-        'requestingConnectionInformationError',
-        `Something went wrong.
-        Please try again later or contact support and provide the following error information: ${payload}`
-      );
-
     case CHECK_CONNECTION + REQUESTED:
       return state.set('isChecking', true);
 
     case CHECK_CONNECTION + SUCCEDED:
       return state
         .set('isChecking', false)
-        .set('connectionStatus', fromJS(payload))
+        .set('connectionInformation', fromJS(payload.connections[0]))
         .set('checkError', '');
 
     case CHECK_CONNECTION + FAILED:
@@ -514,10 +474,7 @@ function* MemberProfileRequest({ payload }) {
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
-      yield all([
-        put(memberProfileRequestSuccess(response.data.response)),
-        put(getConnectionInformation(response.data.response)),
-      ]);
+      yield all([put(memberProfileRequestSuccess(response.data.response))]);
     } else {
       yield put(memberProfileRequestFailed(response.data.error));
     }
@@ -638,10 +595,7 @@ function* DeleteConnectionRequest({ payload }) {
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
-      yield all([
-        put(connectionDeleteRequestSuccess(response.data.response)),
-        put(getConnectionInformation(response.data.response)),
-      ]);
+      yield all([put(connectionDeleteRequestSuccess(response.data.response))]);
     } else {
       yield put(connectionDeleteRequestFailed(response.data.error));
     }
@@ -650,34 +604,13 @@ function* DeleteConnectionRequest({ payload }) {
   }
 }
 
-function* CreateConnectionInformationRequest({ payload }) {
-  const token = yield select(getToken);
-  try {
-    const response = yield call(request, {
-      method: 'GET',
-      url: `${API_URL}/connection/${payload.id}/info`,
-      headers: { 'x-access-token': token },
-    });
-    if (response.status === 200) {
-      yield put(
-        getConnectionInformationSuccess(response.data.response.connections[0])
-      );
-    } else {
-      yield put(getConnectionInformationFailed(response.data.error));
-    }
-  } catch (error) {
-    yield put(getConnectionInformationError(error));
-  }
-}
-
 function* CheckConnectionRequest({ payload }) {
   const token = yield select(getToken);
   try {
     const response = yield call(request, {
-      method: 'POST',
-      url: `${API_URL}/connection/check`,
-      data: {
-        toSlug: payload.toSlug,
+      method: 'GET',
+      url: `${API_URL}/connection/${payload.to}/info`,
+      params: {
         from: payload.from,
       },
       headers: { 'x-access-token': token },
@@ -704,10 +637,6 @@ export default function*(): Saga<void> {
     takeLatest(ENDORSEMENTS + REQUESTED, EndorsementsRequest),
     takeLatest(CREATE_CONNECTION + REQUESTED, CreateConnectionRequest),
     takeLatest(DELETE_CONNECTION + REQUESTED, DeleteConnectionRequest),
-    takeLatest(
-      CONNECTION_INFORMATION + REQUESTED,
-      CreateConnectionInformationRequest
-    ),
     takeLatest(CHECK_CONNECTION + REQUESTED, CheckConnectionRequest),
   ]);
 }

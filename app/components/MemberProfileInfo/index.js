@@ -258,6 +258,15 @@ class MemberProfileInfo extends Component<Props, State> {
       } else if (connectionInformation.get('status') === 'PENDING') {
         status = 'Request Sent';
       }
+    } else if (
+      connectionInformation &&
+      connectionInformation.get('connectionType') === 'b2f'
+    ) {
+      if (connectionInformation.get('status') === 'CONNECTED') {
+        status = 'Connected';
+      } else {
+        status = 'Request Sent';
+      }
     }
     if (isConnectionSent) status = 'Request Sent';
     return status;

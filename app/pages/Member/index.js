@@ -299,7 +299,7 @@ type Props = {
   works: Object,
   coworkers: Object,
   endorsements: Object,
-  connectionInformation: string,
+  connectionInformation: Object,
   isCreatingConnection: boolean, // eslint-disable-line
   createConnectionError: string, // eslint-disable-line
   isDeletingConnection: boolean, // eslint-disable-line
@@ -422,7 +422,6 @@ class Member extends Component<Props, State> {
     const from = isBusiness
       ? businesses.length > 0 && businesses[0].id
       : currentUser && currentUser.get('id');
-    const connectionType = isBusiness ? 'b2f' : 'f2f';
 
     this.props.requestMemberProfile(slug);
     this.props.requestMemberBadges(slug);
@@ -431,7 +430,7 @@ class Member extends Component<Props, State> {
     this.props.requestMemberWorks(slug);
     this.props.requestMemberCoworkers(slug);
     this.props.requestMemberEndorsements(slug);
-    this.props.requestCheckConnection({ toSlug: slug, from, connectionType });
+    this.props.requestCheckConnection({ to: slug, from });
   }
   onCloseModal = () => {
     this.setState({ isOpen: false });
@@ -940,7 +939,6 @@ const mapStateToProps = state => ({
   createConnectionError: state.getIn(['member', 'createConnectionError']),
   isDeletingConnection: state.getIn(['member', 'isDeletingConnection']),
   deleteConnectionError: state.getIn(['member', 'deleteConnectionError']),
-  connectionStatus: state.getIn(['member', 'connectionStatus']),
 });
 
 const mapDispatchToProps = dispatch => ({
