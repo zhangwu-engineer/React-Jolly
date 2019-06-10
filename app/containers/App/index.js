@@ -64,7 +64,9 @@ class App extends Component<Props> {
       const {
         params: { slug },
       } = matchBusiness;
-      this.props.requestBusinessProfile(slug);
+      if (slug !== 'network') {
+        this.props.requestBusinessProfile(slug);
+      }
     }
   }
   componentDidUpdate(prevProps: Props) {
