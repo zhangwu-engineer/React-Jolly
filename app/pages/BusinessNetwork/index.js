@@ -561,7 +561,8 @@ class BusinessNetworkPage extends Component<Props, State> {
                         classes.findFreelancersCount
                       )}
                     >
-                      44 Filtered&nbsp;&sdot;&nbsp;
+                      {`${total} Filtered`}
+                      &nbsp;&sdot;&nbsp;
                     </span>
                     <span
                       className={cx(
