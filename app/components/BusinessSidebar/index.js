@@ -2,6 +2,7 @@
 
 import React, { PureComponent, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import cx from 'classnames';
 
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -11,6 +12,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import Collapse from '@material-ui/core/Collapse';
 
+import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
 import UserAvatar from 'components/UserAvatar';
 
@@ -77,6 +79,7 @@ type Props = {
   business: Object,
   classes: Object,
   colorfulSideTop: Boolean,
+  onClose: Function,
 };
 
 type State = {
@@ -91,6 +94,11 @@ class BusinessSidebar extends PureComponent<Props, State> {
   toggleNestedMenu = () => {
     this.setState(state => ({ isNested: !state.isNested }));
   };
+  goToNetworkPage = () => {
+    this.props.onClose();
+    history.push('/b/network');
+  };
+
   render() {
     const { business, classes, colorfulSideTop } = this.props;
     const { isNested } = this.state;
@@ -101,7 +109,7 @@ class BusinessSidebar extends PureComponent<Props, State> {
           alignItems="center"
           className={
             colorfulSideTop
-              ? [classes.sideTop, classes.sideTopColorful]
+              ? cx(classes.sideTop, classes.sideTopColorful)
               : classes.sideTop
           }
         >
@@ -153,6 +161,7 @@ class BusinessSidebar extends PureComponent<Props, State> {
               <ListItemText
                 classes={{ primary: classes.menuItemText }}
                 primary="Discover"
+                onClick={this.goToNetworkPage}
               />
             </MenuItem>
           </Collapse>

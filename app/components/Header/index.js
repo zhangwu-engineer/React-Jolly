@@ -863,7 +863,11 @@ class Header extends Component<Props, State> {
                 open={businessSide}
                 onClose={this.toggleBusinessSideDrawer(false)}
               >
-                <BusinessSidebar business={currentBusiness} colorfulSideTop />
+                <BusinessSidebar
+                  business={currentBusiness}
+                  onClose={this.toggleBusinessSideDrawer(false)}
+                  colorfulSideTop
+                />
               </Drawer>
             </Grid>
           </Grid>
