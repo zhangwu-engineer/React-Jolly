@@ -115,6 +115,7 @@ type Props = {
   classes: Object,
   onCloseModal: Function,
   onInvite: Function,
+  currentUser: Object,
 };
 
 type State = {
@@ -139,7 +140,8 @@ class VouchInviteFormModal extends Component<Props, State> {
     });
   };
   render() {
-    const { user, isOpen, classes } = this.props;
+    const { user, isOpen, classes, currentUser } = this.props;
+    const isBusiness = currentUser && currentUser.get('isBusiness');
     return (
       <BaseModal
         className={classes.modal}
@@ -175,19 +177,21 @@ class VouchInviteFormModal extends Component<Props, State> {
               )} ${capitalize(user && user.get('lastName'))}?`}
             </Typography>
           </Grid>
-          <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={this.state.isCoworker}
-                  onChange={this.toggleIsCoworker}
-                  value="true"
-                  color="default"
-                />
-              }
-              label="We've worked together in the past"
-            />
-          </Grid>
+          {!isBusiness && (
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={this.state.isCoworker}
+                    onChange={this.toggleIsCoworker}
+                    value="true"
+                    color="default"
+                  />
+                }
+                label="We've worked together in the past"
+              />
+            </Grid>
+          )}
           <div className={classes.inviteButtonWrapper}>
             <Button
               variant="contained"

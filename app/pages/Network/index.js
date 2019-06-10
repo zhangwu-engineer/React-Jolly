@@ -249,6 +249,7 @@ type Props = {
   requestRemoveConnection: Function,
   requestAcceptConnection: Function,
   requestConnections: Function,
+  currentUser: Object,
 };
 
 type State = {
@@ -458,7 +459,14 @@ class NetworkPage extends Component<Props, State> {
     );
   };
   render() {
-    const { coworkers, connections, cityUsers, classes, total } = this.props;
+    const {
+      coworkers,
+      connections,
+      cityUsers,
+      classes,
+      total,
+      currentUser,
+    } = this.props;
     const {
       isFormOpen,
       selectedUser,
@@ -643,6 +651,7 @@ class NetworkPage extends Component<Props, State> {
         <VouchInviteFormModal
           isOpen={isFormOpen}
           user={selectedUser}
+          currentUser={currentUser}
           onCloseModal={this.closeFormModal}
           onInvite={this.handleConnectionInvite}
         />
@@ -652,6 +661,7 @@ class NetworkPage extends Component<Props, State> {
 }
 
 const mapStateToProps = state => ({
+  currentUser: state.getIn(['app', 'user']),
   user: state.getIn(['app', 'user']),
   cityUsers: state.getIn(['app', 'cityUsers', 'users']),
   total: state.getIn(['app', 'cityUsers', 'total']),
