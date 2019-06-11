@@ -369,7 +369,7 @@ const styles = theme => ({
   },
   businessSidebarButton: {
     display: 'none',
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.down('md')]: {
       display: 'block',
     },
   },
@@ -643,14 +643,17 @@ class Header extends Component<Props, State> {
     });
 
     let isPrivateBusinessPage = false;
+    let isBusinessNetworkPage = false;
     let currentBusiness = null;
     let isFreelancer = user && true;
     if (matchBusiness) {
       const {
         params: { slug },
       } = matchBusiness;
+
       const isBusinessUser = user && user.get('isBusiness');
       isFreelancer = !isBusinessUser;
+
       const businesses =
         isBusinessUser &&
         user.get('businesses') &&
@@ -660,7 +663,14 @@ class Header extends Component<Props, State> {
         businesses && businesses.find(element => element.slug === slug);
       isPrivateBusinessPage =
         isBusinessUser && isBusinessPage && currentBusiness;
+
+      isBusinessNetworkPage = isBusinessUser && slug === 'network';
+      if (isBusinessNetworkPage) {
+        currentBusiness = businesses[0];
+      }
     }
+    const isShowingBusinessSidebar =
+      isPrivateBusinessPage || isBusinessNetworkPage;
 
     const isWorkDetailPage = workDetailMatch && workDetailMatch.isExact;
     const showFeedButton =
@@ -680,14 +690,15 @@ class Header extends Component<Props, State> {
         justify="space-between"
         alignItems="center"
       >
-        {isPrivateBusinessPage && (
+        {isShowingBusinessSidebar && (
           <Grid item>
             <Button
               onClick={this.toggleBusinessSideDrawer(true)}
               color="inherit"
-              className={`${classes.businessSidebarButton} ${
+              className={cx(
+                classes.businessSidebarButton,
                 classes.businessButton
-              }`}
+              )}
             >
               <Fragment>
                 <UserAvatar
@@ -866,6 +877,7 @@ class Header extends Component<Props, State> {
                 <BusinessSidebar
                   business={currentBusiness}
                   onClose={this.toggleBusinessSideDrawer(false)}
+                  isFromHeader
                   colorfulSideTop
                 />
               </Drawer>

@@ -18,7 +18,11 @@ import BusinessSidebar from 'components/BusinessSidebar';
 
 const styles = theme => ({
   root: {
-    maxWidth: '1064px',
+    display: 'flex',
+  },
+  content: {
+    width: '100%',
+    maxWidth: 1064,
     margin: '0px auto 150px auto',
     [theme.breakpoints.down('xs')]: {
       margin: 0,
@@ -26,11 +30,10 @@ const styles = theme => ({
     },
   },
   businessSidebar: {
-    position: 'fixed',
     width: 291,
     minHeight: '100vh',
     background: theme.palette.common.white,
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.down('md')]: {
       display: 'none',
     },
   },
@@ -375,31 +378,33 @@ class BusinessMember extends Component<Props, State> {
               </Grid>
             </Grid>
           )}
-        {isPrivate && (
-          <div className={classes.businessSidebar}>
-            <BusinessSidebar business={currentBusiness} />
-          </div>
-        )}
         <div className={classes.root}>
-          <div className={classes.profileInfo}>
-            {isPrivate ? (
-              <BusinessProfileInfo
-                user={currentUser}
-                business={currentBusiness}
-                openPhotoModal={this.openPhotoModal}
-                viewBadgeProgress={this.viewBadgeProgress}
-              />
-            ) : (
-              <BusinessMemberProfileInfo
-                currentUser={currentUser}
-                business={business}
-                openPhotoModal={this.openPhotoModal}
-                isConnectionSent={isConnectionSent}
-              />
-            )}
-          </div>
-          <div className={classes.panel}>
-            <div className={classes.leftPanel} />
+          {isPrivate && (
+            <div className={classes.businessSidebar}>
+              <BusinessSidebar business={currentBusiness} />
+            </div>
+          )}
+          <div className={classes.content}>
+            <div className={classes.profileInfo}>
+              {isPrivate ? (
+                <BusinessProfileInfo
+                  user={currentUser}
+                  business={currentBusiness}
+                  openPhotoModal={this.openPhotoModal}
+                  viewBadgeProgress={this.viewBadgeProgress}
+                />
+              ) : (
+                <BusinessMemberProfileInfo
+                  currentUser={currentUser}
+                  business={business}
+                  openPhotoModal={this.openPhotoModal}
+                  isConnectionSent={isConnectionSent}
+                />
+              )}
+            </div>
+            <div className={classes.panel}>
+              <div className={classes.leftPanel} />
+            </div>
           </div>
         </div>
       </Fragment>
