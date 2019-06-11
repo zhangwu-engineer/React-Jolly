@@ -15,6 +15,7 @@ import FormControl from '@material-ui/core/FormControl';
 import SearchIcon from '@material-ui/icons/Search';
 import Button from '@material-ui/core/Button';
 
+import Preloader from 'components/Preloader';
 import Link from 'components/Link';
 import BusinessSidebar from 'components/BusinessSidebar';
 import EditableInput from 'components/EditableInput';
@@ -108,6 +109,7 @@ const styles = theme => ({
     paddingTop: 30,
     paddingLeft: 25,
     paddingRight: 25,
+    position: 'relative',
   },
   pendingConnectionsTitle: {
     fontSize: 16,
@@ -247,6 +249,12 @@ const styles = theme => ({
     '&:hover, &:focus': {
       color: theme.palette.common.white,
     },
+  },
+  progressContainer: {
+    position: 'absolute',
+    justifyContent: 'center',
+    zIndex: 1000,
+    marginLeft: -24,
   },
 });
 
@@ -518,6 +526,7 @@ class BusinessNetworkPage extends Component<Props, State> {
       classes,
       total,
       user,
+      isCityUsersLoading,
     } = this.props;
     const {
       isFormOpen,
@@ -706,6 +715,11 @@ class BusinessNetworkPage extends Component<Props, State> {
                   />
                 </Grid>
               </Grid>
+              {isCityUsersLoading && (
+                <Grid container className={classes.progressContainer}>
+                  <Preloader />
+                </Grid>
+              )}
               {selectedTab === 0 && (
                 <Grid
                   container
