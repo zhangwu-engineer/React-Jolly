@@ -69,3 +69,18 @@ export const BUSINESS_CATEGORY_OPTIONS = [
     value: 'Other',
   },
 ];
+
+export const ACTIVE_OPTIONS = [
+  {
+    label: 'Active & Inactive',
+    value: 'Active & Inactive',
+  },
+  {
+    label: 'Active',
+    value: 'Active',
+  },
+  {
+    label: 'Inactive',
+    value: 'Inactive',
+  },
+];

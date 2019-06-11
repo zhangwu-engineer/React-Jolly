@@ -13,9 +13,9 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Input from '@material-ui/core/Input';
 import FormControl from '@material-ui/core/FormControl';
 import SearchIcon from '@material-ui/icons/Search';
-
 import Button from '@material-ui/core/Button';
 
+import Link from 'components/Link';
 import BusinessSidebar from 'components/BusinessSidebar';
 import EditableInput from 'components/EditableInput';
 import UserCard from 'components/UserCard';
@@ -26,6 +26,7 @@ import NetworkNav from 'components/NetworkNav';
 import CustomSelect from 'components/CustomSelect';
 
 import ROLES from 'enum/roles';
+import { ACTIVE_OPTIONS } from 'enum/constants';
 
 import { requestCityUsers, requestUserCoworkers } from 'containers/App/sagas';
 import saga, {
@@ -38,6 +39,7 @@ import saga, {
 import injectSagas from 'utils/injectSagas';
 
 const roles = ROLES.sort().map(role => ({ value: role, label: role }));
+const statuses = ACTIVE_OPTIONS.sort().map(status => status);
 const perPage = 24;
 const styles = theme => ({
   root: {
@@ -81,6 +83,8 @@ const styles = theme => ({
   findFreelancersClearFilter: {
     color: '#1575d9',
     cursor: 'pointer',
+    textDecoration: 'none',
+    textTransform: 'none',
   },
   coworkersBox: {
     backgroundColor: theme.palette.common.white,
@@ -210,6 +214,9 @@ const styles = theme => ({
       display: 'inline-flex',
     },
   },
+  cityUsersContainer: {
+    marginTop: 10,
+  },
   searchInputWrapper: {
     position: 'relative',
   },
@@ -324,6 +331,7 @@ class BusinessNetworkPage extends Component<Props, State> {
     filter: {
       location: '',
       selectedRole: '',
+      activeStatus: '',
     },
     page: 1,
   };
@@ -336,7 +344,8 @@ class BusinessNetworkPage extends Component<Props, State> {
         query,
         page,
         perPage,
-        filter.selectedRole
+        filter.selectedRole,
+        filter.activeStatus
       );
     }
     this.props.requestConnections();
@@ -424,7 +433,8 @@ class BusinessNetworkPage extends Component<Props, State> {
       query,
       page,
       perPage,
-      filter.selectedRole
+      filter.selectedRole,
+      filter.activeStatus
     );
   }, 500);
   handleChange = e => {
@@ -461,11 +471,41 @@ class BusinessNetworkPage extends Component<Props, State> {
       () => this.debouncedSearch()
     );
   };
+  handleActiveStatusChange = status => {
+    this.setState(
+      state => ({
+        ...state,
+        page: 1,
+        filter: {
+          ...state.filter,
+          activeStatus: status,
+        },
+      }),
+      () => this.debouncedSearch()
+    );
+  };
   loadMoreData = () => {
     this.setState(
       state => ({
         ...state,
         page: state.page + 1,
+      }),
+      () => this.debouncedSearch()
+    );
+  };
+  clearFilters = () => {
+    this.setState(
+      state => ({
+        ...state,
+        query: '',
+        page: 1,
+        selectedTab: 0,
+        filter: {
+          ...state.filter,
+          location: '',
+          selectedRole: '',
+          activeStatus: '',
+        },
       }),
       () => this.debouncedSearch()
     );
@@ -561,17 +601,18 @@ class BusinessNetworkPage extends Component<Props, State> {
                         classes.findFreelancersCount
                       )}
                     >
-                      {`${total} Filtered`}
+                      {`${cityUsers ? cityUsers.toJSON().length : 0} Filtered`}
                       &nbsp;&sdot;&nbsp;
                     </span>
-                    <span
+                    <Link
                       className={cx(
                         classes.findFreelancersTitle,
                         classes.findFreelancersClearFilter
                       )}
+                      onClick={() => this.clearFilters()}
                     >
                       Clear Filters
-                    </span>
+                    </Link>
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={4} className={classes.searchInputWrap}>
@@ -600,7 +641,7 @@ class BusinessNetworkPage extends Component<Props, State> {
               <Grid container spacing={8}>
                 <Grid item xs={12} md={4}>
                   <EditableInput
-                    label="City"
+                    label="All Cities"
                     id="location"
                     name="location"
                     value={filter.location}
@@ -642,17 +683,19 @@ class BusinessNetworkPage extends Component<Props, State> {
                   className={classes.searchInputWrapper}
                 >
                   <CustomSelect
-                    placeholder="All Positions"
-                    options={roles}
+                    placeholder="Active & Inactive"
+                    options={statuses}
                     value={
-                      filter.selectedRole
+                      filter.activeStatus
                         ? {
-                            value: filter.selectedRole,
-                            label: filter.selectedRole,
+                            value: filter.activeStatus,
+                            label: filter.activeStatus,
                           }
                         : null
                     }
-                    onChange={value => this.handleRoleChange(value.value)}
+                    onChange={value =>
+                      this.handleActiveStatusChange(value.value)
+                    }
                     isMulti={false}
                     isClearable={false}
                     stylesOverride={{
@@ -664,7 +707,11 @@ class BusinessNetworkPage extends Component<Props, State> {
                 </Grid>
               </Grid>
               {selectedTab === 0 && (
-                <Grid container spacing={8}>
+                <Grid
+                  container
+                  spacing={8}
+                  className={classes.cityUsersContainer}
+                >
                   {cityUsers.map(
                     cityUser =>
                       !coworkerIds.includes(cityUser.get('id')) ? (
@@ -734,8 +781,10 @@ const mapDispatchToProps = dispatch => ({
   requestAcceptConnection: connectionId =>
     dispatch(requestAcceptConnection(connectionId)),
   requestConnections: () => dispatch(requestConnections()),
-  requestCityUsers: (city, query, page, usersPerPage, role) =>
-    dispatch(requestCityUsers(city, query, page, usersPerPage, role)),
+  requestCityUsers: (city, query, page, usersPerPage, role, activeStatus) =>
+    dispatch(
+      requestCityUsers(city, query, page, usersPerPage, role, activeStatus)
+    ),
 });
 
 export default compose(

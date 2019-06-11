@@ -252,13 +252,15 @@ export const requestCityUsers = (
   query: string,
   page: Number,
   perPage: Number,
-  role: string
+  role: string,
+  activeStatus: string
 ) => ({
   type: CITY_USERS + REQUESTED,
   payload: city,
   meta: {
     query,
     role,
+    activeStatus,
     page,
     perPage,
   },
@@ -1205,6 +1207,7 @@ function* CityUsersRequest({ payload, meta }) {
         page: meta.page,
         perPage: meta.perPage,
         role: meta.role,
+        activeStatus: meta.activeStatus,
       },
       headers: { 'x-access-token': token },
     });
