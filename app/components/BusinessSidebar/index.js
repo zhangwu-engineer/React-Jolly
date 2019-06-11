@@ -79,6 +79,7 @@ type Props = {
   business: Object,
   classes: Object,
   colorfulSideTop: Boolean,
+  isFromHeader: Boolean,
   onClose: Function,
 };
 
@@ -95,10 +96,15 @@ class BusinessSidebar extends PureComponent<Props, State> {
     this.setState(state => ({ isNested: !state.isNested }));
   };
   goToNetworkPage = () => {
-    this.props.onClose();
+    if (this.props.isFromHeader) {
+      this.props.onClose();
+    }
     history.push('/b/network');
   };
   goToProfilePage = slug => {
+    if (this.props.isFromHeader) {
+      this.props.onClose();
+    }
     history.push(`/b/${slug}`);
   };
   render() {
@@ -167,7 +173,7 @@ class BusinessSidebar extends PureComponent<Props, State> {
             <MenuItem className={classes.menuItemNoIcon}>
               <ListItemText
                 classes={{ primary: classes.menuItemText }}
-                primary="Discover"
+                primary="Find Connections"
                 onClick={this.goToNetworkPage}
               />
             </MenuItem>
