@@ -9,6 +9,7 @@ import { API_URL, REQUESTED, SUCCEDED, FAILED, ERROR } from 'enum/constants';
 import type { Action, State } from 'types/common';
 import type { Saga } from 'redux-saga';
 import { getToken } from 'containers/App/selectors';
+import { getConnection } from 'containers/Member/selectors';
 
 // ------------------------------------
 // Constants
@@ -201,6 +202,7 @@ const connectionDeleteRequestError = (error: string) => ({
 // ------------------------------------
 const initialState = fromJS({
   roles: fromJS([]),
+  connection: null,
   isLoading: false,
   error: '',
   data: fromJS({}),
@@ -417,7 +419,7 @@ export const reducer = (
       );
 
     case CHECK_CONNECTION + REQUESTED:
-      return state.set('isChecking', true);
+      return state.set('connection', payload).set('isChecking', true);
 
     case CHECK_CONNECTION + SUCCEDED:
       return state
@@ -578,6 +580,8 @@ function* CreateConnectionRequest({ payload }) {
     });
     if (response.status === 200) {
       yield put(connectionCreateRequestSuccess(response.data.response));
+      const connection = yield select(getConnection);
+      yield put(requestCheckConnection(connection));
     } else {
       yield put(connectionCreateRequestFailed(response.data.error));
     }
@@ -595,7 +599,9 @@ function* DeleteConnectionRequest({ payload }) {
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
-      yield all([put(connectionDeleteRequestSuccess(response.data.response))]);
+      yield put(connectionDeleteRequestSuccess(response.data.response));
+      const connection = yield select(getConnection);
+      yield put(requestCheckConnection(connection));
     } else {
       yield put(connectionDeleteRequestFailed(response.data.error));
     }

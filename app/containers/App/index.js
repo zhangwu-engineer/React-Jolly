@@ -64,7 +64,9 @@ class App extends Component<Props> {
       const {
         params: { slug },
       } = matchBusiness;
-      this.props.requestBusinessProfile(slug);
+      if (slug !== 'network') {
+        this.props.requestBusinessProfile(slug);
+      }
     }
   }
   componentDidUpdate(prevProps: Props) {
@@ -136,7 +138,14 @@ class App extends Component<Props> {
     });
 
     if (matchBusiness) {
-      const businessName = business && business.get('name');
+      const businesses =
+        user && user.get('businesses') && user.get('businesses').toJSON();
+      const currentBusinessName = businesses && businesses[0].name;
+
+      const businessName = business.get('name')
+        ? business.get('name')
+        : currentBusinessName;
+
       data = fromJS({
         title: `${businessName} | JollyHQ Network`,
         description: `${businessName}’s profile on Jolly - the professional social network for events businesses and freelancers.`,

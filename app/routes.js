@@ -36,6 +36,7 @@ const AdminLogin = load(() => import('pages/Admin/Login'));
 const Admin = load(() => import('pages/Admin'));
 const FourOfour = load(() => import('pages/404'));
 const Business = load(() => import('pages/Business'));
+const BusinessNetwork = load(() => import('pages/BusinessNetwork'));
 
 class Routes extends Component<{}> {
   render() {
@@ -70,6 +71,11 @@ class Routes extends Component<{}> {
         <Route
           path="/privacy-policy"
           render={props => <Privacy {...props} />}
+        />
+        <PrivateRoute
+          exact
+          path="/b/network"
+          render={props => <BusinessNetwork {...props} />}
         />
         <Route path="/b/:slug" render={props => <Business {...props} />} />
         <Route path="/f/:slug" render={props => <User {...props} />} />

@@ -338,56 +338,65 @@ type State = {
   isPhotoModalOpen: boolean,
   isPublicViewMode: boolean,
   activeBadge: Object,
+  connection: Object,
 };
 
-const B2F_CONNECTION_REQUEST_MSG = 'Connection Request Sent';
+const CONNECTION_REQUEST_MSG = 'Connection Request Sent';
 const COWORKER_CONNECTION_REQUEST_MSG = 'Coworker Connection Request Sent';
 
 class Member extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State) {
+    const {
+      match: { url },
+      currentUser,
+    } = nextProps;
+    const {
+      params: { slug },
+    } = matchPath(url, {
+      path: '/f/:slug',
+    });
+
+    const isBusiness = currentUser && currentUser.get('isBusiness');
+    const businesses = isBusiness && currentUser.get('businesses').toJSON();
+    const from = isBusiness
+      ? businesses.length > 0 && businesses[0].id
+      : currentUser && currentUser.get('id');
+    const state = { connection: { to: slug, from } };
+
     if (nextProps.isCreatingConnection) {
-      return {
-        isInviting: true,
-      };
+      state.isInviting = true;
+      return state;
     }
     if (nextProps.isDeletingConnection) {
-      return {
-        isDeleting: true,
-      };
+      state.isDeleting = true;
     }
     if (
       !nextProps.isDeletingConnection &&
       !nextProps.deleteConnectionError &&
       prevState.isDeleting
     ) {
-      return {
-        showNotification: true,
-        isDeleting: false,
-        isConnectionDeleted: true,
-      };
+      state.showNotification = true;
+      state.isDeleting = false;
+      state.isConnectionDeleted = true;
     }
     if (
       !nextProps.isCreatingConnection &&
       !nextProps.createConnectionError &&
       prevState.isInviting
     ) {
-      return {
-        showNotification: true,
-        isInviting: false,
-        isConnectionSent: true,
-      };
+      state.showNotification = true;
+      state.isInviting = false;
+      state.isConnectionSent = true;
     }
     if (
       !nextProps.isCreatingConnection &&
       nextProps.createConnectionError &&
       prevState.isInviting
     ) {
-      return {
-        showNotification: false,
-        isInviting: false,
-      };
+      state.showNotification = false;
+      state.isInviting = false;
     }
-    return null;
+    return state;
   }
   state = {
     isOpen: false,
@@ -409,19 +418,12 @@ class Member extends Component<Props, State> {
   componentDidMount() {
     const {
       match: { url },
-      currentUser,
     } = this.props;
     const {
       params: { slug },
     } = matchPath(url, {
       path: '/f/:slug',
     });
-
-    const isBusiness = currentUser && currentUser.get('isBusiness');
-    const businesses = isBusiness && currentUser.get('businesses').toJSON();
-    const from = isBusiness
-      ? businesses.length > 0 && businesses[0].id
-      : currentUser && currentUser.get('id');
 
     this.props.requestMemberProfile(slug);
     this.props.requestMemberBadges(slug);
@@ -430,9 +432,7 @@ class Member extends Component<Props, State> {
     this.props.requestMemberWorks(slug);
     this.props.requestMemberCoworkers(slug);
     this.props.requestMemberEndorsements(slug);
-    if (from) {
-      this.props.requestCheckConnection({ to: slug, from });
-    }
+    this.props.requestCheckConnection(this.state.connection);
   }
   onCloseModal = () => {
     this.setState({ isOpen: false });
@@ -628,7 +628,7 @@ class Member extends Component<Props, State> {
             <Notification
               msg={
                 isCurrentBusiness
-                  ? B2F_CONNECTION_REQUEST_MSG
+                  ? CONNECTION_REQUEST_MSG
                   : COWORKER_CONNECTION_REQUEST_MSG
               }
               close={this.closeNotification}
