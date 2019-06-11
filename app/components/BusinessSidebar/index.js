@@ -98,7 +98,9 @@ class BusinessSidebar extends PureComponent<Props, State> {
     this.props.onClose();
     history.push('/b/network');
   };
-
+  goToProfilePage = slug => {
+    history.push(`/b/${slug}`);
+  };
   render() {
     const { business, classes, colorfulSideTop } = this.props;
     const { isNested } = this.state;
@@ -123,7 +125,12 @@ class BusinessSidebar extends PureComponent<Props, State> {
             <Typography variant="h6" className={classes.greetings}>
               {business && business.name}
             </Typography>
-            <Link className={classes.link}>View Business Profile</Link>
+            <Link
+              className={classes.link}
+              onClick={() => this.goToProfilePage(business.slug)}
+            >
+              View Business Profile
+            </Link>
           </Grid>
         </Grid>
         <MenuList className={classes.menuList}>
