@@ -677,7 +677,7 @@ class Header extends Component<Props, State> {
       isProfilePage ||
       isWorkDetailPage ||
       pathname.includes('/edit') ||
-      pathname.includes('/network') ||
+      (pathname.includes('/network') && !isBusinessNetworkPage) ||
       pathname.includes('/feed') ||
       pathname.includes('/settings');
     const hideTopRightButtons =
