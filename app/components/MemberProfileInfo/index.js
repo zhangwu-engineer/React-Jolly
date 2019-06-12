@@ -203,9 +203,16 @@ class MemberProfileInfo extends Component<Props, State> {
     isMenuOpen: false,
   };
   handleToggle = () => {
-    const { isConnectionSent } = this.props;
+    const { isConnectionSent, currentUser } = this.props;
+    const isBusiness = (currentUser && currentUser.get('isBusiness')) || false;
     if (!isConnectionSent) {
-      this.setState(state => ({ isMenuOpen: !state.isMenuOpen }));
+      if (isBusiness) {
+        this.handleConnect({
+          isCoworker: false,
+        });
+      } else {
+        this.setState(state => ({ isMenuOpen: !state.isMenuOpen }));
+      }
     }
   };
   handleClose = event => {
