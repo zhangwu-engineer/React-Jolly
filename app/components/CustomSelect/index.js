@@ -22,7 +22,10 @@ const styles = theme => ({
     fontSize: 14,
     fontWeight: 500,
     color: '#434343',
-    padding: '10px 20px',
+    height: 40,
+    alignItems: 'center',
+    paddingLeft: 10,
+    paddingTop: 10,
     boxSizing: 'border-box',
   },
   valueContainer: {
