@@ -39,7 +39,9 @@ import saga, {
 } from 'containers/Network/sagas';
 import injectSagas from 'utils/injectSagas';
 
-const roles = ROLES.sort().map(role => ({ value: role, label: role }));
+let roles = ROLES.sort().map(role => ({ value: role, label: role }));
+roles = [{ value: '', label: 'All Positions' }].concat(roles);
+
 const statuses = ACTIVE_OPTIONS.sort().map(status => status);
 const perPage = 24;
 const styles = theme => ({
@@ -110,6 +112,9 @@ const styles = theme => ({
     paddingLeft: 25,
     paddingRight: 25,
     position: 'relative',
+  },
+  filterContainer: {
+    marginBottom: 10,
   },
   pendingConnectionsTitle: {
     fontSize: 16,
@@ -187,7 +192,7 @@ const styles = theme => ({
     marginBottom: 10,
   },
   textInput: {
-    top: 15,
+    top: 20,
     fontSize: 14,
     fontWeight: 500,
     color: '#484848',
@@ -647,10 +652,10 @@ class BusinessNetworkPage extends Component<Props, State> {
                   </FormControl>
                 </Grid>
               </Grid>
-              <Grid container spacing={8}>
-                <Grid item xs={12} md={4}>
+              <Grid container spacing={8} className={classes.filterContainer}>
+                <Grid item xs={6} md={4}>
                   <EditableInput
-                    label="All Cities"
+                    label="City"
                     id="location"
                     name="location"
                     value={filter.location}
@@ -658,12 +663,7 @@ class BusinessNetworkPage extends Component<Props, State> {
                     select
                   />
                 </Grid>
-                <Grid
-                  item
-                  xs={12}
-                  md={4}
-                  className={classes.searchInputWrapper}
-                >
+                <Grid item xs={6} md={4} className={classes.searchInputWrapper}>
                   <CustomSelect
                     placeholder="All Positions"
                     options={roles}

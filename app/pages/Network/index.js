@@ -78,11 +78,15 @@ const styles = theme => ({
   },
   rightPanel: {
     flex: 1,
-    paddingTop: 30,
+    paddingTop: 70,
     [theme.breakpoints.down('xs')]: {
       paddingLeft: 25,
       paddingRight: 25,
+      paddingTop: 30,
     },
+  },
+  filterContainer: {
+    marginBottom: 10,
   },
   pendingConnectionsTitle: {
     fontSize: 16,
@@ -160,7 +164,7 @@ const styles = theme => ({
     marginBottom: 10,
   },
   textInput: {
-    top: '25px',
+    top: 9,
     fontSize: 14,
     fontWeight: 500,
     color: '#484848',
@@ -549,7 +553,7 @@ class NetworkPage extends Component<Props, State> {
                 </React.Fragment>
               )}
 
-            <Grid container spacing={8}>
+            <Grid container spacing={8} className={classes.filterContainer}>
               <Grid item xs={6} lg={4}>
                 <EditableInput
                   label="City"
