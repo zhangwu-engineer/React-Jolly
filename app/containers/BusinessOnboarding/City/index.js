@@ -190,6 +190,11 @@ class OnboardingCityPage extends Component<Props, State> {
           category: businessCategory,
         },
       });
+      analytics.track('Business Created', {
+        location: address,
+        name: businessName,
+        category: businessCategory,
+      });
     } else if (this.addressInput.current) {
       this.addressInput.current.blur();
     }
