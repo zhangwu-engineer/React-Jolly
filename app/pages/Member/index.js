@@ -334,6 +334,7 @@ type State = {
   isConnectionDeleted: boolean,
   showNotification: boolean,
   isConnectionSent: boolean,
+  isCoworkerConnectionSent: boolean,
   type: string,
   isPhotoModalOpen: boolean,
   isPublicViewMode: boolean,
@@ -409,6 +410,7 @@ class Member extends Component<Props, State> {
     isDeleting: false, // eslint-disable-line
     showNotification: false,
     isConnectionSent: false,
+    isCoworkerConnectionSent: false,
     isConnectionDeleted: false,
     type: '',
     isPhotoModalOpen: false,
@@ -514,6 +516,10 @@ class Member extends Component<Props, State> {
   viewBadgeProgress = badge => {
     this.setState({ activeBadge: badge });
   };
+  handleConnect = params => {
+    this.setState({ isCoworkerConnectionSent: params.isCoworker });
+    this.props.requestCreateConnection(params);
+  };
   render() {
     const {
       currentUser,
@@ -542,6 +548,7 @@ class Member extends Component<Props, State> {
       isPhotoModalOpen,
       isPublicViewMode,
       activeBadge,
+      isCoworkerConnectionSent,
     } = this.state;
     const showContactOptions =
       member.getIn(['profile', 'receiveEmail']) ||
@@ -627,7 +634,7 @@ class Member extends Component<Props, State> {
           isConnectionSent && (
             <Notification
               msg={
-                isCurrentBusiness
+                isCurrentBusiness || !isCoworkerConnectionSent
                   ? CONNECTION_REQUEST_MSG
                   : COWORKER_CONNECTION_REQUEST_MSG
               }
@@ -658,7 +665,7 @@ class Member extends Component<Props, State> {
                 badges={badges}
                 openShareModal={this.openShareModal}
                 openPhotoModal={this.openPhotoModal}
-                connect={this.props.requestCreateConnection}
+                connect={this.handleConnect}
                 isConnectionSent={isConnectionSent}
                 connectionInformation={connectionInformation}
                 requestDeleteConnection={this.props.requestDeleteConnection}

@@ -1,7 +1,6 @@
 // @flow
 
 import React, { Component, Fragment } from 'react';
-import { capitalize } from 'lodash-es';
 import { generate } from 'shortid';
 import cx from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
@@ -14,9 +13,7 @@ import Popper from '@material-ui/core/Popper';
 import Fade from '@material-ui/core/Fade';
 import Paper from '@material-ui/core/Paper';
 import MenuList from '@material-ui/core/MenuList';
-import MenuItem from '@material-ui/core/MenuItem';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import ListItemText from '@material-ui/core/ListItemText';
 import ImageIcon from '@material-ui/icons/Image';
 
 import { history } from 'components/ConnectedRouter';
@@ -26,6 +23,9 @@ import Icon from 'components/Icon';
 import ConnectIcon from 'images/sprite/connect.svg';
 import ConnectSentIcon from 'images/sprite/connect_sent.svg';
 import ShareIcon from 'images/sprite/share.svg';
+import { DisconnectMenu } from './disconnectMenu';
+import { CoworkerMenu } from './coworkerMenu';
+import { ConnectMenu } from './connectMenu';
 
 const styles = theme => ({
   root: {},
@@ -356,104 +356,66 @@ class MemberProfileInfo extends Component<Props, State> {
                         {connectionEstablished &&
                           isCoWorker && (
                             <MenuList className={classes.menuList}>
-                              <MenuItem
-                                className={classes.menuItem}
+                              <DisconnectMenu
+                                classes={classes}
                                 onClick={() => this.handleDisconnect()}
-                              >
-                                <ListItemText
-                                  classes={{ primary: classes.menuItemText }}
-                                  primary={`Disconnect from ${capitalize(
-                                    member.get('firstName')
-                                  )}`}
-                                />
-                              </MenuItem>
+                                member={member}
+                              />
                             </MenuList>
                           )}
                         {connectionEstablished &&
                           !isCoWorker &&
                           !isBusiness && (
                             <MenuList className={classes.menuList}>
-                              <MenuItem
-                                className={classes.menuItem}
+                              <CoworkerMenu
+                                classes={classes}
                                 onClick={e => {
                                   this.handleClose(e);
                                   this.handleConnect({
                                     isCoworker: true,
                                   });
                                 }}
-                              >
-                                <ListItemText
-                                  classes={{ primary: classes.menuItemText }}
-                                  primary={`I've worked with ${capitalize(
-                                    member.get('firstName')
-                                  )}`}
-                                />
-                              </MenuItem>
-                              <MenuItem
-                                className={classes.menuItem}
+                                member={member}
+                              />
+                              <DisconnectMenu
+                                classes={classes}
                                 onClick={() => this.handleDisconnect()}
-                              >
-                                <ListItemText
-                                  classes={{ primary: classes.menuItemText }}
-                                  primary={`Disconnect from ${capitalize(
-                                    member.get('firstName')
-                                  )}`}
-                                />
-                              </MenuItem>
+                                member={member}
+                              />
                             </MenuList>
                           )}
                         {connectionEstablished &&
                           isBusiness && (
-                            <MenuList className={classes.menuList}>
-                              <MenuItem
-                                className={classes.menuItem}
-                                onClick={() => this.handleDisconnect()}
-                              >
-                                <ListItemText
-                                  classes={{ primary: classes.menuItemText }}
-                                  primary={`Disconnect from ${capitalize(
-                                    member.get('firstName')
-                                  )}`}
-                                />
-                              </MenuItem>
-                            </MenuList>
+                            <DisconnectMenu
+                              classes={classes}
+                              onClick={() => this.handleDisconnect()}
+                              member={member}
+                            />
                           )}
                         {!connectionEstablished &&
                           !isConnectionSent && (
                             <MenuList className={classes.menuList}>
-                              <MenuItem
-                                className={classes.menuItem}
+                              <ConnectMenu
+                                classes={classes}
                                 onClick={e => {
                                   this.handleClose(e);
                                   this.handleConnect({
                                     isCoworker: false,
                                   });
                                 }}
-                              >
-                                <ListItemText
-                                  classes={{ primary: classes.menuItemText }}
-                                  primary={`Connect with ${capitalize(
-                                    member.get('firstName')
-                                  )}`}
-                                />
-                              </MenuItem>
+                                member={member}
+                              />
                               {!isBusiness && (
-                                <MenuItem
-                                  className={classes.menuItem}
+                                <CoworkerMenu
+                                  classes={classes}
                                   onClick={e => {
                                     this.handleClose(e);
                                     this.handleConnect({
                                       isCoworker: true,
                                     });
                                   }}
-                                >
-                                  <ListItemText
-                                    classes={{ primary: classes.menuItemText }}
-                                    primary={`I've worked with ${capitalize(
-                                      member.get('firstName')
-                                    )}`}
-                                  />
-                                </MenuItem>
+                                  member={member}
+                                />
                               )}
                             </MenuList>
                           )}
