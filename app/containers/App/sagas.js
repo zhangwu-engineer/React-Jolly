@@ -1063,6 +1063,7 @@ function* DeleteUserPhotoRequest({ payload, slug }) {
       yield all([
         put(requestMemberFiles(slug)),
         put(requestUserFiles()),
+        put(requestUser()),
         put(userPhotoDeleteSuccess(response.data.response)),
       ]);
     } else {
