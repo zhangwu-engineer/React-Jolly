@@ -215,6 +215,11 @@ const styles = theme => ({
     position: 'relative',
     top: -3,
   },
+  hideForSmall: {
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+  },
   showForSmall: {
     display: 'none',
     [theme.breakpoints.down('xs')]: {
@@ -557,7 +562,7 @@ class BusinessNetworkPage extends Component<Props, State> {
 
     return (
       <React.Fragment>
-        <NetworkNav />
+        <NetworkNav isBusinessNetwork />
         {showNotification && (
           <Notification
             msg={`Coworker connection request sent to ${sentTo}`}
@@ -637,8 +642,23 @@ class BusinessNetworkPage extends Component<Props, State> {
                     <Input
                       value={query}
                       onChange={this.handleChange}
-                      className={cx(classes.textInput)}
+                      className={cx(classes.textInput, classes.hideForSmall)}
                       placeholder="Search by name"
+                      fullWidth
+                      startAdornment={
+                        <InputAdornment
+                          position="start"
+                          className={classes.adornment}
+                        >
+                          <SearchIcon />
+                        </InputAdornment>
+                      }
+                    />
+                    <Input
+                      value={query}
+                      onChange={this.handleChange}
+                      className={cx(classes.textInput, classes.showForSmall)}
+                      placeholder="Search"
                       fullWidth
                       startAdornment={
                         <InputAdornment
