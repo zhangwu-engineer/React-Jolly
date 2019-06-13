@@ -2,7 +2,6 @@
 
 import React, { PureComponent, Fragment } from 'react';
 import { generate } from 'shortid';
-import cx from 'classnames';
 import Masonry from 'react-masonry-component';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -13,6 +12,7 @@ import CameraIcon from '@material-ui/icons/CameraAlt';
 import CloseIcon from '@material-ui/icons/Close';
 
 import BaseModal from 'components/BaseModal';
+import DeleteImage from 'components/DeleteImage';
 
 const styles = theme => ({
   modal: {
@@ -53,6 +53,22 @@ const styles = theme => ({
   selected: {
     border: '2px solid #000000',
   },
+  photoWrapper: {
+    width: 164,
+    height: 30,
+    color: 'white',
+    fontSize: 15,
+    fontWeight: 550,
+    backgroundColor: theme.palette.primary.main,
+    textAlign: 'center',
+  },
+  moreVertIconButton: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    minWidth: 0,
+    cursor: 'pointer',
+  },
 });
 
 type Props = {
@@ -64,6 +80,8 @@ type Props = {
   onCloseModal: Function,
   uploadPhoto?: Function,
   updateUser?: Function,
+  isPrivate: boolean,
+  deletePhoto: Function,
 };
 
 class PhotoModal extends PureComponent<Props> {
@@ -75,13 +93,14 @@ class PhotoModal extends PureComponent<Props> {
     this.props.onCloseModal();
   };
   handleFileUpload = ({ target }: Event) => {
-    const { type } = this.props;
+    const { type, user } = this.props;
+    const slug = user && user.get('slug');
     const reader = new FileReader();
     reader.onload = e => {
       const block = e.target.result.split(';');
       const [, base64] = block;
       const [, realData] = base64.split(','); // eslint-disable-line
-      this.props.uploadPhoto(realData, type);
+      this.props.uploadPhoto(realData, type, slug);
     };
     if (target instanceof HTMLInputElement) {
       const [file] = target.files;
@@ -101,15 +120,30 @@ class PhotoModal extends PureComponent<Props> {
       });
     }
   };
+  handleDeletePhoto = (userId, image, avatar, backgroundImage) => {
+    const { user } = this.props;
+    const slug = user && user.get('slug');
+    this.props.userPhotoDelete(userId, image, avatar, backgroundImage, slug);
+  };
   fileInput = React.createRef();
   render() {
-    const { user, type, files, isOpen, classes, uploadPhoto } = this.props;
-    let selectedFile = '';
+    const {
+      user,
+      type,
+      files,
+      isOpen,
+      classes,
+      uploadPhoto,
+      isPrivate,
+    } = this.props;
+    let selectedFile = 'Gallery';
     if (uploadPhoto && type === 'avatar') {
-      selectedFile = user.getIn(['profile', 'avatar']);
+      selectedFile = 'Profile Image';
     } else if (uploadPhoto && type === 'backgroundImage') {
-      selectedFile = user.getIn(['profile', 'backgroundImage']);
+      selectedFile = 'Cover Image';
     }
+    const profilePhoto = user && user.getIn(['profile', 'avatar']);
+    const coverPhoto = user && user.getIn(['profile', 'backgroundImage']);
     return (
       <BaseModal
         className={classes.modal}
@@ -124,7 +158,7 @@ class PhotoModal extends PureComponent<Props> {
         >
           <Grid item>
             <Typography variant="h6" className={classes.title}>
-              Profile Images &amp; Videos
+              {selectedFile}
             </Typography>
           </Grid>
           <Grid item>
@@ -164,14 +198,34 @@ class PhotoModal extends PureComponent<Props> {
           >
             {files.map(file => (
               <div
-                className={cx(classes.fileWrapper, {
-                  [classes.selected]: selectedFile === file.get('path'),
-                })}
+                className={classes.fileWrapper}
                 key={generate()}
-                onClick={() => this.updateSelection(file.get('path'))}
                 role="button"
               >
-                <img src={file.get('path')} alt={file.get('_id')} />
+                <img
+                  src={file.get('path')}
+                  alt={file.get('_id')}
+                  onClick={() => this.updateSelection(file.get('path'))}
+                />
+                {isPrivate &&
+                  profilePhoto === file.get('path') && (
+                    <div className={classes.photoWrapper}>Profile</div>
+                  )}
+                {isPrivate &&
+                  coverPhoto === file.get('path') && (
+                    <div className={classes.photoWrapper}>Cover</div>
+                  )}
+                {isPrivate && (
+                  <div className={classes.moreVertIconButton}>
+                    <DeleteImage
+                      deletePhoto={this.handleDeletePhoto}
+                      userId={user && user.get('id')}
+                      image={file.get('path')}
+                      avatar={profilePhoto === file.get('path')}
+                      backgroundImage={coverPhoto === file.get('path')}
+                    />
+                  </div>
+                )}
               </div>
             ))}
           </Masonry>

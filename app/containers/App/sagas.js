@@ -11,7 +11,7 @@ import { LOCATION_CHANGE } from 'react-router-redux';
 import type { Action, State } from 'types/common';
 import type { Saga } from 'redux-saga';
 import { getToken, getUserId, getAdminToken } from 'containers/App/selectors';
-
+import { requestMemberFiles } from 'containers/Member/sagas';
 // ------------------------------------
 // Constants
 // ------------------------------------
@@ -22,6 +22,7 @@ const LOGOUT = 'Jolly/App/LOGOUT';
 const USER = 'Jolly/App/USER';
 const USER_DATA_UPDATE = 'Jolly/App/UPDATE_USER_DATA';
 const USER_PHOTO_UPLOAD = 'Jolly/App/USER_PHOTO_UPLOAD';
+const USER_PHOTO_DELETE = 'Jolly/App/USER_PHOTO_DELETE';
 const USER_RESUME_UPLOAD = 'Jolly/App/USER_RESUME_UPLOAD';
 const USER_RESUME_DELETE = 'Jolly/App/USER_RESUME_DELETE';
 const USER_FILES = 'Jolly/App/USER_FILES';
@@ -81,10 +82,15 @@ const userDataUpdateError = error => ({
   payload: error,
 });
 
-export const requestUserPhotoUpload = (photo: string, type: string) => ({
+export const requestUserPhotoUpload = (
+  photo: string,
+  type: string,
+  slug: string
+) => ({
   type: USER_PHOTO_UPLOAD + REQUESTED,
   payload: photo,
   meta: type,
+  slug,
 });
 const userPhotoUploadSuccess = (payload: Object) => ({
   type: USER_PHOTO_UPLOAD + SUCCEDED,
@@ -97,6 +103,23 @@ const userPhotoUploadFailed = error => ({
 const userPhotoUploadError = error => ({
   type: USER_PHOTO_UPLOAD + ERROR,
   payload: error,
+});
+
+export const requestUserPhotoDelete = (
+  userId: string,
+  image: string,
+  avatar: boolean,
+  backgroundImage: boolean,
+  slug: string
+) => ({
+  type: USER_PHOTO_DELETE + REQUESTED,
+  payload: {
+    userId,
+    image,
+    avatar,
+    backgroundImage,
+  },
+  slug,
 });
 
 export const requestUserResumeUpload = (resume: string) => ({
@@ -966,7 +989,7 @@ function* UpdateUserDataRequest({ payload }) {
   }
 }
 
-function* UploadUserPhotoRequest({ payload, meta }) {
+function* UploadUserPhotoRequest({ payload, meta, slug }) {
   const token = yield select(getToken);
   try {
     const response = yield call(request, {
@@ -980,19 +1003,42 @@ function* UploadUserPhotoRequest({ payload, meta }) {
     if (response.status === 200) {
       yield put(userPhotoUploadSuccess(response.data.response));
       if (meta === 'avatar' || meta === 'backgroundImage') {
-        yield put(
-          requestUserDataUpdate({
-            profile: {
-              [meta]: response.data.response.path,
-            },
-          })
-        );
+        yield all([
+          put(requestMemberFiles(slug)),
+          put(
+            requestUserDataUpdate({
+              profile: {
+                [meta]: response.data.response.path,
+              },
+            })
+          ),
+        ]);
       }
     } else {
       yield put(userPhotoUploadFailed(response.data.error.message));
     }
   } catch (error) {
     yield put(userPhotoUploadError(error));
+  }
+}
+
+function* DeleteUserPhotoRequest({ payload, slug }) {
+  const token = yield select(getToken);
+  console.log(slug);
+  try {
+    const response = yield call(request, {
+      method: 'DELETE',
+      url: `${API_URL}/user/image/delete`,
+      params: payload,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(requestMemberFiles(slug));
+    } else {
+      console.log(response.status);
+    }
+  } catch (error) {
+    console.log(error);
   }
 }
 
@@ -1238,6 +1284,7 @@ export default function*(): Saga<void> {
     takeLatest(USER + REQUESTED, UserRequest),
     takeLatest(USER_DATA_UPDATE + REQUESTED, UpdateUserDataRequest),
     takeLatest(USER_PHOTO_UPLOAD + REQUESTED, UploadUserPhotoRequest),
+    takeLatest(USER_PHOTO_DELETE + REQUESTED, DeleteUserPhotoRequest),
     takeLatest(USER_RESUME_UPLOAD + REQUESTED, UploadUserResumeRequest),
     takeLatest(USER_RESUME_DELETE + REQUESTED, DeleteUserResumeRequest),
     takeLatest(USER_FILES + REQUESTED, UserFilesRequest),
