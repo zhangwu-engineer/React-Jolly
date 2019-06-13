@@ -151,9 +151,9 @@ class ProfileGallery extends Component<Props> {
     const { classes, user, files, location } = this.props;
     let selectedFile = '';
     if (location.pathname.indexOf('profile-picture') > -1) {
-      selectedFile = 'Profile Image & Videos';
+      selectedFile = 'Profile Image';
     } else {
-      selectedFile = 'Cover Image & Videos';
+      selectedFile = 'Cover Image';
     }
     const profilePhoto = user.getIn(['profile', 'avatar']);
     const coverPhoto = user.getIn(['profile', 'backgroundImage']);
