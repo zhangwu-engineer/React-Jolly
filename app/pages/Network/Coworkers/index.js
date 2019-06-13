@@ -258,7 +258,7 @@ class CoworkersPage extends Component<Props, State> {
     filter: {
       location: '',
       selectedRole: '',
-      connections: '',
+      connection: '',
     },
   };
   componentDidMount() {
@@ -268,7 +268,8 @@ class CoworkersPage extends Component<Props, State> {
       user.get('slug'),
       filter.location,
       query,
-      filter.selectedRole
+      filter.selectedRole,
+      filter.connection
     );
   }
   componentDidUpdate(prevProps: Props) {
@@ -285,7 +286,8 @@ class CoworkersPage extends Component<Props, State> {
         user.get('slug'),
         filter.location,
         query,
-        filter.selectedRole
+        filter.selectedRole,
+        filter.connection
       );
     }
     if (prevProps.isAccepting && !isAccepting && !acceptError) {
@@ -293,7 +295,8 @@ class CoworkersPage extends Component<Props, State> {
         user.get('slug'),
         filter.location,
         query,
-        filter.selectedRole
+        filter.selectedRole,
+        filter.connection
       );
     }
   }
@@ -304,7 +307,8 @@ class CoworkersPage extends Component<Props, State> {
       user.get('slug'),
       filter.location,
       query,
-      filter.selectedRole
+      filter.selectedRole,
+      filter.connection
     );
   }, 500);
   handleConnectionInvite = user => {
@@ -380,7 +384,7 @@ class CoworkersPage extends Component<Props, State> {
         ...state,
         filter: {
           ...state.filter,
-          connections: connection,
+          connection,
         },
       }),
       () => this.debouncedSearch()
@@ -525,10 +529,10 @@ class CoworkersPage extends Component<Props, State> {
                       placeholder="All Connections"
                       options={connections}
                       value={
-                        filter.connections
+                        filter.connection
                           ? {
-                              value: filter.connections,
-                              label: filter.connections,
+                              value: filter.connection,
+                              label: filter.connection,
                             }
                           : null
                       }
@@ -595,8 +599,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
-  requestUserCoworkers: (slug, city, query, role) =>
-    dispatch(requestUserCoworkers(slug, city, query, role)),
+  requestUserCoworkers: (slug, city, query, role, connection) =>
+    dispatch(requestUserCoworkers(slug, city, query, role, connection)),
 });
 
 export default compose(
