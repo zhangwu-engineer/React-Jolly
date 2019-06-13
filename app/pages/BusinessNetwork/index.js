@@ -562,7 +562,7 @@ class BusinessNetworkPage extends Component<Props, State> {
 
     return (
       <React.Fragment>
-        <NetworkNav />
+        <NetworkNav isBusinessNetwork />
         {showNotification && (
           <Notification
             msg={`Coworker connection request sent to ${sentTo}`}
