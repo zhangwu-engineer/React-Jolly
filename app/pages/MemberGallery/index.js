@@ -10,6 +10,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import Typography from '@material-ui/core/Typography';
 
 import Link from 'components/Link';
 import DeleteImage from 'components/DeleteImage';
@@ -70,6 +71,12 @@ const styles = theme => ({
     right: 4,
     minWidth: 0,
     cursor: 'pointer',
+  },
+  headerText: {
+    fontSize: 18,
+    color: theme.palette.common.white,
+    fontWeight: 500,
+    marginLeft: 21,
   },
 });
 
@@ -150,7 +157,9 @@ class MemberGallery extends PureComponent<Props> {
               )}
             >
               <ArrowBackIcon />
-              Gallery
+              <Typography className={classes.headerText}>
+                Gallery
+              </Typography>
             </Button>
           </Grid>
         </Grid>

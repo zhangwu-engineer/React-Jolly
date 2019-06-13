@@ -10,6 +10,7 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import CameraIcon from '@material-ui/icons/CameraAlt';
+import Typography from '@material-ui/core/Typography';
 
 import Link from 'components/Link';
 import DeleteImage from 'components/DeleteImage';
@@ -38,6 +39,7 @@ const styles = theme => ({
     '&:hover': {
       color: theme.palette.common.white,
     },
+    paddingTop: 0,
   },
   fileInput: {
     display: 'none',
@@ -67,6 +69,12 @@ const styles = theme => ({
     right: 4,
     minWidth: 0,
     cursor: 'pointer',
+  },
+  headerText: {
+    fontSize: 18,
+    color: theme.palette.common.white,
+    fontWeight: 500,
+    marginLeft: 21,
   },
 });
 
@@ -143,9 +151,9 @@ class ProfileGallery extends Component<Props> {
     const { classes, user, files, location } = this.props;
     let selectedFile = '';
     if (location.pathname.indexOf('profile-picture') > -1) {
-      selectedFile = 'Profile Image';
+      selectedFile = 'Profile Image & Videos';
     } else {
-      selectedFile = 'Cover Image';
+      selectedFile = 'Cover Image & Videos';
     }
     const profilePhoto = user.getIn(['profile', 'avatar']);
     const coverPhoto = user.getIn(['profile', 'backgroundImage']);
@@ -163,7 +171,9 @@ class ProfileGallery extends Component<Props> {
               component={props => <Link to="/edit" {...props} />}
             >
               <ArrowBackIcon />
-              {selectedFile}
+              <Typography className={classes.headerText}>
+                {selectedFile}
+              </Typography>
             </Button>
           </Grid>
           <Grid item>
