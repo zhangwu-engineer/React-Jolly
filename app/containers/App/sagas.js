@@ -475,6 +475,7 @@ const initialState = fromJS({
   cityUsersError: '',
   isSignupInviteLoading: false,
   signupInviteError: '',
+  isPhotoDeleting: false,
 });
 
 export const reducer = (
@@ -1061,6 +1062,7 @@ function* DeleteUserPhotoRequest({ payload, slug }) {
     if (response.status === 200) {
       yield all([
         put(requestMemberFiles(slug)),
+        put(requestUserFiles()),
         put(userPhotoDeleteSuccess(response.data.response)),
       ]);
     } else {
