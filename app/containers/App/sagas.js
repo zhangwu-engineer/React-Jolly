@@ -122,6 +122,19 @@ export const requestUserPhotoDelete = (
   slug,
 });
 
+const userPhotoDeleteSuccess = (payload: Object) => ({
+  type: USER_PHOTO_DELETE + SUCCEDED,
+  payload,
+});
+const userPhotoDeleteFailed = error => ({
+  type: USER_PHOTO_DELETE + FAILED,
+  payload: error,
+});
+const userPhotoDeleteError = error => ({
+  type: USER_PHOTO_DELETE + ERROR,
+  payload: error,
+});
+
 export const requestUserResumeUpload = (resume: string) => ({
   type: USER_RESUME_UPLOAD + REQUESTED,
   payload: resume,
@@ -531,7 +544,21 @@ export const reducer = (
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
+    case USER_PHOTO_DELETE + REQUESTED:
+      return state.set('isPhotoDeleting', true).set('photoDeleteError', null);
+    case USER_PHOTO_DELETE + SUCCEDED:
+      return state.set('isPhotoDeleting', false).set('photoDeleteError', '');
+    case USER_PHOTO_DELETE + FAILED:
+      return state
+        .set('isPhotoDeleting', false)
+        .set('photoDeleteError', payload);
 
+    case USER_PHOTO_DELETE + ERROR:
+      return state.set('isPhotoDeleting', false).set(
+        'photoDeleteError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
     case USER_RESUME_UPLOAD + REQUESTED:
       return state
         .set('isResumeUploading', true)
@@ -1024,7 +1051,6 @@ function* UploadUserPhotoRequest({ payload, meta, slug }) {
 
 function* DeleteUserPhotoRequest({ payload, slug }) {
   const token = yield select(getToken);
-  console.log(slug);
   try {
     const response = yield call(request, {
       method: 'DELETE',
@@ -1033,12 +1059,15 @@ function* DeleteUserPhotoRequest({ payload, slug }) {
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
-      yield put(requestMemberFiles(slug));
+      yield all([
+        put(requestMemberFiles(slug)),
+        put(userPhotoDeleteSuccess(response.data.response)),
+      ]);
     } else {
-      console.log(response.status);
+      yield put(userPhotoDeleteFailed(response.data.error.message));
     }
   } catch (error) {
-    console.log(error);
+    yield put(userPhotoDeleteError(error));
   }
 }
 
