@@ -71,7 +71,14 @@ const styles = theme => ({
   searchInputWrap: {
     marginBottom: 25,
     [theme.breakpoints.down('xs')]: {
-      marginBottom: 10,
+      marginTop: 10,
+      marginBottom: 0,
+    },
+  },
+  findTitleWrap: {
+    marginBottom: 0,
+    [theme.breakpoints.down('xs')]: {
+      marginBottom: 20,
     },
   },
   findFreelancersTitle: {
@@ -612,7 +619,12 @@ class BusinessNetworkPage extends Component<Props, State> {
                 )}
               <Grid container alignItems="center" spacing={8}>
                 <Grid item xs={12} md={8}>
-                  <Typography className={classes.findFreelancersTitle}>
+                  <Typography
+                    className={cx(
+                      classes.findFreelancersTitle,
+                      classes.findTitleWrap
+                    )}
+                  >
                     <span>Find Freelancers&nbsp;</span>
                     <span
                       className={cx(
@@ -634,7 +646,12 @@ class BusinessNetworkPage extends Component<Props, State> {
                     </Link>
                   </Typography>
                 </Grid>
-                <Grid item xs={12} md={4} className={classes.searchInputWrap}>
+                <Grid
+                  item
+                  xs={12}
+                  md={4}
+                  className={cx(classes.searchInputWrap, classes.hideForSmall)}
+                >
                   <FormControl
                     classes={{ root: classes.formControl }}
                     fullWidth
@@ -644,21 +661,6 @@ class BusinessNetworkPage extends Component<Props, State> {
                       onChange={this.handleChange}
                       className={cx(classes.textInput, classes.hideForSmall)}
                       placeholder="Search by name"
-                      fullWidth
-                      startAdornment={
-                        <InputAdornment
-                          position="start"
-                          className={classes.adornment}
-                        >
-                          <SearchIcon />
-                        </InputAdornment>
-                      }
-                    />
-                    <Input
-                      value={query}
-                      onChange={this.handleChange}
-                      className={cx(classes.textInput, classes.showForSmall)}
-                      placeholder="Search"
                       fullWidth
                       startAdornment={
                         <InputAdornment
@@ -733,6 +735,33 @@ class BusinessNetworkPage extends Component<Props, State> {
                       }),
                     }}
                   />
+                </Grid>
+                <Grid
+                  item
+                  xs={12}
+                  md={4}
+                  className={cx(classes.searchInputWrap, classes.showForSmall)}
+                >
+                  <FormControl
+                    classes={{ root: classes.formControl }}
+                    fullWidth
+                  >
+                    <Input
+                      value={query}
+                      onChange={this.handleChange}
+                      className={cx(classes.textInput, classes.showForSmall)}
+                      placeholder="Search"
+                      fullWidth
+                      startAdornment={
+                        <InputAdornment
+                          position="start"
+                          className={classes.adornment}
+                        >
+                          <SearchIcon />
+                        </InputAdornment>
+                      }
+                    />
+                  </FormControl>
                 </Grid>
               </Grid>
               {isCityUsersLoading && (

@@ -167,12 +167,6 @@ class BusinessSidebar extends PureComponent<Props, State> {
             <MenuItem className={classes.menuItemNoIcon}>
               <ListItemText
                 classes={{ primary: classes.menuItemText }}
-                primary="My connections"
-              />
-            </MenuItem>
-            <MenuItem className={classes.menuItemNoIcon}>
-              <ListItemText
-                classes={{ primary: classes.menuItemText }}
                 primary="Find Connections"
                 onClick={this.goToNetworkPage}
               />
