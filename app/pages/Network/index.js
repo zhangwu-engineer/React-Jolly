@@ -13,9 +13,9 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Input from '@material-ui/core/Input';
 import FormControl from '@material-ui/core/FormControl';
 import SearchIcon from '@material-ui/icons/Search';
-
 import Button from '@material-ui/core/Button';
 
+import Preloader from 'components/Preloader';
 import Link from 'components/Link';
 import EditableInput from 'components/EditableInput';
 import UserCard from 'components/UserCard';
@@ -38,7 +38,9 @@ import saga, {
 } from 'containers/Network/sagas';
 import injectSagas from 'utils/injectSagas';
 
-const roles = ROLES.sort().map(role => ({ value: role, label: role }));
+let roles = ROLES.sort().map(role => ({ value: role, label: role }));
+roles = [{ value: '', label: 'All Positions' }].concat(roles);
+
 const perPage = 16;
 const styles = theme => ({
   content: {
@@ -79,6 +81,7 @@ const styles = theme => ({
   rightPanel: {
     flex: 1,
     paddingTop: 70,
+    position: 'relative',
     [theme.breakpoints.down('xs')]: {
       paddingLeft: 25,
       paddingRight: 25,
@@ -228,6 +231,12 @@ const styles = theme => ({
     '&:hover, &:focus': {
       color: theme.palette.common.white,
     },
+  },
+  progressContainer: {
+    position: 'absolute',
+    justifyContent: 'center',
+    zIndex: 1000,
+    marginLeft: -24,
   },
 });
 
@@ -429,6 +438,7 @@ class NetworkPage extends Component<Props, State> {
     this.setState(
       state => ({
         ...state,
+        page: 1,
         filter: {
           ...state.filter,
           [id]: value,
@@ -466,6 +476,7 @@ class NetworkPage extends Component<Props, State> {
       coworkers,
       connections,
       cityUsers,
+      isCityUsersLoading,
       classes,
       total,
       currentUser,
@@ -505,19 +516,17 @@ class NetworkPage extends Component<Props, State> {
         )}
         <div className={classes.content}>
           <div className={classes.leftPanel}>
-            <div className={`${classes.coworkersBox} ${classes.active}`}>
-              <Link
-                to="/network/"
-                className={`${classes.activeLink} ${classes.coworkersTitle}`}
-              >
+            <Link
+              to="/network/"
+              className={`${classes.activeLink} ${classes.coworkersTitle}`}
+            >
+              <div className={`${classes.coworkersBox} ${classes.active}`}>
                 Find Connections
-              </Link>
-            </div>
-            <div className={classes.coworkersBox}>
-              <Link to="/network/coworkers" className={classes.coworkersTitle}>
-                {`My Connections ${coworkers ? `(${coworkers.size})` : ''}`}
-              </Link>
-            </div>
+              </div>
+            </Link>
+            <Link to="/network/connections" className={classes.coworkersTitle}>
+              <div className={classes.coworkersBox}>My Connections</div>
+            </Link>
             <div className={classes.inviteBox}>
               <InviteForm
                 sendInvite={this.handleSendInvite}
@@ -622,6 +631,11 @@ class NetworkPage extends Component<Props, State> {
                 </FormControl>
               </Grid>
             </Grid>
+            {isCityUsersLoading && (
+              <Grid container className={classes.progressContainer}>
+                <Preloader />
+              </Grid>
+            )}
             {selectedTab === 0 && (
               <Grid container spacing={8}>
                 {cityUsers.map(
