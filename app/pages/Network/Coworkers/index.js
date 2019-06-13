@@ -33,10 +33,7 @@ import saga, {
 import injectSagas from 'utils/injectSagas';
 
 const roles = ROLES.sort().map(role => ({ value: role, label: role }));
-const connections = CONNECTIONS.sort().map(connection => ({
-  value: connection,
-  label: connection,
-}));
+const connections = CONNECTIONS.sort().map(connection => ({ value: connection, label: connection }));
 const styles = theme => ({
   content: {
     maxWidth: 1064,
@@ -198,8 +195,6 @@ const styles = theme => ({
 
 type Props = {
   user: Object, // eslint-disable-line
-  isCityUsersLoading: boolean, // eslint-disable-line
-  cityUsersError: string, // eslint-disable-line
   coworkers: List<Object>,
   isCreating: boolean, // eslint-disable-line
   createError: string, // eslint-disable-line
@@ -214,9 +209,6 @@ type Props = {
 
 type State = {
   isFormOpen: boolean,
-  selectedUser: ?Object,
-  initialValues: Object,
-  jobs: Array<Object>,
   sentTo: ?string,
   isInviting: boolean,
   showNotification: boolean,
@@ -266,7 +258,7 @@ class CoworkersPage extends Component<Props, State> {
     filter: {
       location: '',
       selectedRole: '',
-      connections: '',
+      connection: '',
     },
   };
   componentDidMount() {
@@ -276,7 +268,8 @@ class CoworkersPage extends Component<Props, State> {
       user.get('slug'),
       filter.location,
       query,
-      filter.selectedRole
+      filter.selectedRole,
+      filter.connection
     );
   }
   componentDidUpdate(prevProps: Props) {
@@ -293,7 +286,8 @@ class CoworkersPage extends Component<Props, State> {
         user.get('slug'),
         filter.location,
         query,
-        filter.selectedRole
+        filter.selectedRole,
+        filter.connection
       );
     }
     if (prevProps.isAccepting && !isAccepting && !acceptError) {
@@ -301,7 +295,8 @@ class CoworkersPage extends Component<Props, State> {
         user.get('slug'),
         filter.location,
         query,
-        filter.selectedRole
+        filter.selectedRole,
+        filter.connection
       );
     }
   }
@@ -312,7 +307,8 @@ class CoworkersPage extends Component<Props, State> {
       user.get('slug'),
       filter.location,
       query,
-      filter.selectedRole
+      filter.selectedRole,
+      filter.connection
     );
   }, 500);
   handleConnectionInvite = user => {
@@ -377,6 +373,18 @@ class CoworkersPage extends Component<Props, State> {
         filter: {
           ...state.filter,
           selectedRole: role,
+        },
+      }),
+      () => this.debouncedSearch()
+    );
+  };
+  handleConnectionsChange = connection => {
+    this.setState(
+      state => ({
+        ...state,
+        filter: {
+          ...state.filter,
+          connection,
         },
       }),
       () => this.debouncedSearch()
@@ -521,16 +529,14 @@ class CoworkersPage extends Component<Props, State> {
                       placeholder="All Connections"
                       options={connections}
                       value={
-                        filter.connections
+                        filter.connection
                           ? {
-                              value: filter.connections,
-                              label: filter.connections,
+                              value: filter.connection,
+                              label: filter.connection,
                             }
                           : null
                       }
-                      onChange={value =>
-                        this.handleConnectionsChange(value.value)
-                      }
+                      onChange={value => this.handleConnectionsChange(value.value)}
                       isMulti={false}
                       isClearable={false}
                       isSearchable={false}
@@ -593,8 +599,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
-  requestUserCoworkers: (slug, city, query, role) =>
-    dispatch(requestUserCoworkers(slug, city, query, role)),
+  requestUserCoworkers: (slug, city, query, role, connection) =>
+    dispatch(requestUserCoworkers(slug, city, query, role, connection)),
 });
 
 export default compose(
