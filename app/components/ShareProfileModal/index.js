@@ -114,8 +114,7 @@ class ShareProfileModal extends Component<Props, State> {
     const isiOSDevice = navigator.userAgent.match(/ipad|iphone/i);
     el.value = `${window.location.origin}${shareURL}`;
     el.setAttribute('readonly', '');
-    el.style.position = 'absolute';
-    el.style.left = '-9999px';
+    el.style.position = 'fixed';
     if (document.body) {
       document.body.appendChild(el);
     }
