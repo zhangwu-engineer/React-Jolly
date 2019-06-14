@@ -199,6 +199,7 @@ class Profile extends Component<Props, State> {
   componentDidMount() {
     const { user } = this.props;
     history.push(`/f/${user.get('slug')}`);
+
     // this.props.requestUser();
     // this.props.requestUserFiles();
     // this.props.requestRoles();

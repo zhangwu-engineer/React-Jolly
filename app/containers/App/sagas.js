@@ -38,7 +38,7 @@ const CLOSE_NAVBAR = 'Jolly/App/CLOSE_NAVBAR';
 const ADMIN_LOGIN = 'Jolly/App/ADMIN_LOGIN';
 const ADMIN_USER = 'Jolly/App/ADMIN_USER';
 const ADMIN_LOGOUT = 'Jolly/App/ADMIN_LOGOUT';
-
+const BUSINESS_PROFILE = 'Jolly/Business/BUSINESS_PROFILE';
 const SET_META_JSON = 'Jolly/App/SET_META_JSON';
 
 declare var analytics;
@@ -191,12 +191,14 @@ const loginRequestError = (error: string) => ({
 export const requestSocialLogin = (
   payload: Object,
   type: string,
+  isBusiness: boolean,
   invite: ?Object
 ) => ({
   type: SOCIAL_LOGIN + REQUESTED,
   payload,
   meta: {
     type,
+    isBusiness,
     invite,
   },
 });
@@ -288,13 +290,15 @@ export const requestCityUsers = (
   query: string,
   page: Number,
   perPage: Number,
-  role: string
+  role: string,
+  activeStatus: string
 ) => ({
   type: CITY_USERS + REQUESTED,
   payload: city,
   meta: {
     query,
     role,
+    activeStatus,
     page,
     perPage,
   },
@@ -423,6 +427,23 @@ export const closeNavbar = () => ({
   type: CLOSE_NAVBAR,
 });
 
+export const requestBusinessProfile = (slug: string) => ({
+  type: BUSINESS_PROFILE + REQUESTED,
+  payload: slug,
+});
+const businessProfileRequestSuccess = (payload: Object) => ({
+  type: BUSINESS_PROFILE + SUCCEDED,
+  payload,
+});
+const businessProfileRequestFailed = (error: string) => ({
+  type: BUSINESS_PROFILE + FAILED,
+  payload: error,
+});
+const businessProfileRequestError = (error: string) => ({
+  type: BUSINESS_PROFILE + ERROR,
+  payload: error,
+});
+
 export const setMetaJson = (path: string, value: ?Object) => ({
   type: SET_META_JSON,
   payload: value,
@@ -480,6 +501,9 @@ const initialState = fromJS({
   isSignupInviteLoading: false,
   signupInviteError: '',
   isPhotoDeleting: false,
+  isBusinessLoading: false,
+  businessError: '',
+  businessData: fromJS({}),
 });
 
 export const reducer = (
@@ -906,6 +930,27 @@ export const reducer = (
     case LOCATION_CHANGE:
       return state.set('metaJson', fromJS({})).set('error', '');
 
+    case BUSINESS_PROFILE + REQUESTED:
+      return state.set('isBusinessLoading', true);
+
+    case BUSINESS_PROFILE + SUCCEDED:
+      return state
+        .set('isBusinessLoading', false)
+        .set('businessData', fromJS(payload))
+        .set('businessError', '');
+
+    case BUSINESS_PROFILE + FAILED:
+      return state
+        .set('isBusinessLoading', false)
+        .set('businessError', payload.message);
+
+    case BUSINESS_PROFILE + ERROR:
+      return state.set('isBusinessLoading', false).set(
+        'businessError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
     default:
       return state;
   }
@@ -960,7 +1005,7 @@ function* LoginRequest({ payload, meta }) {
   }
 }
 
-function* SocialLoginRequest({ payload, meta: { type, invite } }) {
+function* SocialLoginRequest({ payload, meta: { type, isBusiness, invite } }) {
   try {
     const response = yield call(request, {
       method: 'POST',
@@ -970,6 +1015,7 @@ function* SocialLoginRequest({ payload, meta: { type, invite } }) {
           : `${API_URL}/auth/linkedin`,
       data: {
         ...payload,
+        isBusiness,
         invite,
       },
     });
@@ -1247,6 +1293,7 @@ function* CityUsersRequest({ payload, meta }) {
         page: meta.page,
         perPage: meta.perPage,
         role: meta.role,
+        activeStatus: meta.activeStatus,
       },
       headers: { 'x-access-token': token },
     });
@@ -1319,6 +1366,24 @@ function* AdminUserRequest() {
   }
 }
 
+function* BusinessProfileRequest({ payload, meta }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/business/slug/${payload}`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(businessProfileRequestSuccess(response.data.response, meta));
+    } else {
+      yield put(businessProfileRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(businessProfileRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(REGISTER + REQUESTED, RegisterRequest),
@@ -1340,5 +1405,6 @@ export default function*(): Saga<void> {
     takeLatest(SIGNUP_INVITE + REQUESTED, SignupInviteRequest),
     takeLatest(ADMIN_LOGIN + REQUESTED, AdminLoginRequest),
     takeLatest(ADMIN_USER + REQUESTED, AdminUserRequest),
+    takeLatest(BUSINESS_PROFILE + REQUESTED, BusinessProfileRequest),
   ]);
 }

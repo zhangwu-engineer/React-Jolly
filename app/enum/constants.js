@@ -42,3 +42,45 @@ export const CATEGORY_OPTIONS = [
     value: 'general-message',
   },
 ];
+
+export const BUSINESS_CATEGORY_OPTIONS = [
+  {
+    label: 'Event services',
+    value: 'Event services',
+  },
+  {
+    label: 'Event organizer',
+    value: 'Event organizer',
+  },
+  {
+    label: 'Event venue',
+    value: 'Event venue',
+  },
+  {
+    label: 'Brand',
+    value: 'Brand',
+  },
+  {
+    label: 'Event staffing',
+    value: 'Event staffing',
+  },
+  {
+    label: 'Other',
+    value: 'Other',
+  },
+];
+
+export const ACTIVE_OPTIONS = [
+  {
+    label: 'Active & Inactive',
+    value: '',
+  },
+  {
+    label: 'Active',
+    value: 'Active',
+  },
+  {
+    label: 'Inactive',
+    value: 'Inactive',
+  },
+];

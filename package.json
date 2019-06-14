@@ -99,6 +99,7 @@
     "material-ui-pickers": "^2.0.4",
     "mime-types": "^2.1.16",
     "minimist": "1.2.0",
+    "moment": "^2.24.0",
     "pace": "0.0.4",
     "pace-js": "^1.0.2",
     "prerender-node": "^3.2.0",

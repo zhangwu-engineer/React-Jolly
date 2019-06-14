@@ -1,7 +1,6 @@
 // @flow
 
 import React, { Component, Fragment } from 'react';
-import { capitalize } from 'lodash-es';
 import { generate } from 'shortid';
 import cx from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
@@ -14,9 +13,7 @@ import Popper from '@material-ui/core/Popper';
 import Fade from '@material-ui/core/Fade';
 import Paper from '@material-ui/core/Paper';
 import MenuList from '@material-ui/core/MenuList';
-import MenuItem from '@material-ui/core/MenuItem';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import ListItemText from '@material-ui/core/ListItemText';
 import ImageIcon from '@material-ui/icons/Image';
 
 import { history } from 'components/ConnectedRouter';
@@ -26,6 +23,9 @@ import Icon from 'components/Icon';
 import ConnectIcon from 'images/sprite/connect.svg';
 import ConnectSentIcon from 'images/sprite/connect_sent.svg';
 import ShareIcon from 'images/sprite/share.svg';
+import { DisconnectMenu } from './disconnectMenu';
+import { CoworkerMenu } from './coworkerMenu';
+import { ConnectMenu } from './connectMenu';
 
 const styles = theme => ({
   root: {},
@@ -183,13 +183,15 @@ const styles = theme => ({
 
 type Props = {
   currentUser: Object,
-  user: Object,
+  member: Object,
   badges: Object,
-  isConnectionSent: boolean,
-  classes: Object,
   openShareModal: Function,
   openPhotoModal: Function,
   connect: Function,
+  isConnectionSent: boolean,
+  classes: Object,
+  connectionInformation: Object,
+  requestDeleteConnection: Function,
 };
 
 type State = {
@@ -201,9 +203,16 @@ class MemberProfileInfo extends Component<Props, State> {
     isMenuOpen: false,
   };
   handleToggle = () => {
-    const { isConnectionSent } = this.props;
+    const { isConnectionSent, currentUser } = this.props;
+    const isBusiness = (currentUser && currentUser.get('isBusiness')) || false;
     if (!isConnectionSent) {
-      this.setState(state => ({ isMenuOpen: !state.isMenuOpen }));
+      if (isBusiness) {
+        this.handleConnect({
+          isCoworker: false,
+        });
+      } else {
+        this.setState(state => ({ isMenuOpen: !state.isMenuOpen }));
+      }
     }
   };
   handleClose = event => {
@@ -215,26 +224,85 @@ class MemberProfileInfo extends Component<Props, State> {
   openUrl = url => {
     window.open(url, '_blank');
   };
-  handleConnect = () => {
-    const { currentUser, user } = this.props;
-    if (currentUser && currentUser.get('id') !== user.get('id')) {
-      this.props.connect(user.get('id'));
+  handleConnect = params => {
+    const { currentUser, member } = this.props;
+    const connectParams = {};
+
+    connectParams.toUserId = member.get('id');
+    connectParams.isCoworker = params.isCoworker;
+
+    if (currentUser && currentUser.get('isBusiness')) {
+      connectParams.connectionType = 'b2f';
+      const businesses =
+        currentUser.get('businesses') && currentUser.get('businesses').toJSON();
+      connectParams.from = businesses[0].id;
+    }
+
+    if (currentUser && currentUser.get('id') !== member.get('id')) {
+      this.props.connect(connectParams);
     } else {
       history.push('/freelancer-signup');
     }
   };
+  handleDisconnect = () => {
+    const { member } = this.props;
+    this.props.requestDeleteConnection(member.get('id'));
+  };
   anchorEl: HTMLElement;
+  displayConnectionState = () => {
+    let status;
+    const { isConnectionSent, connectionInformation } = this.props;
+    if (
+      connectionInformation &&
+      connectionInformation.get('connectionType') === 'f2f'
+    ) {
+      if (connectionInformation.get('status') === 'CONNECTED') {
+        if (connectionInformation.get('isCoworker') === true) {
+          status = 'Coworker';
+        } else {
+          status = 'Connected';
+        }
+      } else if (connectionInformation.get('status') === 'PENDING') {
+        status = 'Request Sent';
+      }
+    } else if (
+      connectionInformation &&
+      connectionInformation.get('connectionType') === 'b2f'
+    ) {
+      if (connectionInformation.get('status') === 'CONNECTED') {
+        status = 'Connected';
+      } else {
+        status = 'Request Sent';
+      }
+    }
+    if (isConnectionSent) status = 'Request Sent';
+    return status;
+  };
   render() {
-    const { user, badges, isConnectionSent, classes } = this.props;
+    const {
+      currentUser,
+      member,
+      badges,
+      isConnectionSent,
+      classes,
+      connectionInformation,
+    } = this.props;
     const { isMenuOpen } = this.state;
-    const avatarImg = user.getIn(['profile', 'avatar']) || '';
+    const avatarImg = member.getIn(['profile', 'avatar']) || '';
+    const isBusiness = (currentUser && currentUser.get('isBusiness')) || false;
+    const connectionEstablished =
+      connectionInformation &&
+      ['CONNECTED', 'PENDING'].includes(connectionInformation.get('status'));
+    const isCoWorker =
+      connectionInformation && connectionInformation.get('isCoworker');
+    const connected = connectionEstablished || isConnectionSent;
     return (
       <div className={classes.root}>
         <div className={classes.topSection}>
           <div
             className={classes.backgroundImage}
             style={{
-              backgroundImage: `url('${user.getIn([
+              backgroundImage: `url('${member.getIn([
                 'profile',
                 'backgroundImage',
               ])}')`,
@@ -242,7 +310,7 @@ class MemberProfileInfo extends Component<Props, State> {
           >
             <div className={classes.overlay} />
           </div>
-          {user.getIn(['profile', 'showImageLibrary']) && (
+          {member.getIn(['profile', 'showImageLibrary']) && (
             <Fragment>
               <IconButton
                 className={classes.imageButton}
@@ -252,7 +320,7 @@ class MemberProfileInfo extends Component<Props, State> {
               </IconButton>
               <IconButton
                 className={classes.smallImageButton}
-                onClick={() => history.push(`/f/${user.get('slug')}/gallery`)}
+                onClick={() => history.push(`/f/${member.get('slug')}/gallery`)}
               >
                 <ImageIcon />
               </IconButton>
@@ -267,7 +335,7 @@ class MemberProfileInfo extends Component<Props, State> {
             <Grid item className={classes.connectButtonBox}>
               <Button
                 className={cx(classes.connectButton, {
-                  [classes.connectionSentButton]: isConnectionSent,
+                  [classes.connectionSentButton]: connected,
                 })}
                 onClick={this.handleToggle}
                 buttonRef={node => {
@@ -275,12 +343,12 @@ class MemberProfileInfo extends Component<Props, State> {
                 }}
               >
                 <Icon
-                  glyph={isConnectionSent ? ConnectSentIcon : ConnectIcon}
+                  glyph={connected ? ConnectSentIcon : ConnectIcon}
                   width={23}
                   height={13}
                   className={classes.connectIcon}
                 />
-                {isConnectionSent ? 'Request Sent' : 'Connect'}
+                {connected ? this.displayConnectionState() : 'Connect'}
               </Button>
               <Popper
                 open={isMenuOpen}
@@ -292,22 +360,72 @@ class MemberProfileInfo extends Component<Props, State> {
                   <Fade {...TransitionProps} timeout={350}>
                     <Paper square classes={{ root: classes.menu }}>
                       <ClickAwayListener onClickAway={this.handleClose}>
-                        <MenuList className={classes.menuList}>
-                          <MenuItem
-                            className={classes.menuItem}
-                            onClick={e => {
-                              this.handleClose(e);
-                              this.handleConnect();
-                            }}
-                          >
-                            <ListItemText
-                              classes={{ primary: classes.menuItemText }}
-                              primary={`I've worked with ${capitalize(
-                                user.get('firstName')
-                              )}`}
+                        {connectionEstablished &&
+                          isCoWorker && (
+                            <MenuList className={classes.menuList}>
+                              <DisconnectMenu
+                                classes={classes}
+                                onClick={() => this.handleDisconnect()}
+                                member={member}
+                              />
+                            </MenuList>
+                          )}
+                        {connectionEstablished &&
+                          !isCoWorker &&
+                          !isBusiness && (
+                            <MenuList className={classes.menuList}>
+                              <CoworkerMenu
+                                classes={classes}
+                                onClick={e => {
+                                  this.handleClose(e);
+                                  this.handleConnect({
+                                    isCoworker: true,
+                                  });
+                                }}
+                                member={member}
+                              />
+                              <DisconnectMenu
+                                classes={classes}
+                                onClick={() => this.handleDisconnect()}
+                                member={member}
+                              />
+                            </MenuList>
+                          )}
+                        {connectionEstablished &&
+                          isBusiness && (
+                            <DisconnectMenu
+                              classes={classes}
+                              onClick={() => this.handleDisconnect()}
+                              member={member}
                             />
-                          </MenuItem>
-                        </MenuList>
+                          )}
+                        {!connectionEstablished &&
+                          !isConnectionSent && (
+                            <MenuList className={classes.menuList}>
+                              <ConnectMenu
+                                classes={classes}
+                                onClick={e => {
+                                  this.handleClose(e);
+                                  this.handleConnect({
+                                    isCoworker: false,
+                                  });
+                                }}
+                                member={member}
+                              />
+                              {!isBusiness && (
+                                <CoworkerMenu
+                                  classes={classes}
+                                  onClick={e => {
+                                    this.handleClose(e);
+                                    this.handleConnect({
+                                      isCoworker: true,
+                                    });
+                                  }}
+                                  member={member}
+                                />
+                              )}
+                            </MenuList>
+                          )}
                       </ClickAwayListener>
                     </Paper>
                   </Fade>
@@ -335,11 +453,12 @@ class MemberProfileInfo extends Component<Props, State> {
         >
           <Grid item className={classes.nameSection}>
             <Typography className={classes.username}>
-              {`${user.get('firstName') || ''} ${user.get('lastName') || ''}`}
+              {`${member.get('firstName') || ''} ${member.get('lastName') ||
+                ''}`}
             </Typography>
-            {user.getIn(['profile', 'location']) && (
+            {member.getIn(['profile', 'location']) && (
               <Typography className={classes.location}>
-                {user.getIn(['profile', 'location'])}
+                {member.getIn(['profile', 'location'])}
               </Typography>
             )}
           </Grid>
@@ -350,7 +469,7 @@ class MemberProfileInfo extends Component<Props, State> {
                   badge =>
                     badge.get('earned') ? (
                       <Grid item key={generate()} md={6}>
-                        <Badge badge={badge} user={user} />
+                        <Badge badge={badge} user={member} />
                       </Grid>
                     ) : null
                 )}

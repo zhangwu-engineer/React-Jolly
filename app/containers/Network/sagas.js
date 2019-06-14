@@ -195,9 +195,7 @@ function* CreateConnectionRequest({ payload }) {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/connection`,
-      data: {
-        to: payload,
-      },
+      data: payload,
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {

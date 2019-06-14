@@ -21,6 +21,7 @@ const styles = theme => ({
     display: 'none',
     [theme.breakpoints.down('xs')]: {
       display: 'flex',
+      justifyContent: 'space-between',
     },
   },
   menuItem: {
@@ -55,6 +56,7 @@ const styles = theme => ({
 type Props = {
   location: Object,
   classes: Object,
+  isBusinessNetwork: Boolean,
 };
 
 class NetworkNav extends Component<Props> {
@@ -62,36 +64,48 @@ class NetworkNav extends Component<Props> {
     const {
       location: { pathname },
       classes,
+      isBusinessNetwork,
     } = this.props;
     return (
       <Grid container className={classes.root}>
         <Grid item xs={4} className={classes.menuItem}>
-          <Link to="/network" className={classes.link}>
-            <Icon glyph={SearchIcon} size={20} className={classes.icon} />
-            Find
-          </Link>
-          {pathname === '/network' && (
+          {(isBusinessNetwork && (
+            <Link to="/b/network" className={classes.link}>
+              <Icon glyph={SearchIcon} size={20} className={classes.icon} />
+              Find
+            </Link>
+          )) || (
+            <Link to="/network" className={classes.link}>
+              <Icon glyph={SearchIcon} size={20} className={classes.icon} />
+              Find
+            </Link>
+          )}
+          {(pathname === '/network' || pathname === '/b/network') && (
             <Divider className={classes.activeLine} />
           )}
         </Grid>
-        <Grid item xs={4} className={classes.menuItem}>
-          <Link to="/network/coworkers" className={classes.link}>
-            <Icon glyph={ConnectionIcon} size={20} className={classes.icon} />
-            Connections
-          </Link>
-          {pathname === '/network/coworkers' && (
-            <Divider className={classes.activeLine} />
-          )}
-        </Grid>
-        <Grid item xs={4} className={classes.menuItem}>
-          <Link to="/network/invite" className={classes.link}>
-            <Icon glyph={InviteIcon} size={20} className={classes.icon} />
-            Invite
-          </Link>
-          {pathname === '/network/invite' && (
-            <Divider className={classes.activeLine} />
-          )}
-        </Grid>
+        {!isBusinessNetwork && (
+          <Grid item xs={4} className={classes.menuItem}>
+            <Link to="/network/coworkers" className={classes.link}>
+              <Icon glyph={ConnectionIcon} size={20} className={classes.icon} />
+              Connections
+            </Link>
+            {pathname === '/network/coworkers' && (
+              <Divider className={classes.activeLine} />
+            )}
+          </Grid>
+        )}
+        {!isBusinessNetwork && (
+          <Grid item xs={4} className={classes.menuItem}>
+            <Link to="/network/invite" className={classes.link}>
+              <Icon glyph={InviteIcon} size={20} className={classes.icon} />
+              Invite
+            </Link>
+            {pathname === '/network/invite' && (
+              <Divider className={classes.activeLine} />
+            )}
+          </Grid>
+        )}
       </Grid>
     );
   }

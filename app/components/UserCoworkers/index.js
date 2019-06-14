@@ -221,8 +221,11 @@ class UserCoworkers extends Component<Props, State> {
                   </Grid>
                 ) : (
                   <Grid item className={classes.connectButtonBox}>
-
-                    {coworkers && currentUser && coworkers.some(el => el.get('id') === currentUser.get('id')) ? (
+                    {coworkers &&
+                    currentUser &&
+                    coworkers.some(
+                      el => el.get('id') === currentUser.get('id')
+                    ) ? (
                       <Button
                         className={
                           (classes.moreButton, classes.connectSentButton)

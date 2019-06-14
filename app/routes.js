@@ -25,9 +25,9 @@ const GeneralSettings = load(() => import('pages/Settings/General'));
 const ProfileSettings = load(() => import('pages/Settings/Profile'));
 const Mobile = load(() => import('pages/Mobile'));
 const Roles = load(() => import('pages/Roles'));
-const OnboardingCity = load(() => import('pages/Onboarding/City'));
-const OnboardingCoworker = load(() => import('pages/Onboarding/Coworker'));
-const OnboardingPosition = load(() => import('pages/Onboarding/Position'));
+const ObPage1 = load(() => import('pages/Ob/Page1'));
+const ObPage2 = load(() => import('pages/Ob/Page2'));
+const ObPage3 = load(() => import('pages/Ob/Page3'));
 const Network = load(() => import('pages/Network'));
 const Coworkers = load(() => import('pages/Network/Coworkers'));
 const NetworkInvite = load(() => import('pages/Network/Invite'));
@@ -35,6 +35,8 @@ const Feed = load(() => import('pages/Feed'));
 const AdminLogin = load(() => import('pages/Admin/Login'));
 const Admin = load(() => import('pages/Admin'));
 const FourOfour = load(() => import('pages/404'));
+const Business = load(() => import('pages/Business'));
+const BusinessNetwork = load(() => import('pages/BusinessNetwork'));
 
 class Routes extends Component<{}> {
   render() {
@@ -42,11 +44,11 @@ class Routes extends Component<{}> {
       <Switch>
         <Route exact path="/" render={props => <Home {...props} />} />
         <Route
-          path="/freelancer-signup-2"
+          path="/(freelancer-signup-2|business-signup-2)"
           render={props => <SignUp {...props} />}
         />
         <Route
-          path="/freelancer-signup"
+          path="/(freelancer-signup|business-signup)"
           render={props => <Welcome {...props} />}
         />
         <Route path="/sign-in" render={props => <SignIn {...props} />} />
@@ -70,21 +72,27 @@ class Routes extends Component<{}> {
           path="/privacy-policy"
           render={props => <Privacy {...props} />}
         />
+        <PrivateRoute
+          exact
+          path="/b/network"
+          render={props => <BusinessNetwork {...props} />}
+        />
+        <Route path="/b/:slug" render={props => <Business {...props} />} />
         <Route path="/f/:slug" render={props => <User {...props} />} />
         <PrivateRoute
           exact
           path="/ob/1"
-          render={props => <OnboardingCity {...props} />}
+          render={props => <ObPage1 {...props} />}
         />
         <PrivateRoute
           exact
           path="/ob/2"
-          render={props => <OnboardingCoworker {...props} />}
+          render={props => <ObPage2 {...props} />}
         />
         <PrivateRoute
           exact
           path="/ob/3"
-          render={props => <OnboardingPosition {...props} />}
+          render={props => <ObPage3 {...props} />}
         />
         <PrivateRoute
           exact

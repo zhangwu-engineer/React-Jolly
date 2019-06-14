@@ -9,6 +9,7 @@ import { API_URL, REQUESTED, SUCCEDED, FAILED, ERROR } from 'enum/constants';
 import type { Action, State } from 'types/common';
 import type { Saga } from 'redux-saga';
 import { getToken } from 'containers/App/selectors';
+import { getConnection } from 'containers/Member/selectors';
 
 // ------------------------------------
 // Constants
@@ -21,6 +22,9 @@ const WORKS = 'Jolly/Member/WORKS';
 const COWORKERS = 'Jolly/Member/COWORKERS';
 const ENDORSEMENTS = 'Jolly/Member/ENDORSEMENTS';
 const CREATE_CONNECTION = 'Jolly/Member/CREATE_CONNECTION';
+const DELETE_CONNECTION = 'Jolly/Member/DELETE_CONNECTION';
+const CHECK_CONNECTION = 'Jolly/Network/CHECK_CONNECTION';
+
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -159,11 +163,46 @@ const connectionCreateRequestError = (error: string) => ({
   type: CREATE_CONNECTION + ERROR,
   payload: error,
 });
+
+export const requestCheckConnection = (payload: Object) => ({
+  type: CHECK_CONNECTION + REQUESTED,
+  payload,
+});
+const connectionCheckRequestSuccess = (payload: Object) => ({
+  type: CHECK_CONNECTION + SUCCEDED,
+  payload,
+});
+const connectionCheckRequestFailed = (error: string) => ({
+  type: CHECK_CONNECTION + FAILED,
+  payload: error,
+});
+const connectionCheckRequestError = (error: string) => ({
+  type: CHECK_CONNECTION + ERROR,
+  payload: error,
+});
+
+export const requestDeleteConnection = (userId: string) => ({
+  type: DELETE_CONNECTION + REQUESTED,
+  payload: userId,
+});
+const connectionDeleteRequestSuccess = (payload: Object) => ({
+  type: DELETE_CONNECTION + SUCCEDED,
+  payload,
+});
+const connectionDeleteRequestFailed = (error: string) => ({
+  type: DELETE_CONNECTION + FAILED,
+  payload: error,
+});
+const connectionDeleteRequestError = (error: string) => ({
+  type: DELETE_CONNECTION + ERROR,
+  payload: error,
+});
 // ------------------------------------
 // Reducer
 // ------------------------------------
 const initialState = fromJS({
   roles: fromJS([]),
+  connection: null,
   isLoading: false,
   error: '',
   data: fromJS({}),
@@ -186,6 +225,12 @@ const initialState = fromJS({
   coworkersError: '',
   isCreatingConnection: false,
   createConnectionError: '',
+  isDeletingConnection: false,
+  deleteConnectionError: '',
+  isRequestingConnectionInformation: false,
+  requestingConnectionInformationError: '',
+  isChecking: false,
+  checkError: '',
 });
 
 export const reducer = (
@@ -353,6 +398,44 @@ export const reducer = (
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
+    case DELETE_CONNECTION + REQUESTED:
+      return state.set('isDeletingConnection', true);
+
+    case DELETE_CONNECTION + SUCCEDED:
+      return state
+        .set('isDeletingConnection', false)
+        .set('deleteConnectionError', '');
+
+    case DELETE_CONNECTION + FAILED:
+      return state
+        .set('isDeletingConnection', false)
+        .set('deleteConnectionError', payload.message);
+
+    case DELETE_CONNECTION + ERROR:
+      return state.set('isDeletingConnection', false).set(
+        'createConnectionError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case CHECK_CONNECTION + REQUESTED:
+      return state.set('connection', payload).set('isChecking', true);
+
+    case CHECK_CONNECTION + SUCCEDED:
+      return state
+        .set('isChecking', false)
+        .set('connectionInformation', fromJS(payload.connections[0]))
+        .set('checkError', '');
+
+    case CHECK_CONNECTION + FAILED:
+      return state.set('isChecking', false).set('checkError', payload.message);
+
+    case CHECK_CONNECTION + ERROR:
+      return state.set('isChecking', false).set(
+        'checkError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
 
     default:
       return state;
@@ -393,7 +476,7 @@ function* MemberProfileRequest({ payload }) {
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
-      yield put(memberProfileRequestSuccess(response.data.response));
+      yield all([put(memberProfileRequestSuccess(response.data.response))]);
     } else {
       yield put(memberProfileRequestFailed(response.data.error));
     }
@@ -492,18 +575,60 @@ function* CreateConnectionRequest({ payload }) {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/connection`,
-      data: {
-        to: payload,
-      },
+      data: payload,
       headers: { 'x-access-token': token },
     });
     if (response.status === 200) {
       yield put(connectionCreateRequestSuccess(response.data.response));
+      const connection = yield select(getConnection);
+      yield put(requestCheckConnection(connection));
     } else {
       yield put(connectionCreateRequestFailed(response.data.error));
     }
   } catch (error) {
     yield put(connectionCreateRequestError(error));
+  }
+}
+
+function* DeleteConnectionRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/connection/${payload}/disconnect`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(connectionDeleteRequestSuccess(response.data.response));
+      const connection = yield select(getConnection);
+      yield put(requestCheckConnection(connection));
+    } else {
+      yield put(connectionDeleteRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(connectionDeleteRequestError(error));
+  }
+}
+
+function* CheckConnectionRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/connection/${payload.to}/info`,
+      params: {
+        from: payload.from,
+      },
+      headers: { 'x-access-token': token },
+    });
+
+    if (response.status === 200) {
+      yield put(connectionCheckRequestSuccess(response.data.response));
+    } else {
+      yield put(connectionCheckRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(connectionCheckRequestError(error));
   }
 }
 
@@ -517,5 +642,7 @@ export default function*(): Saga<void> {
     takeLatest(COWORKERS + REQUESTED, MemberCoworkersRequest),
     takeLatest(ENDORSEMENTS + REQUESTED, EndorsementsRequest),
     takeLatest(CREATE_CONNECTION + REQUESTED, CreateConnectionRequest),
+    takeLatest(DELETE_CONNECTION + REQUESTED, DeleteConnectionRequest),
+    takeLatest(CHECK_CONNECTION + REQUESTED, CheckConnectionRequest),
   ]);
 }

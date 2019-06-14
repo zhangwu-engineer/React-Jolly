@@ -44,6 +44,8 @@ import saga, {
   requestMemberCoworkers,
   requestMemberEndorsements,
   requestCreateConnection,
+  requestDeleteConnection,
+  requestCheckConnection,
 } from 'containers/Member/sagas';
 import {
   requestUserPhotoUpload,
@@ -298,8 +300,11 @@ type Props = {
   works: Object,
   coworkers: Object,
   endorsements: Object,
+  connectionInformation: Object,
   isCreatingConnection: boolean, // eslint-disable-line
   createConnectionError: string, // eslint-disable-line
+  isDeletingConnection: boolean, // eslint-disable-line
+  deleteConnectionError: string, // eslint-disable-line
   classes: Object,
   match: Object,
   requestMemberProfile: Function,
@@ -315,6 +320,8 @@ type Props = {
   updateUser: Function,
   requestCreateConnection: Function,
   requestUserPhotoDelete: Function,
+  requestDeleteConnection: Function,
+  requestCheckConnection: Function,
 };
 
 type State = {
@@ -325,43 +332,74 @@ type State = {
   photoIndex: number,
   isGalleryOpen: boolean,
   isInviting: boolean,
+  isDeleting: boolean,
+  isConnectionDeleted: boolean,
   showNotification: boolean,
   isConnectionSent: boolean,
+  isCoworkerConnectionSent: boolean,
   type: string,
   isPhotoModalOpen: boolean,
   isPublicViewMode: boolean,
   activeBadge: Object,
+  connection: Object,
 };
+
+const CONNECTION_REQUEST_MSG = 'Connection Request Sent';
+const COWORKER_CONNECTION_REQUEST_MSG = 'Coworker Connection Request Sent';
 
 class Member extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State) {
+    const {
+      match: { url },
+      currentUser,
+    } = nextProps;
+    const {
+      params: { slug },
+    } = matchPath(url, {
+      path: '/f/:slug',
+    });
+
+    const isBusiness = currentUser && currentUser.get('isBusiness');
+    const businesses = isBusiness && currentUser.get('businesses').toJSON();
+    const from = isBusiness
+      ? businesses.length > 0 && businesses[0].id
+      : currentUser && currentUser.get('id');
+    const state = { connection: { to: slug, from } };
+
     if (nextProps.isCreatingConnection) {
-      return {
-        isInviting: true,
-      };
+      state.isInviting = true;
+      return state;
+    }
+    if (nextProps.isDeletingConnection) {
+      state.isDeleting = true;
+    }
+    if (
+      !nextProps.isDeletingConnection &&
+      !nextProps.deleteConnectionError &&
+      prevState.isDeleting
+    ) {
+      state.showNotification = true;
+      state.isDeleting = false;
+      state.isConnectionDeleted = true;
     }
     if (
       !nextProps.isCreatingConnection &&
       !nextProps.createConnectionError &&
       prevState.isInviting
     ) {
-      return {
-        showNotification: true,
-        isInviting: false,
-        isConnectionSent: true,
-      };
+      state.showNotification = true;
+      state.isInviting = false;
+      state.isConnectionSent = true;
     }
     if (
       !nextProps.isCreatingConnection &&
       nextProps.createConnectionError &&
       prevState.isInviting
     ) {
-      return {
-        showNotification: false,
-        isInviting: false,
-      };
+      state.showNotification = false;
+      state.isInviting = false;
     }
-    return null;
+    return state;
   }
   state = {
     isOpen: false,
@@ -371,8 +409,11 @@ class Member extends Component<Props, State> {
     photoIndex: 0,
     isGalleryOpen: false,
     isInviting: false, // eslint-disable-line
+    isDeleting: false, // eslint-disable-line
     showNotification: false,
     isConnectionSent: false,
+    isCoworkerConnectionSent: false,
+    isConnectionDeleted: false,
     type: '',
     isPhotoModalOpen: false,
     isPublicViewMode: false,
@@ -387,6 +428,7 @@ class Member extends Component<Props, State> {
     } = matchPath(url, {
       path: '/f/:slug',
     });
+
     this.props.requestMemberProfile(slug);
     this.props.requestMemberBadges(slug);
     this.props.requestMemberFiles(slug);
@@ -394,6 +436,7 @@ class Member extends Component<Props, State> {
     this.props.requestMemberWorks(slug);
     this.props.requestMemberCoworkers(slug);
     this.props.requestMemberEndorsements(slug);
+    this.props.requestCheckConnection(this.state.connection);
   }
   onCloseModal = () => {
     this.setState({ isOpen: false });
@@ -475,6 +518,10 @@ class Member extends Component<Props, State> {
   viewBadgeProgress = badge => {
     this.setState({ activeBadge: badge });
   };
+  handleConnect = params => {
+    this.setState({ isCoworkerConnectionSent: params.isCoworker });
+    this.props.requestCreateConnection(params);
+  };
   render() {
     const {
       currentUser,
@@ -486,6 +533,7 @@ class Member extends Component<Props, State> {
       coworkers,
       endorsements,
       classes,
+      connectionInformation,
       match: { url },
     } = this.props;
     const {
@@ -497,10 +545,12 @@ class Member extends Component<Props, State> {
       isGalleryOpen,
       showNotification,
       isConnectionSent,
+      isConnectionDeleted,
       type,
       isPhotoModalOpen,
       isPublicViewMode,
       activeBadge,
+      isCoworkerConnectionSent,
     } = this.state;
     const showContactOptions =
       member.getIn(['profile', 'receiveEmail']) ||
@@ -514,6 +564,9 @@ class Member extends Component<Props, State> {
     const isPrivate =
       (currentUser && currentUser.get('slug') === slug && !isPublicViewMode) ||
       false;
+    const isCurrentBusiness =
+      (currentUser && currentUser.get('isBusiness')) || false;
+
     const unearnedBadges =
       badges && badges.filter(b => b.get('earned') === false);
     const nextBadgeToEarn = unearnedBadges && unearnedBadges.get(0);
@@ -579,12 +632,24 @@ class Member extends Component<Props, State> {
               </Grid>
             </Grid>
           )}
-        {showNotification && (
-          <Notification
-            msg="Coworker connection request sent."
-            close={this.closeNotification}
-          />
-        )}
+        {showNotification &&
+          isConnectionSent && (
+            <Notification
+              msg={
+                isCurrentBusiness || !isCoworkerConnectionSent
+                  ? CONNECTION_REQUEST_MSG
+                  : COWORKER_CONNECTION_REQUEST_MSG
+              }
+              close={this.closeNotification}
+            />
+          )}
+        {showNotification &&
+          isConnectionDeleted && (
+            <Notification
+              msg="You've been disconnected!"
+              close={this.closeNotification}
+            />
+          )}
         <div className={classes.root}>
           <div className={classes.profileInfo}>
             {isPrivate ? (
@@ -598,12 +663,14 @@ class Member extends Component<Props, State> {
             ) : (
               <MemberProfileInfo
                 currentUser={currentUser}
-                user={member}
+                member={member}
                 badges={badges}
                 openShareModal={this.openShareModal}
                 openPhotoModal={this.openPhotoModal}
-                connect={this.props.requestCreateConnection}
+                connect={this.handleConnect}
                 isConnectionSent={isConnectionSent}
+                connectionInformation={connectionInformation}
+                requestDeleteConnection={this.props.requestDeleteConnection}
               />
             )}
           </div>
@@ -880,8 +947,11 @@ const mapStateToProps = state => ({
   works: state.getIn(['member', 'works']),
   coworkers: state.getIn(['member', 'coworkers']),
   endorsements: state.getIn(['member', 'endorsements']),
+  connectionInformation: state.getIn(['member', 'connectionInformation']),
   isCreatingConnection: state.getIn(['member', 'isCreatingConnection']),
   createConnectionError: state.getIn(['member', 'createConnectionError']),
+  isDeletingConnection: state.getIn(['member', 'isDeletingConnection']),
+  deleteConnectionError: state.getIn(['member', 'deleteConnectionError']),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -897,12 +967,14 @@ const mapDispatchToProps = dispatch => ({
     dispatch(requestUserPhotoUpload(photo, type, slug)),
   requestUserResumeUpload: resume => dispatch(requestUserResumeUpload(resume)),
   requestUserResumeDelete: () => dispatch(requestUserResumeDelete()),
+  requestDeleteConnection: userId => dispatch(requestDeleteConnection(userId)),
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
   requestUserPhotoDelete: (userId, image, avatar, backgroundImage, slug) =>
     dispatch(
       requestUserPhotoDelete(userId, image, avatar, backgroundImage, slug)
     ),
+  requestCheckConnection: payload => dispatch(requestCheckConnection(payload)),
 });
 
 export default compose(
