@@ -26,6 +26,7 @@ const styles = theme => ({
   },
   rootSelect: {
     backgroundColor: '#FFFFFF',
+    height: 40,
   },
   disabledRoot: {
     backgroundColor: 'rgba(241, 241, 241, 0.45)',
@@ -34,12 +35,13 @@ const styles = theme => ({
     fontSize: 14,
     color: '#212121',
     fontWeight: 600,
-    paddingLeft: 20,
+    paddingLeft: 10,
+    transform: 'translate(0, 14px) scale(1)',
   },
   textInput: {
     paddingLeft: 18,
     paddingRight: 18,
-    marginTop: '23px !important',
+    marginTop: '7px !important',
     '&:before': {
       borderBottom: '2px solid #f1f1f1',
     },
@@ -86,9 +88,10 @@ const styles = theme => ({
     },
   },
   shrink: {
-    transform: 'translate(0px, 10px) scale(0.85)',
-    transformOrigin: 'top left',
+    transform: 'translate(0px, 2px) scale(0.85)',
+    transformOrigin: 'top',
     color: '#9b9b9b',
+    fontSize: 13,
   },
   link: {
     fontSize: 14,

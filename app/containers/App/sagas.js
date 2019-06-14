@@ -11,7 +11,7 @@ import { LOCATION_CHANGE } from 'react-router-redux';
 import type { Action, State } from 'types/common';
 import type { Saga } from 'redux-saga';
 import { getToken, getUserId, getAdminToken } from 'containers/App/selectors';
-
+import { requestMemberFiles } from 'containers/Member/sagas';
 // ------------------------------------
 // Constants
 // ------------------------------------
@@ -22,6 +22,7 @@ const LOGOUT = 'Jolly/App/LOGOUT';
 const USER = 'Jolly/App/USER';
 const USER_DATA_UPDATE = 'Jolly/App/UPDATE_USER_DATA';
 const USER_PHOTO_UPLOAD = 'Jolly/App/USER_PHOTO_UPLOAD';
+const USER_PHOTO_DELETE = 'Jolly/App/USER_PHOTO_DELETE';
 const USER_RESUME_UPLOAD = 'Jolly/App/USER_RESUME_UPLOAD';
 const USER_RESUME_DELETE = 'Jolly/App/USER_RESUME_DELETE';
 const USER_FILES = 'Jolly/App/USER_FILES';
@@ -37,7 +38,7 @@ const CLOSE_NAVBAR = 'Jolly/App/CLOSE_NAVBAR';
 const ADMIN_LOGIN = 'Jolly/App/ADMIN_LOGIN';
 const ADMIN_USER = 'Jolly/App/ADMIN_USER';
 const ADMIN_LOGOUT = 'Jolly/App/ADMIN_LOGOUT';
-
+const BUSINESS_PROFILE = 'Jolly/Business/BUSINESS_PROFILE';
 const SET_META_JSON = 'Jolly/App/SET_META_JSON';
 
 declare var analytics;
@@ -81,10 +82,17 @@ const userDataUpdateError = error => ({
   payload: error,
 });
 
-export const requestUserPhotoUpload = (photo: string, type: string) => ({
+export const requestUserPhotoUpload = (
+  photo: string,
+  type: string,
+  slug: string
+) => ({
   type: USER_PHOTO_UPLOAD + REQUESTED,
   payload: photo,
-  meta: type,
+  meta: {
+    type,
+    slug,
+  },
 });
 const userPhotoUploadSuccess = (payload: Object) => ({
   type: USER_PHOTO_UPLOAD + SUCCEDED,
@@ -96,6 +104,36 @@ const userPhotoUploadFailed = error => ({
 });
 const userPhotoUploadError = error => ({
   type: USER_PHOTO_UPLOAD + ERROR,
+  payload: error,
+});
+
+export const requestUserPhotoDelete = (
+  userId: string,
+  image: string,
+  avatar: boolean,
+  backgroundImage: boolean,
+  slug: string
+) => ({
+  type: USER_PHOTO_DELETE + REQUESTED,
+  payload: {
+    userId,
+    image,
+    avatar,
+    backgroundImage,
+  },
+  slug,
+});
+
+const userPhotoDeleteSuccess = (payload: Object) => ({
+  type: USER_PHOTO_DELETE + SUCCEDED,
+  payload,
+});
+const userPhotoDeleteFailed = error => ({
+  type: USER_PHOTO_DELETE + FAILED,
+  payload: error,
+});
+const userPhotoDeleteError = error => ({
+  type: USER_PHOTO_DELETE + ERROR,
   payload: error,
 });
 
@@ -153,12 +191,14 @@ const loginRequestError = (error: string) => ({
 export const requestSocialLogin = (
   payload: Object,
   type: string,
+  isBusiness: boolean,
   invite: ?Object
 ) => ({
   type: SOCIAL_LOGIN + REQUESTED,
   payload,
   meta: {
     type,
+    isBusiness,
     invite,
   },
 });
@@ -262,13 +302,15 @@ export const requestCityUsers = (
   query: string,
   page: Number,
   perPage: Number,
-  role: string
+  role: string,
+  activeStatus: string
 ) => ({
   type: CITY_USERS + REQUESTED,
   payload: city,
   meta: {
     query,
     role,
+    activeStatus,
     page,
     perPage,
   },
@@ -397,6 +439,23 @@ export const closeNavbar = () => ({
   type: CLOSE_NAVBAR,
 });
 
+export const requestBusinessProfile = (slug: string) => ({
+  type: BUSINESS_PROFILE + REQUESTED,
+  payload: slug,
+});
+const businessProfileRequestSuccess = (payload: Object) => ({
+  type: BUSINESS_PROFILE + SUCCEDED,
+  payload,
+});
+const businessProfileRequestFailed = (error: string) => ({
+  type: BUSINESS_PROFILE + FAILED,
+  payload: error,
+});
+const businessProfileRequestError = (error: string) => ({
+  type: BUSINESS_PROFILE + ERROR,
+  payload: error,
+});
+
 export const setMetaJson = (path: string, value: ?Object) => ({
   type: SET_META_JSON,
   payload: value,
@@ -453,6 +512,10 @@ const initialState = fromJS({
   cityUsersError: '',
   isSignupInviteLoading: false,
   signupInviteError: '',
+  isPhotoDeleting: false,
+  isBusinessLoading: false,
+  businessError: '',
+  businessData: fromJS({}),
 });
 
 export const reducer = (
@@ -522,7 +585,21 @@ export const reducer = (
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
+    case USER_PHOTO_DELETE + REQUESTED:
+      return state.set('isPhotoDeleting', true).set('photoDeleteError', null);
+    case USER_PHOTO_DELETE + SUCCEDED:
+      return state.set('isPhotoDeleting', false).set('photoDeleteError', '');
+    case USER_PHOTO_DELETE + FAILED:
+      return state
+        .set('isPhotoDeleting', false)
+        .set('photoDeleteError', payload);
 
+    case USER_PHOTO_DELETE + ERROR:
+      return state.set('isPhotoDeleting', false).set(
+        'photoDeleteError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
     case USER_RESUME_UPLOAD + REQUESTED:
       return state
         .set('isResumeUploading', true)
@@ -570,6 +647,9 @@ export const reducer = (
         full_name: `${payload.user.firstName} ${payload.user.lastName}`,
         email: payload.user.email,
       });
+      analytics.track('Sign In', {
+        signin_method: 'email',
+      });
       return state
         .set('isLoading', false)
         .set('token', payload.auth_token)
@@ -603,6 +683,9 @@ export const reducer = (
           signup_method: payload.type,
         });
       }
+      analytics.track('Sign In', {
+        signin_method: 'social',
+      });
       return state
         .set('isSocialLoading', false)
         .set('token', payload.auth_token)
@@ -859,6 +942,27 @@ export const reducer = (
     case LOCATION_CHANGE:
       return state.set('metaJson', fromJS({})).set('error', '');
 
+    case BUSINESS_PROFILE + REQUESTED:
+      return state.set('isBusinessLoading', true);
+
+    case BUSINESS_PROFILE + SUCCEDED:
+      return state
+        .set('isBusinessLoading', false)
+        .set('businessData', fromJS(payload))
+        .set('businessError', '');
+
+    case BUSINESS_PROFILE + FAILED:
+      return state
+        .set('isBusinessLoading', false)
+        .set('businessError', payload.message);
+
+    case BUSINESS_PROFILE + ERROR:
+      return state.set('isBusinessLoading', false).set(
+        'businessError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
     default:
       return state;
   }
@@ -913,7 +1017,7 @@ function* LoginRequest({ payload, meta }) {
   }
 }
 
-function* SocialLoginRequest({ payload, meta: { type, invite } }) {
+function* SocialLoginRequest({ payload, meta: { type, isBusiness, invite } }) {
   try {
     const response = yield call(request, {
       method: 'POST',
@@ -923,6 +1027,7 @@ function* SocialLoginRequest({ payload, meta: { type, invite } }) {
           : `${API_URL}/auth/linkedin`,
       data: {
         ...payload,
+        isBusiness,
         invite,
       },
     });
@@ -993,20 +1098,47 @@ function* UploadUserPhotoRequest({ payload, meta }) {
     });
     if (response.status === 200) {
       yield put(userPhotoUploadSuccess(response.data.response));
-      if (meta === 'avatar' || meta === 'backgroundImage') {
-        yield put(
-          requestUserDataUpdate({
-            profile: {
-              [meta]: response.data.response.path,
-            },
-          })
-        );
+      if (meta.type === 'avatar' || meta.type === 'backgroundImage') {
+        yield all([
+          put(requestMemberFiles(meta.slug)),
+          put(
+            requestUserDataUpdate({
+              profile: {
+                [meta.type]: response.data.response.path,
+              },
+            })
+          ),
+        ]);
       }
     } else {
       yield put(userPhotoUploadFailed(response.data.error.message));
     }
   } catch (error) {
     yield put(userPhotoUploadError(error));
+  }
+}
+
+function* DeleteUserPhotoRequest({ payload, slug }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'DELETE',
+      url: `${API_URL}/user/image/delete`,
+      params: payload,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield all([
+        put(requestMemberFiles(slug)),
+        put(requestUserFiles()),
+        put(requestUser()),
+        put(userPhotoDeleteSuccess(response.data.response)),
+      ]);
+    } else {
+      yield put(userPhotoDeleteFailed(response.data.error.message));
+    }
+  } catch (error) {
+    yield put(userPhotoDeleteError(error));
   }
 }
 
@@ -1174,6 +1306,7 @@ function* CityUsersRequest({ payload, meta }) {
         page: meta.page,
         perPage: meta.perPage,
         role: meta.role,
+        activeStatus: meta.activeStatus,
       },
       headers: { 'x-access-token': token },
     });
@@ -1246,6 +1379,24 @@ function* AdminUserRequest() {
   }
 }
 
+function* BusinessProfileRequest({ payload, meta }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/business/slug/${payload}`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(businessProfileRequestSuccess(response.data.response, meta));
+    } else {
+      yield put(businessProfileRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(businessProfileRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(REGISTER + REQUESTED, RegisterRequest),
@@ -1254,6 +1405,7 @@ export default function*(): Saga<void> {
     takeLatest(USER + REQUESTED, UserRequest),
     takeLatest(USER_DATA_UPDATE + REQUESTED, UpdateUserDataRequest),
     takeLatest(USER_PHOTO_UPLOAD + REQUESTED, UploadUserPhotoRequest),
+    takeLatest(USER_PHOTO_DELETE + REQUESTED, DeleteUserPhotoRequest),
     takeLatest(USER_RESUME_UPLOAD + REQUESTED, UploadUserResumeRequest),
     takeLatest(USER_RESUME_DELETE + REQUESTED, DeleteUserResumeRequest),
     takeLatest(USER_FILES + REQUESTED, UserFilesRequest),
@@ -1266,5 +1418,6 @@ export default function*(): Saga<void> {
     takeLatest(SIGNUP_INVITE + REQUESTED, SignupInviteRequest),
     takeLatest(ADMIN_LOGIN + REQUESTED, AdminLoginRequest),
     takeLatest(ADMIN_USER + REQUESTED, AdminUserRequest),
+    takeLatest(BUSINESS_PROFILE + REQUESTED, BusinessProfileRequest),
   ]);
 }

@@ -22,7 +22,10 @@ const styles = theme => ({
     fontSize: 14,
     fontWeight: 500,
     color: '#434343',
-    padding: '10px 20px',
+    height: 40,
+    alignItems: 'center',
+    paddingLeft: 10,
+    paddingTop: 10,
     boxSizing: 'border-box',
   },
   valueContainer: {
@@ -54,9 +57,10 @@ const styles = theme => ({
   placeholder: {
     fontSize: 14,
     fontWeight: 500,
-    color: '#434343',
+    color: '#212121',
     boxSizing: 'border-box',
-    opacity: 0.5,
+    opacity: 1,
+    position: 'absolute',
   },
   paper: {
     position: 'absolute',

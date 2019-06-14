@@ -10,9 +10,16 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import Typography from '@material-ui/core/Typography';
 
 import Link from 'components/Link';
+import DeleteImage from 'components/DeleteImage';
 
+import {
+  requestUser,
+  requestUserFiles,
+  requestUserPhotoDelete,
+} from 'containers/App/sagas';
 import saga, {
   reducer,
   requestMemberProfile,
@@ -49,6 +56,31 @@ const styles = theme => ({
   selected: {
     border: '2px solid #000000',
   },
+  photoWrapper: {
+    width: 168,
+    height: 29,
+    color: 'white',
+    fontSize: 15,
+    fontWeight: 550,
+    backgroundColor: theme.palette.primary.main,
+    textAlign: 'center',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  moreVertIconButton: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    minWidth: 0,
+    cursor: 'pointer',
+  },
+  headerText: {
+    fontSize: 18,
+    color: theme.palette.common.white,
+    fontWeight: 500,
+    marginLeft: 21,
+  },
 });
 
 type Props = {
@@ -58,6 +90,10 @@ type Props = {
   match: Object,
   requestMemberProfile: Function,
   requestMemberFiles: Function,
+  requestUser: Function,
+  requestUserFiles: Function,
+  user: Object,
+  requestPhotoDelete: Function,
 };
 
 class MemberGallery extends PureComponent<Props> {
@@ -72,14 +108,39 @@ class MemberGallery extends PureComponent<Props> {
     });
     this.props.requestMemberProfile(slug);
     this.props.requestMemberFiles(slug);
+    this.props.requestUser();
+    this.props.requestUserFiles();
   }
   componentWillUnmount() {
     window.localStorage.removeItem('privateGallery');
+    this.props.requestUser();
+    this.props.requestUserFiles();
   }
+  handleDeletePhoto = (userId, image, avatar, backgroundImage) => {
+    const {
+      match: { url },
+    } = this.props;
+    const {
+      params: { slug },
+    } = matchPath(url, {
+      path: '/f/:slug/gallery',
+    });
+    this.props.requestPhotoDelete(userId, image, avatar, backgroundImage, slug);
+  };
   render() {
-    const { classes, member, files } = this.props;
+    const { classes, member, files, user } = this.props;
+    const profilePhoto = user && user.getIn(['profile', 'avatar']);
+    const coverPhoto = user && user.getIn(['profile', 'backgroundImage']);
     const privateGallery =
       window.localStorage.getItem('privateGallery') === 'yes';
+    const {
+      match: { url },
+    } = this.props;
+    const {
+      params: { slug },
+    } = matchPath(url, {
+      path: '/f/:slug/gallery',
+    });
     return (
       <div className={classes.root}>
         <Grid
@@ -99,6 +160,7 @@ class MemberGallery extends PureComponent<Props> {
               )}
             >
               <ArrowBackIcon />
+              <Typography className={classes.headerText}>Gallery</Typography>
             </Button>
           </Grid>
         </Grid>
@@ -114,6 +176,24 @@ class MemberGallery extends PureComponent<Props> {
             {files.map(file => (
               <div className={classes.fileWrapper} key={generate()}>
                 <img src={file.get('path')} alt={file.get('_id')} />
+                {profilePhoto === file.get('path') && (
+                  <div className={classes.photoWrapper}>Profile</div>
+                )}
+                {coverPhoto === file.get('path') && (
+                  <div className={classes.photoWrapper}>Cover</div>
+                )}
+                {user &&
+                  user.get('slug') === slug && (
+                    <div className={classes.moreVertIconButton}>
+                      <DeleteImage
+                        deletePhoto={this.handleDeletePhoto}
+                        userId={user && user.get('id')}
+                        image={file.get('path')}
+                        avatar={profilePhoto === file.get('path')}
+                        backgroundImage={coverPhoto === file.get('path')}
+                      />
+                    </div>
+                  )}
               </div>
             ))}
           </Masonry>
@@ -128,11 +208,18 @@ const mapStateToProps = state => ({
   isLoading: state.getIn(['member', 'isMemberLoading']),
   error: state.getIn(['member', 'memberError']),
   files: state.getIn(['member', 'files']),
+  user: state.getIn(['app', 'user']),
 });
 
 const mapDispatchToProps = dispatch => ({
   requestMemberProfile: slug => dispatch(requestMemberProfile(slug)),
   requestMemberFiles: slug => dispatch(requestMemberFiles(slug)),
+  requestUser: () => dispatch(requestUser()),
+  requestUserFiles: () => dispatch(requestUserFiles()),
+  requestPhotoDelete: (userId, image, avatar, backgroundImage, slug) =>
+    dispatch(
+      requestUserPhotoDelete(userId, image, avatar, backgroundImage, slug)
+    ),
 });
 
 export default compose(

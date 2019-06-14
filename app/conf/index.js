@@ -17,6 +17,11 @@ const API_URLS = {
   production: 'https://jollyapi.herokuapp.com',
 };
 
+const INTERCOM_APP_IDS = {
+  staging: 'wz8qfqtl',
+  production: 'lkedu906',
+};
+
 module.exports = {
   /** Logging */
   LOG: isDev,
@@ -78,6 +83,9 @@ module.exports = {
 
     /** Port Number To Listen To */
     PORT: ENV.PORT || 3000,
+
+    /** Application Id */
+    ID: isDev ? 'lkedu906' : 'lkedu906',
   },
 
   FACEBOOK: {
@@ -85,6 +93,9 @@ module.exports = {
   },
   LINKEDIN: {
     APP_ID: isDev ? '862j54unk910vg' : '78qrisch5bmx23',
+  },
+  INTERCOM: {
+    APP_ID: isDev ? 'wz8qfqtl' : INTERCOM_APP_IDS[process.env.API_ENV],
   },
   /** Application API */
   API: {

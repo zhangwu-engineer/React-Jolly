@@ -33,7 +33,10 @@ import saga, {
 import injectSagas from 'utils/injectSagas';
 
 const roles = ROLES.sort().map(role => ({ value: role, label: role }));
-const connections = CONNECTIONS.sort().map(connection => ({ value: connection, label: connection }));
+const connections = CONNECTIONS.sort().map(connection => ({
+  value: connection,
+  label: connection,
+}));
 const styles = theme => ({
   content: {
     maxWidth: 1064,
@@ -333,7 +336,7 @@ class CoworkersPage extends Component<Props, State> {
         sentTo: { $set: email },
       }),
       () => {
-        this.props.requestCreateConnection(email);
+        this.props.requestCreateConnection({ email });
       }
     );
   };
@@ -540,7 +543,9 @@ class CoworkersPage extends Component<Props, State> {
                             }
                           : null
                       }
-                      onChange={value => this.handleConnectionsChange(value.value)}
+                      onChange={value =>
+                        this.handleConnectionsChange(value.value)
+                      }
                       isMulti={false}
                       isClearable={false}
                       isSearchable={false}

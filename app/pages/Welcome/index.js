@@ -20,6 +20,7 @@ import './styles.scss';
 
 type Props = {
   user: Object,
+  location: Object,
   requestSocialLogin: Function,
 };
 
@@ -39,9 +40,14 @@ class Welcome extends Component<Props> {
     const {
       _token: { accessToken },
     } = user;
+    const {
+      location: { pathname },
+    } = this.props;
+    const isBusiness = pathname === '/business-signup';
     this.props.requestSocialLogin(
       { access_token: accessToken },
       'facebook',
+      isBusiness,
       storage.get('invite')
     );
   };
@@ -53,9 +59,14 @@ class Welcome extends Component<Props> {
     const {
       _token: { accessToken },
     } = user;
+    const {
+      location: { pathname },
+    } = this.props;
+    const isBusiness = pathname === '/business-signup';
     this.props.requestSocialLogin(
       { access_token: accessToken },
       'linkedin',
+      isBusiness,
       storage.get('invite')
     );
   };
@@ -64,6 +75,10 @@ class Welcome extends Component<Props> {
     console.log(err); // eslint-disable-line
   };
   render() {
+    const {
+      location: { pathname },
+    } = this.props;
+    const isBusiness = pathname === '/business-signup';
     return (
       <div className="welcome">
         <div className="welcome__leftPanel">
@@ -98,7 +113,7 @@ class Welcome extends Component<Props> {
             <Button
               className="welcome__btn light-green mb-lg"
               element={Link}
-              to="/freelancer-signup-2"
+              to={isBusiness ? '/business-signup-2' : '/freelancer-signup-2'}
             >
               Continue with email
             </Button>
@@ -143,8 +158,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  requestSocialLogin: (payload, type, invite) =>
-    dispatch(requestSocialLogin(payload, type, invite)),
+  requestSocialLogin: (payload, type, isBusiness, invite) =>
+    dispatch(requestSocialLogin(payload, type, isBusiness, invite)),
 });
 
 export default connect(

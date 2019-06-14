@@ -15,22 +15,24 @@ import MenuList from '@material-ui/core/MenuList';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
+import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
 import Drawer from '@material-ui/core/Drawer';
 import MenuIcon from '@material-ui/icons/Menu';
-import ContactIcon from '@material-ui/icons/ContactSupportOutlined';
 
 import { history } from 'components/ConnectedRouter';
+import UserAvatar from 'components/UserAvatar';
 import Link from 'components/Link';
 import Icon from 'components/Icon';
+import BusinessSidebar from 'components/BusinessSidebar';
 
 import LogoWhite from 'images/logo-white.png';
-import UserIcon from 'images/sprite/user.svg';
 import SettingsIcon from 'images/sprite/settings.svg';
 import LogoutIcon from 'images/sprite/logout.svg';
 import People from 'images/sprite/people_outline.svg';
 import HomeIcon from 'images/sprite/home.svg';
+import ContactIcon from 'images/sprite/contact.svg';
 import EmptyAvatar from 'images/sprite/empty_avatar.svg';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
@@ -121,10 +123,32 @@ const styles = theme => ({
       margin: 0,
     },
   },
+  businessAvatar: {
+    width: 40,
+    height: 40,
+    margin: '0 auto',
+    backgroundColor: theme.palette.primary.main,
+    border: '2px solid #ffffff',
+    [theme.breakpoints.down('xs')]: {
+      width: 30,
+      height: 30,
+      paddingTop: 1,
+      fontSize: 14,
+    },
+  },
+  businessTopMenuAvatar: {
+    width: 24,
+    height: 24,
+    fontWeight: 600,
+    fontSize: 9,
+    border: 0,
+    margin: '0 auto',
+    backgroundColor: theme.palette.primary.main,
+  },
   emptyAvatar: {
     marginRight: 10,
     width: 40,
-    height: 40,
+    height: 39.7,
     backgroundColor: theme.palette.common.white,
     border: '2px solid #ffffff',
     borderRadius: 40,
@@ -138,19 +162,29 @@ const styles = theme => ({
     boxShadow: '0 5px 19px 0 rgba(0, 0, 0, 0.07)',
   },
   menuTop: {
-    padding: 25,
+    padding: '26px 25px 24px 25px',
     backgroundColor: '#f2f9ff',
   },
   menuAvatar: {
     width: 40,
     height: 40,
-    marginRight: 15,
+    marginRight: 14,
   },
   menuName: {
     fontSize: 16,
     fontWeight: 600,
+    lineHeight: 1,
+    height: 22,
+    fontFamily: 'Avenir Next, Demi Bold',
     color: '#343434',
     textTransform: 'capitalize',
+  },
+  menuDivider: {
+    height: 1,
+  },
+  dividedSection: {},
+  dividedBusinesses: {
+    padding: '12px 25px 5px 25px',
   },
   createAccountButton: {
     fontSize: 14,
@@ -233,18 +267,51 @@ const styles = theme => ({
     padding: 0,
   },
   menuList: {
-    padding: 0,
+    paddingTop: 15,
+    paddingBottom: 25,
+  },
+  menuBusinessList: {
+    paddingTop: 0,
+    paddingBottom: 24,
   },
   menuItem: {
-    paddingLeft: 30,
+    paddingLeft: 25,
+  },
+  menuSubItem: {
+    lineHeight: 1,
   },
   menuItemIcon: {
     margin: 0,
+    width: 24,
+    height: 24,
+    paddingTop: 3,
+  },
+  businessMenuItemIcon: {
+    margin: 0,
+    width: 24,
+    height: 24,
   },
   menuItemText: {
     fontSize: 14,
+    fontFamily: 'Avenir Next, Demi Bold',
     fontWeight: 600,
+    lineHeight: 1,
     color: '#343434',
+    marginLeft: -4,
+  },
+  menuItemCaption: {
+    fontSize: 12,
+    fontFamily: 'Avenir Next, Demi Bold',
+    fontWeight: 500,
+    lineHeight: 2.67,
+    color: '#595959',
+  },
+  link: {
+    fontSize: 13,
+    fontWeight: 600,
+    letterSpacing: '0.3px',
+    textTransform: 'none',
+    textDecoration: 'none',
   },
   hide: {
     display: 'none',
@@ -269,6 +336,22 @@ const styles = theme => ({
       width: 48,
     },
   },
+  businessButton: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 0,
+    height: 70,
+    width: 70,
+    '&:hover': {
+      backgroundColor: 'rgba(255, 255, 255, 0.16)',
+    },
+    [theme.breakpoints.down('xs')]: {
+      height: 48,
+      width: 48,
+      marginRight: 5,
+    },
+  },
   networkButton: {
     display: 'flex',
     justifyContent: 'center',
@@ -284,6 +367,16 @@ const styles = theme => ({
       marginRight: 5,
     },
   },
+  businessSidebarButton: {
+    display: 'none',
+    [theme.breakpoints.down('md')]: {
+      display: 'block',
+    },
+  },
+  businessInfo: {
+    marginTop: 10,
+    marginBottom: 10,
+  },
 });
 
 type Props = {
@@ -292,17 +385,20 @@ type Props = {
   classes: Object,
   pathname: string,
   logout: Function,
+  match: Object,
 };
 
 type State = {
   open: boolean,
   side: boolean,
+  businessSide: boolean,
 };
 
 class Header extends Component<Props, State> {
   state = {
     open: false,
     side: false,
+    businessSide: false,
   };
   handleToggle = () => {
     this.setState(state => ({ open: !state.open }));
@@ -327,9 +423,17 @@ class Header extends Component<Props, State> {
       side: open,
     });
   };
+  toggleBusinessSideDrawer = open => () => {
+    this.setState({
+      businessSide: open,
+    });
+  };
   anchorEl: HTMLElement;
   renderMenu = () => {
     const { user, classes } = this.props;
+    const isBusiness = user && user.get('isBusiness');
+    const businesses =
+      isBusiness && user.get('businesses') && user.get('businesses').toJSON();
     const nameLength = user
       ? user.get('firstName').length + user.get('lastName').length
       : 0;
@@ -346,7 +450,7 @@ class Header extends Component<Props, State> {
               <Icon glyph={EmptyAvatar} className={classes.menuAvatar} />
             )}
           </Grid>
-          <Grid item>
+          <Grid item className={classes.menuSubItem}>
             {user ? (
               <Typography variant="h6" className={classes.menuName}>
                 {nameLength > 10
@@ -361,9 +465,15 @@ class Header extends Component<Props, State> {
               </Typography>
             )}
             {user ? (
-              <Typography className={classes.location}>
-                {user.getIn(['profile', 'location'])}
-              </Typography>
+              <Link
+                className={classes.link}
+                onClick={e => {
+                  this.handleClose(e);
+                  history.push(`/edit`);
+                }}
+              >
+                View My Profile
+              </Link>
             ) : (
               <Button
                 color="primary"
@@ -376,63 +486,70 @@ class Header extends Component<Props, State> {
           </Grid>
         </Grid>
         {user ? (
-          <MenuList className={classes.menuList}>
-            <MenuItem
-              className={classes.menuItem}
-              onClick={e => {
-                this.handleClose(e);
-                history.push('/edit');
-              }}
-            >
-              <ListItemIcon className={classes.menuItemIcon}>
-                <Icon glyph={UserIcon} size={18} />
-              </ListItemIcon>
-              <ListItemText
-                classes={{ primary: classes.menuItemText }}
-                primary="Profile"
-              />
-            </MenuItem>
-            <MenuItem
-              className={classes.menuItem}
-              onClick={e => {
-                this.handleClose(e);
-                history.push('/settings');
-              }}
-            >
-              <ListItemIcon className={classes.menuItemIcon}>
-                <Icon glyph={SettingsIcon} size={18} />
-              </ListItemIcon>
-              <ListItemText
-                classes={{ primary: classes.menuItemText }}
-                primary="Edit Profile &amp; Settings"
-              />
-            </MenuItem>
-            <MenuItem
-              className={classes.menuItem}
-              onClick={e => {
-                this.handleClose(e);
-                window.open('https://www.joinjolly.com/contact', '_blank');
-              }}
-            >
-              <ListItemIcon className={classes.menuItemIcon}>
-                <ContactIcon />
-              </ListItemIcon>
-              <ListItemText
-                classes={{ primary: classes.menuItemText }}
-                primary="Contact"
-              />
-            </MenuItem>
-            <MenuItem className={classes.menuItem} onClick={this.handleLogout}>
-              <ListItemIcon className={classes.menuItemIcon}>
-                <Icon glyph={LogoutIcon} size={18} />
-              </ListItemIcon>
-              <ListItemText
-                classes={{ primary: classes.menuItemText }}
-                inset
-                primary="Log out"
-              />
-            </MenuItem>
-          </MenuList>
+          <div>
+            <MenuList className={classes.menuList}>
+              <MenuItem
+                className={classes.menuItem}
+                onClick={e => {
+                  this.handleClose(e);
+                  history.push('/settings');
+                }}
+              >
+                <ListItemIcon className={classes.menuItemIcon}>
+                  <Icon glyph={SettingsIcon} size={20} />
+                </ListItemIcon>
+                <ListItemText
+                  classes={{ primary: classes.menuItemText }}
+                  primary="Edit Profile &amp; Settings"
+                />
+              </MenuItem>
+              <MenuItem
+                className={classes.menuItem}
+                onClick={e => {
+                  this.handleClose(e);
+                  window.open('https://www.joinjolly.com/contact', '_blank');
+                }}
+              >
+                <ListItemIcon className={classes.menuItemIcon}>
+                  <Icon glyph={ContactIcon} size={20} />
+                </ListItemIcon>
+                <ListItemText
+                  classes={{ primary: classes.menuItemText }}
+                  primary="Contact"
+                />
+              </MenuItem>
+              <MenuItem
+                className={classes.menuItem}
+                onClick={this.handleLogout}
+              >
+                <ListItemIcon className={classes.menuItemIcon}>
+                  <Icon glyph={LogoutIcon} size={20} />
+                </ListItemIcon>
+                <ListItemText
+                  classes={{ primary: classes.menuItemText }}
+                  inset
+                  primary="Log out"
+                />
+              </MenuItem>
+            </MenuList>
+            {isBusiness && (
+              <Grid className={classes.dividedSection}>
+                <Divider className={classes.menuDivider} />
+                <Grid className={classes.dividedBusinesses}>
+                  <Typography
+                    className={classes.menuItemCaption}
+                    display="block"
+                    variant="caption"
+                  >
+                    Businesses
+                  </Typography>
+                </Grid>
+                <MenuList className={classes.menuBusinessList}>
+                  {this.renderBusinesses(businesses, classes)}
+                </MenuList>
+              </Grid>
+            )}
+          </div>
         ) : (
           <div className={classes.menuBottom}>
             <Grid container>
@@ -481,9 +598,32 @@ class Header extends Component<Props, State> {
       </Fragment>
     );
   };
+  renderBusinesses(businesses, classes) {
+    let items = null;
+    if (businesses)
+      items = businesses.map(b => (
+        <MenuItem
+          className={classes.menuItem}
+          onClick={() => history.push(`/b/${b.slug}`)}
+          key={b.id}
+        >
+          <ListItemIcon className={classes.businessMenuItemIcon}>
+            <UserAvatar
+              className={classes.businessTopMenuAvatar}
+              content={b && b.name}
+            />
+          </ListItemIcon>
+          <ListItemText
+            classes={{ primary: classes.menuItemText }}
+            primary={b.name}
+          />
+        </MenuItem>
+      ));
+    return items;
+  }
   render() {
     const { user, work, classes, pathname } = this.props;
-    const { open, side } = this.state;
+    const { open, side, businessSide } = this.state;
     const workDetailBack =
       user && work && user.get('slug') !== work.getIn(['user', 'slug'])
         ? `${capitalize(work.getIn(['user', 'firstName']))} ${capitalize(
@@ -497,12 +637,47 @@ class Header extends Component<Props, State> {
     const workDetailMatch = matchPath(pathname, {
       path: '/f/:slug/e/:eventSlug',
     });
+
+    const matchBusiness = matchPath(pathname, {
+      path: '/b/:slug',
+    });
+
+    let isPrivateBusinessPage = false;
+    let isBusinessNetworkPage = false;
+    let currentBusiness = null;
+    let isFreelancer = user && true;
+    if (matchBusiness) {
+      const {
+        params: { slug },
+      } = matchBusiness;
+
+      const isBusinessUser = user && user.get('isBusiness');
+      isFreelancer = !isBusinessUser;
+
+      const businesses =
+        isBusinessUser &&
+        user.get('businesses') &&
+        user.get('businesses').toJSON();
+      const isBusinessPage = matchBusiness && matchBusiness.isExact;
+      currentBusiness =
+        businesses && businesses.find(element => element.slug === slug);
+      isPrivateBusinessPage =
+        isBusinessUser && isBusinessPage && currentBusiness;
+
+      isBusinessNetworkPage = isBusinessUser && slug === 'network';
+      if (isBusinessNetworkPage) {
+        currentBusiness = businesses[0];
+      }
+    }
+    const isShowingBusinessSidebar =
+      isPrivateBusinessPage || isBusinessNetworkPage;
+
     const isWorkDetailPage = workDetailMatch && workDetailMatch.isExact;
     const showFeedButton =
       isProfilePage ||
       isWorkDetailPage ||
       pathname.includes('/edit') ||
-      pathname.includes('/network') ||
+      (pathname.includes('/network') && !isBusinessNetworkPage) ||
       pathname.includes('/feed') ||
       pathname.includes('/settings');
     const hideTopRightButtons =
@@ -515,6 +690,25 @@ class Header extends Component<Props, State> {
         justify="space-between"
         alignItems="center"
       >
+        {isShowingBusinessSidebar && (
+          <Grid item>
+            <Button
+              onClick={this.toggleBusinessSideDrawer(true)}
+              color="inherit"
+              className={cx(
+                classes.businessSidebarButton,
+                classes.businessButton
+              )}
+            >
+              <Fragment>
+                <UserAvatar
+                  className={classes.businessAvatar}
+                  content={currentBusiness && currentBusiness.name}
+                />
+              </Fragment>
+            </Button>
+          </Grid>
+        )}
         <Link
           className={classes.logoContainer}
           onClick={() => {
@@ -583,7 +777,7 @@ class Header extends Component<Props, State> {
           })}
         >
           <Grid container alignItems="center">
-            {user && (
+            {isFreelancer && (
               <Grid item>
                 <Link to="/network" className={classes.networkButton}>
                   <Icon glyph={People} size={30} />
@@ -674,6 +868,18 @@ class Header extends Component<Props, State> {
                 >
                   {this.renderMenu()}
                 </div>
+              </Drawer>
+              <Drawer
+                anchor="left"
+                open={businessSide}
+                onClose={this.toggleBusinessSideDrawer(false)}
+              >
+                <BusinessSidebar
+                  business={currentBusiness}
+                  onClose={this.toggleBusinessSideDrawer(false)}
+                  isFromHeader
+                  colorfulSideTop
+                />
               </Drawer>
             </Grid>
           </Grid>

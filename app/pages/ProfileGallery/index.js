@@ -5,20 +5,22 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { generate } from 'shortid';
 import Masonry from 'react-masonry-component';
-import cx from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import CameraIcon from '@material-ui/icons/CameraAlt';
+import Typography from '@material-ui/core/Typography';
 
 import Link from 'components/Link';
+import DeleteImage from 'components/DeleteImage';
 
 import {
   requestUser,
   requestUserPhotoUpload,
   requestUserFiles,
   requestUserDataUpdate,
+  requestUserPhotoDelete,
 } from 'containers/App/sagas';
 
 const styles = theme => ({
@@ -37,6 +39,7 @@ const styles = theme => ({
     '&:hover': {
       color: theme.palette.common.white,
     },
+    paddingTop: 0,
   },
   fileInput: {
     display: 'none',
@@ -51,6 +54,31 @@ const styles = theme => ({
   selected: {
     border: '2px solid #000000',
   },
+  photoWrapper: {
+    width: 168,
+    height: 30,
+    color: 'white',
+    fontSize: 15,
+    fontWeight: 550,
+    backgroundColor: theme.palette.primary.main,
+    textAlign: 'center',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  moreVertIconButton: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    minWidth: 0,
+    cursor: 'pointer',
+  },
+  headerText: {
+    fontSize: 18,
+    color: theme.palette.common.white,
+    fontWeight: 500,
+    marginLeft: 21,
+  },
 });
 
 type Props = {
@@ -64,6 +92,7 @@ type Props = {
   requestUserFiles: Function,
   uploadPhoto: Function,
   updateUser: Function,
+  requestPhotoDelete: Function,
 };
 
 class ProfileGallery extends Component<Props> {
@@ -83,6 +112,8 @@ class ProfileGallery extends Component<Props> {
   };
   handleFileUpload = ({ target }: Event) => {
     const reader = new FileReader();
+    const { user } = this.props;
+    const slug = user && user.get('slug');
     let type = 'avatar';
     if (location.pathname.indexOf('background-picture') > -1) {
       type = 'backgroundImage';
@@ -91,7 +122,7 @@ class ProfileGallery extends Component<Props> {
       const block = e.target.result.split(';');
       const [, base64] = block;
       const [, realData] = base64.split(',');
-      this.props.uploadPhoto(realData, type);
+      this.props.uploadPhoto(realData, type, slug);
     };
     if (target instanceof HTMLInputElement) {
       const [file] = target.files;
@@ -113,15 +144,22 @@ class ProfileGallery extends Component<Props> {
       },
     });
   };
+  handleDeletePhoto = (userId, image, avatar, backgroundImage) => {
+    const { user } = this.props;
+    const slug = user && user.get('slug');
+    this.props.requestPhotoDelete(userId, image, avatar, backgroundImage, slug);
+  };
   fileInput = React.createRef();
   render() {
     const { classes, user, files, location } = this.props;
     let selectedFile = '';
     if (location.pathname.indexOf('profile-picture') > -1) {
-      selectedFile = user.getIn(['profile', 'avatar']);
+      selectedFile = 'Profile Image';
     } else {
-      selectedFile = user.getIn(['profile', 'backgroundImage']);
+      selectedFile = 'Cover Image';
     }
+    const profilePhoto = user.getIn(['profile', 'avatar']);
+    const coverPhoto = user.getIn(['profile', 'backgroundImage']);
     return (
       <div className={classes.root}>
         <Grid
@@ -136,7 +174,9 @@ class ProfileGallery extends Component<Props> {
               component={props => <Link to="/edit" {...props} />}
             >
               <ArrowBackIcon />
-              &nbsp;Profile Images &amp; Videos
+              <Typography className={classes.headerText}>
+                {selectedFile}
+              </Typography>
             </Button>
           </Grid>
           <Grid item>
@@ -160,14 +200,31 @@ class ProfileGallery extends Component<Props> {
           >
             {files.map(file => (
               <div
-                className={cx(classes.fileWrapper, {
-                  [classes.selected]: selectedFile === file.get('path'),
-                })}
+                className={classes.fileWrapper}
                 key={generate()}
-                onClick={() => this.updateSelection(file.get('path'))}
                 role="button"
               >
-                <img src={file.get('path')} alt={file.get('_id')} />
+                <div
+                  onClick={() => this.updateSelection(file.get('path'))}
+                  role="button"
+                >
+                  <img src={file.get('path')} alt={file.get('_id')} />
+                </div>
+                {profilePhoto === file.get('path') && (
+                  <div className={classes.photoWrapper}>Profile</div>
+                )}
+                {coverPhoto === file.get('path') && (
+                  <div className={classes.photoWrapper}>Cover</div>
+                )}
+                <div className={classes.moreVertIconButton}>
+                  <DeleteImage
+                    deletePhoto={this.handleDeletePhoto}
+                    userId={user && user.get('id')}
+                    image={file.get('path')}
+                    avatar={profilePhoto === file.get('path')}
+                    backgroundImage={coverPhoto === file.get('path')}
+                  />
+                </div>
               </div>
             ))}
           </Masonry>
@@ -190,9 +247,14 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   requestUser: () => dispatch(requestUser()),
-  uploadPhoto: (photo, type) => dispatch(requestUserPhotoUpload(photo, type)),
+  uploadPhoto: (photo, type, slug) =>
+    dispatch(requestUserPhotoUpload(photo, type, slug)),
   requestUserFiles: () => dispatch(requestUserFiles()),
   updateUser: payload => dispatch(requestUserDataUpdate(payload)),
+  requestPhotoDelete: (userId, image, avatar, backgroundImage, slug) =>
+    dispatch(
+      requestUserPhotoDelete(userId, image, avatar, backgroundImage, slug)
+    ),
 });
 
 export default compose(
