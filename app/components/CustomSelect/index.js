@@ -54,9 +54,10 @@ const styles = theme => ({
   placeholder: {
     fontSize: 14,
     fontWeight: 500,
-    color: '#434343',
+    color: '#212121',
     boxSizing: 'border-box',
-    opacity: 0.5,
+    opacity: 1,
+    position: 'absolute',
   },
   paper: {
     position: 'absolute',
@@ -171,7 +172,6 @@ const components = {
   Placeholder,
   SingleValue,
   ValueContainer,
-  DropdownIndicator: () => null,
   IndicatorSeparator: () => null,
 };
 
@@ -184,6 +184,7 @@ type Props = {
   theme: Object,
   classes: Object,
   onChange: Function,
+  stylesOverride: Object,
 };
 
 class CustomSelect extends React.Component<Props> {
@@ -196,6 +197,7 @@ class CustomSelect extends React.Component<Props> {
       isMulti,
       classes,
       theme,
+      stylesOverride,
     } = this.props;
 
     const selectStyles = {
@@ -212,7 +214,10 @@ class CustomSelect extends React.Component<Props> {
       <div className={classes.root}>
         <Select
           classes={classes}
-          styles={selectStyles}
+          styles={{
+            ...selectStyles,
+            ...stylesOverride,
+          }}
           options={options}
           components={components}
           value={value}

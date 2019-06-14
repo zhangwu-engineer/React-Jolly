@@ -141,6 +141,15 @@ const styles = theme => ({
     textAlign: 'center',
     marginBottom: 20,
   },
+  active: {
+    backgroundColor: '#1575d9',
+  },
+  activeLink: {
+    color: theme.palette.common.white,
+    '&:hover, &:focus': {
+      color: theme.palette.common.white,
+    },
+  },
 });
 
 type Props = {
@@ -229,11 +238,17 @@ class CoworkersPage extends Component<Props, State> {
         )}
         <div className={classes.content}>
           <div className={classes.leftPanel}>
-            <div className={classes.coworkersBox}>
-              <Link to="/network" className={classes.coworkersTitle}>
-                Find Coworkers
-              </Link>
-            </div>
+            <Link to="/network" className={classes.coworkersTitle}>
+              <div className={classes.coworkersBox}>Find Connections</div>
+            </Link>
+            <Link
+              to="/network/coworkers"
+              className={`${classes.activeLink} ${classes.coworkersTitle}`}
+            >
+              <div className={`${classes.coworkersBox} ${classes.active}`}>
+                {`My Connections ${coworkers ? `(${coworkers.size})` : ''}`}
+              </div>
+            </Link>
             <div className={classes.inviteBox}>
               <InviteForm
                 sendInvite={this.handleSendInvite}
