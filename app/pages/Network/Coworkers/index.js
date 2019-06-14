@@ -336,7 +336,7 @@ class CoworkersPage extends Component<Props, State> {
         sentTo: { $set: email },
       }),
       () => {
-        this.props.requestCreateConnection({ email });
+        this.props.requestCreateConnection(email);
       }
     );
   };

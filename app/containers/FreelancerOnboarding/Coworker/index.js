@@ -313,12 +313,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
     const { user, page } = this.props;
     const { query } = this.state;
     if (user.getIn(['profile', 'location'])) {
-      this.props.requestCityUsers(
-        user.getIn(['profile', 'location']),
-        query,
-        page || 1,
-        perPage
-      );
+      this.props.requestCityUsers('', query, page || 1, perPage);
     } else {
       history.push(`/f/${user.get('slug')}`);
     }
@@ -394,13 +389,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
     );
   };
   debouncedSearch = debounce(query => {
-    const { user } = this.props;
-    this.props.requestCityUsers(
-      user.getIn(['profile', 'location']),
-      query,
-      1,
-      perPage
-    );
+    this.props.requestCityUsers('', query, 1, perPage);
   }, 500);
   handleChange = e => {
     e.persist();
@@ -409,7 +398,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
     });
   };
   render() {
-    const { user, cityUsers, page, total, classes } = this.props;
+    const { cityUsers, page, total, classes } = this.props;
     const {
       isSkipOpen,
       isFormOpen,
@@ -504,10 +493,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
                 }
               />
             </FormControl>
-            <Typography className={classes.title}>
-              Find coworkers near{' '}
-              <strong>{user.getIn(['profile', 'location'])}</strong>
-            </Typography>
+            <Typography className={classes.title}>Find coworkers</Typography>
             <Grid container spacing={8}>
               {cityUsers.map(cityUser => (
                 <Grid item key={generate()} xs={12} lg={6}>
@@ -525,12 +511,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
                     color="primary"
                     className={classes.loadMoreButton}
                     onClick={() => {
-                      this.props.requestCityUsers(
-                        user.getIn(['profile', 'location']),
-                        query,
-                        page + 1,
-                        perPage
-                      );
+                      this.props.requestCityUsers('', query, page + 1, perPage);
                     }}
                   >
                     See More

@@ -65,8 +65,8 @@ const styles = theme => ({
     marginBottom: 15,
   },
   connectBox: {
-    paddingTop: 30,
-    paddingBottom: 30,
+    paddingTop: 60,
+    paddingBottom: 60,
   },
   desc: {
     fontSize: 20,
