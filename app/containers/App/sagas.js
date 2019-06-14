@@ -89,8 +89,10 @@ export const requestUserPhotoUpload = (
 ) => ({
   type: USER_PHOTO_UPLOAD + REQUESTED,
   payload: photo,
-  meta: type,
-  slug,
+  meta: {
+    type,
+    slug,
+  },
 });
 const userPhotoUploadSuccess = (payload: Object) => ({
   type: USER_PHOTO_UPLOAD + SUCCEDED,
@@ -1017,7 +1019,7 @@ function* UpdateUserDataRequest({ payload }) {
   }
 }
 
-function* UploadUserPhotoRequest({ payload, meta, slug }) {
+function* UploadUserPhotoRequest({ payload, meta }) {
   const token = yield select(getToken);
   try {
     const response = yield call(request, {
@@ -1030,13 +1032,13 @@ function* UploadUserPhotoRequest({ payload, meta, slug }) {
     });
     if (response.status === 200) {
       yield put(userPhotoUploadSuccess(response.data.response));
-      if (meta === 'avatar' || meta === 'backgroundImage') {
+      if (meta.type === 'avatar' || meta.type === 'backgroundImage') {
         yield all([
-          put(requestMemberFiles(slug)),
+          put(requestMemberFiles(meta.slug)),
           put(
             requestUserDataUpdate({
               profile: {
-                [meta]: response.data.response.path,
+                [meta.type]: response.data.response.path,
               },
             })
           ),

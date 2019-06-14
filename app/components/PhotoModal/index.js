@@ -61,6 +61,9 @@ const styles = theme => ({
     fontWeight: 550,
     backgroundColor: theme.palette.primary.main,
     textAlign: 'center',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   moreVertIconButton: {
     position: 'absolute',
