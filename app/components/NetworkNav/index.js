@@ -95,15 +95,17 @@ class NetworkNav extends Component<Props> {
             )}
           </Grid>
         )}
-        <Grid item xs={4} className={classes.menuItem}>
-          <Link to="/network/invite" className={classes.link}>
-            <Icon glyph={InviteIcon} size={20} className={classes.icon} />
-            Invite
-          </Link>
-          {pathname === '/network/invite' && (
-            <Divider className={classes.activeLine} />
-          )}
-        </Grid>
+        {!isBusinessNetwork && (
+          <Grid item xs={4} className={classes.menuItem}>
+            <Link to="/network/invite" className={classes.link}>
+              <Icon glyph={InviteIcon} size={20} className={classes.icon} />
+              Invite
+            </Link>
+            {pathname === '/network/invite' && (
+              <Divider className={classes.activeLine} />
+            )}
+          </Grid>
+        )}
       </Grid>
     );
   }
