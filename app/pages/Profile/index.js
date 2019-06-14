@@ -292,11 +292,12 @@ class Profile extends Component<Props, State> {
                       <JobCard
                         key={generate()}
                         job={work}
+                        user={user}
                         openGallery={this.openGallery}
                       />
                     ))
                   ) : (
-                    <JobCard />
+                    <JobCard user={user} />
                   )}
                   <Grid container justify="center">
                     <Grid item>
@@ -320,10 +321,14 @@ class Profile extends Component<Props, State> {
                 <div className={classes.sectionBody}>
                   {roles && roles.size ? (
                     roles.map(role => (
-                      <RoleCard key={generate()} role={role.toJS()} />
+                      <RoleCard
+                        key={generate()}
+                        role={role.toJS()}
+                        user={user}
+                      />
                     ))
                   ) : (
-                    <RoleCard />
+                    <RoleCard user={user} />
                   )}
                   <Grid container justify="center">
                     <Grid item>
@@ -481,8 +486,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   requestUser: () => dispatch(requestUser()),
   requestRoles: () => dispatch(requestRoles()),
-  requestUserPhotoUpload: (photo, type) =>
-    dispatch(requestUserPhotoUpload(photo, type)),
+  requestUserPhotoUpload: (photo, type, slug) =>
+    dispatch(requestUserPhotoUpload(photo, type, slug)),
   requestUserResumeUpload: resume => dispatch(requestUserResumeUpload(resume)),
   requestUserResumeDelete: () => dispatch(requestUserResumeDelete()),
   requestUserFiles: () => dispatch(requestUserFiles()),

@@ -15,6 +15,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import ShareIcon from '@material-ui/icons/Share';
+import PenIcon from '@material-ui/icons/CreateOutlined';
 
 import ProfileInfo from 'components/ProfileInfo';
 import MemberProfileInfo from 'components/MemberProfileInfo';
@@ -31,7 +32,6 @@ import FloatingAddButton from 'components/FloatingAddButton';
 import BadgeProgressBanner from 'components/BadgeProgressBanner';
 import UserWorkList from 'components/UserWorkList';
 import UserCoworkers from 'components/UserCoworkers';
-
 import AddPhotoIcon from 'images/sprite/add-photo-blue.svg';
 
 import saga, {
@@ -50,6 +50,7 @@ import {
   requestUserResumeUpload,
   requestUserResumeDelete,
   requestUserDataUpdate,
+  requestUserPhotoDelete,
 } from 'containers/App/sagas';
 import injectSagas from 'utils/injectSagas';
 
@@ -272,6 +273,19 @@ const styles = theme => ({
     fontWeight: 'bold',
     textDecoration: 'none',
     textTransform: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+  },
+  editPositionIcon: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    textDecoration: 'none',
+    textTransform: 'none',
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+    },
   },
 });
 
@@ -300,6 +314,7 @@ type Props = {
   requestUserResumeDelete: Function,
   updateUser: Function,
   requestCreateConnection: Function,
+  requestUserPhotoDelete: Function,
 };
 
 type State = {
@@ -626,39 +641,57 @@ class Member extends Component<Props, State> {
                 user={member}
                 endorsements={endorsements}
                 publicMode={!isPrivate}
+                currentUser={currentUser}
+                coworkers={coworkers}
               />
               <UserWorkList
                 works={works}
+                user={member}
                 isPrivate={isPrivate}
                 openGallery={this.openGallery}
               />
               <div className={classes.section}>
                 <div className={classes.sectionHeader}>
-                  <Typography className={classes.title}>
-                    Positions for Hire
-                  </Typography>
+                  <Grid
+                    container
+                    justify="space-between"
+                    alignItems="center"
+                    className={classes.header}
+                  >
+                    <Grid item>
+                      <Typography className={classes.title}>
+                        Positions for Hire
+                      </Typography>
+                    </Grid>
+                    <Grid item>
+                      {isPrivate && (
+                        <React.Fragment>
+                          <Link
+                            className={classes.editPosition}
+                            to="/types-of-work"
+                          >
+                            Edit Positions
+                          </Link>
+                          <Link
+                            className={classes.editPositionIcon}
+                            to="/types-of-work"
+                          >
+                            <PenIcon fontSize="small" />
+                          </Link>
+                        </React.Fragment>
+                      )}
+                    </Grid>
+                  </Grid>
                 </div>
                 <div className={classes.sectionBody}>
                   {roles.size ? (
                     roles.map(role => (
                       <div key={generate()} id={role.get('id')}>
-                        <RoleCard role={role.toJS()} />
+                        <RoleCard role={role.toJS()} user={member} />
                       </div>
                     ))
                   ) : (
-                    <RoleCard />
-                  )}
-                  {isPrivate && (
-                    <Grid container justify="center">
-                      <Grid item>
-                        <Link
-                          className={classes.editPosition}
-                          to="/types-of-work"
-                        >
-                          Edit Positions
-                        </Link>
-                      </Grid>
-                    </Grid>
+                    <RoleCard isPrivate={isPrivate} user={member} />
                   )}
                 </div>
               </div>
@@ -809,6 +842,8 @@ class Member extends Component<Props, State> {
           onCloseModal={this.closePhotoModal}
           uploadPhoto={this.props.requestUserPhotoUpload}
           updateUser={this.props.updateUser}
+          isPrivate={isPrivate}
+          userPhotoDelete={this.props.requestUserPhotoDelete}
         />
         {isGalleryOpen && (
           <Lightbox
@@ -858,12 +893,16 @@ const mapDispatchToProps = dispatch => ({
   requestMemberCoworkers: slug => dispatch(requestMemberCoworkers(slug)),
   requestMemberEndorsements: slug => dispatch(requestMemberEndorsements(slug)),
   updateUser: payload => dispatch(requestUserDataUpdate(payload)),
-  requestUserPhotoUpload: (photo, type) =>
-    dispatch(requestUserPhotoUpload(photo, type)),
+  requestUserPhotoUpload: (photo, type, slug) =>
+    dispatch(requestUserPhotoUpload(photo, type, slug)),
   requestUserResumeUpload: resume => dispatch(requestUserResumeUpload(resume)),
   requestUserResumeDelete: () => dispatch(requestUserResumeDelete()),
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
+  requestUserPhotoDelete: (userId, image, avatar, backgroundImage, slug) =>
+    dispatch(
+      requestUserPhotoDelete(userId, image, avatar, backgroundImage, slug)
+    ),
 });
 
 export default compose(
