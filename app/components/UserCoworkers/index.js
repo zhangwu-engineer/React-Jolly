@@ -193,9 +193,11 @@ class UserCoworkers extends Component<Props, State> {
         <Grid container justify="space-between" alignItems="baseline">
           <Grid item>
             <Typography className={classes.title}>
-              Coworkers ·&nbsp;
+              {isPrivate
+                ? `My Coworkers · `
+                : `${capitalize(user.get('firstName'))}'s Coworkers · `}
               <Link
-                to={isPrivate ? '/network/coworkers' : ''}
+                to={isPrivate ? '/network/connections' : ''}
                 className={cx(classes.count, {
                   [classes.emptyCount]: coworkers && coworkers.size === 0,
                 })}

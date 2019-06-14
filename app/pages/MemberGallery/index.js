@@ -160,9 +160,7 @@ class MemberGallery extends PureComponent<Props> {
               )}
             >
               <ArrowBackIcon />
-              <Typography className={classes.headerText}>
-                Gallery
-              </Typography>
+              <Typography className={classes.headerText}>Gallery</Typography>
             </Button>
           </Grid>
         </Grid>

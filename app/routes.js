@@ -137,7 +137,7 @@ class Routes extends Component<{}> {
         />
         <PrivateRoute
           exact
-          path="/network/coworkers"
+          path="/network/connections"
           render={props => <Coworkers {...props} />}
         />
         <PrivateRoute

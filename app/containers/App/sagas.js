@@ -251,9 +251,21 @@ const userFilesRequestError = (error: string) => ({
   payload: error,
 });
 
-export const requestUserCoworkers = (slug: string) => ({
+export const requestUserCoworkers = (
+  slug: string,
+  city: string,
+  query: string,
+  role: string,
+  connection: string
+) => ({
   type: USER_COWORKERS + REQUESTED,
   payload: slug,
+  meta: {
+    city,
+    query,
+    role,
+    connection,
+  },
 });
 const userCoworkersRequestSuccess = (payload: Object) => ({
   type: USER_COWORKERS + SUCCEDED,
@@ -1190,13 +1202,14 @@ function* UserFilesRequest() {
   }
 }
 
-function* UserCoworkersRequest({ payload }) {
+function* UserCoworkersRequest({ payload, meta }) {
   const token = yield select(getToken);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/user/${payload}/coworkers`,
       headers: { 'x-access-token': token },
+      params: meta,
     });
     if (response.status === 200) {
       yield put(userCoworkersRequestSuccess(response.data.response));

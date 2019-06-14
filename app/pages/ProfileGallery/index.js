@@ -204,7 +204,10 @@ class ProfileGallery extends Component<Props> {
                 key={generate()}
                 role="button"
               >
-                <div onClick={() => this.updateSelection(file.get('path'))}>
+                <div
+                  onClick={() => this.updateSelection(file.get('path'))}
+                  role="button"
+                >
                   <img src={file.get('path')} alt={file.get('_id')} />
                 </div>
                 {profilePhoto === file.get('path') && (
