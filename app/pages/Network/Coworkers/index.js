@@ -303,12 +303,16 @@ class CoworkersPage extends Component<Props, State> {
   debouncedSearch = debounce(() => {
     const { query, filter } = this.state;
     const { user } = this.props;
+    const connection = filter.connection
+      .split(' ')
+      .join('')
+      .toLowerCase();
     this.props.requestUserCoworkers(
       user.get('slug'),
       filter.location,
       query,
       filter.selectedRole,
-      filter.connection
+      connection
     );
   }, 500);
   handleConnectionInvite = user => {
