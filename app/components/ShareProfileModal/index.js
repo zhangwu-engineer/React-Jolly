@@ -111,6 +111,7 @@ class ShareProfileModal extends Component<Props, State> {
   copy = () => {
     const { shareURL } = this.props;
     const el = document.createElement('textarea');
+    const isiOSDevice = navigator.userAgent.match(/ipad|iphone/i);
     el.value = `${window.location.origin}${shareURL}`;
     el.setAttribute('readonly', '');
     el.style.position = 'absolute';
@@ -118,7 +119,21 @@ class ShareProfileModal extends Component<Props, State> {
     if (document.body) {
       document.body.appendChild(el);
     }
-    el.select();
+    if (isiOSDevice) {
+      const { contentEditable, readOnly } = el;
+      el.contentEditable = true;
+      el.readOnly = false;
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      el.setSelectionRange(0, 999999);
+      el.contentEditable = contentEditable;
+      el.readOnly = readOnly;
+    } else {
+      el.select();
+    }
     document.execCommand('copy');
     if (document.body) {
       document.body.removeChild(el);
