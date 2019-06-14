@@ -50,6 +50,16 @@ class App extends Component<Props> {
         history.push('/freelancer-signup');
       }
     }
+    if (location.pathname.startsWith('/f/')) {
+      analytics.page('User Profile', {
+        viewer:
+          user && user.get('slug') === location.pathname.split('/').slice(-1)[0]
+            ? 'this-user'
+            : 'other-user',
+      });
+    } else {
+      analytics.page(location.pathname);
+    }
   }
   componentDidUpdate(prevProps: Props) {
     const { user, location } = this.props;
@@ -58,17 +68,18 @@ class App extends Component<Props> {
     } else if (location.pathname === '/' && user) {
       history.push(`/f/${user.get('slug')}`);
     }
-    if (location.pathname.startsWith('/f/')) {
-      analytics.page('User Profile', {
-        viewer:
-          user &&
-          user.get('slug') ===
-            prevProps.location.pathname.split('/').slice(-1)[0]
-            ? 'this-user'
-            : 'other-user',
-      });
-    } else if (prevProps.location.pathname !== location.pathname) {
-      analytics.page(location.pathname);
+    if (prevProps && prevProps.location.pathname !== location.pathname) {
+      if (location.pathname.startsWith('/f/')) {
+        analytics.page('User Profile', {
+          viewer:
+            user &&
+            user.get('slug') === location.pathname.split('/').slice(-1)[0]
+              ? 'this-user'
+              : 'other-user',
+        });
+      } else {
+        analytics.page(location.pathname);
+      }
     }
     if (user) {
       analytics.identify(user.get('id'), {
