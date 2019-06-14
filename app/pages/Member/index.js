@@ -50,6 +50,7 @@ import {
   requestUserResumeUpload,
   requestUserResumeDelete,
   requestUserDataUpdate,
+  requestUserPhotoDelete,
 } from 'containers/App/sagas';
 import injectSagas from 'utils/injectSagas';
 
@@ -313,6 +314,7 @@ type Props = {
   requestUserResumeDelete: Function,
   updateUser: Function,
   requestCreateConnection: Function,
+  requestUserPhotoDelete: Function,
 };
 
 type State = {
@@ -840,6 +842,8 @@ class Member extends Component<Props, State> {
           onCloseModal={this.closePhotoModal}
           uploadPhoto={this.props.requestUserPhotoUpload}
           updateUser={this.props.updateUser}
+          isPrivate={isPrivate}
+          userPhotoDelete={this.props.requestUserPhotoDelete}
         />
         {isGalleryOpen && (
           <Lightbox
@@ -889,12 +893,16 @@ const mapDispatchToProps = dispatch => ({
   requestMemberCoworkers: slug => dispatch(requestMemberCoworkers(slug)),
   requestMemberEndorsements: slug => dispatch(requestMemberEndorsements(slug)),
   updateUser: payload => dispatch(requestUserDataUpdate(payload)),
-  requestUserPhotoUpload: (photo, type) =>
-    dispatch(requestUserPhotoUpload(photo, type)),
+  requestUserPhotoUpload: (photo, type, slug) =>
+    dispatch(requestUserPhotoUpload(photo, type, slug)),
   requestUserResumeUpload: resume => dispatch(requestUserResumeUpload(resume)),
   requestUserResumeDelete: () => dispatch(requestUserResumeDelete()),
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
+  requestUserPhotoDelete: (userId, image, avatar, backgroundImage, slug) =>
+    dispatch(
+      requestUserPhotoDelete(userId, image, avatar, backgroundImage, slug)
+    ),
 });
 
 export default compose(

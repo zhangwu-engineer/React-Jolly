@@ -11,7 +11,7 @@ import { LOCATION_CHANGE } from 'react-router-redux';
 import type { Action, State } from 'types/common';
 import type { Saga } from 'redux-saga';
 import { getToken, getUserId, getAdminToken } from 'containers/App/selectors';
-
+import { requestMemberFiles } from 'containers/Member/sagas';
 // ------------------------------------
 // Constants
 // ------------------------------------
@@ -22,6 +22,7 @@ const LOGOUT = 'Jolly/App/LOGOUT';
 const USER = 'Jolly/App/USER';
 const USER_DATA_UPDATE = 'Jolly/App/UPDATE_USER_DATA';
 const USER_PHOTO_UPLOAD = 'Jolly/App/USER_PHOTO_UPLOAD';
+const USER_PHOTO_DELETE = 'Jolly/App/USER_PHOTO_DELETE';
 const USER_RESUME_UPLOAD = 'Jolly/App/USER_RESUME_UPLOAD';
 const USER_RESUME_DELETE = 'Jolly/App/USER_RESUME_DELETE';
 const USER_FILES = 'Jolly/App/USER_FILES';
@@ -81,10 +82,17 @@ const userDataUpdateError = error => ({
   payload: error,
 });
 
-export const requestUserPhotoUpload = (photo: string, type: string) => ({
+export const requestUserPhotoUpload = (
+  photo: string,
+  type: string,
+  slug: string
+) => ({
   type: USER_PHOTO_UPLOAD + REQUESTED,
   payload: photo,
-  meta: type,
+  meta: {
+    type,
+    slug,
+  },
 });
 const userPhotoUploadSuccess = (payload: Object) => ({
   type: USER_PHOTO_UPLOAD + SUCCEDED,
@@ -96,6 +104,36 @@ const userPhotoUploadFailed = error => ({
 });
 const userPhotoUploadError = error => ({
   type: USER_PHOTO_UPLOAD + ERROR,
+  payload: error,
+});
+
+export const requestUserPhotoDelete = (
+  userId: string,
+  image: string,
+  avatar: boolean,
+  backgroundImage: boolean,
+  slug: string
+) => ({
+  type: USER_PHOTO_DELETE + REQUESTED,
+  payload: {
+    userId,
+    image,
+    avatar,
+    backgroundImage,
+  },
+  slug,
+});
+
+const userPhotoDeleteSuccess = (payload: Object) => ({
+  type: USER_PHOTO_DELETE + SUCCEDED,
+  payload,
+});
+const userPhotoDeleteFailed = error => ({
+  type: USER_PHOTO_DELETE + FAILED,
+  payload: error,
+});
+const userPhotoDeleteError = error => ({
+  type: USER_PHOTO_DELETE + ERROR,
   payload: error,
 });
 
@@ -439,6 +477,7 @@ const initialState = fromJS({
   cityUsersError: '',
   isSignupInviteLoading: false,
   signupInviteError: '',
+  isPhotoDeleting: false,
 });
 
 export const reducer = (
@@ -508,7 +547,21 @@ export const reducer = (
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
+    case USER_PHOTO_DELETE + REQUESTED:
+      return state.set('isPhotoDeleting', true).set('photoDeleteError', null);
+    case USER_PHOTO_DELETE + SUCCEDED:
+      return state.set('isPhotoDeleting', false).set('photoDeleteError', '');
+    case USER_PHOTO_DELETE + FAILED:
+      return state
+        .set('isPhotoDeleting', false)
+        .set('photoDeleteError', payload);
 
+    case USER_PHOTO_DELETE + ERROR:
+      return state.set('isPhotoDeleting', false).set(
+        'photoDeleteError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
     case USER_RESUME_UPLOAD + REQUESTED:
       return state
         .set('isResumeUploading', true)
@@ -985,20 +1038,47 @@ function* UploadUserPhotoRequest({ payload, meta }) {
     });
     if (response.status === 200) {
       yield put(userPhotoUploadSuccess(response.data.response));
-      if (meta === 'avatar' || meta === 'backgroundImage') {
-        yield put(
-          requestUserDataUpdate({
-            profile: {
-              [meta]: response.data.response.path,
-            },
-          })
-        );
+      if (meta.type === 'avatar' || meta.type === 'backgroundImage') {
+        yield all([
+          put(requestMemberFiles(meta.slug)),
+          put(
+            requestUserDataUpdate({
+              profile: {
+                [meta.type]: response.data.response.path,
+              },
+            })
+          ),
+        ]);
       }
     } else {
       yield put(userPhotoUploadFailed(response.data.error.message));
     }
   } catch (error) {
     yield put(userPhotoUploadError(error));
+  }
+}
+
+function* DeleteUserPhotoRequest({ payload, slug }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'DELETE',
+      url: `${API_URL}/user/image/delete`,
+      params: payload,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield all([
+        put(requestMemberFiles(slug)),
+        put(requestUserFiles()),
+        put(requestUser()),
+        put(userPhotoDeleteSuccess(response.data.response)),
+      ]);
+    } else {
+      yield put(userPhotoDeleteFailed(response.data.error.message));
+    }
+  } catch (error) {
+    yield put(userPhotoDeleteError(error));
   }
 }
 
@@ -1244,6 +1324,7 @@ export default function*(): Saga<void> {
     takeLatest(USER + REQUESTED, UserRequest),
     takeLatest(USER_DATA_UPDATE + REQUESTED, UpdateUserDataRequest),
     takeLatest(USER_PHOTO_UPLOAD + REQUESTED, UploadUserPhotoRequest),
+    takeLatest(USER_PHOTO_DELETE + REQUESTED, DeleteUserPhotoRequest),
     takeLatest(USER_RESUME_UPLOAD + REQUESTED, UploadUserResumeRequest),
     takeLatest(USER_RESUME_DELETE + REQUESTED, DeleteUserResumeRequest),
     takeLatest(USER_FILES + REQUESTED, UserFilesRequest),
