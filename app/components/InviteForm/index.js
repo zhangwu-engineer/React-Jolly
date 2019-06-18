@@ -39,7 +39,7 @@ type Props = {
 
 class InviteForm extends Component<Props> {
   static defaultProps = {
-    text: `Don't see any coworkers? Invite them to Jolly`,
+    text: `Can't find someone? Invite them to Jolly`,
     buttonTitle: 'Send Invite',
   };
   handleSave = (values, { resetForm }) => {

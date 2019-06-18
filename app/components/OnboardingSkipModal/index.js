@@ -77,9 +77,9 @@ class OnboardingSkipModal extends Component<Props> {
           Sure you want to skip?
         </Typography>
         <Typography className={classes.modalText} variant="body2" component="p">
-          Finding people you’ve worked with is is the best way to get started
-          with Jolly. It will help you build your reputation, improve your
-          network and find more jobs.
+          Connecting with people is the best way to get started with Jolly. It
+          will help you build your reputation, improve your network and find
+          more jobs.
         </Typography>
         <Grid container justify="flex-end" alignItems="center">
           <Grid item>
@@ -98,7 +98,7 @@ class OnboardingSkipModal extends Component<Props> {
               color="primary"
               onClick={this.props.onCloseModal}
             >
-              Find Coworkers
+              Find Connections
             </Button>
           </Grid>
         </Grid>

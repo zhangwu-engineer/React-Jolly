@@ -78,12 +78,8 @@ const styles = theme => ({
     fontSize: 14,
     fontWeight: 600,
     letterSpacing: 0.5,
-    color: theme.palette.common.white,
     textTransform: 'none',
     textDecoration: 'none',
-    '&:hover': {
-      color: theme.palette.common.white,
-    },
     [theme.breakpoints.down('xs')]: {
       fontSize: 12,
       letterSpacing: 0.4,
@@ -174,6 +170,7 @@ const styles = theme => ({
   },
   nextButtonWrapper: {
     textAlign: 'right',
+    marginTop: 19,
   },
   nextButton: {
     textTransform: 'none',
@@ -381,9 +378,6 @@ class OnboardingPositionPage extends Component<Props, State> {
           <Typography className={classes.text} align="center">
             These will be visible on your profile so you can get hired!
           </Typography>
-          <Link className={classes.skip} onClick={this.openSkipModal}>
-            Skip this Step
-          </Link>
         </div>
         <div className={classes.content}>
           <div className={classes.leftPanel}>
@@ -509,14 +503,9 @@ class OnboardingPositionPage extends Component<Props, State> {
                 </Grid>
               )}
               <Grid item xs={12} lg={12} className={classes.nextButtonWrapper}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.nextButton}
-                  onClick={this.handleNext}
-                >
-                  Next
-                </Button>
+                <Link className={classes.skip} onClick={this.openSkipModal}>
+                  Skip this Step
+                </Link>
               </Grid>
             </Grid>
           </div>
