@@ -254,14 +254,17 @@ class OnboardingPositionPage extends Component<Props, State> {
     filteredPositions: ROLES.sort(),
     page: 1,
     isSkipOpen: false,
+    isHirer: false,
   };
   componentDidMount() {
     this.props.requestRoles();
   }
   componentDidUpdate(prevProps: Props) {
     const { user, isSaving, saveError, isDeleting, deleteError } = this.props;
+    const { isHirer } = this.state;
     if (prevProps.isSaving && !isSaving && !saveError) {
-      history.push(`/f/${user.get('slug')}`);
+      if (isHirer) history.push(`/network`);
+      else history.push(`/f/${user.get('slug')}`);
     }
     if (prevProps.isDeleting && !isDeleting && !deleteError) {
       this.props.requestRoles();
@@ -332,6 +335,7 @@ class OnboardingPositionPage extends Component<Props, State> {
   };
   handleNext = isHirer => {
     const { selectedPositions } = this.state;
+    this.setState({ isHirer });
     if (selectedPositions.length) {
       const positions = selectedPositions.map(position => ({
         name: position,
