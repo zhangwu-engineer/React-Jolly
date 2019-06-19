@@ -151,45 +151,47 @@ class UserInfo extends Component<Props> {
       isPrivate || (user.getIn(['profile', 'resume']) && showResume);
     return (
       <div className={classes.root}>
-        <div className={classes.position}>
-          <Grid
-            container
-            justify="space-between"
-            alignItems="center"
-            className={classes.positionHeader}
-          >
-            <Grid item>
-              <Typography className={classes.title}>
-                My Positions for Hire
-              </Typography>
-            </Grid>
-            {isPrivate && (
+        {user.getIn(['profile', 'showPositions']) && (
+          <div className={classes.position}>
+            <Grid
+              container
+              justify="space-between"
+              alignItems="center"
+              className={classes.positionHeader}
+            >
               <Grid item>
-                <IconButton
-                  classes={{ root: classes.editButton }}
-                  onClick={this.editPositions}
-                >
-                  <PenIcon fontSize="small" />
-                </IconButton>
+                <Typography className={classes.title}>
+                  My Positions for Hire
+                </Typography>
               </Grid>
+              {isPrivate && (
+                <Grid item>
+                  <IconButton
+                    classes={{ root: classes.editButton }}
+                    onClick={this.editPositions}
+                  >
+                    <PenIcon fontSize="small" />
+                  </IconButton>
+                </Grid>
+              )}
+            </Grid>
+            {roles && roles.size ? (
+              roles.map(role => (
+                <div
+                  key={generate()}
+                  onClick={() => {
+                    this.props.onPositionClick(role.get('id'));
+                  }}
+                  role="button"
+                >
+                  <PositionCard role={role.toJS()} />
+                </div>
+              ))
+            ) : (
+              <PositionCard />
             )}
-          </Grid>
-          {roles && roles.size ? (
-            roles.map(role => (
-              <div
-                key={generate()}
-                onClick={() => {
-                  this.props.onPositionClick(role.get('id'));
-                }}
-                role="button"
-              >
-                <PositionCard role={role.toJS()} />
-              </div>
-            ))
-          ) : (
-            <PositionCard />
-          )}
-        </div>
+          </div>
+        )}
         <div className={classes.bio}>
           <Grid
             container

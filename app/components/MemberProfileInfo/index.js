@@ -462,19 +462,21 @@ class MemberProfileInfo extends Component<Props, State> {
               </Typography>
             )}
           </Grid>
-          <Grid item className={classes.badgeSection}>
-            <Grid container>
-              {badges &&
-                badges.map(
-                  badge =>
-                    badge.get('earned') ? (
-                      <Grid item key={generate()} md={6}>
-                        <Badge badge={badge} user={member} />
-                      </Grid>
-                    ) : null
-                )}
+          {member.getIn(['profile', 'showBadges']) && (
+            <Grid item className={classes.badgeSection}>
+              <Grid container>
+                {badges &&
+                  badges.map(
+                    badge =>
+                      badge.get('earned') ? (
+                        <Grid item key={generate()} md={6}>
+                          <Badge badge={badge} user={member} />
+                        </Grid>
+                      ) : null
+                  )}
+              </Grid>
             </Grid>
-          </Grid>
+          )}
         </Grid>
       </div>
     );

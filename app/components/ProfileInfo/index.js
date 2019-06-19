@@ -368,20 +368,22 @@ class ProfileInfo extends PureComponent<Props> {
               </Typography>
             )}
           </Grid>
-          <Grid item className={classes.badgeSection}>
-            <Grid container>
-              {badges &&
-                badges.map(badge => (
-                  <Grid item key={generate()} md={6}>
-                    <Badge
-                      badge={badge}
-                      user={user}
-                      viewProgress={this.props.viewBadgeProgress}
-                    />
-                  </Grid>
-                ))}
+          {user.getIn(['profile', 'showBadges']) && (
+            <Grid item className={classes.badgeSection}>
+              <Grid container>
+                {badges &&
+                  badges.map(badge => (
+                    <Grid item key={generate()} md={6}>
+                      <Badge
+                        badge={badge}
+                        user={user}
+                        viewProgress={this.props.viewBadgeProgress}
+                      />
+                    </Grid>
+                  ))}
+              </Grid>
             </Grid>
-          </Grid>
+          )}
         </Grid>
       </div>
     );
