@@ -29,6 +29,7 @@ import saga, {
   requestDeleteRole,
   requestRoles,
 } from 'containers/Role/sagas';
+import { requestUserDataUpdate } from 'containers/App/sagas';
 import injectSagas from 'utils/injectSagas';
 
 import ROLES from 'enum/roles';
@@ -212,6 +213,14 @@ const styles = theme => ({
     color: '#313131',
     paddingLeft: 5,
   },
+  headText: {
+    fontSize: 16,
+    fontWeight: 600,
+    lineHeight: 1.25,
+    letterSpacing: 0.4,
+    textTransform: 'none',
+    color: '#7cc6fe',
+  },
 });
 
 type Props = {
@@ -225,6 +234,7 @@ type Props = {
   requestCreateRole: Function,
   requestDeleteRole: Function,
   requestRoles: Function,
+  updateUser: Function,
 };
 
 type State = {
@@ -320,7 +330,7 @@ class OnboardingPositionPage extends Component<Props, State> {
       }
     }
   };
-  handleNext = () => {
+  handleNext = isHirer => {
     const { selectedPositions } = this.state;
     if (selectedPositions.length) {
       const positions = selectedPositions.map(position => ({
@@ -331,6 +341,15 @@ class OnboardingPositionPage extends Component<Props, State> {
         unit: 'hour',
       }));
       this.props.requestCreateRole(positions);
+      this.props.updateUser({
+        profile: {
+          isHirer,
+          showBadges: !isHirer,
+          showPositions: !isHirer,
+          showCoworkers: !isHirer,
+          showRecommendations: !isHirer,
+        },
+      });
     } else {
       this.setState({ isSkipOpen: true });
     }
@@ -378,6 +397,17 @@ class OnboardingPositionPage extends Component<Props, State> {
           <Typography className={classes.text} align="center">
             These will be visible on your profile so you can get hired!
           </Typography>
+          <Grid item xs={12} className={classes.hirerContentSection}>
+            <Typography className={classes.headText}>
+              Not looking for work?
+            </Typography>
+            <Link
+              onClick={() => this.handleNext(true)}
+              className={classes.headText}
+            >
+              I want to hire event workers
+            </Link>
+          </Grid>
         </div>
         <div className={classes.content}>
           <div className={classes.leftPanel}>
@@ -503,9 +533,14 @@ class OnboardingPositionPage extends Component<Props, State> {
                 </Grid>
               )}
               <Grid item xs={12} lg={12} className={classes.nextButtonWrapper}>
-                <Link className={classes.skip} onClick={this.openSkipModal}>
-                  Skip this Step
-                </Link>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.nextButton}
+                  onClick={() => this.handleNext(false)}
+                >
+                  Next
+                </Button>
               </Grid>
             </Grid>
           </div>
@@ -532,6 +567,7 @@ const mapDispatchToProps = dispatch => ({
   requestRoles: () => dispatch(requestRoles()),
   requestCreateRole: payload => dispatch(requestCreateRole(payload)),
   requestDeleteRole: payload => dispatch(requestDeleteRole(payload)),
+  updateUser: payload => dispatch(requestUserDataUpdate(payload)),
 });
 
 export default compose(
