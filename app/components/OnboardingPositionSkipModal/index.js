@@ -75,6 +75,7 @@ type Props = {
   classes: Object,
   isOpen: boolean,
   onCloseModal: Function,
+  handleHire: Function,
 };
 
 class OnboardingPositionSkipModal extends Component<Props> {
@@ -83,9 +84,6 @@ class OnboardingPositionSkipModal extends Component<Props> {
       page: 'ob/3',
     });
     history.push('/edit');
-  };
-  handleHire = () => {
-    history.push('/network');
   };
   closeModal = () => {
     this.props.onCloseModal();
@@ -142,7 +140,7 @@ class OnboardingPositionSkipModal extends Component<Props> {
             <Typography className={cx(classes.modalText, classes.hirerText)}>
               Not looking for work?
             </Typography>
-            <Link className={classes.linkText} onClick={this.handleHire}>
+            <Link className={classes.linkText} onClick={this.props.handleHire}>
               I want to hire event workers
             </Link>
           </Grid>

@@ -335,16 +335,8 @@ class OnboardingPositionPage extends Component<Props, State> {
   };
   handleNext = isHirer => {
     const { selectedPositions } = this.state;
-    this.setState({ isHirer });
     if (selectedPositions.length) {
-      const positions = selectedPositions.map(position => ({
-        name: position,
-        years: '',
-        minRate: '',
-        maxRate: '',
-        unit: 'hour',
-      }));
-      this.props.requestCreateRole(positions);
+      this.setState({ isHirer });
       this.props.updateUser({
         profile: {
           isHirer,
@@ -354,9 +346,30 @@ class OnboardingPositionPage extends Component<Props, State> {
           showRecommendations: !isHirer,
         },
       });
+      const positions = selectedPositions.map(position => ({
+        name: position,
+        years: '',
+        minRate: '',
+        maxRate: '',
+        unit: 'hour',
+      }));
+      this.props.requestCreateRole(positions);
     } else {
       this.setState({ isSkipOpen: true });
     }
+  };
+  handleHirerNext = isHirer => {
+    this.setState({ isHirer });
+    this.props.updateUser({
+      profile: {
+        isHirer,
+        showBadges: !isHirer,
+        showPositions: !isHirer,
+        showCoworkers: !isHirer,
+        showRecommendations: !isHirer,
+      },
+    });
+    history.push('/network');
   };
   groupPositions = positions =>
     positions.reduce((group, position) => {
@@ -552,6 +565,7 @@ class OnboardingPositionPage extends Component<Props, State> {
         <OnboardingPositionSkipModal
           isOpen={isSkipOpen}
           onCloseModal={this.closeSkipModal}
+          handleHire={() => this.handleHirerNext(true)}
         />
       </React.Fragment>
     );
