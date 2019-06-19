@@ -274,7 +274,7 @@ class OnboardingPositionPage extends Component<Props, State> {
     this.setState({ isSkipOpen: true });
   };
   closeSkipModal = () => {
-    this.setState({ isSkipOpen: false });
+    this.setState({ isSkipOpen: false, isHirer: false });
   };
   debouncedSearch = debounce(value => {
     if (value) {
@@ -333,19 +333,10 @@ class OnboardingPositionPage extends Component<Props, State> {
       }
     }
   };
-  handleNext = isHirer => {
+  handleNext = (isSkip, isHirer) => {
     const { selectedPositions } = this.state;
     if (selectedPositions.length) {
-      this.setState({ isHirer });
-      this.props.updateUser({
-        profile: {
-          isHirer,
-          showBadges: !isHirer,
-          showPositions: !isHirer,
-          showCoworkers: !isHirer,
-          showRecommendations: !isHirer,
-        },
-      });
+      this.handleHirerNext(isHirer);
       const positions = selectedPositions.map(position => ({
         name: position,
         years: '',
@@ -354,6 +345,9 @@ class OnboardingPositionPage extends Component<Props, State> {
         unit: 'hour',
       }));
       this.props.requestCreateRole(positions);
+    } else if (isSkip) {
+      this.handleHirerNext(isHirer);
+      history.push('/network');
     } else {
       this.setState({ isSkipOpen: true });
     }
@@ -369,7 +363,6 @@ class OnboardingPositionPage extends Component<Props, State> {
         showRecommendations: !isHirer,
       },
     });
-    history.push('/network');
   };
   groupPositions = positions =>
     positions.reduce((group, position) => {
@@ -419,7 +412,7 @@ class OnboardingPositionPage extends Component<Props, State> {
               Not looking for work?
             </Typography>
             <Link
-              onClick={() => this.handleNext(true)}
+              onClick={() => this.handleNext(false, true)}
               className={classes.headText}
             >
               I want to hire event workers
@@ -554,7 +547,7 @@ class OnboardingPositionPage extends Component<Props, State> {
                   variant="contained"
                   color="primary"
                   className={classes.nextButton}
-                  onClick={() => this.handleNext(false)}
+                  onClick={() => this.handleNext(false, false)}
                 >
                   Next
                 </Button>
@@ -565,7 +558,7 @@ class OnboardingPositionPage extends Component<Props, State> {
         <OnboardingPositionSkipModal
           isOpen={isSkipOpen}
           onCloseModal={this.closeSkipModal}
-          handleHire={() => this.handleHirerNext(true)}
+          handleHire={() => this.handleNext(true, true)}
         />
       </React.Fragment>
     );
