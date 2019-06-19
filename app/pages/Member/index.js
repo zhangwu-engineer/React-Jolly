@@ -41,13 +41,13 @@ import saga, {
   requestMemberFiles,
   requestMemberRoles,
   requestMemberWorks,
-  requestMemberCoworkers,
   requestMemberEndorsements,
   requestCreateConnection,
   requestDeleteConnection,
   requestCheckConnection,
 } from 'containers/Member/sagas';
 import {
+  requestUserCoworkers,
   requestUserPhotoUpload,
   requestUserResumeUpload,
   requestUserResumeDelete,
@@ -312,7 +312,7 @@ type Props = {
   requestMemberRoles: Function,
   requestMemberFiles: Function,
   requestMemberWorks: Function,
-  requestMemberCoworkers: Function,
+  requestUserCoworkers: Function,
   requestMemberEndorsements: Function,
   requestUserPhotoUpload: Function,
   requestUserResumeUpload: Function,
@@ -434,7 +434,7 @@ class Member extends Component<Props, State> {
     this.props.requestMemberFiles(slug);
     this.props.requestMemberRoles(slug);
     this.props.requestMemberWorks(slug);
-    this.props.requestMemberCoworkers(slug);
+    this.props.requestUserCoworkers(slug);
     this.props.requestMemberEndorsements(slug);
     this.props.requestCheckConnection(this.state.connection);
   }
@@ -952,7 +952,7 @@ const mapStateToProps = state => ({
   roles: state.getIn(['member', 'roles']),
   files: state.getIn(['member', 'files']),
   works: state.getIn(['member', 'works']),
-  coworkers: state.getIn(['member', 'coworkers']),
+  coworkers: state.getIn(['app', 'coworkers']),
   endorsements: state.getIn(['member', 'endorsements']),
   connectionInformation: state.getIn(['member', 'connectionInformation']),
   isCreatingConnection: state.getIn(['member', 'isCreatingConnection']),
@@ -967,7 +967,7 @@ const mapDispatchToProps = dispatch => ({
   requestMemberRoles: slug => dispatch(requestMemberRoles(slug)),
   requestMemberFiles: slug => dispatch(requestMemberFiles(slug)),
   requestMemberWorks: slug => dispatch(requestMemberWorks(slug)),
-  requestMemberCoworkers: slug => dispatch(requestMemberCoworkers(slug)),
+  requestUserCoworkers: slug => dispatch(requestUserCoworkers(slug)),
   requestMemberEndorsements: slug => dispatch(requestMemberEndorsements(slug)),
   updateUser: payload => dispatch(requestUserDataUpdate(payload)),
   requestUserPhotoUpload: (photo, type, slug) =>

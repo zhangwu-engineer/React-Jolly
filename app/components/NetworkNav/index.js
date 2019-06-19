@@ -86,11 +86,11 @@ class NetworkNav extends Component<Props> {
         </Grid>
         {!isBusinessNetwork && (
           <Grid item xs={4} className={classes.menuItem}>
-            <Link to="/network/coworkers" className={classes.link}>
+            <Link to="/network/connections" className={classes.link}>
               <Icon glyph={ConnectionIcon} size={20} className={classes.icon} />
               Connections
             </Link>
-            {pathname === '/network/coworkers' && (
+            {pathname === '/network/connections' && (
               <Divider className={classes.activeLine} />
             )}
           </Grid>

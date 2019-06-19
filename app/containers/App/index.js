@@ -56,7 +56,6 @@ class App extends Component<Props> {
         history.push('/freelancer-signup');
       }
     }
-
     if (location.pathname.startsWith('/f/')) {
       analytics.page('User Profile', {
         viewer:
@@ -66,17 +65,17 @@ class App extends Component<Props> {
       });
     } else {
       analytics.page(location.pathname);
-    }
 
-    const matchBusiness = matchPath(pathname, {
-      path: '/b/:slug',
-    });
-    if (matchBusiness) {
-      const {
-        params: { slug },
-      } = matchBusiness;
-      if (slug !== 'network') {
-        this.props.requestBusinessProfile(slug);
+      const matchBusiness = matchPath(pathname, {
+        path: '/b/:slug',
+      });
+      if (matchBusiness) {
+        const {
+          params: { slug },
+        } = matchBusiness;
+        if (slug !== 'network') {
+          this.props.requestBusinessProfile(slug);
+        }
       }
     }
   }

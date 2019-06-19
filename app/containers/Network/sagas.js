@@ -16,7 +16,8 @@ import { getToken } from 'containers/App/selectors';
 const CREATE_CONNECTION = 'Jolly/Network/CREATE_CONNECTION';
 const REMOVE_CONNECTION = 'Jolly/Network/REMOVE_CONNECTION';
 const ACCEPT_CONNECTION = 'Jolly/Network/ACCEPT_CONNECTION';
-const CONNECTION = 'Jolly/Network/CONNECTION';
+const ALL_CONNECTIONS = 'Jolly/Network/ALL_CONNECTIONS';
+const CONNECTED_CONNECTIONS = 'Jolly/Network/CONNECTED_CONNECTIONS';
 
 // ------------------------------------
 // Actions
@@ -73,18 +74,45 @@ const connectionAcceptRequestError = (error: string) => ({
 });
 
 export const requestConnections = () => ({
-  type: CONNECTION + REQUESTED,
+  type: ALL_CONNECTIONS + REQUESTED,
 });
 const connectionsRequestSuccess = (payload: Object) => ({
-  type: CONNECTION + SUCCEDED,
+  type: ALL_CONNECTIONS + SUCCEDED,
   payload,
 });
 const connectionsRequestFailed = (error: string) => ({
-  type: CONNECTION + FAILED,
+  type: ALL_CONNECTIONS + FAILED,
   payload: error,
 });
 const connectionsRequestError = (error: string) => ({
-  type: CONNECTION + ERROR,
+  type: ALL_CONNECTIONS + ERROR,
+  payload: error,
+});
+
+export const requestConnectedConnections = (
+  city: string,
+  query: string,
+  role: string,
+  connection: string
+) => ({
+  type: CONNECTED_CONNECTIONS + REQUESTED,
+  payload: {
+    city,
+    query,
+    role,
+    connection,
+  },
+});
+const connectedConnectionsRequestSuccess = (payload: Object) => ({
+  type: CONNECTED_CONNECTIONS + SUCCEDED,
+  payload,
+});
+const connectedConnectionsRequestFailed = (error: string) => ({
+  type: CONNECTED_CONNECTIONS + FAILED,
+  payload: error,
+});
+const connectedConnectionsRequestError = (error: string) => ({
+  type: CONNECTED_CONNECTIONS + ERROR,
   payload: error,
 });
 
@@ -158,19 +186,38 @@ export const reducer = (
         Please try again later or contact support and provide the following error information: ${payload}`
       );
 
-    case CONNECTION + REQUESTED:
+    case ALL_CONNECTIONS + REQUESTED:
       return state.set('isLoading', true);
 
-    case CONNECTION + SUCCEDED:
+    case ALL_CONNECTIONS + SUCCEDED:
       return state
         .set('isLoading', false)
         .set('connections', fromJS(payload.connections))
         .set('error', '');
 
-    case CONNECTION + FAILED:
+    case ALL_CONNECTIONS + FAILED:
       return state.set('isLoading', false).set('error', payload.message);
 
-    case CONNECTION + ERROR:
+    case ALL_CONNECTIONS + ERROR:
+      return state.set('isLoading', false).set(
+        'error',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case CONNECTED_CONNECTIONS + REQUESTED:
+      return state.set('isLoading', true);
+
+    case CONNECTED_CONNECTIONS + SUCCEDED:
+      return state
+        .set('isLoading', false)
+        .set('connections', fromJS(payload.connections))
+        .set('error', '');
+
+    case CONNECTED_CONNECTIONS + FAILED:
+      return state.set('isLoading', false).set('error', payload.message);
+
+    case CONNECTED_CONNECTIONS + ERROR:
       return state.set('isLoading', false).set(
         'error',
         `Something went wrong.
@@ -262,11 +309,31 @@ function* ConnectionsRequest() {
   }
 }
 
+function* ConnectedConnectionsRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/user/connections`,
+      headers: { 'x-access-token': token },
+      params: payload,
+    });
+    if (response.status === 200) {
+      yield put(connectedConnectionsRequestSuccess(response.data.response));
+    } else {
+      yield put(connectedConnectionsRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(connectedConnectionsRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(CREATE_CONNECTION + REQUESTED, CreateConnectionRequest),
     takeLatest(REMOVE_CONNECTION + REQUESTED, RemoveConnectionRequest),
     takeLatest(ACCEPT_CONNECTION + REQUESTED, AcceptConnectionRequest),
-    takeLatest(CONNECTION + REQUESTED, ConnectionsRequest),
+    takeLatest(ALL_CONNECTIONS + REQUESTED, ConnectionsRequest),
+    takeLatest(CONNECTED_CONNECTIONS + REQUESTED, ConnectedConnectionsRequest),
   ]);
 }

@@ -25,15 +25,18 @@ import EditableInput from 'components/EditableInput';
 import ROLES from 'enum/roles';
 import CONNECTIONS from 'enum/connections';
 
-import { requestUserCoworkers } from 'containers/App/sagas';
 import saga, {
   reducer,
   requestCreateConnection,
+  requestConnectedConnections,
 } from 'containers/Network/sagas';
 import injectSagas from 'utils/injectSagas';
 
 const roles = ROLES.sort().map(role => ({ value: role, label: role }));
-const connections = CONNECTIONS.sort().map(connection => ({ value: connection, label: connection }));
+const connectionSelect = CONNECTIONS.sort().map(connection => ({
+  value: connection,
+  label: connection,
+}));
 const styles = theme => ({
   content: {
     maxWidth: 1064,
@@ -195,7 +198,7 @@ const styles = theme => ({
 
 type Props = {
   user: Object, // eslint-disable-line
-  coworkers: List<Object>,
+  connections: List<Object>,
   isCreating: boolean, // eslint-disable-line
   createError: string, // eslint-disable-line
   isRemoving: boolean,
@@ -203,7 +206,7 @@ type Props = {
   isAccepting: boolean,
   acceptError: string,
   classes: Object,
-  requestUserCoworkers: Function,
+  requestConnectedConnections: Function,
   requestCreateConnection: Function,
 };
 
@@ -262,10 +265,8 @@ class CoworkersPage extends Component<Props, State> {
     },
   };
   componentDidMount() {
-    const { user } = this.props;
     const { query, filter } = this.state;
-    this.props.requestUserCoworkers(
-      user.get('slug'),
+    this.props.requestConnectedConnections(
       filter.location,
       query,
       filter.selectedRole,
@@ -274,16 +275,10 @@ class CoworkersPage extends Component<Props, State> {
   }
   componentDidUpdate(prevProps: Props) {
     const { query, filter } = this.state;
-    const {
-      user,
-      isRemoving,
-      removeError,
-      isAccepting,
-      acceptError,
-    } = this.props;
+    const { isRemoving, removeError, isAccepting, acceptError } = this.props;
+
     if (prevProps.isRemoving && !isRemoving && !removeError) {
-      this.props.requestUserCoworkers(
-        user.get('slug'),
+      this.props.requestConnectedConnections(
         filter.location,
         query,
         filter.selectedRole,
@@ -291,8 +286,7 @@ class CoworkersPage extends Component<Props, State> {
       );
     }
     if (prevProps.isAccepting && !isAccepting && !acceptError) {
-      this.props.requestUserCoworkers(
-        user.get('slug'),
+      this.props.requestConnectedConnections(
         filter.location,
         query,
         filter.selectedRole,
@@ -302,13 +296,15 @@ class CoworkersPage extends Component<Props, State> {
   }
   debouncedSearch = debounce(() => {
     const { query, filter } = this.state;
-    const { user } = this.props;
-    this.props.requestUserCoworkers(
-      user.get('slug'),
+    const connection = filter.connection
+      .split(' ')
+      .join('')
+      .toLowerCase();
+    this.props.requestConnectedConnections(
       filter.location,
       query,
       filter.selectedRole,
-      filter.connection
+      connection
     );
   }, 500);
   handleConnectionInvite = user => {
@@ -392,7 +388,7 @@ class CoworkersPage extends Component<Props, State> {
   };
 
   render() {
-    const { coworkers, classes } = this.props;
+    const { connections, classes } = this.props;
     const {
       sentTo,
       isInviting,
@@ -527,7 +523,7 @@ class CoworkersPage extends Component<Props, State> {
                   >
                     <CustomSelect
                       placeholder="All Connections"
-                      options={connections}
+                      options={connectionSelect}
                       value={
                         filter.connection
                           ? {
@@ -536,7 +532,9 @@ class CoworkersPage extends Component<Props, State> {
                             }
                           : null
                       }
-                      onChange={value => this.handleConnectionsChange(value.value)}
+                      onChange={value =>
+                        this.handleConnectionsChange(value.value)
+                      }
                       isMulti={false}
                       isClearable={false}
                       isSearchable={false}
@@ -552,16 +550,16 @@ class CoworkersPage extends Component<Props, State> {
             </Grid>
             {selectedTab === 1 && (
               <Grid container spacing={8}>
-                {coworkers &&
-                  coworkers.map(coworker => (
+                {connections &&
+                  connections.map(connection => (
                     <Grid item key={generate()} xs={12} lg={6}>
-                      <CoworkerCard user={coworker} />
+                      <CoworkerCard user={connection} />
                     </Grid>
                   ))}
               </Grid>
             )}
-            {coworkers &&
-              coworkers.size === 0 && (
+            {connections &&
+              connections.size === 0 && (
                 <Grid container spacing={8}>
                   <Grid item xs={12} lg={12}>
                     <div className={classes.emptyCoworkersPanel}>
@@ -587,7 +585,7 @@ class CoworkersPage extends Component<Props, State> {
 
 const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
-  coworkers: state.getIn(['app', 'coworkers']),
+  connections: state.getIn(['network', 'connections']),
   isCreating: state.getIn(['network', 'isCreating']),
   createError: state.getIn(['network', 'createError']),
   isRemoving: state.getIn(['network', 'isRemoving']),
@@ -599,8 +597,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
-  requestUserCoworkers: (slug, city, query, role, connection) =>
-    dispatch(requestUserCoworkers(slug, city, query, role, connection)),
+  requestConnectedConnections: (city, query, role, connection) =>
+    dispatch(requestConnectedConnections(city, query, role, connection)),
 });
 
 export default compose(
