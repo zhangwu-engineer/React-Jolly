@@ -809,6 +809,7 @@ class BusinessNetworkPage extends Component<Props, State> {
         </div>
         <VouchInviteFormModal
           isOpen={isFormOpen}
+          isBusinessNetwork
           user={selectedUser}
           onCloseModal={this.closeFormModal}
           onInvite={this.handleConnectionInvite}

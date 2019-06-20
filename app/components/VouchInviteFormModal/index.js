@@ -113,9 +113,9 @@ type Props = {
   user: Object,
   isOpen: boolean,
   classes: Object,
+  isBusinessNetwork: boolean,
   onCloseModal: Function,
   onInvite: Function,
-  currentUser: Object,
 };
 
 type State = {
@@ -140,8 +140,7 @@ class VouchInviteFormModal extends Component<Props, State> {
     });
   };
   render() {
-    const { user, isOpen, classes, currentUser } = this.props;
-    const isBusiness = currentUser && currentUser.get('isBusiness');
+    const { user, isOpen, classes, isBusinessNetwork } = this.props;
     return (
       <BaseModal
         className={classes.modal}
@@ -177,7 +176,7 @@ class VouchInviteFormModal extends Component<Props, State> {
               )} ${capitalize(user && user.get('lastName'))}?`}
             </Typography>
           </Grid>
-          {!isBusiness && (
+          {!isBusinessNetwork && (
             <Grid item xs={12}>
               <FormControlLabel
                 control={
