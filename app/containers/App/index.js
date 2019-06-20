@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { replace } from 'react-router-redux';
 import { withRouter, matchPath } from 'react-router';
-import { Switch } from 'react-router-dom';
+import { Switch, Redirect } from 'react-router-dom';
 import { fromJS } from 'immutable';
 import { capitalize } from 'lodash-es';
 import { Route } from 'components/Routes';
@@ -82,7 +82,6 @@ class App extends Component<Props> {
   componentDidUpdate(prevProps: Props) {
     const { user, location } = this.props;
     if (location.pathname === '/' && !user) {
-      history.push('/sign-in');
     } else if (location.pathname === '/' && user) {
       history.push(`/f/${user.get('slug')}`);
     }
@@ -168,7 +167,7 @@ class App extends Component<Props> {
       <React.Fragment>
         <PageMeta data={data} ogImage={ogImage} />
         <Switch>
-          <Route path="/freelancer-signup" />
+          <Route path="/freelancer-signup" render={() => <Redirect to="/" />} />
           <Route path="/sign-in" />
           <Route path="/profile-picture" />
           <Route path="/background-picture" />
@@ -176,6 +175,7 @@ class App extends Component<Props> {
           <Route path="/add" />
           <Route path="/f/:slug/e/:eventSlug" />
           <Route path="/admin" />
+          {pathname === '/' && ( <Route path="/" /> )}
           <Route
             path="/"
             render={() => (

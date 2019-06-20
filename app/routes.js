@@ -1,7 +1,7 @@
 // @flow
 
 import React, { Component } from 'react';
-import { Switch } from 'react-router-dom';
+import { Switch, Redirect } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import load from 'utils/load';
 
@@ -42,14 +42,14 @@ class Routes extends Component<{}> {
   render() {
     return (
       <Switch>
-        <Route exact path="/" render={props => <Home {...props} />} />
+        <Route exact path="/" render={props => <Welcome {...props} />} />
         <Route
           path="/(freelancer-signup-2|business-signup-2)"
-          render={props => <SignUp {...props} />}
+          render={() => <Redirect to="/" />}
         />
         <Route
           path="/(freelancer-signup|business-signup)"
-          render={props => <Welcome {...props} />}
+          render={() => <Redirect to="/" />}
         />
         <Route path="/sign-in" render={props => <SignIn {...props} />} />
         <Route
