@@ -477,7 +477,7 @@ class Header extends Component<Props, State> {
             ) : (
               <Button
                 color="primary"
-                component={props => <Link to="/freelancer-signup" {...props} />}
+                component={props => <Link to="/" {...props} />}
                 className={classes.createAccountButton}
               >
                 Create Account
@@ -559,7 +559,7 @@ class Header extends Component<Props, State> {
                   color="primary"
                   fullWidth
                   className={classes.joinButton}
-                  onClick={() => history.push('/freelancer-signup')}
+                  onClick={() => history.push('/')}
                 >
                   Join Jolly
                 </Button>
@@ -735,13 +735,13 @@ class Header extends Component<Props, State> {
               if (pathname.includes('/email-sign-in')) {
                 history.replace('/sign-in');
               } else if (pathname.includes('/freelancer-signup-2')) {
-                history.replace('/freelancer-signup');
+                history.replace('/');
               } else if (pathname.includes('/forgot-password')) {
                 history.replace('/email-sign-in');
               } else if (pathname.includes('/reset-password')) {
                 history.replace('/email-sign-in');
               } else if (pathname.includes('/privacy-policy')) {
-                history.replace('/freelancer-signup-2');
+                history.replace('/');
               } else if (
                 pathname.includes('/settings/general') ||
                 pathname.includes('/settings/profile')

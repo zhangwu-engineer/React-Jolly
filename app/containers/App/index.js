@@ -52,8 +52,6 @@ class App extends Component<Props> {
     if (this.props.location.pathname === '/') {
       if (user) {
         history.push(`/f/${user.get('slug')}`);
-      } else {
-        history.push('/freelancer-signup');
       }
     }
     if (location.pathname.startsWith('/f/')) {
@@ -82,6 +80,7 @@ class App extends Component<Props> {
   componentDidUpdate(prevProps: Props) {
     const { user, location } = this.props;
     if (location.pathname === '/' && !user) {
+
     } else if (location.pathname === '/' && user) {
       history.push(`/f/${user.get('slug')}`);
     }
@@ -167,7 +166,7 @@ class App extends Component<Props> {
       <React.Fragment>
         <PageMeta data={data} ogImage={ogImage} />
         <Switch>
-          <Route path="/freelancer-signup" render={() => <Redirect to="/" />} />
+          <Route path="/(freelancer-signup|freelancer-signup-2)" render={() => <Redirect to="/" />} />
           <Route path="/sign-in" />
           <Route path="/profile-picture" />
           <Route path="/background-picture" />
@@ -175,7 +174,7 @@ class App extends Component<Props> {
           <Route path="/add" />
           <Route path="/f/:slug/e/:eventSlug" />
           <Route path="/admin" />
-          {pathname === '/' && ( <Route path="/" /> )}
+          {pathname === '/' && <Route path="/" />}
           <Route
             path="/"
             render={() => (
