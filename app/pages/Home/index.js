@@ -601,7 +601,7 @@ class HomePage extends Component<Props, State> {
           <Link
             target="_blank"
             className={classes.footerLink}
-            to="https://www.joinjolly.com/"
+            to="https://company.jollyhq.com/freelancers"
           >
             Freelancers
           </Link>
