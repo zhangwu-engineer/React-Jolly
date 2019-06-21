@@ -226,6 +226,14 @@ const styles = theme => ({
     '&:hover, &:focus': {
       color: '#7cc6fe',
     },
+    [theme.breakpoints.down('xs')]: {
+      display: 'inline-block',
+    },
+  },
+  copyRight: {
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+    },
   },
   fbButton: {
     borderRadius: 0,
@@ -374,7 +382,8 @@ class HomePage extends Component<Props, State> {
       <React.Fragment>
         <div className={classes.header}>
           <Typography className={classes.headerText}>
-            Friday 6/14 · New in Jolly: Add badges on your profile · Search nationwide and filter by location+position
+            Friday 6/14 · New in Jolly: Add badges on your profile · Search
+            nationwide and filter by location+position
           </Typography>
         </div>
         <div className={classes.panelBox}>
@@ -403,11 +412,11 @@ class HomePage extends Component<Props, State> {
               </SocialButton>
               <div className={classes.sectionDevider}>
                 <div className={classes.flexOne}>
-                  <Divider style={{ backgroundColor: '#e4e4e4', height: 1}} />
+                  <Divider style={{ backgroundColor: '#e4e4e4', height: 1 }} />
                 </div>
                 <p className={classes.textOr}>OR</p>
                 <div className={classes.flexOne}>
-                  <Divider style={{ backgroundColor: '#e4e4e4', height: 1}} />
+                  <Divider style={{ backgroundColor: '#e4e4e4', height: 1 }} />
                 </div>
               </div>
               <TextField
@@ -491,7 +500,8 @@ class HomePage extends Component<Props, State> {
               </FormControl>
               {error && error === 'email exists' ? (
                 <FormHelperText className={classes.fieldMargin} error>
-                  There is already an account associated with this email address. Please&nbsp;
+                  There is already an account associated with this email
+                  address. Please&nbsp;
                   <Link to="/email-sign-in" className={classes.signinLink}>
                     sign in
                   </Link>
@@ -526,7 +536,9 @@ class HomePage extends Component<Props, State> {
               >
                 By continuing, I agree to Jolly&apos;s
                 <br />
-                <Link to="/terms" className={classes.link}>Terms of Use</Link>
+                <Link to="/terms" className={classes.link}>
+                  Terms of Use
+                </Link>
                 &nbsp;&amp;&nbsp;
                 <Link to="/privacy-policy" className={classes.link}>
                   Privacy Policy
@@ -538,7 +550,9 @@ class HomePage extends Component<Props, State> {
                 color="textSecondary"
               >
                 Already have an account?
-                <Link to="/email-sign-in" className={classes.signInLink}> Sign in</Link>
+                <Link to="/email-sign-in" className={classes.signInLink}>
+                  Sign in
+                </Link>
               </Typography>
             </Paper>
           </div>
@@ -572,16 +586,68 @@ class HomePage extends Component<Props, State> {
           </BaseModal>
         </div>
         <div className={classes.footer}>
-          <Link target="_blank" className={classes.footerLink} to="https://www.joinjolly.com/">Freelancers </Link>
-          <Link target="_blank" className={classes.footerLink} >Hirers</Link>
-          <Link target="_blank" className={classes.footerLink} to="https://business.jollyhq.com/" >Businesses</Link>
-          <Link target="_blank" className={classes.footerLink} to="https://company.jollyhq.com/get-started" >Get started</Link>
-          <Link target="_blank" className={classes.footerLink} to="https://business.jollyhq.com/freelancer-management-system">FMS</Link>
-          <Link target="_blank" className={classes.footerLink} to="https://company.jollyhq.com/">About</Link>
-          <Link target="_blank" className={classes.footerLink} to="https://company.jollyhq.com/contact">Contact</Link>
-          <Link target="_blank" className={classes.footerLink} to="https://company.jollyhq.com/terms">Terms</Link>
-          <Link target="_blank" className={classes.footerLink} to="https://company.jollyhq.com/privacy">Privacy</Link>
-          <Link className={classes.footerLink}> ©2019 Jolly</Link>
+          <Link
+            target="_blank"
+            className={classes.footerLink}
+            to="https://www.joinjolly.com/"
+          >
+            Freelancers
+          </Link>
+          <Link target="_blank" className={classes.footerLink}>
+            Hirers
+          </Link>
+          <Link
+            target="_blank"
+            className={classes.footerLink}
+            to="https://business.jollyhq.com/"
+          >
+            Businesses
+          </Link>
+          <Link
+            target="_blank"
+            className={classes.footerLink}
+            to="https://company.jollyhq.com/get-started"
+          >
+            Get started
+          </Link>
+          <Link
+            target="_blank"
+            className={classes.footerLink}
+            to="https://business.jollyhq.com/freelancer-management-system"
+          >
+            FMS
+          </Link>
+          <Link
+            target="_blank"
+            className={classes.footerLink}
+            to="https://company.jollyhq.com/"
+          >
+            About
+          </Link>
+          <Link
+            target="_blank"
+            className={classes.footerLink}
+            to="https://company.jollyhq.com/contact"
+          >
+            Contact
+          </Link>
+          <Link
+            target="_blank"
+            className={classes.footerLink}
+            to="https://company.jollyhq.com/terms"
+          >
+            Terms
+          </Link>
+          <Link
+            target="_blank"
+            className={classes.footerLink}
+            to="https://company.jollyhq.com/privacy"
+          >
+            Privacy
+          </Link>
+          <Link className={cx(classes.footerLink, classes.copyRight)}>
+            ©2019 Jolly
+          </Link>
         </div>
       </React.Fragment>
     );
