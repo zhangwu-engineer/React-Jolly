@@ -132,8 +132,7 @@ class SignIn extends Component<Props> {
               Sign in with email
             </Button>
             <div className="signin__signUpLink">
-              Don&apos;t have an account?{' '}
-              <Link to="/freelancer-signup">Sign Up</Link>
+              Don&apos;t have an account? <Link to="/">Sign Up</Link>
             </div>
           </div>
         </div>
