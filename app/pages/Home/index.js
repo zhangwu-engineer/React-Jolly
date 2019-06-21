@@ -98,6 +98,9 @@ const styles = theme => ({
     fontWeight: 500,
     color: '#484848',
     marginTop: 24,
+    [theme.breakpoints.down('xs')]: {
+      marginTop: 15,
+    },
   },
   link: {
     fontWeight: 500,
@@ -570,7 +573,7 @@ class HomePage extends Component<Props, State> {
         </div>
         <div className={classes.footer}>
           <Link target="_blank" className={classes.footerLink} to="https://www.joinjolly.com/">Freelancers </Link>
-          <Link target="_blank" className={classes.footerLink} to="">Hirers</Link>
+          <Link target="_blank" className={classes.footerLink} >Hirers</Link>
           <Link target="_blank" className={classes.footerLink} to="https://business.jollyhq.com/" >Businesses</Link>
           <Link target="_blank" className={classes.footerLink} to="https://company.jollyhq.com/get-started" >Get started</Link>
           <Link target="_blank" className={classes.footerLink} to="https://business.jollyhq.com/freelancer-management-system">FMS</Link>
