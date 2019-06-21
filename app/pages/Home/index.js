@@ -28,7 +28,7 @@ import SocialButton from 'components/SocialButton';
 import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
 import BaseModal from 'components/BaseModal';
-import Logo from 'images/logo.png';
+import LogoBlue from 'images/Jolly_Logo_blue.svg';
 import homeMobile from 'images/welcome-image.png';
 import { requestRegister, requestSocialLogin } from 'containers/App/sagas';
 
@@ -231,6 +231,7 @@ const styles = theme => ({
     },
   },
   copyRight: {
+    cursor: 'default  ',
     [theme.breakpoints.down('xs')]: {
       display: 'block',
     },
@@ -251,6 +252,9 @@ const styles = theme => ({
     width: 500,
     marginTop: 55,
     marginRight: '-100',
+  },
+  logo: {
+    width: 100,
   },
 });
 
@@ -395,7 +399,7 @@ class HomePage extends Component<Props, State> {
           <div className={classes.rightPanel}>
             <Paper className={classes.panel} elevation={1}>
               <Typography className={classes.title}>
-                <img src={Logo} alt="logo" />
+                <img className={classes.logo} src={LogoBlue} alt="logo" />
               </Typography>
               <Typography className={classes.title} variant="h5" component="h1">
                 Join your local network of event freelancers, hirers &
@@ -536,11 +540,19 @@ class HomePage extends Component<Props, State> {
               >
                 By continuing, I agree to Jolly&apos;s
                 <br />
-                <Link to="/terms" className={classes.link}>
+                <Link
+                  target="_blank"
+                  to="https://company.jollyhq.com/terms"
+                  className={classes.link}
+                >
                   Terms of Use
                 </Link>
                 &nbsp;&amp;&nbsp;
-                <Link to="/privacy-policy" className={classes.link}>
+                <Link
+                  target="_blank"
+                  to="https://company.jollyhq.com/privacy"
+                  className={classes.link}
+                >
                   Privacy Policy
                 </Link>
               </Typography>
@@ -550,8 +562,8 @@ class HomePage extends Component<Props, State> {
                 color="textSecondary"
               >
                 Already have an account?
-                <Link to="/email-sign-in" className={classes.signInLink}>
-                  Sign in
+                <Link to="/sign-in" className={classes.signInLink}>
+                  &nbsp;Sign in
                 </Link>
               </Typography>
             </Paper>
@@ -592,9 +604,6 @@ class HomePage extends Component<Props, State> {
             to="https://www.joinjolly.com/"
           >
             Freelancers
-          </Link>
-          <Link target="_blank" className={classes.footerLink}>
-            Hirers
           </Link>
           <Link
             target="_blank"
