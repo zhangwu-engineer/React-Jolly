@@ -335,8 +335,13 @@ class OnboardingPositionPage extends Component<Props, State> {
   };
   handleNext = (isSkip, isHirer) => {
     const { selectedPositions } = this.state;
+    if (isHirer) {
+      analytics.track('Hirer Call To Action', {
+        isHirer: 1,
+      });
+    }
+    this.handleHirerNext(isHirer);
     if (selectedPositions.length) {
-      this.handleHirerNext(isHirer);
       const positions = selectedPositions.map(position => ({
         name: position,
         years: '',
@@ -346,7 +351,6 @@ class OnboardingPositionPage extends Component<Props, State> {
       }));
       this.props.requestCreateRole(positions);
     } else if (isSkip) {
-      this.handleHirerNext(isHirer);
       history.push('/network');
     } else {
       this.setState({ isSkipOpen: true });
