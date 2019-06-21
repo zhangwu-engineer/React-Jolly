@@ -80,7 +80,7 @@ class App extends Component<Props> {
   componentDidUpdate(prevProps: Props) {
     const { user, location } = this.props;
     if (location.pathname === '/' && !user) {
-
+      history.push('/sign-in');
     } else if (location.pathname === '/' && user) {
       history.push(`/f/${user.get('slug')}`);
     }
