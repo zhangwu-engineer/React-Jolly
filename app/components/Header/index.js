@@ -728,13 +728,13 @@ class Header extends Component<Props, State> {
                 pathname.includes('/forgot-password') ||
                 pathname.includes('/reset-password') ||
                 pathname.includes('/privacy-policy') ||
-                pathname.includes('/freelancer-signup-2') ||
+                pathname.includes('/') ||
                 hideTopRightButtons,
             })}
             onClick={() => {
               if (pathname.includes('/email-sign-in')) {
                 history.replace('/sign-in');
-              } else if (pathname.includes('/freelancer-signup-2')) {
+              } else if (pathname.includes('/')) {
                 history.replace('/');
               } else if (pathname.includes('/forgot-password')) {
                 history.replace('/email-sign-in');
