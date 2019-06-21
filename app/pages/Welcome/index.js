@@ -113,7 +113,7 @@ class Welcome extends Component<Props> {
             <Button
               className="welcome__btn light-green mb-lg"
               element={Link}
-              to={isBusiness ? '/business-signup-2' : '/freelancer-signup-2'}
+              to={isBusiness ? '/business-signup-2' : '/'}
             >
               Continue with email
             </Button>

@@ -241,7 +241,7 @@ class MemberProfileInfo extends Component<Props, State> {
     if (currentUser && currentUser.get('id') !== member.get('id')) {
       this.props.connect(connectParams);
     } else {
-      history.push('/freelancer-signup');
+      history.push('/');
     }
   };
   handleDisconnect = () => {
