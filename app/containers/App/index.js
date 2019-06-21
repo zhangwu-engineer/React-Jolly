@@ -79,7 +79,11 @@ class App extends Component<Props> {
   }
   componentDidUpdate(prevProps: Props) {
     const { user, location } = this.props;
-    if (location.pathname === '/' && user.getIn(['profile', 'location'])) {
+    if (
+      location.pathname === '/' &&
+      user &&
+      user.getIn(['profile', 'location'])
+    ) {
       history.push(`/f/${user.get('slug')}`);
     }
     if (prevProps && prevProps.location.pathname !== location.pathname) {
