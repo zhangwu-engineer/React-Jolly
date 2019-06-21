@@ -297,7 +297,7 @@ class UserProfileForm extends Component<Props> {
                       color="primary"
                     />
                   }
-                  label="Show positions for hire sections on profile"
+                  label={`Show "positions for hire" sections on profile`}
                   labelPlacement="start"
                   classes={{
                     label: classes.switchLabel,
