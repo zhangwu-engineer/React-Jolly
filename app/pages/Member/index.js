@@ -675,7 +675,8 @@ class Member extends Component<Props, State> {
             )}
           </div>
           {isPrivate &&
-            nextBadgeToEarn && (
+            nextBadgeToEarn &&
+            member.getIn(['profile', 'showBadges']) && (
               <div className={classes.badgeProgressBanner}>
                 <BadgeProgressBanner
                   badge={activeBadge || nextBadgeToEarn}
@@ -696,72 +697,78 @@ class Member extends Component<Props, State> {
               />
             </div>
             <div className={classes.rightPanel}>
-              <UserCoworkers
-                coworkers={coworkers}
-                currentUser={currentUser}
-                user={member}
-                isPrivate={isPrivate}
-                connect={this.props.requestCreateConnection}
-                isConnectionSent={isConnectionSent}
-              />
-              <UserRecommendations
-                user={member}
-                endorsements={endorsements}
-                publicMode={!isPrivate}
-                currentUser={currentUser}
-                coworkers={coworkers}
-              />
+              {member.getIn(['profile', 'showCoworkers']) && (
+                <UserCoworkers
+                  coworkers={coworkers}
+                  currentUser={currentUser}
+                  user={member}
+                  isPrivate={isPrivate}
+                  connect={this.props.requestCreateConnection}
+                  isConnectionSent={isConnectionSent}
+                />
+              )}
+              {member.getIn(['profile', 'showRecommendations']) && (
+                <UserRecommendations
+                  user={member}
+                  endorsements={endorsements}
+                  publicMode={!isPrivate}
+                  currentUser={currentUser}
+                  coworkers={coworkers}
+                />
+              )}
               <UserWorkList
                 works={works}
                 user={member}
                 isPrivate={isPrivate}
                 openGallery={this.openGallery}
               />
-              <div className={classes.section}>
-                <div className={classes.sectionHeader}>
-                  <Grid
-                    container
-                    justify="space-between"
-                    alignItems="center"
-                    className={classes.header}
-                  >
-                    <Grid item>
-                      <Typography className={classes.title}>
-                        Positions for Hire
-                      </Typography>
+              {member.getIn(['profile', 'showPositions']) && (
+                <div className={classes.section}>
+                  <div className={classes.sectionHeader}>
+                    <Grid
+                      container
+                      justify="space-between"
+                      alignItems="center"
+                      className={classes.header}
+                    >
+                      <Grid item>
+                        <Typography className={classes.title}>
+                          Positions for Hire
+                        </Typography>
+                      </Grid>
+                      <Grid item>
+                        {isPrivate && (
+                          <React.Fragment>
+                            <Link
+                              className={classes.editPosition}
+                              to="/types-of-work"
+                            >
+                              Edit Positions
+                            </Link>
+                            <Link
+                              className={classes.editPositionIcon}
+                              to="/types-of-work"
+                            >
+                              <PenIcon fontSize="small" />
+                            </Link>
+                          </React.Fragment>
+                        )}
+                      </Grid>
                     </Grid>
-                    <Grid item>
-                      {isPrivate && (
-                        <React.Fragment>
-                          <Link
-                            className={classes.editPosition}
-                            to="/types-of-work"
-                          >
-                            Edit Positions
-                          </Link>
-                          <Link
-                            className={classes.editPositionIcon}
-                            to="/types-of-work"
-                          >
-                            <PenIcon fontSize="small" />
-                          </Link>
-                        </React.Fragment>
-                      )}
-                    </Grid>
-                  </Grid>
+                  </div>
+                  <div className={classes.sectionBody}>
+                    {roles.size ? (
+                      roles.map(role => (
+                        <div key={generate()} id={role.get('id')}>
+                          <RoleCard role={role.toJS()} user={member} />
+                        </div>
+                      ))
+                    ) : (
+                      <RoleCard isPrivate={isPrivate} user={member} />
+                    )}
+                  </div>
                 </div>
-                <div className={classes.sectionBody}>
-                  {roles.size ? (
-                    roles.map(role => (
-                      <div key={generate()} id={role.get('id')}>
-                        <RoleCard role={role.toJS()} user={member} />
-                      </div>
-                    ))
-                  ) : (
-                    <RoleCard isPrivate={isPrivate} user={member} />
-                  )}
-                </div>
-              </div>
+              )}
               {isPrivate ? (
                 <div className={classes.bottomBannerContainer}>
                   {currentUser.getIn(['profile', 'avatar']) ? (

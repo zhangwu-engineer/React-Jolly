@@ -142,8 +142,8 @@ class OnboardingCityPage extends Component<Props, State> {
           Welcome!
         </Typography>
         <Typography align="center" className={classes.text}>
-          Jolly is a convenient and helpful platform to network with event
-          freelancers and connect with gigs.
+          Jolly is where event professionals connect, grow their network and
+          find opportunities.
         </Typography>
         <FormControl classes={{ root: classes.formControl }} fullWidth>
           <PlacesAutocomplete
@@ -162,7 +162,7 @@ class OnboardingCityPage extends Component<Props, State> {
                 <Input
                   className={classes.textInput}
                   {...getInputProps({
-                    placeholder: 'What city do you work in most often?',
+                    placeholder: 'What city do you live in?',
                   })}
                   inputRef={this.addressInput}
                   startAdornment={
