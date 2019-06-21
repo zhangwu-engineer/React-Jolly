@@ -40,8 +40,8 @@ const styles = theme => ({
     paddingLeft: 40,
     paddingRight: 40,
     paddingBottom: 16,
-    marginLeft: 40,
-    marginTop: 80,
+    marginLeft: 50,
+    marginTop: 102,
     marginBottom: 80,
     [theme.breakpoints.down('xs')]: {
       paddingTop: 37.4,
@@ -56,7 +56,7 @@ const styles = theme => ({
     boxShadow: 'none',
   },
   title: {
-    marginBottom: 30,
+    marginBottom: 27,
     fontSize: 20,
     fontWeight: 600,
     fontStyle: 'normal',
@@ -67,10 +67,11 @@ const styles = theme => ({
     color: '#484848',
   },
   fieldMargin: {
-    marginBottom: 10,
+    marginBottom: 8,
   },
   textInput: {
     '& input': {
+      paddingTop: 3,
       [theme.breakpoints.down('xs')]: {
         paddingBottom: 10,
       },
@@ -96,7 +97,7 @@ const styles = theme => ({
     fontSize: 13,
     fontWeight: 500,
     color: '#484848',
-    marginTop: 20,
+    marginTop: 24,
   },
   link: {
     fontWeight: 500,
@@ -167,7 +168,7 @@ const styles = theme => ({
     flex: 1,
   },
   textOr: {
-    paddingTop: 17,
+    paddingTop: 20,
     paddingRight: 10,
     paddingLeft: 10,
     fontSize: 14,
@@ -236,7 +237,9 @@ const styles = theme => ({
     width: '100%',
   },
   mobileImage: {
-    width: 447,
+    width: 500,
+    marginTop: 55,
+    marginRight: '-100',
   },
 });
 
