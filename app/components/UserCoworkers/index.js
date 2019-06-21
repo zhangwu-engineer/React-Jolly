@@ -172,7 +172,7 @@ class UserCoworkers extends Component<Props, State> {
     if (currentUser && currentUser.get('id') !== user.get('id')) {
       this.props.connect(user.get('id'));
     } else {
-      history.push('/');
+      history.push('/freelancer-signup');
     }
   };
   openUrl = url => {

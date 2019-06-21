@@ -658,7 +658,7 @@ class InvitePage extends Component<Props, State> {
                 >
                   Yes. Save to my work experience
                 </Button>
-                <Link to="/" className={classes.skipLink}>
+                <Link to="/freelancer-signup-2" className={classes.skipLink}>
                   Skip for now
                 </Link>
               </div>
@@ -815,7 +815,7 @@ class InvitePage extends Component<Props, State> {
                         };
                         storage.set('invite', inviteData);
                         if (invite.get('startFrom') === 'signup') {
-                          history.push('/');
+                          history.push('/freelancer-signup-2');
                         } else {
                           history.push('/email-sign-in');
                         }
@@ -856,7 +856,7 @@ class InvitePage extends Component<Props, State> {
                           if (invite.get('startFrom') === 'signup') {
                             history.push('/sign-in');
                           } else {
-                            history.push('/');
+                            history.push('/freelancer-signup');
                           }
                         }}
                       >
@@ -917,7 +917,7 @@ class InvitePage extends Component<Props, State> {
                             },
                           };
                           storage.set('invite', inviteData);
-                          history.push('/');
+                          history.push('/freelancer-signup');
                         }}
                       >
                         Sign up
