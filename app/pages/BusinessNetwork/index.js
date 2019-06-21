@@ -399,17 +399,23 @@ class BusinessNetworkPage extends Component<Props, State> {
   openFormModal = user => {
     this.setState({ selectedUser: user, isFormOpen: true });
   };
-  handleConnectionInvite = (user, isCoworker) => {
+  handleConnectionInvite = (toUser, isCoworker) => {
+    const { user } = this.props;
+    const businesses =
+      user && user.get('businesses') && user.get('businesses').toJSON();
+    const currentBusiness = businesses && businesses[0];
     this.setState(
       update(this.state, {
-        invitedUserIds: { $push: [user.get('id')] },
-        connectedTo: { $set: capitalize(user.get('firstName')) },
+        invitedUserIds: { $push: [toUser.get('id')] },
+        connectedTo: { $set: capitalize(toUser.get('firstName')) },
         isFormOpen: { $set: false },
       }),
       () => {
         this.props.requestCreateConnection({
-          toUserId: user.get('id'),
+          toUserId: toUser.get('id'),
           isCoworker,
+          from: currentBusiness.id,
+          connectionType: 'b2f',
         });
       }
     );
@@ -572,13 +578,13 @@ class BusinessNetworkPage extends Component<Props, State> {
         <NetworkNav isBusinessNetwork />
         {showNotification && (
           <Notification
-            msg={`Coworker connection request sent to ${sentTo}`}
+            msg={`Connection Request Sent to ${sentTo}`}
             close={this.closeNotification}
           />
         )}
         {connectedTo && (
           <Notification
-            msg={`Coworker connection request sent to ${connectedTo}`}
+            msg={`Connection Request Sent to ${connectedTo}`}
             close={this.closeConnectionNotification}
           />
         )}
@@ -809,6 +815,7 @@ class BusinessNetworkPage extends Component<Props, State> {
         </div>
         <VouchInviteFormModal
           isOpen={isFormOpen}
+          isBusinessNetwork
           user={selectedUser}
           onCloseModal={this.closeFormModal}
           onInvite={this.handleConnectionInvite}
