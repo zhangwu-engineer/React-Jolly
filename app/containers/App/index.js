@@ -79,9 +79,7 @@ class App extends Component<Props> {
   }
   componentDidUpdate(prevProps: Props) {
     const { user, location } = this.props;
-    if (location.pathname === '/' && !user) {
-      history.push('/sign-in');
-    } else if (location.pathname === '/' && user) {
+    if (location.pathname === '/' && user) {
       history.push(`/f/${user.get('slug')}`);
     }
     if (prevProps && prevProps.location.pathname !== location.pathname) {
@@ -166,7 +164,10 @@ class App extends Component<Props> {
       <React.Fragment>
         <PageMeta data={data} ogImage={ogImage} />
         <Switch>
-          <Route path="/(freelancer-signup|freelancer-signup-2)" render={() => <Redirect to="/" />} />
+          <Route
+            path="/(freelancer-signup|freelancer-signup-2)"
+            render={() => <Redirect to="/" />}
+          />
           <Route path="/sign-in" />
           <Route path="/profile-picture" />
           <Route path="/background-picture" />
