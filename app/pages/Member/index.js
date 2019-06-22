@@ -937,7 +937,7 @@ class Member extends Component<Props, State> {
             }
           />
         )}
-        <FloatingAddButton />
+        {isPrivate && <FloatingAddButton />}
       </Fragment>
     );
   }
