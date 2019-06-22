@@ -264,7 +264,7 @@ class OnboardingJobFormModal extends Component<Props> {
                     onClick={handleSubmit}
                     disabled={!values.title || !values.role || !values.from}
                   >
-                    Save Coworker
+                    Save Connection
                   </Button>
                 </Grid>
               </Grid>

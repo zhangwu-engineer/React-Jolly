@@ -416,11 +416,10 @@ class OnboardingCoworkerPage extends Component<Props, State> {
       <React.Fragment>
         <div className={classes.banner}>
           <Typography className={classes.bannerTitle} align="center">
-            Select people you’ve worked with
+            Start Connecting to Find Opportunities
           </Typography>
           <Typography className={classes.text} align="center">
-            They&apos;ll be able to endorse you, tag you in jobs and help you
-            find your next gig!
+            Your connections can recommend you and help find your next gig!
           </Typography>
           <Link className={classes.skip} onClick={this.openSkipModal}>
             Skip this Step
@@ -434,7 +433,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
         )}
         {connectedTo && (
           <Notification
-            msg={`Coworker connection request sent to ${connectedTo}`}
+            msg={`Connection request sent to ${connectedTo}`}
             close={this.closeConnectionNotification}
           />
         )}
@@ -442,7 +441,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
           <div className={classes.leftPanel}>
             <div className={classes.coworkersBox}>
               <Typography className={classes.coworkersTitle}>
-                Coworkers
+                Connections
               </Typography>
               {cityUsers.map(
                 cityUser =>
@@ -480,7 +479,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
                 value={query}
                 onChange={this.handleChange}
                 className={classes.textInput}
-                placeholder="Search Jolly for Coworkers"
+                placeholder="Search Jolly for Connections"
                 fullWidth
                 disableUnderline
                 startAdornment={
@@ -493,7 +492,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
                 }
               />
             </FormControl>
-            <Typography className={classes.title}>Find coworkers</Typography>
+            <Typography className={classes.title}>Find connections</Typography>
             <Grid container spacing={8}>
               {cityUsers.map(cityUser => (
                 <Grid item key={generate()} xs={12} lg={6}>

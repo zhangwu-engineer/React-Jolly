@@ -86,6 +86,10 @@ class UserProfileForm extends Component<Props> {
       linkedin: user.getIn(['profile', 'linkedin']) || '',
       youtube: user.getIn(['profile', 'youtube']) || '',
       showImageLibrary: user.getIn(['profile', 'showImageLibrary']),
+      showBadges: user.getIn(['profile', 'showBadges']),
+      showPositions: user.getIn(['profile', 'showPositions']),
+      showCoworkers: user.getIn(['profile', 'showCoworkers']),
+      showRecommendations: user.getIn(['profile', 'showRecommendations']),
     };
     return (
       <Formik initialValues={profile} onSubmit={this.handleSave}>
@@ -239,25 +243,108 @@ class UserProfileForm extends Component<Props> {
               startWith="/"
               onChange={handleChange}
             />
-            <FormControlLabel
-              control={
-                <Switch
-                  id="showImageLibrary"
-                  inputProps={{
-                    name: 'showImageLibrary',
+            <section className={classes.imageSwitchRoot}>
+              <Grid item>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      id="showImageLibrary"
+                      inputProps={{
+                        name: 'showImageLibrary',
+                      }}
+                      checked={values.showImageLibrary}
+                      onChange={handleChange}
+                      color="primary"
+                    />
+                  }
+                  label="Show image library on public profile"
+                  labelPlacement="start"
+                  classes={{
+                    label: classes.switchLabel,
                   }}
-                  checked={values.showImageLibrary}
-                  onChange={handleChange}
-                  color="primary"
                 />
-              }
-              label="Show image library on public profile"
-              labelPlacement="start"
-              classes={{
-                root: classes.imageSwitchRoot,
-                label: classes.switchLabel,
-              }}
-            />
+              </Grid>
+              <Grid item>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      id="showBadges"
+                      inputProps={{
+                        name: 'showBadges',
+                      }}
+                      checked={values.showBadges}
+                      onChange={handleChange}
+                      color="primary"
+                    />
+                  }
+                  label="Show all badges on profile"
+                  labelPlacement="start"
+                  classes={{
+                    label: classes.switchLabel,
+                  }}
+                />
+              </Grid>
+              <Grid item>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      id="showPositions"
+                      inputProps={{
+                        name: 'showPositions',
+                      }}
+                      checked={values.showPositions}
+                      onChange={handleChange}
+                      color="primary"
+                    />
+                  }
+                  label={`Show "positions for hire" sections on profile`}
+                  labelPlacement="start"
+                  classes={{
+                    label: classes.switchLabel,
+                  }}
+                />
+              </Grid>
+              <Grid item>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      id="showCoworkers"
+                      inputProps={{
+                        name: 'showCoworkers',
+                      }}
+                      checked={values.showCoworkers}
+                      onChange={handleChange}
+                      color="primary"
+                    />
+                  }
+                  label="Show coworkers section on profile"
+                  labelPlacement="start"
+                  classes={{
+                    label: classes.switchLabel,
+                  }}
+                />
+              </Grid>
+              <Grid item>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      id="showRecommendations"
+                      inputProps={{
+                        name: 'showRecommendations',
+                      }}
+                      checked={values.showRecommendations}
+                      onChange={handleChange}
+                      color="primary"
+                    />
+                  }
+                  label="Show recommendations section on profile"
+                  labelPlacement="start"
+                  classes={{
+                    label: classes.switchLabel,
+                  }}
+                />
+              </Grid>
+            </section>
             <Grid container justify="flex-end">
               <Grid item>
                 <Button
