@@ -231,7 +231,8 @@ class MemberProfileInfo extends Component<Props, State> {
     connectParams.toUserId = member.get('id');
     connectParams.isCoworker = params.isCoworker;
 
-    if (isBusinessActive) {
+    const isBusiness = currentUser && currentUser.get('isBusiness');
+    if (isBusinessActive && isBusiness) {
       connectParams.connectionType = 'b2f';
       const businesses =
         currentUser.get('businesses') && currentUser.get('businesses').toJSON();

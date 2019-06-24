@@ -361,7 +361,8 @@ class Member extends Component<Props, State> {
 
     const isBusinessActive =
       window.localStorage.getItem('isBusinessActive') === 'yes';
-    const businesses = currentUser && currentUser.get('businesses').toJSON();
+    const businesses =
+      currentUser.get('businesses') && currentUser.get('businesses').toJSON();
     const from = isBusinessActive
       ? businesses.length > 0 && businesses[0].id
       : currentUser && currentUser.get('id');
