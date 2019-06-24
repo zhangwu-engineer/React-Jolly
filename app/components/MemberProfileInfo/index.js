@@ -189,6 +189,7 @@ type Props = {
   openPhotoModal: Function,
   connect: Function,
   isConnectionSent: boolean,
+  isBusinessActive: boolean,
   classes: Object,
   connectionInformation: Object,
   requestDeleteConnection: Function,
@@ -203,10 +204,9 @@ class MemberProfileInfo extends Component<Props, State> {
     isMenuOpen: false,
   };
   handleToggle = () => {
-    const { isConnectionSent, currentUser } = this.props;
-    const isBusiness = (currentUser && currentUser.get('isBusiness')) || false;
+    const { isConnectionSent, isBusinessActive } = this.props;
     if (!isConnectionSent) {
-      if (isBusiness) {
+      if (isBusinessActive) {
         this.handleConnect({
           isCoworker: false,
         });
@@ -225,13 +225,13 @@ class MemberProfileInfo extends Component<Props, State> {
     window.open(url, '_blank');
   };
   handleConnect = params => {
-    const { currentUser, member } = this.props;
+    const { currentUser, member, isBusinessActive } = this.props;
     const connectParams = {};
 
     connectParams.toUserId = member.get('id');
     connectParams.isCoworker = params.isCoworker;
 
-    if (currentUser && currentUser.get('isBusiness')) {
+    if (isBusinessActive) {
       connectParams.connectionType = 'b2f';
       const businesses =
         currentUser.get('businesses') && currentUser.get('businesses').toJSON();
@@ -280,16 +280,15 @@ class MemberProfileInfo extends Component<Props, State> {
   };
   render() {
     const {
-      currentUser,
       member,
       badges,
       isConnectionSent,
+      isBusinessActive,
       classes,
       connectionInformation,
     } = this.props;
     const { isMenuOpen } = this.state;
     const avatarImg = member.getIn(['profile', 'avatar']) || '';
-    const isBusiness = (currentUser && currentUser.get('isBusiness')) || false;
     const connectionEstablished =
       connectionInformation &&
       ['CONNECTED', 'PENDING'].includes(connectionInformation.get('status'));
@@ -372,7 +371,7 @@ class MemberProfileInfo extends Component<Props, State> {
                           )}
                         {connectionEstablished &&
                           !isCoWorker &&
-                          !isBusiness && (
+                          !isBusinessActive && (
                             <MenuList className={classes.menuList}>
                               <CoworkerMenu
                                 classes={classes}
@@ -392,7 +391,7 @@ class MemberProfileInfo extends Component<Props, State> {
                             </MenuList>
                           )}
                         {connectionEstablished &&
-                          isBusiness && (
+                          isBusinessActive && (
                             <DisconnectMenu
                               classes={classes}
                               onClick={() => this.handleDisconnect()}
@@ -412,7 +411,7 @@ class MemberProfileInfo extends Component<Props, State> {
                                 }}
                                 member={member}
                               />
-                              {!isBusiness && (
+                              {!isBusinessActive && (
                                 <CoworkerMenu
                                   classes={classes}
                                   onClick={e => {

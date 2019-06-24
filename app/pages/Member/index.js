@@ -582,6 +582,8 @@ class Member extends Component<Props, State> {
       }
     }
     const showResume = (currentUser && isCoworker) || false;
+    const isBusinessActive =
+      window.localStorage.getItem('isBusinessActive') === 'yes';
     return (
       <Fragment>
         <Waypoint onPositionChange={this.positionChange} />
@@ -669,6 +671,7 @@ class Member extends Component<Props, State> {
                 openPhotoModal={this.openPhotoModal}
                 connect={this.handleConnect}
                 isConnectionSent={isConnectionSent}
+                isBusinessActive={isBusinessActive}
                 connectionInformation={connectionInformation}
                 requestDeleteConnection={this.props.requestDeleteConnection}
               />

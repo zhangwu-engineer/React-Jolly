@@ -16,7 +16,7 @@ import BusinessProfileInfo from 'components/BusinessProfileInfo';
 import BusinessMemberProfileInfo from 'components/BusinessMemberProfileInfo';
 import BusinessSidebar from 'components/BusinessSidebar';
 import injectSagas from 'utils/injectSagas';
-import saga, { reducer, setBusinessActiveStatus } from 'containers/App/sagas';
+import saga, { reducer } from 'containers/App/sagas';
 
 const styles = theme => ({
   root: {
@@ -257,7 +257,6 @@ type Props = {
   business: Object,
   classes: Object,
   match: Object,
-  setBusinessActiveStatus: Function,
 };
 
 type State = {
@@ -323,7 +322,7 @@ class BusinessMember extends Component<Props, State> {
     const currentBusiness =
       businesses && businesses.find(element => element.slug === slug);
     const isPrivate = (currentBusiness && !isPublicViewMode) || false;
-    if (isPrivate) this.props.setBusinessActiveStatus(true);
+    if (isPrivate) window.localStorage.setItem('isBusinessActive', 'yes');
   }
   toggleViewMode = () => {
     const { currentUser } = this.props;
@@ -441,17 +440,10 @@ const mapStateToProps = state => ({
   business: state.getIn(['app', 'businessData']),
   error: state.getIn(['business', 'businessError']),
 });
-const mapDispatchToProps = dispatch => ({
-  setBusinessActiveStatus: isActive =>
-    dispatch(setBusinessActiveStatus(isActive)),
-});
 
 export default compose(
   withRouter,
   injectSagas({ key: 'app', saga, reducer }),
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  ),
+  connect(mapStateToProps),
   withStyles(styles)
 )(BusinessMember);
