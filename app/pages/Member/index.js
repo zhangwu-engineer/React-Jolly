@@ -359,9 +359,10 @@ class Member extends Component<Props, State> {
       path: '/f/:slug',
     });
 
-    const isBusiness = currentUser && currentUser.get('isBusiness');
-    const businesses = isBusiness && currentUser.get('businesses').toJSON();
-    const from = isBusiness
+    const isBusinessActive =
+      window.localStorage.getItem('isBusinessActive') === 'yes';
+    const businesses = currentUser && currentUser.get('businesses').toJSON();
+    const from = isBusinessActive
       ? businesses.length > 0 && businesses[0].id
       : currentUser && currentUser.get('id');
     const state = { connection: { to: slug, from } };
