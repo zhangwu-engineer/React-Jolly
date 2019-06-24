@@ -3,7 +3,7 @@
 import React, { Component, Fragment } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { matchPath } from 'react-router';
+import { withRouter, matchPath } from 'react-router';
 import cx from 'classnames';
 import 'react-image-lightbox/style.css';
 
@@ -15,6 +15,8 @@ import Grid from '@material-ui/core/Grid';
 import BusinessProfileInfo from 'components/BusinessProfileInfo';
 import BusinessMemberProfileInfo from 'components/BusinessMemberProfileInfo';
 import BusinessSidebar from 'components/BusinessSidebar';
+import injectSagas from 'utils/injectSagas';
+import saga, { reducer, setBusinessActiveStatus } from 'containers/App/sagas';
 
 const styles = theme => ({
   root: {
@@ -255,6 +257,7 @@ type Props = {
   business: Object,
   classes: Object,
   match: Object,
+  setBusinessActiveStatus: Function,
 };
 
 type State = {
@@ -302,8 +305,29 @@ class BusinessMember extends Component<Props, State> {
     isConnectionSent: false,
     isPublicViewMode: false,
   };
+  componentDidMount() {
+    const {
+      currentUser,
+      match: { url },
+    } = this.props;
+    const {
+      params: { slug },
+    } = matchPath(url, {
+      path: '/b/:slug',
+    });
+    const { isPublicViewMode } = this.state;
+    const businesses =
+      currentUser &&
+      currentUser.get('businesses') &&
+      currentUser.get('businesses').toJSON();
+    const currentBusiness =
+      businesses && businesses.find(element => element.slug === slug);
+    const isPrivate = (currentBusiness && !isPublicViewMode) || false;
+    if (isPrivate) this.props.setBusinessActiveStatus(true);
+  }
   toggleViewMode = () => {
     const { currentUser } = this.props;
+
     this.setState(
       state => ({
         isPublicViewMode: !state.isPublicViewMode,
@@ -417,8 +441,17 @@ const mapStateToProps = state => ({
   business: state.getIn(['app', 'businessData']),
   error: state.getIn(['business', 'businessError']),
 });
+const mapDispatchToProps = dispatch => ({
+  setBusinessActiveStatus: isActive =>
+    dispatch(setBusinessActiveStatus(isActive)),
+});
 
 export default compose(
-  connect(mapStateToProps),
+  withRouter,
+  injectSagas({ key: 'app', saga, reducer }),
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  ),
   withStyles(styles)
 )(BusinessMember);

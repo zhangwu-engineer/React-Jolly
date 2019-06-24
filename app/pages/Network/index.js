@@ -28,7 +28,11 @@ import CustomSelect from 'components/CustomSelect';
 
 import ROLES from 'enum/roles';
 
-import { requestCityUsers, requestUserCoworkers } from 'containers/App/sagas';
+import {
+  requestCityUsers,
+  requestUserCoworkers,
+  setBusinessActiveStatus,
+} from 'containers/App/sagas';
 import saga, {
   reducer,
   requestCreateConnection,
@@ -262,6 +266,7 @@ type Props = {
   requestRemoveConnection: Function,
   requestAcceptConnection: Function,
   requestConnections: Function,
+  setBusinessActiveStatus: Function,
   currentUser: Object,
 };
 
@@ -340,6 +345,7 @@ class NetworkPage extends Component<Props, State> {
     }
     this.props.requestConnections();
     this.props.requestUserCoworkers(user.get('slug'));
+    this.props.setBusinessActiveStatus(false);
   }
   componentDidUpdate(prevProps: Props) {
     const {
@@ -708,6 +714,8 @@ const mapDispatchToProps = dispatch => ({
   requestConnections: () => dispatch(requestConnections()),
   requestCityUsers: (city, query, page, usersPerPage, role) =>
     dispatch(requestCityUsers(city, query, page, usersPerPage, role)),
+  setBusinessActiveStatus: isActive =>
+    dispatch(setBusinessActiveStatus(isActive)),
 });
 
 export default compose(

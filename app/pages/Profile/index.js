@@ -36,6 +36,7 @@ import {
   requestUserDataUpdate,
   requestWorks,
   requestEndorsements,
+  setBusinessActiveStatus,
 } from 'containers/App/sagas';
 import saga, { reducer, requestRoles } from 'containers/Role/sagas';
 import injectSagas from 'utils/injectSagas';
@@ -176,6 +177,7 @@ type Props = {
   requestRoles: Function,
   requestWorks: Function,
   requestEndorsements: Function,
+  setBusinessActiveStatus: Function,
 };
 
 type State = {
@@ -199,7 +201,7 @@ class Profile extends Component<Props, State> {
   componentDidMount() {
     const { user } = this.props;
     history.push(`/f/${user.get('slug')}`);
-
+    this.props.setBusinessActiveStatus(false);
     // this.props.requestUser();
     // this.props.requestUserFiles();
     // this.props.requestRoles();
@@ -495,6 +497,8 @@ const mapDispatchToProps = dispatch => ({
   updateUser: payload => dispatch(requestUserDataUpdate(payload)),
   requestWorks: () => dispatch(requestWorks()),
   requestEndorsements: () => dispatch(requestEndorsements()),
+  setBusinessActiveStatus: isActive =>
+    dispatch(setBusinessActiveStatus(isActive)),
 });
 
 export default compose(

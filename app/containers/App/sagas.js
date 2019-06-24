@@ -40,6 +40,7 @@ const ADMIN_USER = 'Jolly/App/ADMIN_USER';
 const ADMIN_LOGOUT = 'Jolly/App/ADMIN_LOGOUT';
 const BUSINESS_PROFILE = 'Jolly/Business/BUSINESS_PROFILE';
 const SET_META_JSON = 'Jolly/App/SET_META_JSON';
+const SET_BUSINESS_ACTIVE_STATUS = 'Jolly/App/SET_BUSINESS_ACTIVE_STATUS';
 
 declare var analytics;
 // ------------------------------------
@@ -452,6 +453,11 @@ export const setMetaJson = (path: string, value: ?Object) => ({
   },
 });
 
+export const setBusinessActiveStatus = (isActive: Boolean) => ({
+  type: SET_BUSINESS_ACTIVE_STATUS,
+  payload: isActive,
+});
+
 // ------------------------------------
 // Reducer
 // ------------------------------------
@@ -504,6 +510,7 @@ const initialState = fromJS({
   isBusinessLoading: false,
   businessError: '',
   businessData: fromJS({}),
+  isBusinessActive: false,
 });
 
 export const reducer = (
@@ -921,6 +928,9 @@ export const reducer = (
 
     case CLOSE_NAVBAR:
       return state.set('navbarOpen', false);
+
+    case SET_BUSINESS_ACTIVE_STATUS:
+      return state.set('isBusinessActive', payload);
 
     case SET_META_JSON:
       if (meta.path)
