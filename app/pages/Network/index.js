@@ -317,6 +317,7 @@ class NetworkPage extends Component<Props, State> {
     invitedUserIds: [],
     sentTo: null,
     isInviting: false,
+    isCoworker: false,
     showNotification: false,
     selectedTab: 0,
     query: '',
@@ -371,6 +372,7 @@ class NetworkPage extends Component<Props, State> {
         invitedUserIds: { $push: [user.get('id')] },
         connectedTo: { $set: capitalize(user.get('firstName')) },
         isFormOpen: { $set: false },
+        isCoworker: { $set: isCoworker },
       }),
       () => {
         this.props.requestCreateConnection({
@@ -395,6 +397,7 @@ class NetworkPage extends Component<Props, State> {
       sentTo: null,
       isInviting: false,
       showNotification: false,
+      isCoworker: false,
     });
   };
   closeConnectionNotification = () => {
@@ -487,6 +490,7 @@ class NetworkPage extends Component<Props, State> {
       selectedUser,
       sentTo,
       isInviting,
+      isCoworker,
       showNotification,
       invitedUserIds,
       connectedTo,
@@ -509,12 +513,20 @@ class NetworkPage extends Component<Props, State> {
             close={this.closeNotification}
           />
         )}
-        {connectedTo && (
-          <Notification
-            msg={`Coworker connection request sent to ${connectedTo}`}
-            close={this.closeConnectionNotification}
-          />
-        )}
+        {connectedTo &&
+          isCoworker && (
+            <Notification
+              msg={`Coworker connection request sent to ${connectedTo}`}
+              close={this.closeConnectionNotification}
+            />
+          )}
+        {connectedTo &&
+          !isCoworker && (
+            <Notification
+              msg={`Connection Request sent to ${connectedTo}`}
+              close={this.closeConnectionNotification}
+            />
+          )}
         <div className={classes.content}>
           <div className={classes.leftPanel}>
             <Link
