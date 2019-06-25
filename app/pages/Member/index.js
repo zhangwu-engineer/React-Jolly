@@ -361,8 +361,11 @@ class Member extends Component<Props, State> {
 
     const isBusiness = currentUser && currentUser.get('isBusiness');
     const businesses = isBusiness && currentUser.get('businesses').toJSON();
-    const from = isBusiness
-      ? businesses.length > 0 && businesses[0].id
+    const storageStatus = window.localStorage.getItem('isBusinessActive');
+    const isBusinessActive =
+      storageStatus && storageStatus === 'yes' && isBusiness;
+    const from = isBusinessActive
+      ? businesses && businesses[0].id
       : currentUser && currentUser.get('id');
     const state = { connection: { to: slug, from } };
 
@@ -582,6 +585,10 @@ class Member extends Component<Props, State> {
       }
     }
     const showResume = (currentUser && isCoworker) || false;
+    const isBusiness = currentUser && currentUser.get('isBusiness');
+    const storageStatus = window.localStorage.getItem('isBusinessActive');
+    const isBusinessActive =
+      storageStatus && storageStatus === 'yes' && isBusiness;
     return (
       <Fragment>
         <Waypoint onPositionChange={this.positionChange} />
@@ -669,6 +676,7 @@ class Member extends Component<Props, State> {
                 openPhotoModal={this.openPhotoModal}
                 connect={this.handleConnect}
                 isConnectionSent={isConnectionSent}
+                isBusinessActive={isBusinessActive}
                 connectionInformation={connectionInformation}
                 requestDeleteConnection={this.props.requestDeleteConnection}
               />

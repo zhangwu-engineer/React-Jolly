@@ -375,6 +375,7 @@ class BusinessNetworkPage extends Component<Props, State> {
     }
     this.props.requestConnections();
     this.props.requestUserCoworkers(user.get('slug'));
+    window.localStorage.setItem('isBusinessActive', 'yes');
   }
   componentDidUpdate(prevProps: Props) {
     const {

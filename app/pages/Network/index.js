@@ -340,6 +340,7 @@ class NetworkPage extends Component<Props, State> {
     }
     this.props.requestConnections();
     this.props.requestUserCoworkers(user.get('slug'));
+    window.localStorage.setItem('isBusinessActive', 'no');
   }
   componentDidUpdate(prevProps: Props) {
     const {

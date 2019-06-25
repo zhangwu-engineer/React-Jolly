@@ -3,7 +3,7 @@
 import React, { Component, Fragment } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { matchPath } from 'react-router';
+import { withRouter, matchPath } from 'react-router';
 import cx from 'classnames';
 import 'react-image-lightbox/style.css';
 
@@ -15,6 +15,8 @@ import Grid from '@material-ui/core/Grid';
 import BusinessProfileInfo from 'components/BusinessProfileInfo';
 import BusinessMemberProfileInfo from 'components/BusinessMemberProfileInfo';
 import BusinessSidebar from 'components/BusinessSidebar';
+import injectSagas from 'utils/injectSagas';
+import saga, { reducer } from 'containers/App/sagas';
 
 const styles = theme => ({
   root: {
@@ -302,8 +304,29 @@ class BusinessMember extends Component<Props, State> {
     isConnectionSent: false,
     isPublicViewMode: false,
   };
+  componentDidMount() {
+    const {
+      currentUser,
+      match: { url },
+    } = this.props;
+    const {
+      params: { slug },
+    } = matchPath(url, {
+      path: '/b/:slug',
+    });
+    const { isPublicViewMode } = this.state;
+    const businesses =
+      currentUser &&
+      currentUser.get('businesses') &&
+      currentUser.get('businesses').toJSON();
+    const currentBusiness =
+      businesses && businesses.find(element => element.slug === slug);
+    const isPrivate = (currentBusiness && !isPublicViewMode) || false;
+    if (isPrivate) window.localStorage.setItem('isBusinessActive', 'yes');
+  }
   toggleViewMode = () => {
     const { currentUser } = this.props;
+
     this.setState(
       state => ({
         isPublicViewMode: !state.isPublicViewMode,
@@ -419,6 +442,8 @@ const mapStateToProps = state => ({
 });
 
 export default compose(
+  withRouter,
+  injectSagas({ key: 'app', saga, reducer }),
   connect(mapStateToProps),
   withStyles(styles)
 )(BusinessMember);
