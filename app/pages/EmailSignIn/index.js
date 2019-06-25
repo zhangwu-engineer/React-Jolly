@@ -159,7 +159,7 @@ class EmailSignIn extends Component<Props, State> {
           path = redirect || `/f/${user.get('slug')}`;
         }
         const slugToConnect = window.localStorage.getItem('ProfileToConnect');
-        if (slugToConnect === undefined || slugToConnect === 'null') {
+        if (slugToConnect === undefined || slugToConnect === null) {
           history.push(path);
         } else {
           window.localStorage.setItem('ProfileToConnect', null);
