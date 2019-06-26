@@ -117,6 +117,13 @@ const styles = theme => ({
       letterSpacing: 0.3,
     },
   },
+  findTitle: {
+    fontWeight: 600,
+    letterSpacing: 0.33,
+    marginBottom: 18,
+    height: 19,
+    color: '#272727',
+  },
   loadMoreButton: {
     backgroundColor: theme.palette.common.white,
     textTransform: 'none',
@@ -578,6 +585,9 @@ class NetworkPage extends Component<Props, State> {
                 </React.Fragment>
               )}
 
+            <Typography className={cx(classes.showForSmall, classes.findTitle)}>
+              Find Connections
+            </Typography>
             <Tabs
               items={ConnectionTabs.NETWORK}
               mobileItems={ConnectionTabs.NETWORK_MOBILE}
