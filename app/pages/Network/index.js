@@ -578,7 +578,11 @@ class NetworkPage extends Component<Props, State> {
                 </React.Fragment>
               )}
 
-            <Tabs items={ConnectionTabs.NETWORK} activeIndex={0} />
+            <Tabs
+              items={ConnectionTabs.NETWORK}
+              mobileItems={ConnectionTabs.NETWORK_MOBILE}
+              activeIndex={0}
+            />
 
             <Grid container spacing={8} className={classes.filterContainer}>
               <Grid item xs={6} lg={4}>

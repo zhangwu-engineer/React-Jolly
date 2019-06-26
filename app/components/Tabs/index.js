@@ -5,6 +5,7 @@ import { generate } from 'shortid';
 import cx from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 
 const styles = theme => ({
   root: {
@@ -16,9 +17,11 @@ const styles = theme => ({
       marginBottom: 20,
     },
   },
+  tabWrapper: {
+    flexGrow: 1,
+  },
   tabItem: {
     height: 44,
-    flexGrow: 1,
     fontSize: 14,
     textAlign: 'center',
     color: '#1b1b1b',
@@ -28,6 +31,17 @@ const styles = theme => ({
     cursor: 'pointer',
     '&:hover': {
       backgroundColor: '#eaf1f7',
+    },
+  },
+  tabNormal: {
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+  },
+  tabMobile: {
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
     },
   },
   active: {
@@ -42,25 +56,37 @@ const styles = theme => ({
 type Props = {
   classes: Object,
   items: Array<String>,
+  mobileItems: Array<String>,
   activeIndex: Number,
 };
 
 class Tabs extends Component<Props> {
   render() {
-    const { classes, items, activeIndex } = this.props;
+    const { classes, items, mobileItems, activeIndex } = this.props;
     return (
       <div className={classes.root}>
         {items &&
           items.map((item, index) => (
-            <Typography
-              key={generate()}
-              className={cx(
-                index === activeIndex ? classes.active : classes.classes,
-                classes.tabItem
-              )}
-            >
-              {item}
-            </Typography>
+            <Grid key={generate()} className={classes.tabWrapper}>
+              <Typography
+                className={cx(
+                  index === activeIndex ? classes.active : classes.classes,
+                  classes.tabItem,
+                  classes.tabNormal
+                )}
+              >
+                {item}
+              </Typography>
+              <Typography
+                className={cx(
+                  index === activeIndex ? classes.active : classes.classes,
+                  classes.tabItem,
+                  classes.tabMobile
+                )}
+              >
+                {mobileItems[index]}
+              </Typography>
+            </Grid>
           ))}
       </div>
     );
