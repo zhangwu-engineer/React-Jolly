@@ -17,6 +17,7 @@ import Button from '@material-ui/core/Button';
 
 import Preloader from 'components/Preloader';
 import Link from 'components/Link';
+import Tabs from 'components/Tabs';
 import EditableInput from 'components/EditableInput';
 import UserCard from 'components/UserCard';
 import ConnectionCard from 'components/ConnectionCard';
@@ -27,6 +28,7 @@ import NetworkNav from 'components/NetworkNav';
 import CustomSelect from 'components/CustomSelect';
 
 import ROLES from 'enum/roles';
+import ConnectionTabs from 'enum/ConnectionTabs';
 
 import { requestCityUsers, requestUserCoworkers } from 'containers/App/sagas';
 import saga, {
@@ -575,6 +577,8 @@ class NetworkPage extends Component<Props, State> {
                   </Grid>
                 </React.Fragment>
               )}
+
+            <Tabs items={ConnectionTabs.NETWORK} activeIndex={0} />
 
             <Grid container spacing={8} className={classes.filterContainer}>
               <Grid item xs={6} lg={4}>
