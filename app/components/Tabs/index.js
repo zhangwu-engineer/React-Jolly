@@ -55,14 +55,14 @@ const styles = theme => ({
 
 type Props = {
   classes: Object,
-  items: Array<String>,
-  mobileItems: Array<String>,
+  items: Array<Object>,
   activeIndex: Number,
+  handleChange: Function,
 };
 
 class Tabs extends Component<Props> {
   render() {
-    const { classes, items, mobileItems, activeIndex } = this.props;
+    const { classes, items, activeIndex } = this.props;
     return (
       <div className={classes.root}>
         {items &&
@@ -74,8 +74,11 @@ class Tabs extends Component<Props> {
                   classes.tabItem,
                   classes.tabNormal
                 )}
+                onClick={() => {
+                  if (index !== activeIndex) this.props.handleChange(item.link);
+                }}
               >
-                {item}
+                {item.caption}
               </Typography>
               <Typography
                 className={cx(
@@ -83,8 +86,11 @@ class Tabs extends Component<Props> {
                   classes.tabItem,
                   classes.tabMobile
                 )}
+                onClick={() => {
+                  if (index !== activeIndex) this.props.handleChange(item.link);
+                }}
               >
-                {mobileItems[index]}
+                {item.captionForMobile}
               </Typography>
             </Grid>
           ))}

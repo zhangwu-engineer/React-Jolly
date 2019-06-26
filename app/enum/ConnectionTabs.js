@@ -3,8 +3,18 @@
  */
 
 const ConnectionTabs = {
-  NETWORK: ['Find People', 'Find Businesses'],
-  NETWORK_MOBILE: ['People', 'Businesses'],
+  NETWORK: [
+    {
+      caption: 'Find People',
+      captionForMobile: 'People',
+      link: '/network',
+    },
+    {
+      caption: 'Find Businesses',
+      captionForMobile: 'Businesses',
+      link: '/network/businesses',
+    },
+  ],
 };
 
 export default ConnectionTabs;

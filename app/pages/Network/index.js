@@ -15,6 +15,7 @@ import FormControl from '@material-ui/core/FormControl';
 import SearchIcon from '@material-ui/icons/Search';
 import Button from '@material-ui/core/Button';
 
+import { history } from 'components/ConnectedRouter';
 import Preloader from 'components/Preloader';
 import Link from 'components/Link';
 import Tabs from 'components/Tabs';
@@ -414,8 +415,8 @@ class NetworkPage extends Component<Props, State> {
       connectedTo: null,
     });
   };
-  handleChangeTab = (e, value) => {
-    this.setState({ selectedTab: value });
+  handleChangeTab = link => {
+    history.push(link);
   };
   filterRole = e => {
     const { id, value } = e.target;
@@ -591,6 +592,7 @@ class NetworkPage extends Component<Props, State> {
             <Tabs
               items={ConnectionTabs.NETWORK}
               mobileItems={ConnectionTabs.NETWORK_MOBILE}
+              handleChange={link => this.handleChangeTab(link)}
               activeIndex={0}
             />
 
