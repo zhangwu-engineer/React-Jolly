@@ -1,4 +1,32 @@
-## Branching
+# Getting Started
+## Development Environment
+
+### Dependencies
+
+1. You'd need `nodejs` > 10
+1. `npm` -v 6.5.0
+
+### Installation (MacOS)
+1. Install Homebrew -> `/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`
+1. Install Node `brew install nodejs`
+1. Install npm `brew install npm`
+1. Install MongoDB `brew install mongodb`
+
+### Hosts file
+Edit the hosts file `/etc/hosts` to reflect the following config 
+
+```
+127.0.0.1   dev-jolly.co
+```
+
+### Setting up the project
+1. Clone the repo `git@github.com:JollyNetwork/jolly-ui.git`
+1. cd inside the repo you just cloned. `cd jolly-ui`
+1. run `npm install` to install all the npm libraries
+1. run `npm start` to start the app.
+1. visit `https://dev-jolly.co:3000` to view the app, make sure that the api app is running too. 
+
+# Branching
 
 Branch naming: `taskType/taskName`, example: `feature/add-image-to-page`, or `bug/remove-error-message`.
 
@@ -141,4 +169,3 @@ When you add/remove/edit routes, be sure to adjust `/server/middlewares/sitemap.
 # Other notes
 
 Our app is based on [react-boilerplate](https://github.com/react-boilerplate/react-boilerplate) v3.5.0. Take a look at its [documentation](https://github.com/react-boilerplate/react-boilerplate#documentation), it is very good and covers most of tools and techniques used in the project.
-
