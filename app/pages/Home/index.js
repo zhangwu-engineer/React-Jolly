@@ -386,8 +386,8 @@ class HomePage extends Component<Props, State> {
       <React.Fragment>
         <div className={classes.header}>
           <Typography className={classes.headerText}>
-            Friday 6/14 · New in Jolly: Add badges on your profile · Search
-            nationwide and filter by location+position
+            Thursday, June 27 · New in Jolly: Connect with anyone, not just past
+            coworkers · Hirers can now sign up to recruit freelancers
           </Typography>
         </div>
         <div className={classes.panelBox}>
