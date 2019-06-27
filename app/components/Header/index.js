@@ -507,7 +507,7 @@ class Header extends Component<Props, State> {
                 className={classes.menuItem}
                 onClick={e => {
                   this.handleClose(e);
-                  window.open('https://www.joinjolly.com/contact', '_blank');
+                  window.open('https://company.jollyhq.com/contact', '_blank');
                 }}
               >
                 <ListItemIcon className={classes.menuItemIcon}>
