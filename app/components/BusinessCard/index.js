@@ -68,12 +68,13 @@ type Props = {
 class BusinessCard extends Component<Props> {
   viewProfile = () => {
     const { business } = this.props;
-    window.open(`/b/${business.get('slug')}`, '_blank');
+    if (business.get('slug'))
+      window.open(`/b/${business.get('slug')}`, '_blank');
   };
   render() {
     const { business, classes } = this.props;
     return (
-      <ListItem className={classes.root} onClick={this.handleClick}>
+      <ListItem className={classes.root} onClick={this.viewProfile}>
         <UserAvatar
           className={
             business.get('name') ? classes.businessAvatar : classes.avatar
