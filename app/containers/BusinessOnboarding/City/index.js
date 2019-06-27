@@ -188,6 +188,7 @@ class OnboardingCityPage extends Component<Props, State> {
         business: {
           name: businessName,
           category: businessCategory,
+          location: address,
         },
       });
       analytics.track('Business Created', {
