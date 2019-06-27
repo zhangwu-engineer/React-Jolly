@@ -22,6 +22,7 @@ import Tabs from 'components/Tabs';
 import EditableInput from 'components/EditableInput';
 import BusinessCard from 'components/BusinessCard';
 import ConnectionCard from 'components/ConnectionCard';
+import ConnectionFromBusinessCard from 'components/ConnectionFromBusinessCard';
 import VouchInviteFormModal from 'components/VouchInviteFormModal';
 import InviteForm from 'components/InviteForm';
 import Notification from 'components/Notification';
@@ -558,11 +559,20 @@ class NetworkBusinessesPage extends Component<Props, State> {
                   >
                     {pendingConnections.map(connection => (
                       <Grid item key={generate()} xs={12} lg={12}>
-                        <ConnectionCard
-                          connection={connection}
-                          ignore={this.props.requestRemoveConnection}
-                          accept={this.props.requestAcceptConnection}
-                        />
+                        {connection.get('connectionType') === 'f2f' && (
+                          <ConnectionCard
+                            connection={connection}
+                            ignore={this.props.requestRemoveConnection}
+                            accept={this.props.requestAcceptConnection}
+                          />
+                        )}
+                        {connection.get('connectionType') === 'b2f' && (
+                          <ConnectionFromBusinessCard
+                            connection={connection}
+                            ignore={this.props.requestRemoveConnection}
+                            accept={this.props.requestAcceptConnection}
+                          />
+                        )}
                       </Grid>
                     ))}
                   </Grid>
