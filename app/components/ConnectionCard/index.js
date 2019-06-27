@@ -107,6 +107,8 @@ class ConnectionCard extends Component<Props> {
   render() {
     const { connection, classes } = this.props;
     const user = connection.get('from');
+    const isCoworker = connection.get('isCoworker');
+
     return (
       <div className={classes.root}>
         <UserAvatar
@@ -116,7 +118,13 @@ class ConnectionCard extends Component<Props> {
         />
         <div className={classes.userInfo}>
           <Typography className={classes.location}>
-            {user.getIn(['profile', 'location'])}
+            {isCoworker ? (
+              <span>
+                Connect as <strong>Coworker</strong>
+              </span>
+            ) : (
+              user.getIn(['profile', 'location'])
+            )}
           </Typography>
           <Typography className={classes.name}>
             {`${capitalize(user && user.get('firstName'))} ${capitalize(
