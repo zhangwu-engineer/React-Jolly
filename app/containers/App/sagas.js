@@ -29,6 +29,7 @@ const USER_FILES = 'Jolly/App/USER_FILES';
 const USER_COWORKERS = 'Jolly/App/USER_COWORKERS';
 const EMAIL_VERIFICATION = 'Jolly/App/EMAIL_VERIFICATION';
 const CITY_USERS = 'Jolly/App/CITY_USERS';
+const CITY_BUSINESSES = 'Jolly/App/CITY_BUSINESSES';
 const SIGNUP_INVITE = 'Jolly/App/SIGNUP_INVITE';
 const MEMBER = 'Jolly/App/Member';
 const WORKS = 'Jolly/App/WORKS';
@@ -317,6 +318,37 @@ const cityUsersRequestError = (error: string) => ({
   payload: error,
 });
 
+export const requestCityBusinesses = (
+  city: string,
+  query: string,
+  page: Number,
+  perPage: Number,
+  role: string,
+  activeStatus: string
+) => ({
+  type: CITY_BUSINESSES + REQUESTED,
+  payload: city,
+  meta: {
+    query,
+    role,
+    activeStatus,
+    page,
+    perPage,
+  },
+});
+const cityBusinessesRequestSuccess = (payload: Object) => ({
+  type: CITY_BUSINESSES + SUCCEDED,
+  payload,
+});
+const cityBusinessesRequestFailed = (error: string) => ({
+  type: CITY_BUSINESSES + FAILED,
+  payload: error,
+});
+const cityBusinessesRequestError = (error: string) => ({
+  type: CITY_BUSINESSES + ERROR,
+  payload: error,
+});
+
 export const requestMember = (slug: string) => ({
   type: MEMBER + REQUESTED,
   payload: slug,
@@ -504,6 +536,13 @@ const initialState = fromJS({
   }),
   isCityUsersLoading: false,
   cityUsersError: '',
+  cityBusinesses: fromJS({
+    total: null,
+    page: null,
+    businesses: [],
+  }),
+  isCityBusinessesLoading: false,
+  cityBusinessesError: '',
   isSignupInviteLoading: false,
   signupInviteError: '',
   isPhotoDeleting: false,
@@ -794,6 +833,41 @@ export const reducer = (
     case CITY_USERS + ERROR:
       return state.set('isCityUsersLoading', false).set(
         'cityUsersError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case CITY_BUSINESSES + REQUESTED:
+      return state.set('isCityBusinessesLoading', true);
+
+    case CITY_BUSINESSES + SUCCEDED: {
+      const existingBusinesses: List = state.getIn([
+        'cityBusinesses',
+        'businesses',
+      ]);
+      const currentPage = state.getIn(['cityBusinesses', 'page']);
+      let newBusinesses;
+      if (currentPage !== payload.page && payload.page !== 1) {
+        newBusinesses = existingBusinesses.concat(fromJS(payload.businesses));
+      } else {
+        newBusinesses = fromJS(payload.businesses);
+      }
+      return state
+        .set('isCityBusinessesLoading', false)
+        .setIn(['cityBusinesses', 'total'], payload.total)
+        .setIn(['cityBusinesses', 'page'], payload.page)
+        .setIn(['cityBusinesses', 'businesses'], newBusinesses)
+        .set('cityBusinessesError', '');
+    }
+
+    case CITY_BUSINESSES + FAILED:
+      return state
+        .set('isCityBusinessesLoading', false)
+        .set('cityBusinessesError', payload.message);
+
+    case CITY_BUSINESSES + ERROR:
+      return state.set('isCityBusinessesLoading', false).set(
+        'cityBusinessesError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -1317,6 +1391,31 @@ function* CityUsersRequest({ payload, meta }) {
   }
 }
 
+function* CityBusinessesRequest({ payload, meta }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/business/city`,
+      data: {
+        city: payload,
+        query: meta.query,
+        page: meta.page,
+        perPage: meta.perPage,
+        role: meta.role,
+      },
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(cityBusinessesRequestSuccess(response.data.response));
+    } else {
+      yield put(cityBusinessesRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(cityBusinessesRequestError(error));
+  }
+}
+
 function* SignupInviteRequest({ payload }) {
   const token = yield select(getToken);
   try {
@@ -1412,6 +1511,7 @@ export default function*(): Saga<void> {
     takeLatest(WORKS + REQUESTED, WorksRequest),
     takeLatest(ENDORSEMENTS + REQUESTED, EndorsementsRequest),
     takeLatest(CITY_USERS + REQUESTED, CityUsersRequest),
+    takeLatest(CITY_BUSINESSES + REQUESTED, CityBusinessesRequest),
     takeLatest(SIGNUP_INVITE + REQUESTED, SignupInviteRequest),
     takeLatest(ADMIN_LOGIN + REQUESTED, AdminLoginRequest),
     takeLatest(ADMIN_USER + REQUESTED, AdminUserRequest),
