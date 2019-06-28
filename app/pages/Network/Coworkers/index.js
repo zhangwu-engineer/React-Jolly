@@ -14,8 +14,12 @@ import SearchIcon from '@material-ui/icons/Search';
 import cx from 'classnames';
 import { capitalize, debounce } from 'lodash-es';
 
+import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
+import Tabs from 'components/Tabs';
 import CoworkerCard from 'components/CoworkerCard';
+import ConnectionCard from 'components/ConnectionCard';
+import ConnectionFromBusinessCard from 'components/ConnectionFromBusinessCard';
 import InviteForm from 'components/InviteForm';
 import Notification from 'components/Notification';
 import NetworkNav from 'components/NetworkNav';
@@ -23,12 +27,16 @@ import CustomSelect from 'components/CustomSelect';
 import EditableInput from 'components/EditableInput';
 
 import ROLES from 'enum/roles';
+import ConnectionTabs from 'enum/ConnectionTabs';
 import CONNECTIONS from 'enum/connections';
 
 import saga, {
   reducer,
   requestCreateConnection,
   requestConnectedConnections,
+  requestConnections,
+  requestRemoveConnection,
+  requestAcceptConnection,
 } from 'containers/Network/sagas';
 import injectSagas from 'utils/injectSagas';
 
@@ -75,9 +83,12 @@ const styles = theme => ({
   },
   rightPanel: {
     flex: 1,
+    paddingTop: 70,
+    position: 'relative',
     [theme.breakpoints.down('xs')]: {
       paddingLeft: 25,
       paddingRight: 25,
+      paddingTop: 30,
     },
   },
   title: {
@@ -92,9 +103,30 @@ const styles = theme => ({
       letterSpacing: 0.3,
     },
   },
+  myNetworkTitle: {
+    fontWeight: 600,
+    letterSpacing: 0.33,
+    marginBottom: 18,
+    height: 19,
+    color: '#272727',
+  },
   emailCard: {
     padding: 0,
     marginBottom: 12,
+  },
+  pendingConnectionsTitle: {
+    fontSize: 16,
+    fontWeight: 500,
+    letterSpacing: 0.4,
+    color: '#272727',
+    paddingBottom: 15,
+    [theme.breakpoints.down('xs')]: {
+      fontWeight: 600,
+      letterSpacing: 0.3,
+    },
+  },
+  pendingConnections: {
+    marginBottom: 50,
   },
   avatar: {
     width: 40,
@@ -181,10 +213,12 @@ const styles = theme => ({
   },
   filterWrapper: {
     marginTop: 21,
+    marginBottom: 10,
   },
   filterWrapperMobile: {
     [theme.breakpoints.down('xs')]: {
       flexDirection: 'column-reverse',
+      marginBottom: 10,
     },
   },
   selectedTab: {
@@ -199,6 +233,7 @@ const styles = theme => ({
 type Props = {
   user: Object, // eslint-disable-line
   connections: List<Object>,
+  connectedConnections: List<Object>,
   isCreating: boolean, // eslint-disable-line
   createError: string, // eslint-disable-line
   isRemoving: boolean,
@@ -208,6 +243,9 @@ type Props = {
   classes: Object,
   requestConnectedConnections: Function,
   requestCreateConnection: Function,
+  requestConnections: Function,
+  requestRemoveConnection: Function,
+  requestAcceptConnection: Function,
 };
 
 type State = {
@@ -219,6 +257,7 @@ type State = {
   invitedUserIds: Array<string>,
   selectedTab: number,
   filter: Object,
+  connectionType: string,
   query: string,
 };
 
@@ -263,18 +302,22 @@ class CoworkersPage extends Component<Props, State> {
       selectedRole: '',
       connection: '',
     },
+    connectionType: 'f2f',
   };
   componentDidMount() {
-    const { query, filter } = this.state;
+    const { query, filter, connectionType } = this.state;
     this.props.requestConnectedConnections(
       filter.location,
       query,
       filter.selectedRole,
-      filter.connection
+      filter.connection,
+      connectionType
     );
+    this.props.requestConnections();
+    window.localStorage.setItem('isBusinessActive', 'no');
   }
   componentDidUpdate(prevProps: Props) {
-    const { query, filter } = this.state;
+    const { query, filter, connectionType } = this.state;
     const { isRemoving, removeError, isAccepting, acceptError } = this.props;
 
     if (prevProps.isRemoving && !isRemoving && !removeError) {
@@ -282,20 +325,26 @@ class CoworkersPage extends Component<Props, State> {
         filter.location,
         query,
         filter.selectedRole,
-        filter.connection
+        filter.connection,
+        connectionType
       );
     }
+    if (prevProps.isRemoving && !isRemoving && !removeError) {
+      this.props.requestConnections();
+    }
     if (prevProps.isAccepting && !isAccepting && !acceptError) {
+      this.props.requestConnections();
       this.props.requestConnectedConnections(
         filter.location,
         query,
         filter.selectedRole,
-        filter.connection
+        filter.connection,
+        connectionType
       );
     }
   }
   debouncedSearch = debounce(() => {
-    const { query, filter } = this.state;
+    const { query, filter, connectionType } = this.state;
     const connection = filter.connection
       .split(' ')
       .join('')
@@ -304,7 +353,8 @@ class CoworkersPage extends Component<Props, State> {
       filter.location,
       query,
       filter.selectedRole,
-      connection
+      connection,
+      connectionType
     );
   }, 500);
   handleConnectionInvite = user => {
@@ -340,6 +390,9 @@ class CoworkersPage extends Component<Props, State> {
     this.setState({
       connectedTo: null,
     });
+  };
+  handleChangeTab = link => {
+    history.push(link);
   };
   handleChange = e => {
     e.persist();
@@ -388,7 +441,7 @@ class CoworkersPage extends Component<Props, State> {
   };
 
   render() {
-    const { connections, classes } = this.props;
+    const { connections, connectedConnections, classes } = this.props;
     const {
       sentTo,
       isInviting,
@@ -398,6 +451,9 @@ class CoworkersPage extends Component<Props, State> {
       query,
       filter,
     } = this.state;
+    const pendingConnections =
+      connections &&
+      connections.filter(connection => connection.get('status') === 'PENDING');
     return (
       <React.Fragment>
         <NetworkNav />
@@ -434,6 +490,52 @@ class CoworkersPage extends Component<Props, State> {
             </div>
           </div>
           <div className={classes.rightPanel}>
+            {pendingConnections &&
+              pendingConnections.size > 0 && (
+                <React.Fragment>
+                  <Grid container spacing={8}>
+                    <Grid item xs={12} lg={12}>
+                      <Typography className={classes.pendingConnectionsTitle}>
+                        Pending Connections
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                  <Grid
+                    container
+                    spacing={8}
+                    className={classes.pendingConnections}
+                  >
+                    {pendingConnections.map(connection => (
+                      <Grid item key={generate()} xs={12} lg={12}>
+                        {connection.get('connectionType') === 'f2f' && (
+                          <ConnectionCard
+                            connection={connection}
+                            ignore={this.props.requestRemoveConnection}
+                            accept={this.props.requestAcceptConnection}
+                          />
+                        )}
+                        {connection.get('connectionType') === 'b2f' && (
+                          <ConnectionFromBusinessCard
+                            connection={connection}
+                            ignore={this.props.requestRemoveConnection}
+                            accept={this.props.requestAcceptConnection}
+                          />
+                        )}
+                      </Grid>
+                    ))}
+                  </Grid>
+                </React.Fragment>
+              )}
+            <Typography
+              className={cx(classes.showForSmall, classes.myNetworkTitle)}
+            >
+              My Network
+            </Typography>
+            <Tabs
+              items={ConnectionTabs.CONNECTIONS}
+              handleChange={link => this.handleChangeTab(link)}
+              activeIndex={0}
+            />
             <Grid container spacing={8} className={classes.filterWrapperMobile}>
               <Grid item xs={12} lg={12}>
                 <Grid container spacing={8} justify="flex-end">
@@ -550,16 +652,20 @@ class CoworkersPage extends Component<Props, State> {
             </Grid>
             {selectedTab === 1 && (
               <Grid container spacing={8}>
-                {connections &&
-                  connections.map(connection => (
-                    <Grid item key={generate()} xs={12} lg={6}>
-                      <CoworkerCard user={connection} />
-                    </Grid>
-                  ))}
+                {connectedConnections &&
+                  connectedConnections.map(connection => {
+                    if (connection.get('profile'))
+                      return (
+                        <Grid item key={generate()} xs={12} lg={6}>
+                          <CoworkerCard user={connection} />
+                        </Grid>
+                      );
+                    return null;
+                  })}
               </Grid>
             )}
-            {connections &&
-              connections.size === 0 && (
+            {connectedConnections &&
+              connectedConnections.size === 0 && (
                 <Grid container spacing={8}>
                   <Grid item xs={12} lg={12}>
                     <div className={classes.emptyCoworkersPanel}>
@@ -586,6 +692,7 @@ class CoworkersPage extends Component<Props, State> {
 const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
   connections: state.getIn(['network', 'connections']),
+  connectedConnections: state.getIn(['network', 'connectedConnections']),
   isCreating: state.getIn(['network', 'isCreating']),
   createError: state.getIn(['network', 'createError']),
   isRemoving: state.getIn(['network', 'isRemoving']),
@@ -597,8 +704,21 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
-  requestConnectedConnections: (city, query, role, connection) =>
-    dispatch(requestConnectedConnections(city, query, role, connection)),
+  requestConnectedConnections: (
+    city,
+    query,
+    role,
+    connection,
+    connectionType
+  ) =>
+    dispatch(
+      requestConnectedConnections(city, query, role, connection, connectionType)
+    ),
+  requestConnections: () => dispatch(requestConnections()),
+  requestRemoveConnection: connectionId =>
+    dispatch(requestRemoveConnection(connectionId)),
+  requestAcceptConnection: connectionId =>
+    dispatch(requestAcceptConnection(connectionId)),
 });
 
 export default compose(

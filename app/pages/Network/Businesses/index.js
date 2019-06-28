@@ -20,7 +20,7 @@ import Preloader from 'components/Preloader';
 import Link from 'components/Link';
 import Tabs from 'components/Tabs';
 import EditableInput from 'components/EditableInput';
-import UserCard from 'components/UserCard';
+import BusinessCard from 'components/BusinessCard';
 import ConnectionCard from 'components/ConnectionCard';
 import ConnectionFromBusinessCard from 'components/ConnectionFromBusinessCard';
 import VouchInviteFormModal from 'components/VouchInviteFormModal';
@@ -32,7 +32,7 @@ import CustomSelect from 'components/CustomSelect';
 import ROLES from 'enum/roles';
 import ConnectionTabs from 'enum/ConnectionTabs';
 
-import { requestCityUsers, requestUserCoworkers } from 'containers/App/sagas';
+import { requestCityBusinesses } from 'containers/App/sagas';
 import saga, {
   reducer,
   requestCreateConnection,
@@ -253,12 +253,11 @@ const styles = theme => ({
 
 type Props = {
   user: Object, // eslint-disable-line
-  cityUsers: List<Object>,
+  cityBusinesses: List<Object>,
   total: number, // eslint-disable-line
   page: number, // eslint-disable-line
-  isCityUsersLoading: boolean, // eslint-disable-line
-  cityUsersError: string, // eslint-disable-line
-  coworkers: List<Object>,
+  isCityBusinessesLoading: boolean, // eslint-disable-line
+  cityBusinessesError: string, // eslint-disable-line
   connections: List<Object>,
   isCreating: boolean, // eslint-disable-line
   createError: string, // eslint-disable-line
@@ -267,8 +266,7 @@ type Props = {
   isAccepting: boolean,
   acceptError: string,
   classes: Object,
-  requestCityUsers: Function,
-  requestUserCoworkers: Function,
+  requestCityBusinesses: Function,
   requestCreateConnection: Function,
   requestRemoveConnection: Function,
   requestAcceptConnection: Function,
@@ -292,7 +290,7 @@ type State = {
   page: number,
 };
 
-class NetworkPage extends Component<Props, State> {
+class NetworkBusinessesPage extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State) {
     if (nextProps.isCreating && prevState.sentTo) {
       return {
@@ -325,12 +323,10 @@ class NetworkPage extends Component<Props, State> {
   state = {
     isFormOpen: false,
     selectedUser: null,
-    invitedUserIds: [],
     sentTo: null,
     isInviting: false,
     isCoworker: false,
     showNotification: false,
-    selectedTab: 0,
     query: '',
     filter: {
       location: '',
@@ -342,7 +338,7 @@ class NetworkPage extends Component<Props, State> {
     const { user } = this.props;
     const { query, filter, page } = this.state;
     if (user.getIn(['profile', 'location'])) {
-      this.props.requestCityUsers(
+      this.props.requestCityBusinesses(
         filter.location,
         query,
         page,
@@ -351,24 +347,15 @@ class NetworkPage extends Component<Props, State> {
       );
     }
     this.props.requestConnections();
-    this.props.requestUserCoworkers(user.get('slug'));
     window.localStorage.setItem('isBusinessActive', 'no');
   }
   componentDidUpdate(prevProps: Props) {
-    const {
-      user,
-      isRemoving,
-      removeError,
-      isAccepting,
-      acceptError,
-    } = this.props;
+    const { isRemoving, removeError, isAccepting, acceptError } = this.props;
     if (prevProps.isRemoving && !isRemoving && !removeError) {
       this.props.requestConnections();
-      this.props.requestUserCoworkers(user.get('slug'));
     }
     if (prevProps.isAccepting && !isAccepting && !acceptError) {
       this.props.requestConnections();
-      this.props.requestUserCoworkers(user.get('slug'));
     }
   }
   closeFormModal = () => {
@@ -434,7 +421,7 @@ class NetworkPage extends Component<Props, State> {
   };
   debouncedSearch = debounce(() => {
     const { query, filter, page } = this.state;
-    this.props.requestCityUsers(
+    this.props.requestCityBusinesses(
       filter.location,
       query,
       page,
@@ -488,10 +475,9 @@ class NetworkPage extends Component<Props, State> {
   };
   render() {
     const {
-      coworkers,
       connections,
-      cityUsers,
-      isCityUsersLoading,
+      cityBusinesses,
+      isCityBusinessesLoading,
       classes,
       total,
       currentUser,
@@ -503,9 +489,7 @@ class NetworkPage extends Component<Props, State> {
       isInviting,
       isCoworker,
       showNotification,
-      invitedUserIds,
       connectedTo,
-      selectedTab,
       query,
       filter,
       page,
@@ -513,7 +497,6 @@ class NetworkPage extends Component<Props, State> {
     const pendingConnections =
       connections &&
       connections.filter(connection => connection.get('status') === 'PENDING');
-    const coworkerIds = coworkers ? coworkers.map(c => c.get('id')).toJS() : [];
     const loadMore = total > page * perPage;
     return (
       <React.Fragment>
@@ -602,7 +585,7 @@ class NetworkPage extends Component<Props, State> {
             <Tabs
               items={ConnectionTabs.NETWORK}
               handleChange={link => this.handleChangeTab(link)}
-              activeIndex={0}
+              activeIndex={1}
             />
 
             <Grid container spacing={8} className={classes.filterContainer}>
@@ -673,27 +656,22 @@ class NetworkPage extends Component<Props, State> {
                 </FormControl>
               </Grid>
             </Grid>
-            {isCityUsersLoading && (
+            {isCityBusinessesLoading && (
               <Grid container className={classes.progressContainer}>
                 <Preloader />
               </Grid>
             )}
-            {selectedTab === 0 && (
-              <Grid container spacing={8}>
-                {cityUsers.map(
-                  cityUser =>
-                    !coworkerIds.includes(cityUser.get('id')) ? (
-                      <Grid item key={generate()} xs={12} lg={6}>
-                        <UserCard
-                          user={cityUser}
-                          onSelect={this.openFormModal}
-                          selected={invitedUserIds.includes(cityUser.get('id'))}
-                        />
-                      </Grid>
-                    ) : null
-                )}
-              </Grid>
-            )}
+            <Grid container spacing={8}>
+              {cityBusinesses &&
+                cityBusinesses.map(cityBusiness => (
+                  <Grid item key={generate()} xs={12} lg={6}>
+                    <BusinessCard
+                      business={cityBusiness}
+                      onSelect={this.openFormModal}
+                    />
+                  </Grid>
+                ))}
+            </Grid>
             {loadMore && (
               <Grid item xs={12} lg={12}>
                 <Button
@@ -724,12 +702,11 @@ class NetworkPage extends Component<Props, State> {
 const mapStateToProps = state => ({
   currentUser: state.getIn(['app', 'user']),
   user: state.getIn(['app', 'user']),
-  cityUsers: state.getIn(['app', 'cityUsers', 'users']),
-  total: state.getIn(['app', 'cityUsers', 'total']),
-  page: state.getIn(['app', 'cityUsers', 'page']),
-  isCityUsersLoading: state.getIn(['app', 'isCityUsersLoading']),
-  cityUsersError: state.getIn(['app', 'cityUsersError']),
-  coworkers: state.getIn(['app', 'coworkers']),
+  cityBusinesses: state.getIn(['app', 'cityBusinesses', 'businesses']),
+  total: state.getIn(['app', 'cityBusinesses', 'total']),
+  page: state.getIn(['app', 'cityBusinesses', 'page']),
+  isCityBusinessesLoading: state.getIn(['app', 'isCityBusinessesLoading']),
+  cityBusinessesError: state.getIn(['app', 'cityBusinessesError']),
   connections: state.getIn(['network', 'connections']),
   isCreating: state.getIn(['network', 'isCreating']),
   createError: state.getIn(['network', 'createError']),
@@ -742,14 +719,13 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
-  requestUserCoworkers: slug => dispatch(requestUserCoworkers(slug)),
   requestRemoveConnection: connectionId =>
     dispatch(requestRemoveConnection(connectionId)),
   requestAcceptConnection: connectionId =>
     dispatch(requestAcceptConnection(connectionId)),
   requestConnections: () => dispatch(requestConnections()),
-  requestCityUsers: (city, query, page, usersPerPage, role) =>
-    dispatch(requestCityUsers(city, query, page, usersPerPage, role)),
+  requestCityBusinesses: (city, query, page, usersPerPage, role) =>
+    dispatch(requestCityBusinesses(city, query, page, usersPerPage, role)),
 });
 
 export default compose(
@@ -759,4 +735,4 @@ export default compose(
     mapDispatchToProps
   ),
   withStyles(styles)
-)(NetworkPage);
+)(NetworkBusinessesPage);

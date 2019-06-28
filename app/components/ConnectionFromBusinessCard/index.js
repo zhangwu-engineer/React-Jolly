@@ -1,7 +1,6 @@
 // @flow
 
 import React, { Component } from 'react';
-import { capitalize } from 'lodash-es';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
@@ -21,6 +20,17 @@ const styles = theme => ({
   avatar: {
     height: 50,
     width: 50,
+  },
+  businessAvatar: {
+    width: 50,
+    height: 50,
+    fontWeight: 600,
+    fontSize: 18,
+    border: 0,
+    paddingTop: 3,
+    paddingLeft: 1,
+    margin: '0 auto',
+    backgroundColor: '#c415d9',
   },
   userInfo: {
     paddingLeft: 20,
@@ -95,7 +105,7 @@ type Props = {
   accept: Function,
 };
 
-class ConnectionCard extends Component<Props> {
+class ConnectionFromBusinessCard extends Component<Props> {
   handleIgnore = () => {
     const { connection } = this.props;
     this.props.ignore(connection.get('id'));
@@ -106,31 +116,16 @@ class ConnectionCard extends Component<Props> {
   };
   render() {
     const { connection, classes } = this.props;
-    const user = connection.get('from');
-    const isCoworker = connection.get('isCoworker');
+    const business = connection.get('from');
+    const name = business.get('name');
+    const category = business.get('category');
 
     return (
       <div className={classes.root}>
-        <UserAvatar
-          className={classes.avatar}
-          src={user && user.getIn(['profile', 'avatar'])}
-          alt={user && user.get('firstName')}
-        />
+        <UserAvatar className={classes.businessAvatar} content={name} />
         <div className={classes.userInfo}>
-          <Typography className={classes.location}>
-            {isCoworker ? (
-              <span>
-                Connect as <strong>Coworker</strong>
-              </span>
-            ) : (
-              user.getIn(['profile', 'location'])
-            )}
-          </Typography>
-          <Typography className={classes.name}>
-            {`${capitalize(user && user.get('firstName'))} ${capitalize(
-              user && user.get('lastName')
-            )}`}
-          </Typography>
+          <Typography className={classes.location}>{category}</Typography>
+          <Typography className={classes.name}>{name}</Typography>
         </div>
         {connection.get('status') === 'PENDING' && (
           <React.Fragment>
@@ -169,4 +164,4 @@ class ConnectionCard extends Component<Props> {
   }
 }
 
-export default withStyles(styles)(ConnectionCard);
+export default withStyles(styles)(ConnectionFromBusinessCard);
