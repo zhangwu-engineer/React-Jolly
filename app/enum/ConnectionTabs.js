@@ -15,6 +15,18 @@ const ConnectionTabs = {
       link: '/network/businesses',
     },
   ],
+  CONNECTIONS: [
+    {
+      caption: 'Find People',
+      captionForMobile: 'People',
+      link: '/network/connections',
+    },
+    {
+      caption: 'Find Businesses',
+      captionForMobile: 'Businesses',
+      link: '/network/business-connections',
+    },
+  ],
 };
 
 export default ConnectionTabs;
