@@ -14,6 +14,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import cx from 'classnames';
 import { capitalize, debounce } from 'lodash-es';
 
+import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
 import Tabs from 'components/Tabs';
 import CoworkerCard from 'components/CoworkerCard';
@@ -390,6 +391,9 @@ class CoworkersPage extends Component<Props, State> {
       connectedTo: null,
     });
   };
+  handleChangeTab = link => {
+    history.push(link);
+  };
   handleChange = e => {
     e.persist();
     this.setState({ query: e.target.value }, () => {
@@ -527,7 +531,11 @@ class CoworkersPage extends Component<Props, State> {
             >
               My Network
             </Typography>
-            <Tabs items={ConnectionTabs.CONNECTIONS} activeIndex={0} />
+            <Tabs
+              items={ConnectionTabs.CONNECTIONS}
+              handleChange={link => this.handleChangeTab(link)}
+              activeIndex={0}
+            />
             <Grid container spacing={8} className={classes.filterWrapperMobile}>
               <Grid item xs={12} lg={12}>
                 <Grid container spacing={8} justify="flex-end">

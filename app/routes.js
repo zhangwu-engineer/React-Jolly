@@ -31,6 +31,9 @@ const ObPage3 = load(() => import('pages/Ob/Page3'));
 const Network = load(() => import('pages/Network'));
 const NetworkBusinesses = load(() => import('pages/Network/Businesses'));
 const Coworkers = load(() => import('pages/Network/Coworkers'));
+const ConnectedBusinesses = load(() =>
+  import('pages/Network/ConnectedBusinesses')
+);
 const NetworkInvite = load(() => import('pages/Network/Invite'));
 const Feed = load(() => import('pages/Feed'));
 const AdminLogin = load(() => import('pages/Admin/Login'));
@@ -145,6 +148,11 @@ class Routes extends Component<{}> {
           exact
           path="/network/connections"
           render={props => <Coworkers {...props} />}
+        />
+        <PrivateRoute
+          exact
+          path="/network/business-connections"
+          render={props => <ConnectedBusinesses {...props} />}
         />
         <PrivateRoute
           exact
