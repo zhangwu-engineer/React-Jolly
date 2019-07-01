@@ -133,6 +133,7 @@ const webPackConfigs = options => ({
       'process.env': {
         NODE_ENV: JSON.stringify(CONFIG.ENV),
         API_ENV: JSON.stringify(process.env.API_ENV),
+        SEGMENT_KEY: JSON.stringify(process.env.SEGMENT_KEY),
       },
     }),
   ]),

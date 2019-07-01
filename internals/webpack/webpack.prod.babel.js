@@ -41,12 +41,6 @@ const webPackConfigs = webPackDefault({
   },
 
   plugins: [
-    new webpack.DefinePlugin({
-      'process.env': {
-        SEGMENT_KEY: JSON.stringify(process.env.SEGMENT_KEY),
-        NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-      },
-    }),
     // Minify and optimize the index-prod.html
     new HtmlWebpackPlugin({
       template: 'app/index-prod.ejs',
