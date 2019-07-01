@@ -40,9 +40,14 @@ const webPackConfigs = webPackDefault({
   },
 
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        SEGMENT_KEY: JSON.stringify(process.env.SEGMENT_KEY),
+      },
+    }),
     // Minify and optimize the index-prod.html
     new HtmlWebpackPlugin({
-      template: 'app/index-prod.html',
+      template: 'app/index-prod.ejs',
       minify: {
         removeComments: true,
         collapseWhitespace: true,
