@@ -124,7 +124,7 @@ class App extends Component<Props> {
         cred_count: user.getIn(['profile', 'cred']),
         returning_user: user.get('loginCount') > 0 ? 1 : 0,
         created_at: user.get('date_created'),
-        test: window.localStorage.getItem('testUser') || false,
+        test: window.localStorage.getItem('testUser') === 'true',
       });
     }
   }
