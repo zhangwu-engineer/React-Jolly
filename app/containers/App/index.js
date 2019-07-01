@@ -43,8 +43,15 @@ class App extends Component<Props> {
   componentDidMount() {
     const {
       user,
-      location: { pathname },
+      location: { pathname, search },
     } = this.props;
+
+    const params = new URLSearchParams(search);
+    const testUser = params.get('test_user');
+
+    if (testUser) {
+      window.localStorage.setItem('testUser', true);
+    }
 
     if (user) {
       this.props.requestUser();
@@ -117,6 +124,7 @@ class App extends Component<Props> {
         cred_count: user.getIn(['profile', 'cred']),
         returning_user: user.get('loginCount') > 0 ? 1 : 0,
         created_at: user.get('date_created'),
+        test: window.localStorage.getItem('testUser') || false,
       });
     }
   }
