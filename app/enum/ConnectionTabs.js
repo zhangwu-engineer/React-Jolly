@@ -5,25 +5,21 @@
 const ConnectionTabs = {
   NETWORK: [
     {
-      caption: 'Find People',
-      captionForMobile: 'People',
+      caption: 'People',
       link: '/network',
     },
     {
-      caption: 'Find Businesses',
-      captionForMobile: 'Businesses',
+      caption: 'Businesses',
       link: '/network/businesses',
     },
   ],
   CONNECTIONS: [
     {
-      caption: 'Find People',
-      captionForMobile: 'People',
+      caption: 'People',
       link: '/network/connections',
     },
     {
-      caption: 'Find Businesses',
-      captionForMobile: 'Businesses',
+      caption: 'Businesses',
       link: '/network/business-connections',
     },
   ],
