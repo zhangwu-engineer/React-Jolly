@@ -28,7 +28,6 @@ import EditableInput from 'components/EditableInput';
 
 import ROLES from 'enum/roles';
 import ConnectionTabs from 'enum/ConnectionTabs';
-import CONNECTIONS from 'enum/connections';
 
 import saga, {
   reducer,
@@ -41,10 +40,7 @@ import saga, {
 import injectSagas from 'utils/injectSagas';
 
 const roles = ROLES.sort().map(role => ({ value: role, label: role }));
-const connectionSelect = CONNECTIONS.sort().map(connection => ({
-  value: connection,
-  label: connection,
-}));
+
 const styles = theme => ({
   content: {
     maxWidth: 1064,
@@ -177,7 +173,7 @@ const styles = theme => ({
     marginBottom: 10,
   },
   textInput: {
-    top: '25px',
+    top: '10px',
     fontSize: 14,
     fontWeight: 500,
     color: '#484848',
@@ -212,7 +208,7 @@ const styles = theme => ({
     },
   },
   filterWrapper: {
-    marginTop: 21,
+    marginTop: 10,
     marginBottom: 10,
   },
   filterWrapperMobile: {
@@ -536,120 +532,75 @@ class ConnectedBusinessesPage extends Component<Props, State> {
               handleChange={link => this.handleChangeTab(link)}
               activeIndex={1}
             />
-            <Grid container spacing={8} className={classes.filterWrapperMobile}>
-              <Grid item xs={12} lg={12}>
-                <Grid container spacing={8} justify="flex-end">
-                  <Grid item xs={12} lg={4}>
-                    <FormControl
-                      classes={{ root: classes.formControl }}
-                      fullWidth
-                    >
-                      <Input
-                        value={query}
-                        onChange={this.handleChange}
-                        className={cx(classes.textInput, classes.hideForSmall)}
-                        placeholder="Search by name"
-                        fullWidth
-                        startAdornment={
-                          <InputAdornment
-                            position="start"
-                            className={classes.adornment}
-                          >
-                            <SearchIcon />
-                          </InputAdornment>
-                        }
-                      />
-                      <Input
-                        value={query}
-                        onChange={this.handleChange}
-                        className={cx(classes.textInput, classes.showForSmall)}
-                        placeholder="Search"
-                        fullWidth
-                        startAdornment={
-                          <InputAdornment
-                            position="start"
-                            className={classes.adornment}
-                          >
-                            <SearchIcon />
-                          </InputAdornment>
-                        }
-                      />
-                    </FormControl>
-                  </Grid>
-                </Grid>
+            <Grid container spacing={8} className={classes.filterWrapper}>
+              <Grid item xs={6} lg={4}>
+                <EditableInput
+                  label="City"
+                  id="location"
+                  name="location"
+                  value={filter.location}
+                  onChange={this.handleLocationChange}
+                  select
+                />
               </Grid>
-              <Grid item xs={12} lg={12} className={classes.filterWrapper}>
-                <Grid container spacing={8}>
-                  <Grid item xs={6} lg={4}>
-                    <EditableInput
-                      label="City"
-                      id="location"
-                      name="location"
-                      value={filter.location}
-                      onChange={this.handleLocationChange}
-                      select
-                    />
-                  </Grid>
-                  <Grid
-                    item
-                    xs={6}
-                    lg={4}
-                    className={classes.searchInputWrapper}
-                  >
-                    <CustomSelect
-                      placeholder="All Positions"
-                      options={roles}
-                      value={
-                        filter.selectedRole
-                          ? {
-                              value: filter.selectedRole,
-                              label: filter.selectedRole,
-                            }
-                          : null
-                      }
-                      onChange={value => this.handleRoleChange(value.value)}
-                      isMulti={false}
-                      isClearable={false}
-                      stylesOverride={{
-                        container: () => ({
-                          backgroundColor: 'white',
-                        }),
-                      }}
-                    />
-                  </Grid>
-                  <Grid
-                    item
-                    xs={12}
-                    lg={4}
-                    className={classes.searchInputWrapper}
-                  >
-                    <CustomSelect
-                      placeholder="All Connections"
-                      options={connectionSelect}
-                      value={
-                        filter.connection
-                          ? {
-                              value: filter.connection,
-                              label: filter.connection,
-                            }
-                          : null
-                      }
-                      onChange={value =>
-                        this.handleConnectionsChange(value.value)
-                      }
-                      isMulti={false}
-                      isClearable={false}
-                      isSearchable={false}
-                      stylesOverride={{
-                        container: () => ({
-                          backgroundColor: 'white',
-                        }),
-                      }}
-                    />
-                  </Grid>
-                </Grid>
+              <Grid item xs={6} lg={4} className={classes.searchInputWrapper}>
+                <CustomSelect
+                  placeholder="All Positions"
+                  options={roles}
+                  value={
+                    filter.selectedRole
+                      ? {
+                          value: filter.selectedRole,
+                          label: filter.selectedRole,
+                        }
+                      : null
+                  }
+                  onChange={value => this.handleRoleChange(value.value)}
+                  isMulti={false}
+                  isClearable={false}
+                  stylesOverride={{
+                    container: () => ({
+                      backgroundColor: 'white',
+                    }),
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} lg={4}>
+                <FormControl classes={{ root: classes.formControl }} fullWidth>
+                  <Input
+                    value={query}
+                    onChange={this.handleChange}
+                    className={cx(classes.textInput, classes.hideForSmall)}
+                    placeholder="Search by name"
+                    fullWidth
+                    startAdornment={
+                      <InputAdornment
+                        position="start"
+                        className={classes.adornment}
+                      >
+                        <SearchIcon />
+                      </InputAdornment>
+                    }
+                  />
+                  <Input
+                    value={query}
+                    onChange={this.handleChange}
+                    className={cx(classes.textInput, classes.showForSmall)}
+                    placeholder="Search"
+                    fullWidth
+                    startAdornment={
+                      <InputAdornment
+                        position="start"
+                        className={classes.adornment}
+                      >
+                        <SearchIcon />
+                      </InputAdornment>
+                    }
+                  />
+                </FormControl>
               </Grid>
             </Grid>
+
             {selectedTab === 1 && (
               <Grid container spacing={8}>
                 {connectedConnections &&
