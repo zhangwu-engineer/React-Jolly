@@ -101,6 +101,12 @@ class BusinessSidebar extends PureComponent<Props, State> {
     }
     history.push('/b/network');
   };
+  goToMyConnectionsPage = () => {
+    if (this.props.isFromHeader) {
+      this.props.onClose();
+    }
+    history.push('/b/network/connections');
+  };
   goToProfilePage = slug => {
     if (this.props.isFromHeader) {
       this.props.onClose();
@@ -169,6 +175,13 @@ class BusinessSidebar extends PureComponent<Props, State> {
                 classes={{ primary: classes.menuItemText }}
                 primary="Find Connections"
                 onClick={this.goToNetworkPage}
+              />
+            </MenuItem>
+            <MenuItem className={classes.menuItemNoIcon}>
+              <ListItemText
+                classes={{ primary: classes.menuItemText }}
+                primary="My Connections"
+                onClick={this.goToMyConnectionsPage}
               />
             </MenuItem>
           </Collapse>

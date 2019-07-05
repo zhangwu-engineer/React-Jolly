@@ -30,6 +30,7 @@ const USER_COWORKERS = 'Jolly/App/USER_COWORKERS';
 const EMAIL_VERIFICATION = 'Jolly/App/EMAIL_VERIFICATION';
 const CITY_USERS = 'Jolly/App/CITY_USERS';
 const CITY_BUSINESSES = 'Jolly/App/CITY_BUSINESSES';
+const CITY_USERS_CONNECTED = 'Jolly/App/CITY_USERS_CONNECTED';
 const SIGNUP_INVITE = 'Jolly/App/SIGNUP_INVITE';
 const MEMBER = 'Jolly/App/Member';
 const WORKS = 'Jolly/App/WORKS';
@@ -318,6 +319,39 @@ const cityUsersRequestError = (error: string) => ({
   payload: error,
 });
 
+export const requestCityUsersConnected = (
+  city: string,
+  query: string,
+  page: Number,
+  perPage: Number,
+  role: string,
+  activeStatus: string,
+  businessId: string
+) => ({
+  type: CITY_USERS_CONNECTED + REQUESTED,
+  payload: city,
+  meta: {
+    query,
+    role,
+    activeStatus,
+    page,
+    perPage,
+    businessId,
+  },
+});
+const cityUsersConnectedRequestSuccess = (payload: Object) => ({
+  type: CITY_USERS_CONNECTED + SUCCEDED,
+  payload,
+});
+const cityUsersConnectedRequestFailed = (error: string) => ({
+  type: CITY_USERS_CONNECTED + FAILED,
+  payload: error,
+});
+const cityUsersConnectedRequestError = (error: string) => ({
+  type: CITY_USERS_CONNECTED + ERROR,
+  payload: error,
+});
+
 export const requestCityBusinesses = (
   city: string,
   query: string,
@@ -536,6 +570,13 @@ const initialState = fromJS({
   }),
   isCityUsersLoading: false,
   cityUsersError: '',
+  cityUsersConnected: fromJS({
+    total: null,
+    page: null,
+    users: [],
+  }),
+  isCityUsersConnectedLoading: false,
+  cityUsersConnectedError: '',
   cityBusinesses: fromJS({
     total: null,
     page: null,
@@ -833,6 +874,35 @@ export const reducer = (
     case CITY_USERS + ERROR:
       return state.set('isCityUsersLoading', false).set(
         'cityUsersError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case CITY_USERS_CONNECTED + SUCCEDED: {
+      const existingUsers: List = state.getIn(['cityUsersConnected', 'users']);
+      const currentPage = state.getIn(['cityUsersConnected', 'page']);
+      let newUsers;
+      if (currentPage !== payload.page && payload.page !== 1) {
+        newUsers = existingUsers.concat(fromJS(payload.users));
+      } else {
+        newUsers = fromJS(payload.users);
+      }
+      return state
+        .set('isCityUsersConnectedLoading', false)
+        .setIn(['cityUsersConnected', 'total'], payload.total)
+        .setIn(['cityUsersConnected', 'page'], payload.page)
+        .setIn(['cityUsersConnected', 'users'], newUsers)
+        .set('cityUsersConnectedError', '');
+    }
+
+    case CITY_USERS_CONNECTED + FAILED:
+      return state
+        .set('isCityUsersConnectedLoading', false)
+        .set('cityUsersConnectedError', payload.message);
+
+    case CITY_USERS_CONNECTED + ERROR:
+      return state.set('isCityUsersConnectedLoading', false).set(
+        'cityUsersConnectedError',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
       );
@@ -1391,6 +1461,33 @@ function* CityUsersRequest({ payload, meta }) {
   }
 }
 
+function* CityUsersConnectedRequest({ payload, meta }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/user/city/connected`,
+      data: {
+        city: payload,
+        query: meta.query,
+        page: meta.page,
+        perPage: meta.perPage,
+        role: meta.role,
+        activeStatus: meta.activeStatus,
+        businessId: meta.businessId,
+      },
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(cityUsersConnectedRequestSuccess(response.data.response));
+    } else {
+      yield put(cityUsersConnectedRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(cityUsersConnectedRequestError(error));
+  }
+}
+
 function* CityBusinessesRequest({ payload, meta }) {
   const token = yield select(getToken);
   try {
@@ -1511,6 +1608,7 @@ export default function*(): Saga<void> {
     takeLatest(WORKS + REQUESTED, WorksRequest),
     takeLatest(ENDORSEMENTS + REQUESTED, EndorsementsRequest),
     takeLatest(CITY_USERS + REQUESTED, CityUsersRequest),
+    takeLatest(CITY_USERS_CONNECTED + REQUESTED, CityUsersConnectedRequest),
     takeLatest(CITY_BUSINESSES + REQUESTED, CityBusinessesRequest),
     takeLatest(SIGNUP_INVITE + REQUESTED, SignupInviteRequest),
     takeLatest(ADMIN_LOGIN + REQUESTED, AdminLoginRequest),
