@@ -22,6 +22,7 @@ import UserAvatar from 'components/UserAvatar';
 import Icon from 'components/Icon';
 import CommentCard from 'components/CommentCard';
 import Link from 'components/Link';
+import copyToClipBoard from 'utils/copyToClipBoard';
 
 import CredIcon from 'images/sprite/cred.svg';
 import CredFilledIcon from 'images/sprite/cred_filled.svg';
@@ -186,12 +187,14 @@ type Props = {
 type State = {
   open: boolean,
   comment: string,
+  isCopied: boolean,
 };
 
 class PostCard extends Component<Props, State> {
   state = {
     open: false,
     comment: '',
+    isCopied: false,
   };
   handleToggle = () => {
     this.setState(state => ({ open: !state.open }));
@@ -222,7 +225,7 @@ class PostCard extends Component<Props, State> {
   anchorEl: HTMLElement;
   render() {
     const { post, currentUser, classes } = this.props;
-    const { open, comment } = this.state;
+    const { open, comment, isCopied } = this.state;
     const user = post.get('user');
     const category = CATEGORY_OPTIONS.filter(
       option => option.value === post.get('category')
@@ -288,6 +291,26 @@ class PostCard extends Component<Props, State> {
                         classes={{ primary: classes.menuItemText }}
                         primary="Edit Post"
                       />
+                    </MenuItem>
+                    <MenuItem
+                      className={classes.menuItem}
+                      onClick={() => {
+                        copyToClipBoard(`/feed/${post.get('id')}`);
+                        this.setState({ isCopied: true });
+                      }}
+                    >
+                      {isCopied && (
+                        <ListItemText
+                          classes={{ primary: classes.menuItemText }}
+                          primary="Copied!"
+                        />
+                      )}
+                      {!isCopied && (
+                        <ListItemText
+                          classes={{ primary: classes.menuItemText }}
+                          primary="Copy link to Post"
+                        />
+                      )}
                     </MenuItem>
                   </MenuList>
                 </ClickAwayListener>
