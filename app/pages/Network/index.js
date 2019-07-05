@@ -32,7 +32,7 @@ import CustomSelect from 'components/CustomSelect';
 import ROLES from 'enum/roles';
 import ConnectionTabs from 'enum/ConnectionTabs';
 
-import { requestCityUsers, requestUserCoworkers } from 'containers/App/sagas';
+import { requestCityUsers } from 'containers/App/sagas';
 import saga, {
   reducer,
   requestCreateConnection,
@@ -258,7 +258,6 @@ type Props = {
   page: number, // eslint-disable-line
   isCityUsersLoading: boolean, // eslint-disable-line
   cityUsersError: string, // eslint-disable-line
-  coworkers: List<Object>,
   connections: List<Object>,
   isCreating: boolean, // eslint-disable-line
   createError: string, // eslint-disable-line
@@ -268,7 +267,6 @@ type Props = {
   acceptError: string,
   classes: Object,
   requestCityUsers: Function,
-  requestUserCoworkers: Function,
   requestCreateConnection: Function,
   requestRemoveConnection: Function,
   requestAcceptConnection: Function,
@@ -351,24 +349,15 @@ class NetworkPage extends Component<Props, State> {
       );
     }
     this.props.requestConnections();
-    this.props.requestUserCoworkers(user.get('slug'));
     window.localStorage.setItem('isBusinessActive', 'no');
   }
   componentDidUpdate(prevProps: Props) {
-    const {
-      user,
-      isRemoving,
-      removeError,
-      isAccepting,
-      acceptError,
-    } = this.props;
+    const { isRemoving, removeError, isAccepting, acceptError } = this.props;
     if (prevProps.isRemoving && !isRemoving && !removeError) {
       this.props.requestConnections();
-      this.props.requestUserCoworkers(user.get('slug'));
     }
     if (prevProps.isAccepting && !isAccepting && !acceptError) {
       this.props.requestConnections();
-      this.props.requestUserCoworkers(user.get('slug'));
     }
   }
   closeFormModal = () => {
@@ -488,7 +477,6 @@ class NetworkPage extends Component<Props, State> {
   };
   render() {
     const {
-      coworkers,
       connections,
       cityUsers,
       isCityUsersLoading,
@@ -513,7 +501,6 @@ class NetworkPage extends Component<Props, State> {
     const pendingConnections =
       connections &&
       connections.filter(connection => connection.get('status') === 'PENDING');
-    const coworkerIds = coworkers ? coworkers.map(c => c.get('id')).toJS() : [];
     const loadMore = total > page * perPage;
     return (
       <React.Fragment>
@@ -680,18 +667,15 @@ class NetworkPage extends Component<Props, State> {
             )}
             {selectedTab === 0 && (
               <Grid container spacing={8}>
-                {cityUsers.map(
-                  cityUser =>
-                    !coworkerIds.includes(cityUser.get('id')) ? (
-                      <Grid item key={generate()} xs={12} lg={6}>
-                        <UserCard
-                          user={cityUser}
-                          onSelect={this.openFormModal}
-                          selected={invitedUserIds.includes(cityUser.get('id'))}
-                        />
-                      </Grid>
-                    ) : null
-                )}
+                {cityUsers.map(cityUser => (
+                  <Grid item key={generate()} xs={12} lg={6}>
+                    <UserCard
+                      user={cityUser}
+                      onSelect={this.openFormModal}
+                      selected={invitedUserIds.includes(cityUser.get('id'))}
+                    />
+                  </Grid>
+                ))}
               </Grid>
             )}
             {loadMore && (
@@ -742,7 +726,6 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
-  requestUserCoworkers: slug => dispatch(requestUserCoworkers(slug)),
   requestRemoveConnection: connectionId =>
     dispatch(requestRemoveConnection(connectionId)),
   requestAcceptConnection: connectionId =>
