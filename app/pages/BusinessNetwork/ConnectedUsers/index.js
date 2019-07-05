@@ -422,6 +422,7 @@ class ConnectedUsersPage extends Component<Props, State> {
     this.setState(
       state => ({
         ...state,
+        page: 1,
         filter: {
           ...state.filter,
           [id]: value,
