@@ -361,6 +361,9 @@ class BusinessNetworkPage extends Component<Props, State> {
   componentDidMount() {
     const { user } = this.props;
     const { query, filter, page } = this.state;
+    const businesses =
+      user && user.get('businesses') && user.get('businesses').toJSON();
+    const currentBusiness = businesses && businesses[0];
     if (user.getIn(['profile', 'location'])) {
       this.props.requestCityUsers(
         filter.location,
@@ -368,7 +371,8 @@ class BusinessNetworkPage extends Component<Props, State> {
         page,
         perPage,
         filter.selectedRole,
-        filter.activeStatus
+        filter.activeStatus,
+        currentBusiness.id
       );
     }
     this.props.requestConnections();
@@ -448,14 +452,19 @@ class BusinessNetworkPage extends Component<Props, State> {
     }
   };
   debouncedSearch = debounce(() => {
+    const { user } = this.props;
     const { query, filter, page } = this.state;
+    const businesses =
+      user && user.get('businesses') && user.get('businesses').toJSON();
+    const currentBusiness = businesses && businesses[0];
     this.props.requestCityUsers(
       filter.location,
       query,
       page,
       perPage,
       filter.selectedRole,
-      filter.activeStatus
+      filter.activeStatus,
+      currentBusiness.id
     );
   }, 500);
   handleChange = e => {
@@ -833,9 +842,25 @@ const mapDispatchToProps = dispatch => ({
   requestAcceptConnection: connectionId =>
     dispatch(requestAcceptConnection(connectionId)),
   requestConnections: () => dispatch(requestConnections()),
-  requestCityUsers: (city, query, page, usersPerPage, role, activeStatus) =>
+  requestCityUsers: (
+    city,
+    query,
+    page,
+    usersPerPage,
+    role,
+    activeStatus,
+    businessId
+  ) =>
     dispatch(
-      requestCityUsers(city, query, page, usersPerPage, role, activeStatus)
+      requestCityUsers(
+        city,
+        query,
+        page,
+        usersPerPage,
+        role,
+        activeStatus,
+        businessId
+      )
     ),
 });
 

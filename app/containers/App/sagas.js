@@ -294,7 +294,8 @@ export const requestCityUsers = (
   page: Number,
   perPage: Number,
   role: string,
-  activeStatus: string
+  activeStatus: string,
+  businessId: string
 ) => ({
   type: CITY_USERS + REQUESTED,
   payload: city,
@@ -304,6 +305,7 @@ export const requestCityUsers = (
     activeStatus,
     page,
     perPage,
+    businessId,
   },
 });
 const cityUsersRequestSuccess = (payload: Object) => ({
@@ -1448,6 +1450,7 @@ function* CityUsersRequest({ payload, meta }) {
         perPage: meta.perPage,
         role: meta.role,
         activeStatus: meta.activeStatus,
+        businessId: meta.businessId,
       },
       headers: { 'x-access-token': token },
     });
