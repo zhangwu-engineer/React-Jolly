@@ -246,17 +246,15 @@ class PostCard extends Component<Props, State> {
     const commentsLeft = post.get('fullComments').size - commentsTotalCount;
     return (
       <div className={classes.root}>
-        {user.get('id') === currentUser.get('id') && (
-          <Button
-            buttonRef={node => {
-              this.anchorEl = node;
-            }}
-            onClick={this.handleToggle}
-            className={classes.menuButton}
-          >
-            <MoreIcon />
-          </Button>
-        )}
+        <Button
+          buttonRef={node => {
+            this.anchorEl = node;
+          }}
+          onClick={this.handleToggle}
+          className={classes.menuButton}
+        >
+          <MoreIcon />
+        </Button>
         <Popper
           open={open}
           anchorEl={this.anchorEl}
@@ -268,30 +266,34 @@ class PostCard extends Component<Props, State> {
               <Paper square classes={{ root: classes.menu }}>
                 <ClickAwayListener onClickAway={this.handleClose}>
                   <MenuList className={classes.menuList}>
-                    <MenuItem
-                      className={classes.menuItem}
-                      onClick={e => {
-                        this.handleClose(e);
-                        this.props.removePost(post.get('id'));
-                      }}
-                    >
-                      <ListItemText
-                        classes={{ primary: classes.menuItemText }}
-                        primary="Delete Post"
-                      />
-                    </MenuItem>
-                    <MenuItem
-                      className={classes.menuItem}
-                      onClick={e => {
-                        this.handleClose(e);
-                        this.props.editPost(post);
-                      }}
-                    >
-                      <ListItemText
-                        classes={{ primary: classes.menuItemText }}
-                        primary="Edit Post"
-                      />
-                    </MenuItem>
+                    {user.get('id') === currentUser.get('id') && (
+                      <React.Fragment>
+                        <MenuItem
+                          className={classes.menuItem}
+                          onClick={e => {
+                            this.handleClose(e);
+                            this.props.removePost(post.get('id'));
+                          }}
+                        >
+                          <ListItemText
+                            classes={{ primary: classes.menuItemText }}
+                            primary="Delete Post"
+                          />
+                        </MenuItem>
+                        <MenuItem
+                          className={classes.menuItem}
+                          onClick={e => {
+                            this.handleClose(e);
+                            this.props.editPost(post);
+                          }}
+                        >
+                          <ListItemText
+                            classes={{ primary: classes.menuItemText }}
+                            primary="Edit Post"
+                          />
+                        </MenuItem>
+                      </React.Fragment>
+                    )}
                     <MenuItem
                       className={classes.menuItem}
                       onClick={() => {
