@@ -32,6 +32,11 @@ import FloatingAddButton from 'components/FloatingAddButton';
 import BadgeProgressBanner from 'components/BadgeProgressBanner';
 import UserWorkList from 'components/UserWorkList';
 import UserCoworkers from 'components/UserCoworkers';
+import {
+  CONNECTION_REQUEST_MSG,
+  COWORKER_REQUEST_MSG,
+  DISCONNECT_REQUEST_MSG,
+} from 'enum/connection';
 import AddPhotoIcon from 'images/sprite/add-photo-blue.svg';
 
 import saga, {
@@ -344,9 +349,6 @@ type State = {
   connection: Object,
 };
 
-const CONNECTION_REQUEST_MSG = 'Connection Request Sent';
-const COWORKER_CONNECTION_REQUEST_MSG = 'Coworker Connection Request Sent';
-
 class Member extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State) {
     const {
@@ -645,7 +647,7 @@ class Member extends Component<Props, State> {
               msg={
                 isCurrentBusiness || !isCoworkerConnectionSent
                   ? CONNECTION_REQUEST_MSG
-                  : COWORKER_CONNECTION_REQUEST_MSG
+                  : COWORKER_REQUEST_MSG
               }
               close={this.closeNotification}
             />
@@ -653,7 +655,7 @@ class Member extends Component<Props, State> {
         {showNotification &&
           isConnectionDeleted && (
             <Notification
-              msg="You've been disconnected!"
+              msg={DISCONNECT_REQUEST_MSG}
               close={this.closeNotification}
             />
           )}

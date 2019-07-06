@@ -28,6 +28,7 @@ import InviteForm from 'components/InviteForm';
 import Notification from 'components/Notification';
 import NetworkNav from 'components/NetworkNav';
 import CustomSelect from 'components/CustomSelect';
+import { CONNECTION_REQUEST_MSG, COWORKER_REQUEST_MSG } from 'enum/connection';
 
 import ROLES from 'enum/roles';
 import ConnectionTabs from 'enum/ConnectionTabs';
@@ -282,6 +283,7 @@ type State = {
   initialValues: Object,
   jobs: Array<Object>,
   sentTo: ?string,
+  isCoworker: boolean,
   isInviting: boolean,
   showNotification: boolean,
   connectedTo: ?string,
@@ -525,16 +527,16 @@ class NetworkPage extends Component<Props, State> {
           />
         )}
         {connectedTo &&
-          isCoworker && (
+          !isCoworker && (
             <Notification
-              msg={`Coworker connection request sent to ${connectedTo}`}
+              msg={`${CONNECTION_REQUEST_MSG} to ${connectedTo}`}
               close={this.closeConnectionNotification}
             />
           )}
         {connectedTo &&
-          !isCoworker && (
+          isCoworker && (
             <Notification
-              msg={`Connection Request sent to ${connectedTo}`}
+              msg={`${COWORKER_REQUEST_MSG} to ${connectedTo}`}
               close={this.closeConnectionNotification}
             />
           )}
