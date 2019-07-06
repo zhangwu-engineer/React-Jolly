@@ -4,8 +4,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { generate } from 'shortid';
 import cx from 'classnames';
-import { debounce, capitalize } from 'lodash-es';
-import update from 'immutability-helper';
+import { debounce } from 'lodash-es';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -15,24 +14,22 @@ import FormControl from '@material-ui/core/FormControl';
 import SearchIcon from '@material-ui/icons/Search';
 import Button from '@material-ui/core/Button';
 
+import { history } from 'components/ConnectedRouter';
 import Preloader from 'components/Preloader';
 import Link from 'components/Link';
 import BusinessSidebar from 'components/BusinessSidebar';
 import EditableInput from 'components/EditableInput';
 import UserCard from 'components/UserCard';
 import ConnectionCard from 'components/ConnectionCard';
-import VouchInviteFormModal from 'components/VouchInviteFormModal';
-import Notification from 'components/Notification';
 import NetworkNav from 'components/NetworkNav';
 import CustomSelect from 'components/CustomSelect';
 
 import ROLES from 'enum/roles';
 import { ACTIVE_OPTIONS } from 'enum/constants';
 
-import { requestCityUsers } from 'containers/App/sagas';
+import { requestCityUsersConnected } from 'containers/App/sagas';
 import saga, {
   reducer,
-  requestCreateConnection,
   requestRemoveConnection,
   requestAcceptConnection,
   requestConnections,
@@ -277,11 +274,11 @@ const styles = theme => ({
 
 type Props = {
   user: Object, // eslint-disable-line
-  cityUsers: List<Object>,
+  cityUsersConnected: List<Object>,
   total: number, // eslint-disable-line
   page: number, // eslint-disable-line
-  isCityUsersLoading: boolean, // eslint-disable-line
-  cityUsersError: string, // eslint-disable-line
+  isCityUsersConnectedLoading: boolean, // eslint-disable-line
+  cityUsersConnectedError: string, // eslint-disable-line
   connections: List<Object>,
   isCreating: boolean, // eslint-disable-line
   createError: string, // eslint-disable-line
@@ -290,15 +287,13 @@ type Props = {
   isAccepting: boolean,
   acceptError: string,
   classes: Object,
-  requestCityUsers: Function,
-  requestCreateConnection: Function,
+  requestCityUsersConnected: Function,
   requestRemoveConnection: Function,
   requestAcceptConnection: Function,
   requestConnections: Function,
 };
 
 type State = {
-  isFormOpen: boolean,
   selectedUser: ?Object,
   initialValues: Object,
   jobs: Array<Object>,
@@ -313,7 +308,7 @@ type State = {
   page: number,
 };
 
-class BusinessNetworkPage extends Component<Props, State> {
+class ConnectedUsersPage extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State) {
     if (nextProps.isCreating && prevState.sentTo) {
       return {
@@ -344,11 +339,7 @@ class BusinessNetworkPage extends Component<Props, State> {
     return null;
   }
   state = {
-    isFormOpen: false,
-    selectedUser: null,
     invitedUserIds: [],
-    sentTo: null,
-    showNotification: false,
     selectedTab: 0,
     query: '',
     filter: {
@@ -364,8 +355,8 @@ class BusinessNetworkPage extends Component<Props, State> {
     const businesses =
       user && user.get('businesses') && user.get('businesses').toJSON();
     const currentBusiness = businesses && businesses[0];
-    if (user.getIn(['profile', 'location'])) {
-      this.props.requestCityUsers(
+    if (user.getIn(['profile', 'location']) && currentBusiness) {
+      this.props.requestCityUsersConnected(
         filter.location,
         query,
         page,
@@ -387,56 +378,8 @@ class BusinessNetworkPage extends Component<Props, State> {
       this.props.requestConnections();
     }
   }
-  closeFormModal = () => {
-    this.setState({ isFormOpen: false });
-  };
-  openFormModal = user => {
-    this.setState({ selectedUser: user, isFormOpen: true });
-  };
-  handleConnectionInvite = (toUser, isCoworker) => {
-    const { user } = this.props;
-    const businesses =
-      user && user.get('businesses') && user.get('businesses').toJSON();
-    const currentBusiness = businesses && businesses[0];
-    this.setState(
-      update(this.state, {
-        invitedUserIds: { $push: [toUser.get('id')] },
-        connectedTo: { $set: capitalize(toUser.get('firstName')) },
-        isFormOpen: { $set: false },
-      }),
-      () => {
-        this.props.requestCreateConnection({
-          toUserId: toUser.get('id'),
-          isCoworker,
-          from: currentBusiness.id,
-          connectionType: 'b2f',
-        });
-      }
-    );
-  };
-  handleSendInvite = email => {
-    this.setState(
-      update(this.state, {
-        sentTo: { $set: email },
-      }),
-      () => {
-        this.props.requestCreateConnection({ email });
-      }
-    );
-  };
-  closeNotification = () => {
-    this.setState({
-      sentTo: null,
-      showNotification: false,
-    });
-  };
-  closeConnectionNotification = () => {
-    this.setState({
-      connectedTo: null,
-    });
-  };
-  handleChangeTab = (e, value) => {
-    this.setState({ selectedTab: value });
+  gotoUserProfile = user => {
+    history.push(`/f/${user.get('slug')}`);
   };
   filterRole = e => {
     const { id, value } = e.target;
@@ -452,20 +395,21 @@ class BusinessNetworkPage extends Component<Props, State> {
     }
   };
   debouncedSearch = debounce(() => {
-    const { user } = this.props;
     const { query, filter, page } = this.state;
+    const { user } = this.props;
     const businesses =
       user && user.get('businesses') && user.get('businesses').toJSON();
     const currentBusiness = businesses && businesses[0];
-    this.props.requestCityUsers(
-      filter.location,
-      query,
-      page,
-      perPage,
-      filter.selectedRole,
-      filter.activeStatus,
-      currentBusiness.id
-    );
+    if (currentBusiness)
+      this.props.requestCityUsersConnected(
+        filter.location,
+        query,
+        page,
+        perPage,
+        filter.selectedRole,
+        filter.activeStatus,
+        currentBusiness.id
+      );
   }, 500);
   handleChange = e => {
     e.persist();
@@ -544,24 +488,13 @@ class BusinessNetworkPage extends Component<Props, State> {
   render() {
     const {
       connections,
-      cityUsers,
+      cityUsersConnected,
       classes,
       total,
       user,
-      isCityUsersLoading,
+      isCityUsersConnectedLoading,
     } = this.props;
-    const {
-      isFormOpen,
-      selectedUser,
-      sentTo,
-      showNotification,
-      invitedUserIds,
-      connectedTo,
-      selectedTab,
-      query,
-      filter,
-      page,
-    } = this.state;
+    const { invitedUserIds, selectedTab, query, filter, page } = this.state;
     const pendingConnections =
       connections &&
       connections.filter(connection => connection.get('status') === 'PENDING');
@@ -574,18 +507,6 @@ class BusinessNetworkPage extends Component<Props, State> {
     return (
       <React.Fragment>
         <NetworkNav isBusinessNetwork />
-        {showNotification && (
-          <Notification
-            msg={`Connection Request Sent to ${sentTo}`}
-            close={this.closeNotification}
-          />
-        )}
-        {connectedTo && (
-          <Notification
-            msg={`Connection Request Sent to ${connectedTo}`}
-            close={this.closeConnectionNotification}
-          />
-        )}
         <div className={classes.root}>
           {currentBusiness && (
             <div className={classes.businessSidebar}>
@@ -636,7 +557,11 @@ class BusinessNetworkPage extends Component<Props, State> {
                         classes.findFreelancersCount
                       )}
                     >
-                      {`${cityUsers ? cityUsers.toJSON().length : 0} Filtered`}
+                      {`${
+                        cityUsersConnected
+                          ? cityUsersConnected.toJSON().length
+                          : 0
+                      } Filtered`}
                       &nbsp;&sdot;&nbsp;
                     </span>
                     <Link
@@ -768,7 +693,7 @@ class BusinessNetworkPage extends Component<Props, State> {
                   </FormControl>
                 </Grid>
               </Grid>
-              {isCityUsersLoading && (
+              {isCityUsersConnectedLoading && (
                 <Grid container className={classes.progressContainer}>
                   <Preloader />
                 </Grid>
@@ -779,11 +704,11 @@ class BusinessNetworkPage extends Component<Props, State> {
                   spacing={8}
                   className={classes.cityUsersContainer}
                 >
-                  {cityUsers.map(cityUser => (
+                  {cityUsersConnected.map(cityUser => (
                     <Grid item key={generate()} xs={12} lg={6}>
                       <UserCard
                         user={cityUser}
-                        onSelect={this.openFormModal}
+                        onSelect={this.gotoUserProfile}
                         selected={invitedUserIds.includes(cityUser.get('id'))}
                       />
                     </Grid>
@@ -806,13 +731,6 @@ class BusinessNetworkPage extends Component<Props, State> {
             </div>
           </div>
         </div>
-        <VouchInviteFormModal
-          isOpen={isFormOpen}
-          isBusinessNetwork
-          user={selectedUser}
-          onCloseModal={this.closeFormModal}
-          onInvite={this.handleConnectionInvite}
-        />
       </React.Fragment>
     );
   }
@@ -820,15 +738,15 @@ class BusinessNetworkPage extends Component<Props, State> {
 
 const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
-  cityUsers: state.getIn(['app', 'cityUsers', 'users']),
+  cityUsersConnected: state.getIn(['app', 'cityUsersConnected', 'users']),
   total: state.getIn(['app', 'cityUsers', 'total']),
   page: state.getIn(['app', 'cityUsers', 'page']),
-  isCityUsersLoading: state.getIn(['app', 'isCityUsersLoading']),
-  cityUsersError: state.getIn(['app', 'cityUsersError']),
-  coworkers: state.getIn(['app', 'coworkers']),
+  isCityUsersConnectedLoading: state.getIn([
+    'app',
+    'isCityUsersConnectedLoading',
+  ]),
+  cityUsersConnectedError: state.getIn(['app', 'cityUsersConnectedError']),
   connections: state.getIn(['network', 'connections']),
-  isCreating: state.getIn(['network', 'isCreating']),
-  createError: state.getIn(['network', 'createError']),
   isRemoving: state.getIn(['network', 'isRemoving']),
   removeError: state.getIn(['network', 'removeError']),
   isAccepting: state.getIn(['network', 'isAccepting']),
@@ -836,14 +754,12 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  requestCreateConnection: payload =>
-    dispatch(requestCreateConnection(payload)),
   requestRemoveConnection: connectionId =>
     dispatch(requestRemoveConnection(connectionId)),
   requestAcceptConnection: connectionId =>
     dispatch(requestAcceptConnection(connectionId)),
   requestConnections: () => dispatch(requestConnections()),
-  requestCityUsers: (
+  requestCityUsersConnected: (
     city,
     query,
     page,
@@ -853,7 +769,7 @@ const mapDispatchToProps = dispatch => ({
     businessId
   ) =>
     dispatch(
-      requestCityUsers(
+      requestCityUsersConnected(
         city,
         query,
         page,
@@ -872,4 +788,4 @@ export default compose(
     mapDispatchToProps
   ),
   withStyles(styles)
-)(BusinessNetworkPage);
+)(ConnectedUsersPage);

@@ -73,6 +73,9 @@ class CoworkerCard extends Component<Props> {
         />
         <div className={classes.userInfo}>
           <Typography className={classes.location}>
+            {user.get('isCoworker') && (
+              <strong>Coworker&nbsp;&sdot;&nbsp;</strong>
+            )}
             {user.getIn(['profile', 'location'])}
           </Typography>
           <Typography className={classes.name}>

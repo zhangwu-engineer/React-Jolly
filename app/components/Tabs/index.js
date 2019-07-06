@@ -33,17 +33,6 @@ const styles = theme => ({
       backgroundColor: '#eaf1f7',
     },
   },
-  tabNormal: {
-    [theme.breakpoints.down('xs')]: {
-      display: 'none',
-    },
-  },
-  tabMobile: {
-    display: 'none',
-    [theme.breakpoints.down('xs')]: {
-      display: 'block',
-    },
-  },
   active: {
     fontWeight: 600,
     borderBottom: '4px solid #083f76',
@@ -71,26 +60,13 @@ class Tabs extends Component<Props> {
               <Typography
                 className={cx(
                   index === activeIndex ? classes.active : classes.classes,
-                  classes.tabItem,
-                  classes.tabNormal
+                  classes.tabItem
                 )}
                 onClick={() => {
                   if (index !== activeIndex) this.props.handleChange(item.link);
                 }}
               >
                 {item.caption}
-              </Typography>
-              <Typography
-                className={cx(
-                  index === activeIndex ? classes.active : classes.classes,
-                  classes.tabItem,
-                  classes.tabMobile
-                )}
-                onClick={() => {
-                  if (index !== activeIndex) this.props.handleChange(item.link);
-                }}
-              >
-                {item.captionForMobile}
               </Typography>
             </Grid>
           ))}
