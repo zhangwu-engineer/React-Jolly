@@ -61,6 +61,8 @@ const styles = theme => ({
     fontSize: 14,
     fontWeight: 600,
     color: '#7f7f7f',
+    textTransform: 'none',
+    textDecoration: 'none',
   },
   content: {
     fontSize: 14,
@@ -344,10 +346,13 @@ class PostCard extends Component<Props, State> {
                 </Grid>
               </Grid>
             }
-            secondary={`${timeAgo} ago`}
-            classes={{
-              secondary: classes.time,
-            }}
+            secondary={
+              <Grid item>
+                <Link to={`/feed/${post.get('id')}`} className={classes.time}>
+                  {`${timeAgo} ago`}
+                </Link>
+              </Grid>
+            }
           />
         </ListItem>
         <Typography className={classes.content}>
