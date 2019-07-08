@@ -739,8 +739,8 @@ class ConnectedUsersPage extends Component<Props, State> {
 const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
   cityUsersConnected: state.getIn(['app', 'cityUsersConnected', 'users']),
-  total: state.getIn(['app', 'cityUsers', 'total']),
-  page: state.getIn(['app', 'cityUsers', 'page']),
+  total: state.getIn(['app', 'cityUsersConnected', 'total']),
+  page: state.getIn(['app', 'cityUsersConnected', 'page']),
   isCityUsersConnectedLoading: state.getIn([
     'app',
     'isCityUsersConnectedLoading',
