@@ -20,7 +20,6 @@ import Link from 'components/Link';
 import BusinessSidebar from 'components/BusinessSidebar';
 import EditableInput from 'components/EditableInput';
 import UserCard from 'components/UserCard';
-import ConnectionCard from 'components/ConnectionCard';
 import VouchInviteFormModal from 'components/VouchInviteFormModal';
 import Notification from 'components/Notification';
 import NetworkNav from 'components/NetworkNav';
@@ -33,9 +32,6 @@ import { requestCityUsers } from 'containers/App/sagas';
 import saga, {
   reducer,
   requestCreateConnection,
-  requestRemoveConnection,
-  requestAcceptConnection,
-  requestConnections,
 } from 'containers/Network/sagas';
 import injectSagas from 'utils/injectSagas';
 
@@ -282,19 +278,11 @@ type Props = {
   page: number, // eslint-disable-line
   isCityUsersLoading: boolean, // eslint-disable-line
   cityUsersError: string, // eslint-disable-line
-  connections: List<Object>,
   isCreating: boolean, // eslint-disable-line
   createError: string, // eslint-disable-line
-  isRemoving: boolean,
-  removeError: string,
-  isAccepting: boolean,
-  acceptError: string,
   classes: Object,
   requestCityUsers: Function,
   requestCreateConnection: Function,
-  requestRemoveConnection: Function,
-  requestAcceptConnection: Function,
-  requestConnections: Function,
 };
 
 type State = {
@@ -375,17 +363,7 @@ class BusinessNetworkPage extends Component<Props, State> {
         currentBusiness.id
       );
     }
-    this.props.requestConnections();
     window.localStorage.setItem('isBusinessActive', 'yes');
-  }
-  componentDidUpdate(prevProps: Props) {
-    const { isRemoving, removeError, isAccepting, acceptError } = this.props;
-    if (prevProps.isRemoving && !isRemoving && !removeError) {
-      this.props.requestConnections();
-    }
-    if (prevProps.isAccepting && !isAccepting && !acceptError) {
-      this.props.requestConnections();
-    }
   }
   closeFormModal = () => {
     this.setState({ isFormOpen: false });
@@ -542,14 +520,7 @@ class BusinessNetworkPage extends Component<Props, State> {
     );
   };
   render() {
-    const {
-      connections,
-      cityUsers,
-      classes,
-      total,
-      user,
-      isCityUsersLoading,
-    } = this.props;
+    const { cityUsers, classes, total, user, isCityUsersLoading } = this.props;
     const {
       isFormOpen,
       selectedUser,
@@ -562,9 +533,6 @@ class BusinessNetworkPage extends Component<Props, State> {
       filter,
       page,
     } = this.state;
-    const pendingConnections =
-      connections &&
-      connections.filter(connection => connection.get('status') === 'PENDING');
     const loadMore = total > page * perPage;
 
     const businesses =
@@ -594,33 +562,6 @@ class BusinessNetworkPage extends Component<Props, State> {
           )}
           <div className={classes.content}>
             <div className={classes.rightPanel}>
-              {pendingConnections &&
-                pendingConnections.size > 0 && (
-                  <React.Fragment>
-                    <Grid container spacing={8}>
-                      <Grid item xs={12} lg={12}>
-                        <Typography className={classes.pendingConnectionsTitle}>
-                          Pending Connections
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                    <Grid
-                      container
-                      spacing={8}
-                      className={classes.pendingConnections}
-                    >
-                      {pendingConnections.map(connection => (
-                        <Grid item key={generate()} xs={12} lg={12}>
-                          <ConnectionCard
-                            connection={connection}
-                            ignore={this.props.requestRemoveConnection}
-                            accept={this.props.requestAcceptConnection}
-                          />
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </React.Fragment>
-                )}
               <Grid container alignItems="center" spacing={8}>
                 <Grid item xs={12} md={8}>
                   <Typography
@@ -826,23 +767,13 @@ const mapStateToProps = state => ({
   isCityUsersLoading: state.getIn(['app', 'isCityUsersLoading']),
   cityUsersError: state.getIn(['app', 'cityUsersError']),
   coworkers: state.getIn(['app', 'coworkers']),
-  connections: state.getIn(['network', 'connections']),
   isCreating: state.getIn(['network', 'isCreating']),
   createError: state.getIn(['network', 'createError']),
-  isRemoving: state.getIn(['network', 'isRemoving']),
-  removeError: state.getIn(['network', 'removeError']),
-  isAccepting: state.getIn(['network', 'isAccepting']),
-  acceptError: state.getIn(['network', 'acceptError']),
 });
 
 const mapDispatchToProps = dispatch => ({
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
-  requestRemoveConnection: connectionId =>
-    dispatch(requestRemoveConnection(connectionId)),
-  requestAcceptConnection: connectionId =>
-    dispatch(requestAcceptConnection(connectionId)),
-  requestConnections: () => dispatch(requestConnections()),
   requestCityUsers: (
     city,
     query,
