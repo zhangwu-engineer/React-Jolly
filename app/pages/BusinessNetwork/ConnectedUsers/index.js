@@ -495,7 +495,7 @@ class ConnectedUsersPage extends Component<Props, State> {
                       classes.findTitleWrap
                     )}
                   >
-                    <span>Find Freelancers&nbsp;</span>
+                    <span>Connections&nbsp;</span>
                     <span
                       className={cx(
                         classes.findFreelancersTitle,
