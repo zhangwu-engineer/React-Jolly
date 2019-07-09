@@ -106,6 +106,7 @@
     "progressbar.js": "^1.0.1",
     "qs": "^6.4.0",
     "react": "16.8.6",
+    "react-device-detect": "^1.6.2",
     "react-dom": "16.8.6",
     "react-dropzone": "^7.0.1",
     "react-foundation-components": "0.14.0",
