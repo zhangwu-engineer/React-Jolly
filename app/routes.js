@@ -37,6 +37,7 @@ const ConnectedBusinesses = load(() =>
 const NetworkInvite = load(() => import('pages/Network/Invite'));
 const Feed = load(() => import('pages/Feed'));
 const FeedDetail = load(() => import('pages/FeedDetail'));
+const FeedDetailMobile = load(() => import('pages/FeedDetail/Mobile'));
 const AdminLogin = load(() => import('pages/Admin/Login'));
 const Admin = load(() => import('pages/Admin'));
 const FourOfour = load(() => import('pages/404'));
@@ -176,6 +177,7 @@ class Routes extends Component<{}> {
           exact
           path="/feed/:slug"
           render={props => <FeedDetail {...props} />}
+          renderMobile={props => <FeedDetailMobile {...props} />}
         />
         <Route
           exact
