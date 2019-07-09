@@ -159,7 +159,7 @@ type State = {
   editingPost: Object,
 };
 
-class FeedPage extends Component<Props, State> {
+class FeedDetailPage extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State) {
     if (nextProps.user && prevState.query === undefined) {
       return {
@@ -404,4 +404,4 @@ export default compose(
     mapDispatchToProps
   ),
   withStyles(styles)
-)(FeedPage);
+)(FeedDetailPage);
