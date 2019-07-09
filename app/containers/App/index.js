@@ -8,17 +8,19 @@ import { withRouter, matchPath } from 'react-router';
 import { Switch, Redirect } from 'react-router-dom';
 import { fromJS } from 'immutable';
 import { capitalize } from 'lodash-es';
-import { Route } from 'components/Routes';
-import { history } from 'components/ConnectedRouter';
+import { isMobile } from 'react-device-detect';
 import injectSagas from 'utils/injectSagas';
 import TrackPage from 'utils/Analytics/trackPage';
 import UserIdentity from 'utils/Analytics/userIdentity';
 import Intercom from 'react-intercom';
-import CONFIG from 'conf';
 
-import Header from 'components/Header';
 import Routes from 'routes';
+import { Route } from 'components/Routes';
+import { history } from 'components/ConnectedRouter';
+import Header from 'components/Header';
 import PageMeta from 'components/PageMeta';
+
+import CONFIG from 'conf';
 import saga, {
   reducer,
   logout,
@@ -151,6 +153,7 @@ class App extends Component<Props> {
           <Route path="/add" />
           <Route path="/f/:slug/e/:eventSlug" />
           <Route path="/admin" />
+          {isMobile && <Route path="/feed/:slug" />}
           {pathname === '/' && <Route path="/" />}
           <Route
             path="/"
