@@ -25,6 +25,7 @@ import InviteForm from 'components/InviteForm';
 import Notification from 'components/Notification';
 import NetworkNav from 'components/NetworkNav';
 import CustomSelect from 'components/CustomSelect';
+import { CONNECTION_REQUEST_MSG, COWORKER_REQUEST_MSG } from 'enum/connection';
 
 import ROLES from 'enum/roles';
 
@@ -271,6 +272,7 @@ type State = {
   initialValues: Object,
   jobs: Array<Object>,
   sentTo: ?string,
+  coworkerInvitationSent: boolean,
   isInviting: boolean,
   showNotification: boolean,
   connectedTo: ?string,
@@ -316,6 +318,7 @@ class NetworkPage extends Component<Props, State> {
     selectedUser: null,
     invitedUserIds: [],
     sentTo: null,
+    coworkerInvitationSent: false,
     isInviting: false,
     showNotification: false,
     selectedTab: 0,
@@ -370,6 +373,7 @@ class NetworkPage extends Component<Props, State> {
         invitedUserIds: { $push: [user.get('id')] },
         connectedTo: { $set: capitalize(user.get('firstName')) },
         isFormOpen: { $set: false },
+        coworkerInvitationSent: { $set: isCoworker },
       }),
       () => {
         this.props.requestCreateConnection({
@@ -489,6 +493,7 @@ class NetworkPage extends Component<Props, State> {
       showNotification,
       invitedUserIds,
       connectedTo,
+      coworkerInvitationSent,
       selectedTab,
       query,
       filter,
@@ -508,12 +513,20 @@ class NetworkPage extends Component<Props, State> {
             close={this.closeNotification}
           />
         )}
-        {connectedTo && (
-          <Notification
-            msg={`Coworker connection request sent to ${connectedTo}`}
-            close={this.closeConnectionNotification}
-          />
-        )}
+        {connectedTo &&
+          !coworkerInvitationSent && (
+            <Notification
+              msg={`${CONNECTION_REQUEST_MSG} to ${connectedTo}`}
+              close={this.closeConnectionNotification}
+            />
+          )}
+        {connectedTo &&
+          coworkerInvitationSent && (
+            <Notification
+              msg={`${COWORKER_REQUEST_MSG} to ${connectedTo}`}
+              close={this.closeConnectionNotification}
+            />
+          )}
         <div className={classes.content}>
           <div className={classes.leftPanel}>
             <Link
