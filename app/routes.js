@@ -1,7 +1,7 @@
 // @flow
 
 import React, { Component } from 'react';
-import { Switch, Redirect } from 'react-router-dom';
+import { Switch } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import load from 'utils/load';
 
@@ -32,6 +32,7 @@ const Network = load(() => import('pages/Network'));
 const Coworkers = load(() => import('pages/Network/Coworkers'));
 const NetworkInvite = load(() => import('pages/Network/Invite'));
 const Feed = load(() => import('pages/Feed'));
+const FeedDetail = load(() => import('pages/FeedDetail'));
 const AdminLogin = load(() => import('pages/Admin/Login'));
 const Admin = load(() => import('pages/Admin'));
 const FourOfour = load(() => import('pages/404'));
@@ -149,6 +150,11 @@ class Routes extends Component<{}> {
           exact
           path="/feed"
           render={props => <Feed {...props} />}
+        />
+        <PrivateRoute
+          exact
+          path="/feed/:slug"
+          render={props => <FeedDetail {...props} />}
         />
         <Route
           exact
