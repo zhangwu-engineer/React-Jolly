@@ -4,9 +4,14 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { generate } from 'shortid';
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import Typography from '@material-ui/core/Typography';
 
 import PostFormModal from 'components/PostFormModal';
 import PostCard from 'components/PostCard';
+import Link from 'components/Link';
 
 import saga, {
   reducer,
@@ -29,37 +34,38 @@ const styles = theme => ({
       paddingTop: 0,
       width: '100%',
       display: 'block',
-      margin: '10px auto',
     },
   },
-  leftPanel: {
-    width: 223,
-    marginRight: 26,
-    [theme.breakpoints.down('xs')]: {
-      display: 'none',
-    },
+  header: {
+    flexGrow: 1,
+    padding: '3px 15px',
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.common.white,
+    marginBottom: '10px',
+    position: 'relative',
   },
-  profileInfo: {
-    marginBottom: 30,
-    paddingLeft: 12,
-  },
-  avatar: {
-    width: 60,
-    height: 60,
-    marginRight: 20,
-  },
-  greetings: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#373737',
-    textTransform: 'capitalize',
-  },
-  link: {
-    fontSize: 14,
-    fontWeight: 600,
-    letterSpacing: '0.7px',
+  backButton: {
+    color: theme.palette.common.white,
     textTransform: 'none',
-    textDecoration: 'none',
+    paddingLeft: 0,
+    '&:hover': {
+      color: theme.palette.common.white,
+    },
+  },
+  logoContainer: {
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
+  },
+  logoText: {
+    color: theme.palette.common.white,
+    fontSize: 20,
+    fontWeight: 600,
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+    },
   },
   content: {
     flex: 1,
@@ -67,48 +73,6 @@ const styles = theme => ({
       height: 'calc(100vh - 103px)',
       overflowY: 'scroll',
     },
-  },
-  createPostPanel: {
-    backgroundColor: theme.palette.common.white,
-    padding: '15px 20px 18px 21px',
-    boxShadow: '0 10px 15px 5px rgba(0, 0, 0, 0.05)',
-    cursor: 'pointer',
-    marginBottom: 30,
-  },
-  createPostAvatar: {
-    width: 45,
-    height: 45,
-    marginRight: 20,
-  },
-  createPostTitle: {
-    fontSize: 16,
-    fontWeight: 600,
-    letterSpacing: 0.3,
-    color: '#9f9f9f',
-  },
-  rightPanel: {
-    width: 223,
-    marginLeft: 26,
-    [theme.breakpoints.down('xs')]: {
-      display: 'none',
-    },
-  },
-  mobileMenu: {
-    backgroundColor: '#083f76',
-    height: 55,
-    display: 'none',
-    [theme.breakpoints.down('xs')]: {
-      display: 'flex',
-    },
-  },
-  mobileButtonWrapper: {
-    marginLeft: 10,
-    marginRight: 10,
-  },
-  mobileButton: {
-    fontWeight: 600,
-    color: theme.palette.common.white,
-    textTransform: 'none',
   },
 });
 
@@ -214,6 +178,26 @@ class FeedDetailMobile extends Component<Props, State> {
     return (
       <React.Fragment>
         <div className={classes.root}>
+          <Grid
+            className={classes.header}
+            container
+            justify="space-between"
+            alignItems="center"
+          >
+            <Grid item>
+              <Button
+                className={classes.backButton}
+                component={props => <Link to="/feed" {...props} />}
+              >
+                <ArrowBackIcon />
+              </Button>
+            </Grid>
+            <Grid item className={classes.logoContainer}>
+              <Link to="/">
+                <Typography className={classes.logoText}>J</Typography>
+              </Link>
+            </Grid>
+          </Grid>
           <div className={classes.content}>
             {posts &&
               posts.map(post => (
