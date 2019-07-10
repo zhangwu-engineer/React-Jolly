@@ -12,6 +12,7 @@ import { Route } from 'components/Routes';
 import { history } from 'components/ConnectedRouter';
 import injectSagas from 'utils/injectSagas';
 import TrackPage from 'utils/Analytics/trackPage';
+import UserIdentity from 'utils/Analytics/userIdentity';
 import Intercom from 'react-intercom';
 import CONFIG from 'conf';
 
@@ -89,27 +90,7 @@ class App extends Component<Props> {
     if (prevProps && prevProps.location.pathname !== location.pathname) {
       TrackPage.send(location, user);
     }
-    if (user) {
-      analytics.identify(user.get('id'), {
-        full_name: `${user.get('firstName')} ${user.get('lastName')}`,
-        email: user.get('email'),
-        distance: user.getIn(['profile', 'distance']),
-        linkedin: user.getIn(['profile', 'linkedin']),
-        twitter: user.getIn(['profile', 'twitter']),
-        location: user.getIn(['profile', 'location']),
-        youtube: user.getIn(['profile', 'youtube']),
-        facebook: user.getIn(['profile', 'facebook']),
-        phone: user.getIn(['profile', 'phone']),
-        bio: user.getIn(['profile', 'bio']),
-        background_picture: user.getIn(['profile', 'backgroundImage']),
-        profile_picture: user.getIn(['profile', 'avatar']),
-        source: user.get('source'),
-        cred_count: user.getIn(['profile', 'cred']),
-        returning_user: user.get('loginCount') > 0 ? 1 : 0,
-        created_at: user.get('date_created'),
-        isHirer: user.getIn(['profile', 'isHirer']),
-      });
-    }
+    if (user) UserIdentity.send(user);
   }
   intercomUserParams = user => {
     if (user) {
