@@ -22,6 +22,7 @@ import UserAvatar from 'components/UserAvatar';
 import Icon from 'components/Icon';
 import CommentCard from 'components/CommentCard';
 import Link from 'components/Link';
+import copyToClipBoard from 'utils/copyToClipBoard';
 
 import CredIcon from 'images/sprite/cred.svg';
 import CredFilledIcon from 'images/sprite/cred_filled.svg';
@@ -60,6 +61,8 @@ const styles = theme => ({
     fontSize: 14,
     fontWeight: 600,
     color: '#7f7f7f',
+    textTransform: 'none',
+    textDecoration: 'none',
   },
   content: {
     fontSize: 14,
@@ -186,12 +189,14 @@ type Props = {
 type State = {
   open: boolean,
   comment: string,
+  isCopied: boolean,
 };
 
 class PostCard extends Component<Props, State> {
   state = {
     open: false,
     comment: '',
+    isCopied: false,
   };
   handleToggle = () => {
     this.setState(state => ({ open: !state.open }));
@@ -222,7 +227,7 @@ class PostCard extends Component<Props, State> {
   anchorEl: HTMLElement;
   render() {
     const { post, currentUser, classes } = this.props;
-    const { open, comment } = this.state;
+    const { open, comment, isCopied } = this.state;
     const user = post.get('user');
     const category = CATEGORY_OPTIONS.filter(
       option => option.value === post.get('category')
@@ -243,17 +248,15 @@ class PostCard extends Component<Props, State> {
     const commentsLeft = post.get('fullComments').size - commentsTotalCount;
     return (
       <div className={classes.root}>
-        {user.get('id') === currentUser.get('id') && (
-          <Button
-            buttonRef={node => {
-              this.anchorEl = node;
-            }}
-            onClick={this.handleToggle}
-            className={classes.menuButton}
-          >
-            <MoreIcon />
-          </Button>
-        )}
+        <Button
+          buttonRef={node => {
+            this.anchorEl = node;
+          }}
+          onClick={this.handleToggle}
+          className={classes.menuButton}
+        >
+          <MoreIcon />
+        </Button>
         <Popper
           open={open}
           anchorEl={this.anchorEl}
@@ -265,29 +268,53 @@ class PostCard extends Component<Props, State> {
               <Paper square classes={{ root: classes.menu }}>
                 <ClickAwayListener onClickAway={this.handleClose}>
                   <MenuList className={classes.menuList}>
+                    {user.get('id') === currentUser.get('id') && (
+                      <React.Fragment>
+                        <MenuItem
+                          className={classes.menuItem}
+                          onClick={e => {
+                            this.handleClose(e);
+                            this.props.removePost(post.get('id'));
+                          }}
+                        >
+                          <ListItemText
+                            classes={{ primary: classes.menuItemText }}
+                            primary="Delete Post"
+                          />
+                        </MenuItem>
+                        <MenuItem
+                          className={classes.menuItem}
+                          onClick={e => {
+                            this.handleClose(e);
+                            this.props.editPost(post);
+                          }}
+                        >
+                          <ListItemText
+                            classes={{ primary: classes.menuItemText }}
+                            primary="Edit Post"
+                          />
+                        </MenuItem>
+                      </React.Fragment>
+                    )}
                     <MenuItem
                       className={classes.menuItem}
-                      onClick={e => {
-                        this.handleClose(e);
-                        this.props.removePost(post.get('id'));
+                      onClick={() => {
+                        copyToClipBoard(`/feed/${post.get('id')}`);
+                        this.setState({ isCopied: true });
                       }}
                     >
-                      <ListItemText
-                        classes={{ primary: classes.menuItemText }}
-                        primary="Delete Post"
-                      />
-                    </MenuItem>
-                    <MenuItem
-                      className={classes.menuItem}
-                      onClick={e => {
-                        this.handleClose(e);
-                        this.props.editPost(post);
-                      }}
-                    >
-                      <ListItemText
-                        classes={{ primary: classes.menuItemText }}
-                        primary="Edit Post"
-                      />
+                      {isCopied && (
+                        <ListItemText
+                          classes={{ primary: classes.menuItemText }}
+                          primary="Copied!"
+                        />
+                      )}
+                      {!isCopied && (
+                        <ListItemText
+                          classes={{ primary: classes.menuItemText }}
+                          primary="Copy link to Post"
+                        />
+                      )}
                     </MenuItem>
                   </MenuList>
                 </ClickAwayListener>
@@ -319,10 +346,13 @@ class PostCard extends Component<Props, State> {
                 </Grid>
               </Grid>
             }
-            secondary={`${timeAgo} ago`}
-            classes={{
-              secondary: classes.time,
-            }}
+            secondary={
+              <Grid item>
+                <Link to={`/feed/${post.get('id')}`} className={classes.time}>
+                  {`${timeAgo} ago`}
+                </Link>
+              </Grid>
+            }
           />
         </ListItem>
         <Typography className={classes.content}>

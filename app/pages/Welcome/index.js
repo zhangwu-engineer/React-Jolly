@@ -55,25 +55,7 @@ class Welcome extends Component<Props> {
   handleFBLoginFailure = (err: any) => {
     console.log(err); // eslint-disable-line
   };
-  handleLinkedInLogin = (user: Object) => {
-    const {
-      _token: { accessToken },
-    } = user;
-    const {
-      location: { pathname },
-    } = this.props;
-    const isBusiness = pathname === '/business-signup';
-    this.props.requestSocialLogin(
-      { access_token: accessToken },
-      'linkedin',
-      isBusiness,
-      storage.get('invite')
-    );
-  };
 
-  handleLinkedInLoginFailure = (err: any) => {
-    console.log(err); // eslint-disable-line
-  };
   render() {
     const {
       location: { pathname },
@@ -99,15 +81,6 @@ class Welcome extends Component<Props> {
               className="welcome__btn purple-blue"
             >
               Continue with facebook
-            </SocialButton>
-            <SocialButton
-              provider="linkedin"
-              appId={CONFIG.LINKEDIN.APP_ID}
-              onLoginSuccess={this.handleLinkedInLogin}
-              onLoginFailure={this.handleLinkedInLoginFailure}
-              className="welcome__btn secondary"
-            >
-              Continue with linkedin
             </SocialButton>
             <h1 className="welcome__divider">or</h1>
             <Button

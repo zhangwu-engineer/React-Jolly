@@ -11,6 +11,7 @@ import { capitalize } from 'lodash-es';
 import { Route } from 'components/Routes';
 import { history } from 'components/ConnectedRouter';
 import injectSagas from 'utils/injectSagas';
+import TrackPage from 'utils/Analytics/trackPage';
 import UserIdentity from 'utils/Analytics/userIdentity';
 import Intercom from 'react-intercom';
 import CONFIG from 'conf';
@@ -62,26 +63,18 @@ class App extends Component<Props> {
         history.push(`/f/${user.get('slug')}`);
       }
     }
-    if (location.pathname.startsWith('/f/')) {
-      analytics.page('User Profile', {
-        viewer:
-          user && user.get('slug') === location.pathname.split('/').slice(-1)[0]
-            ? 'this-user'
-            : 'other-user',
-      });
-    } else {
-      analytics.page(location.pathname);
 
-      const matchBusiness = matchPath(pathname, {
-        path: '/b/:slug',
-      });
-      if (matchBusiness) {
-        const {
-          params: { slug },
-        } = matchBusiness;
-        if (slug !== 'network') {
-          this.props.requestBusinessProfile(slug);
-        }
+    TrackPage.send(location, user);
+
+    const matchBusiness = matchPath(pathname, {
+      path: '/b/:slug',
+    });
+    if (matchBusiness) {
+      const {
+        params: { slug },
+      } = matchBusiness;
+      if (slug !== 'network') {
+        this.props.requestBusinessProfile(slug);
       }
     }
   }
@@ -95,17 +88,7 @@ class App extends Component<Props> {
       history.push(`/f/${user.get('slug')}`);
     }
     if (prevProps && prevProps.location.pathname !== location.pathname) {
-      if (location.pathname.startsWith('/f/')) {
-        analytics.page('User Profile', {
-          viewer:
-            user &&
-            user.get('slug') === location.pathname.split('/').slice(-1)[0]
-              ? 'this-user'
-              : 'other-user',
-        });
-      } else {
-        analytics.page(location.pathname);
-      }
+      TrackPage.send(location, user);
     }
     if (user) UserIdentity.send(user);
   }
