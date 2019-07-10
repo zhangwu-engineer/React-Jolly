@@ -66,20 +66,6 @@ class SignIn extends Component<Props> {
   handleFBLoginFailure = (err: any) => {
     console.log(err); // eslint-disable-line
   };
-  handleLinkedInLogin = (user: Object) => {
-    const {
-      _token: { accessToken },
-    } = user;
-    this.props.requestSocialLogin(
-      { access_token: accessToken },
-      'linkedin',
-      storage.get('invite')
-    );
-  };
-
-  handleLinkedInLoginFailure = (err: any) => {
-    console.log(err); // eslint-disable-line
-  };
   render() {
     const {
       location: {
@@ -110,15 +96,6 @@ class SignIn extends Component<Props> {
             >
               Sign In with facebook
             </SocialButton>
-            <SocialButton
-              provider="linkedin"
-              appId={CONFIG.LINKEDIN.APP_ID}
-              onLoginSuccess={this.handleLinkedInLogin}
-              onLoginFailure={this.handleLinkedInLoginFailure}
-              className="signin__btn secondary"
-            >
-              Sign In with linkedin
-            </SocialButton>
             <h1 className="signin__divider">or</h1>
             <Button
               className="signin__btn"
@@ -132,8 +109,7 @@ class SignIn extends Component<Props> {
               Sign in with email
             </Button>
             <div className="signin__signUpLink">
-              Don&apos;t have an account?{' '}
-              <Link to="/">Sign Up</Link>
+              Don&apos;t have an account? <Link to="/">Sign Up</Link>
             </div>
           </div>
         </div>
