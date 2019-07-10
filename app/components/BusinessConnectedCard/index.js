@@ -63,18 +63,18 @@ const styles = theme => ({
 type Props = {
   business: Object,
   classes: Object,
-  onSelect: Function,
 };
 
-class BusinessCard extends Component<Props> {
-  handleClick = () => {
+class BusinessConnectedCard extends Component<Props> {
+  viewProfile = () => {
     const { business } = this.props;
-    this.props.onSelect(business);
+    if (business.get('slug'))
+      window.open(`/b/${business.get('slug')}`, '_blank');
   };
   render() {
     const { business, classes } = this.props;
     return (
-      <ListItem className={classes.root} onClick={this.handleClick}>
+      <ListItem className={classes.root} onClick={this.viewProfile}>
         <UserAvatar
           className={
             business.get('name') ? classes.businessAvatar : classes.avatar
@@ -94,4 +94,4 @@ class BusinessCard extends Component<Props> {
   }
 }
 
-export default withStyles(styles)(BusinessCard);
+export default withStyles(styles)(BusinessConnectedCard);
