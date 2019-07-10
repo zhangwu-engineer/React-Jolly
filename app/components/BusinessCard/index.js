@@ -5,7 +5,9 @@ import { withStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
+import Icon from 'components/Icon';
 import UserAvatar from 'components/UserAvatar';
+import CheckIcon from 'images/sprite/green_checkmark.svg';
 
 const styles = theme => ({
   root: {
@@ -63,6 +65,7 @@ const styles = theme => ({
 type Props = {
   business: Object,
   classes: Object,
+  selected: boolean,
   onSelect: Function,
 };
 
@@ -72,7 +75,7 @@ class BusinessCard extends Component<Props> {
     this.props.onSelect(business);
   };
   render() {
-    const { business, classes } = this.props;
+    const { business, selected, classes } = this.props;
     return (
       <ListItem className={classes.root} onClick={this.handleClick}>
         <UserAvatar
@@ -89,6 +92,9 @@ class BusinessCard extends Component<Props> {
             secondary: classes.name,
           }}
         />
+        {selected && (
+          <Icon glyph={CheckIcon} size={20} className={classes.icon} />
+        )}
       </ListItem>
     );
   }

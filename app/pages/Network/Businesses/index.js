@@ -23,7 +23,7 @@ import EditableInput from 'components/EditableInput';
 import BusinessCard from 'components/BusinessCard';
 import ConnectionCard from 'components/ConnectionCard';
 import ConnectionFromBusinessCard from 'components/ConnectionFromBusinessCard';
-import VouchInviteFormModal from 'components/VouchInviteFormModal';
+import VouchBusinessInviteFormModal from 'components/VouchBusinessInviteFormModal';
 import InviteForm from 'components/InviteForm';
 import Notification from 'components/Notification';
 import NetworkNav from 'components/NetworkNav';
@@ -271,19 +271,18 @@ type Props = {
   requestRemoveConnection: Function,
   requestAcceptConnection: Function,
   requestConnections: Function,
-  currentUser: Object,
 };
 
 type State = {
   isFormOpen: boolean,
-  selectedUser: ?Object,
+  selectedBusiness: ?Object,
   initialValues: Object,
   jobs: Array<Object>,
   sentTo: ?string,
   isInviting: boolean,
   showNotification: boolean,
   connectedTo: ?string,
-  invitedUserIds: Array<string>,
+  invitedBusinessIds: Array<string>,
   selectedTab: number,
   filter: Object,
   query: string,
@@ -322,7 +321,8 @@ class NetworkBusinessesPage extends Component<Props, State> {
   }
   state = {
     isFormOpen: false,
-    selectedUser: null,
+    selectedBusiness: null,
+    invitedBusinessIds: [],
     sentTo: null,
     isInviting: false,
     isCoworker: false,
@@ -361,21 +361,24 @@ class NetworkBusinessesPage extends Component<Props, State> {
   closeFormModal = () => {
     this.setState({ isFormOpen: false });
   };
-  openFormModal = user => {
-    this.setState({ selectedUser: user, isFormOpen: true });
+  openFormModal = business => {
+    this.setState({ selectedBusiness: business, isFormOpen: true });
   };
-  handleConnectionInvite = (user, isCoworker) => {
+  handleConnectionInvite = business => {
+    const { user } = this.props;
     this.setState(
       update(this.state, {
-        invitedUserIds: { $push: [user.get('id')] },
-        connectedTo: { $set: capitalize(user.get('firstName')) },
+        invitedBusinessIds: { $push: [business.get('id')] },
+        connectedTo: { $set: capitalize(business.get('name')) },
         isFormOpen: { $set: false },
-        isCoworker: { $set: isCoworker },
       }),
       () => {
         this.props.requestCreateConnection({
-          toUserId: user.get('id'),
-          isCoworker,
+          to: business.get('id'),
+          toUserId: null,
+          from: user.get('id'),
+          fromUserId: user.get('id'),
+          connectionType: 'f2b',
         });
       }
     );
@@ -480,11 +483,11 @@ class NetworkBusinessesPage extends Component<Props, State> {
       isCityBusinessesLoading,
       classes,
       total,
-      currentUser,
     } = this.props;
     const {
       isFormOpen,
-      selectedUser,
+      selectedBusiness,
+      invitedBusinessIds,
       sentTo,
       isInviting,
       isCoworker,
@@ -668,6 +671,9 @@ class NetworkBusinessesPage extends Component<Props, State> {
                     <BusinessCard
                       business={cityBusiness}
                       onSelect={this.openFormModal}
+                      selected={invitedBusinessIds.includes(
+                        cityBusiness.get('id')
+                      )}
                     />
                   </Grid>
                 ))}
@@ -687,10 +693,9 @@ class NetworkBusinessesPage extends Component<Props, State> {
             )}
           </div>
         </div>
-        <VouchInviteFormModal
+        <VouchBusinessInviteFormModal
           isOpen={isFormOpen}
-          user={selectedUser}
-          currentUser={currentUser}
+          business={selectedBusiness}
           onCloseModal={this.closeFormModal}
           onInvite={this.handleConnectionInvite}
         />
@@ -700,7 +705,6 @@ class NetworkBusinessesPage extends Component<Props, State> {
 }
 
 const mapStateToProps = state => ({
-  currentUser: state.getIn(['app', 'user']),
   user: state.getIn(['app', 'user']),
   cityBusinesses: state.getIn(['app', 'cityBusinesses', 'businesses']),
   total: state.getIn(['app', 'cityBusinesses', 'total']),
