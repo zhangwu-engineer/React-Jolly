@@ -93,7 +93,8 @@ export const requestConnectedConnections = (
   city: string,
   query: string,
   role: string,
-  connection: string
+  connection: string,
+  connectionType: string
 ) => ({
   type: CONNECTED_CONNECTIONS + REQUESTED,
   payload: {
@@ -101,6 +102,7 @@ export const requestConnectedConnections = (
     query,
     role,
     connection,
+    connectionType,
   },
 });
 const connectedConnectionsRequestSuccess = (payload: Object) => ({
@@ -121,6 +123,7 @@ const connectedConnectionsRequestError = (error: string) => ({
 // ------------------------------------
 const initialState = fromJS({
   connections: null,
+  connectedConnections: null,
   isLoading: false,
   error: '',
   isCreating: false,
@@ -211,7 +214,7 @@ export const reducer = (
     case CONNECTED_CONNECTIONS + SUCCEDED:
       return state
         .set('isLoading', false)
-        .set('connections', fromJS(payload.connections))
+        .set('connectedConnections', fromJS(payload.connections))
         .set('error', '');
 
     case CONNECTED_CONNECTIONS + FAILED:
@@ -314,7 +317,7 @@ function* ConnectedConnectionsRequest({ payload }) {
   try {
     const response = yield call(request, {
       method: 'GET',
-      url: `${API_URL}/user/connections`,
+      url: `${API_URL}/connection/connected`,
       headers: { 'x-access-token': token },
       params: payload,
     });
