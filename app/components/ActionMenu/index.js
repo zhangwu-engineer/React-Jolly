@@ -54,9 +54,9 @@ class ActionMenu extends Component<Props, State> {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, data } = this.props;
     const { open } = this.state;
-
+    const userId = data._original.get('_id');
     return (
       <div className={classes.root}>
         <div>
@@ -92,6 +92,19 @@ class ActionMenu extends Component<Props, State> {
                       <MenuItem onClick={this.viewProfile}>
                         Go To Profile
                       </MenuItem>
+                    </MenuList>
+                  </ClickAwayListener>
+                  <ClickAwayListener onClickAway={this.handleClose}>
+                    <MenuList>
+                      {data._original.get('trusted') ? (
+                        <MenuItem>
+                          Trusted Freelancer
+                        </MenuItem>
+                        ) : (
+                        <MenuItem onClick={() => this.props.handleTrustFreelancerAction(userId)}>
+                          Trust Freelancer
+                        </MenuItem>
+                      )}
                     </MenuList>
                   </ClickAwayListener>
                 </Paper>

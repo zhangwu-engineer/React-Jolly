@@ -10,9 +10,10 @@ import Typography from '@material-ui/core/Typography';
 
 import Table from 'components/Table';
 import ActionMenu from 'components/ActionMenu';
-
+import { API_URL} from 'enum/constants';
 import injectSagas from 'utils/injectSagas';
-import saga, { reducer, requestUsers } from './sagas';
+import saga, { reducer, requestUsers, requestSetUserTrusted } from './sagas';
+import Link from 'components/Link';
 
 const styles = theme => ({
   root: {
@@ -27,6 +28,12 @@ const styles = theme => ({
   title: {
     marginBottom: 30,
   },
+  exportCsv: {
+    fontSize: 16,
+    marginBottom: 10,
+    cursor: 'pointer',
+    width: 'fit-content',
+}
 });
 
 type Props = {
@@ -36,6 +43,7 @@ type Props = {
   isLoading: boolean,
   classes: Object,
   requestUsers: Function,
+  requestSetUserTrusted: Function,
 };
 
 type State = {
@@ -76,6 +84,10 @@ class User extends Component<Props, State> {
   handleSortChange = sort => {
     this.setState({ sort }, () => this.fetchUsers(1));
   };
+  handleTrustFreelancerAction = userId => {
+    this.props.requestSetUserTrusted(userId);
+    this.debounceSearch();
+  };
 
   debounceSearch = debounce(() => {
     this.fetchUsers(1);
@@ -97,11 +109,20 @@ class User extends Component<Props, State> {
   render() {
     const { users, page, pages, isLoading, classes } = this.props;
     const { pageSize, sort } = this.state;
+    const token = JSON.parse(window.localStorage.getItem('adminToken'));
+    const csvUrl = `${API_URL}/admin/users/csv?token=${token}`;
     return (
       <div className={classes.root}>
         <Typography variant="h6" classes={{ root: classes.title }}>
           Users
         </Typography>
+        <Link
+          target="_blank"
+          to={csvUrl}
+          className={ classes.exportCsv}
+        >
+          Export csv
+        </Link>
         <Table
           columns={[
             {
@@ -118,6 +139,27 @@ class User extends Component<Props, State> {
               Header: 'Last',
               id: 'lastName',
               accessor: d => d.get('lastName'),
+            },
+            {
+              Header: 'City',
+              id: 'city',
+              filterable: false,
+              sortable: false,
+              accessor: d => d.get('city'),
+            },
+            {
+              Header: 'Connections',
+              id: 'connections',
+              filterable: false,
+              sortable: false,
+              accessor: d => d.get('connections'),
+            },
+            {
+              Header: 'Trusted',
+              id: 'trusted',
+              filterable: false,
+              sortable: false,
+              accessor: d => d.get('trusted') ? 'Y' : '',
             },
             {
               Header: 'Jobs',
@@ -165,7 +207,7 @@ class User extends Component<Props, State> {
               Header: 'Actions',
               filterable: false,
               sortable: false,
-              Cell: props => <ActionMenu data={props.row} />,
+              Cell: props => <ActionMenu data={props.row} handleTrustFreelancerAction={ this.handleTrustFreelancerAction} />,
             },
           ]}
           manual // Forces table not to paginate or sort automatically, so we can handle it server-side
@@ -204,6 +246,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   requestUsers: payload => dispatch(requestUsers(payload)),
+  requestSetUserTrusted: userId => dispatch(requestSetUserTrusted(userId)),
 });
 
 export default compose(
