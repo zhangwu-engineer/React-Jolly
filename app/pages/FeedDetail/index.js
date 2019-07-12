@@ -23,7 +23,6 @@ import CredIcon from 'images/sprite/cred_white.svg';
 import saga, {
   reducer,
   requestPosts,
-  requestCreatePost,
   requestUpdatePost,
   requestRemovePost,
   requestVotePost,
@@ -84,24 +83,6 @@ const styles = theme => ({
       overflowY: 'scroll',
     },
   },
-  createPostPanel: {
-    backgroundColor: theme.palette.common.white,
-    padding: '15px 20px 18px 21px',
-    boxShadow: '0 10px 15px 5px rgba(0, 0, 0, 0.05)',
-    cursor: 'pointer',
-    marginBottom: 30,
-  },
-  createPostAvatar: {
-    width: 45,
-    height: 45,
-    marginRight: 20,
-  },
-  createPostTitle: {
-    fontSize: 16,
-    fontWeight: 600,
-    letterSpacing: 0.3,
-    color: '#9f9f9f',
-  },
   rightPanel: {
     width: 223,
     marginLeft: 26,
@@ -140,7 +121,6 @@ type Props = {
   isRemoving: boolean,
   removeError: string,
   classes: Object,
-  requestCreatePost: Function,
   requestUpdatePost: Function,
   requestPosts: Function,
   requestVotePost: Function,
@@ -227,10 +207,6 @@ class FeedDetailPage extends Component<Props, State> {
   closeCredModal = () => {
     this.setState({ isCredOpen: false });
   };
-  savePost = data => {
-    this.closeModal();
-    this.props.requestCreatePost(data);
-  };
   updatePost = (id, data) => {
     this.closeModal();
     this.props.requestUpdatePost(id, data);
@@ -309,24 +285,6 @@ class FeedDetailPage extends Component<Props, State> {
             </Grid>
           </div>
           <div className={classes.content}>
-            <Grid
-              container
-              alignItems="center"
-              className={classes.createPostPanel}
-              onClick={this.openModal}
-            >
-              <Grid item>
-                <UserAvatar
-                  src={user.getIn(['profile', 'avatar'])}
-                  className={classes.createPostAvatar}
-                />
-              </Grid>
-              <Grid item>
-                <Typography className={classes.createPostTitle}>
-                  Create a post...
-                </Typography>
-              </Grid>
-            </Grid>
             {posts &&
               posts.map(post => (
                 <PostCard
@@ -351,7 +309,6 @@ class FeedDetailPage extends Component<Props, State> {
           user={user}
           post={editingPost}
           onCloseModal={this.closeModal}
-          onSave={this.savePost}
           onUpdate={this.updatePost}
         />
         <FeedFilterModal
@@ -386,7 +343,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  requestCreatePost: payload => dispatch(requestCreatePost(payload)),
   requestUpdatePost: (id, payload) => dispatch(requestUpdatePost(id, payload)),
   requestPosts: payload => dispatch(requestPosts(payload)),
   requestRemovePost: postId => dispatch(requestRemovePost(postId)),
