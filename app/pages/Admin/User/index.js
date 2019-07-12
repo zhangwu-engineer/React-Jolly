@@ -110,17 +110,17 @@ class User extends Component<Props, State> {
               accessor: d => d.get('email'),
             },
             {
-              Header: 'First Name',
+              Header: 'First',
               id: 'firstName',
               accessor: d => d.get('firstName'),
             },
             {
-              Header: 'Last Name',
+              Header: 'Last',
               id: 'lastName',
               accessor: d => d.get('lastName'),
             },
             {
-              Header: 'Jobs Entered',
+              Header: 'Jobs',
               id: 'jobs',
               filterable: false,
               sortable: false,
@@ -141,14 +141,14 @@ class User extends Component<Props, State> {
               accessor: d => d.get('top2ndPosition'),
             },
             {
-              Header: 'Posts Made',
+              Header: 'Posts',
               id: 'posts',
               filterable: false,
               sortable: false,
               accessor: d => d.get('posts'),
             },
             {
-              Header: 'Coworker Connections',
+              Header: 'Coworkers',
               id: 'coworkers',
               filterable: false,
               sortable: false,
