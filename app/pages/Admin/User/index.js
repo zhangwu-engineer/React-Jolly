@@ -29,11 +29,9 @@ const styles = theme => ({
     marginBottom: 30,
   },
   exportCsv: {
-    fontSize: 16,
     marginBottom: 10,
-    cursor: 'pointer',
-    width: 'fit-content',
-}
+    textDecoration: 'none'
+  }
 });
 
 type Props = {
