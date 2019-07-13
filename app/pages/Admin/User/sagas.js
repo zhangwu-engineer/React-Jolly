@@ -5,7 +5,14 @@
 import { fromJS } from 'immutable';
 import { call, put, select, takeLatest, all } from 'redux-saga/effects';
 import request from 'utils/request';
-import { API_URL, REQUESTED, SUCCEDED, FAILED, ERROR, SET_USER_TRUSTED } from 'enum/constants';
+import {
+  API_URL,
+  REQUESTED,
+  SUCCEDED,
+  FAILED,
+  ERROR,
+  SET_USER_TRUSTED,
+} from 'enum/constants';
 import type { Action, State } from 'types/common';
 import type { Saga } from 'redux-saga';
 import { getAdminToken } from 'containers/App/selectors';
@@ -31,7 +38,7 @@ const usersRequestError = (error: string) => ({
 
 export const requestSetUserTrusted = (userId: string) => ({
   type: SET_USER_TRUSTED + REQUESTED,
-  payload: userId
+  payload: userId,
 });
 const setUserTrustedRequestSuccess = () => ({
   type: SET_USER_TRUSTED + SUCCEDED,
@@ -39,7 +46,7 @@ const setUserTrustedRequestSuccess = () => ({
 const setUserTrustedRequestFailed = (error: string) => ({
   type: SET_USER_TRUSTED + FAILED,
   payload: {
-    message: error
+    message: error,
   },
 });
 const setUserTrustedRequestError = (error: string) => ({
@@ -122,7 +129,7 @@ function* UsersRequest({ payload }) {
   }
 }
 
-function* SetUserTrustedRequest( {payload}) {
+function* SetUserTrustedRequest({ payload }) {
   const token = yield select(getAdminToken);
   try {
     const response = yield call(request, {
@@ -136,7 +143,7 @@ function* SetUserTrustedRequest( {payload}) {
       yield put(setUserTrustedRequestFailed(response.error));
     }
   } catch (error) {
-    yield put(usersRequestFailed(error));
+    yield put(setUserTrustedRequestError(error));
   }
 }
 
