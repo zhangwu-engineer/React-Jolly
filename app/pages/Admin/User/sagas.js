@@ -5,7 +5,14 @@
 import { fromJS } from 'immutable';
 import { call, put, select, takeLatest, all } from 'redux-saga/effects';
 import request from 'utils/request';
-import { API_URL, REQUESTED, SUCCEDED, FAILED, ERROR } from 'enum/constants';
+import {
+  API_URL,
+  REQUESTED,
+  SUCCEDED,
+  FAILED,
+  ERROR,
+  SET_USER_TRUSTED,
+} from 'enum/constants';
 import type { Action, State } from 'types/common';
 import type { Saga } from 'redux-saga';
 import { getAdminToken } from 'containers/App/selectors';
@@ -26,6 +33,24 @@ const usersRequestFailed = (error: string) => ({
 });
 const usersRequestError = (error: string) => ({
   type: USERS + ERROR,
+  payload: error,
+});
+
+export const requestSetUserTrusted = (userId: string) => ({
+  type: SET_USER_TRUSTED + REQUESTED,
+  payload: userId,
+});
+const setUserTrustedRequestSuccess = () => ({
+  type: SET_USER_TRUSTED + SUCCEDED,
+});
+const setUserTrustedRequestFailed = (error: string) => ({
+  type: SET_USER_TRUSTED + FAILED,
+  payload: {
+    message: error,
+  },
+});
+const setUserTrustedRequestError = (error: string) => ({
+  type: SET_USER_TRUSTED + ERROR,
   payload: error,
 });
 
@@ -64,6 +89,22 @@ export const reducer = (
         Please try again later or contact support and provide the following error information: ${payload}`
       );
 
+    case SET_USER_TRUSTED + REQUESTED:
+      return state.set('isLoading', true);
+
+    case SET_USER_TRUSTED + SUCCEDED:
+      return state.set('isLoading', false);
+
+    case SET_USER_TRUSTED + FAILED:
+      return state.set('isLoading', false).set('error', payload.message);
+
+    case SET_USER_TRUSTED + ERROR:
+      return state.set('isLoading', false).set(
+        'error',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
     default:
       return state;
   }
@@ -88,6 +129,27 @@ function* UsersRequest({ payload }) {
   }
 }
 
+function* SetUserTrustedRequest({ payload }) {
+  const token = yield select(getAdminToken);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/admin/user/trusted/${payload}`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(setUserTrustedRequestSuccess());
+    } else {
+      yield put(setUserTrustedRequestFailed(response.error));
+    }
+  } catch (error) {
+    yield put(setUserTrustedRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
-  yield all([takeLatest(USERS + REQUESTED, UsersRequest)]);
+  yield all([
+    takeLatest(USERS + REQUESTED, UsersRequest),
+    takeLatest(SET_USER_TRUSTED + REQUESTED, SetUserTrustedRequest),
+  ]);
 }
