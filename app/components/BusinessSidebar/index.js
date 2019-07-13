@@ -113,6 +113,12 @@ class BusinessSidebar extends PureComponent<Props, State> {
     }
     history.push(`/b/${slug}`);
   };
+  goToPendingsPage = () => {
+    if (this.props.isFromHeader) {
+      this.props.onClose();
+    }
+    history.push(`/b/pending`);
+  };
   render() {
     const { business, classes, colorfulSideTop } = this.props;
     const { isNested } = this.state;
@@ -168,6 +174,7 @@ class BusinessSidebar extends PureComponent<Props, State> {
                     <Typography className={classes.unreadStatus} />
                   </Grid>
                 }
+                onClick={() => this.goToPendingsPage(business.slug)}
               />
             </MenuItem>
             <MenuItem className={classes.menuItemNoIcon}>
