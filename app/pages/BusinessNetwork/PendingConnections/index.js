@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { generate } from 'shortid';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 
 import BusinessSidebar from 'components/BusinessSidebar';
 import ConnectionCard from 'components/ConnectionCard';
@@ -28,6 +29,7 @@ const styles = theme => ({
     maxWidth: 1064,
     margin: '0 auto',
     display: 'flex',
+    marginTop: 70,
     paddingBottom: 137,
     [theme.breakpoints.down('xs')]: {
       display: 'block',
@@ -329,6 +331,10 @@ class PendingConnections extends Component<Props, State> {
           )}
           <div className={classes.content}>
             <div>
+              <Typography className={classes.pendingConnectionsTitle}>
+                Pending freelancer connections &nbsp;
+                {pendingConnections && pendingConnections.size}
+              </Typography>
               {pendingConnections &&
                 pendingConnections.size > 0 && (
                   <React.Fragment>
