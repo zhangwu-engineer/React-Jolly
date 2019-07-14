@@ -1,6 +1,8 @@
 // @flow
 
 import React, { PureComponent, Fragment } from 'react';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import cx from 'classnames';
 
@@ -18,6 +20,12 @@ import UserAvatar from 'components/UserAvatar';
 
 import PeopleIcon from '@material-ui/icons/People';
 import SettingsIcon from '@material-ui/icons/SettingsOutlined';
+
+import saga, {
+  reducer,
+  requestBusinessConnections,
+} from 'containers/Network/sagas';
+import injectSagas from 'utils/injectSagas';
 
 const styles = theme => ({
   sideTop: {
@@ -81,6 +89,8 @@ type Props = {
   colorfulSideTop: Boolean,
   isFromHeader: Boolean,
   onClose: Function,
+  connections: List<Object>,
+  requestBusinessConnections: Function,
 };
 
 type State = {
@@ -91,6 +101,11 @@ class BusinessSidebar extends PureComponent<Props, State> {
   state = {
     isNested: true,
   };
+
+  componentDidMount() {
+    const { business } = this.props;
+    this.props.requestBusinessConnections(business.id);
+  }
 
   toggleNestedMenu = () => {
     this.setState(state => ({ isNested: !state.isNested }));
@@ -120,8 +135,12 @@ class BusinessSidebar extends PureComponent<Props, State> {
     history.push(`/b/pending`);
   };
   render() {
-    const { business, classes, colorfulSideTop } = this.props;
+    const { connections, business, classes, colorfulSideTop } = this.props;
     const { isNested } = this.state;
+
+    const pendingConnections = connections
+      ? connections.filter(connection => connection.get('status') === 'PENDING')
+      : [];
     return (
       <Fragment>
         <Grid
@@ -170,8 +189,14 @@ class BusinessSidebar extends PureComponent<Props, State> {
                 classes={{ primary: classes.menuItemText }}
                 primary={
                   <Grid container alignItems="center">
-                    <span>Pending (6)</span>
-                    <Typography className={classes.unreadStatus} />
+                    Pending
+                    {pendingConnections.size > 0 && (
+                      <span>
+                        &ensp;
+                        {`(${pendingConnections.size})`}
+                        <Typography className={classes.unreadStatus} />
+                      </span>
+                    )}
                   </Grid>
                 }
                 onClick={() => this.goToPendingsPage(business.slug)}
@@ -213,4 +238,20 @@ class BusinessSidebar extends PureComponent<Props, State> {
   }
 }
 
-export default withStyles(styles)(BusinessSidebar);
+const mapStateToProps = state => ({
+  connections: state.getIn(['network', 'connections']),
+});
+
+const mapDispatchToProps = dispatch => ({
+  requestBusinessConnections: businessId =>
+    dispatch(requestBusinessConnections(businessId)),
+});
+
+export default compose(
+  injectSagas({ key: 'network', saga, reducer }),
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  ),
+  withStyles(styles)
+)(BusinessSidebar);
