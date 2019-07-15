@@ -12,6 +12,8 @@ import IconButton from '@material-ui/core/IconButton';
 import UserAvatar from 'components/UserAvatar';
 import Icon from 'components/Icon';
 import ShareIcon from 'images/sprite/share.svg';
+import ConnectIcon from 'images/sprite/connect.svg';
+import ConnectSentIcon from 'images/sprite/connect_sent.svg';
 
 const styles = theme => ({
   root: {},
@@ -170,6 +172,10 @@ const styles = theme => ({
 type Props = {
   classes: Object,
   business: Object,
+  currentUser: Object,
+  isConnectionSent: boolean,
+  connectionInformation: Object,
+  connect: Function,
 };
 
 type State = {};
@@ -179,8 +185,68 @@ class BusinessMemberProfileInfo extends Component<Props, State> {
     window.open(url, '_blank');
   };
   anchorEl: HTMLElement;
+  displayConnectionState = () => {
+    let status;
+    const { isConnectionSent, connectionInformation } = this.props;
+
+    if (connectionInformation) {
+      if (connectionInformation.get('status') === 'CONNECTED') {
+        status = 'Connected';
+      } else if (connectionInformation.get('status') === 'PENDING') {
+        status = 'Request Sent';
+      }
+    }
+
+    if (isConnectionSent) status = 'Request Sent';
+    return status;
+  };
+  handleToggle = () => {
+    const { isConnectionSent } = this.props;
+    if (!isConnectionSent) {
+      this.handleConnect();
+    }
+  };
+  handleConnect = () => {
+    const { business, currentUser } = this.props;
+    const connectParams = {};
+
+    const toBusiness = business && business.get('id');
+    const isBusiness = currentUser && currentUser.get('isBusiness');
+    let foundSelfBusiness = null;
+
+    if (isBusiness) {
+      const businesses =
+        currentUser &&
+        currentUser.get('businesses') &&
+        currentUser.get('businesses').toJSON();
+      foundSelfBusiness = businesses.filter(
+        b => b.get('id') === toBusiness.get('id')
+      );
+    }
+
+    const isConnectable = !isBusiness || !foundSelfBusiness;
+
+    if (isConnectable) {
+      connectParams.connectionType = 'f2b';
+      connectParams.to = toBusiness;
+      this.props.connect(connectParams);
+    } else {
+      history.push('/');
+    }
+  };
   render() {
-    const { classes, business } = this.props;
+    const {
+      classes,
+      isConnectionSent,
+      connectionInformation,
+      business,
+    } = this.props;
+
+    const connectionEstablished =
+      connectionInformation &&
+      ['CONNECTED', 'PENDING'].includes(connectionInformation.get('status'));
+    const connected = connectionEstablished || isConnectionSent;
+
     return (
       <div className={classes.root}>
         <div className={classes.topSection}>
@@ -194,7 +260,20 @@ class BusinessMemberProfileInfo extends Component<Props, State> {
             className={classes.buttonContainer}
           >
             <Grid item className={classes.connectButtonBox}>
-              <Button className={cx(classes.connectButton)}>Connect</Button>
+              <Button
+                className={cx(classes.connectButton, {
+                  [classes.connectionSentButton]: connected,
+                })}
+                onClick={this.handleToggle}
+              >
+                <Icon
+                  glyph={connected ? ConnectSentIcon : ConnectIcon}
+                  width={23}
+                  height={13}
+                  className={classes.connectIcon}
+                />
+                {connected ? this.displayConnectionState() : 'Connect'}
+              </Button>
             </Grid>
             <Grid item>
               <IconButton className={classes.shareButton}>

@@ -17,6 +17,7 @@ const CREATE_CONNECTION = 'Jolly/Network/CREATE_CONNECTION';
 const REMOVE_CONNECTION = 'Jolly/Network/REMOVE_CONNECTION';
 const ACCEPT_CONNECTION = 'Jolly/Network/ACCEPT_CONNECTION';
 const ALL_CONNECTIONS = 'Jolly/Network/ALL_CONNECTIONS';
+const BUSINESS_CONNECTIONS = 'Jolly/Network/BUSINESS_CONNECTIONS';
 const CONNECTED_CONNECTIONS = 'Jolly/Network/CONNECTED_CONNECTIONS';
 
 // ------------------------------------
@@ -86,6 +87,23 @@ const connectionsRequestFailed = (error: string) => ({
 });
 const connectionsRequestError = (error: string) => ({
   type: ALL_CONNECTIONS + ERROR,
+  payload: error,
+});
+
+export const requestBusinessConnections = (to: string) => ({
+  type: BUSINESS_CONNECTIONS + REQUESTED,
+  payload: to,
+});
+const businessConnectionsRequestSuccess = (payload: Object) => ({
+  type: BUSINESS_CONNECTIONS + SUCCEDED,
+  payload,
+});
+const businessConnectionsRequestFailed = (error: string) => ({
+  type: BUSINESS_CONNECTIONS + FAILED,
+  payload: error,
+});
+const businessConnectionsRequestError = (error: string) => ({
+  type: BUSINESS_CONNECTIONS + ERROR,
   payload: error,
 });
 
@@ -208,6 +226,25 @@ export const reducer = (
         Please try again later or contact support and provide the following error information: ${payload}`
       );
 
+    case BUSINESS_CONNECTIONS + REQUESTED:
+      return state.set('isLoading', true);
+
+    case BUSINESS_CONNECTIONS + SUCCEDED:
+      return state
+        .set('isLoading', false)
+        .set('connections', fromJS(payload.connections))
+        .set('error', '');
+
+    case BUSINESS_CONNECTIONS + FAILED:
+      return state.set('isLoading', false).set('error', payload.message);
+
+    case BUSINESS_CONNECTIONS + ERROR:
+      return state.set('isLoading', false).set(
+        'error',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
     case CONNECTED_CONNECTIONS + REQUESTED:
       return state.set('isLoading', true);
 
@@ -312,6 +349,27 @@ function* ConnectionsRequest() {
   }
 }
 
+function* BusinessConnectionsRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/connection/business`,
+      headers: { 'x-access-token': token },
+      params: {
+        businessId: payload,
+      },
+    });
+    if (response.status === 200) {
+      yield put(businessConnectionsRequestSuccess(response.data.response));
+    } else {
+      yield put(businessConnectionsRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(businessConnectionsRequestError(error));
+  }
+}
+
 function* ConnectedConnectionsRequest({ payload }) {
   const token = yield select(getToken);
   try {
@@ -337,6 +395,7 @@ export default function*(): Saga<void> {
     takeLatest(REMOVE_CONNECTION + REQUESTED, RemoveConnectionRequest),
     takeLatest(ACCEPT_CONNECTION + REQUESTED, AcceptConnectionRequest),
     takeLatest(ALL_CONNECTIONS + REQUESTED, ConnectionsRequest),
+    takeLatest(BUSINESS_CONNECTIONS + REQUESTED, BusinessConnectionsRequest),
     takeLatest(CONNECTED_CONNECTIONS + REQUESTED, ConnectedConnectionsRequest),
   ]);
 }

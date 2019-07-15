@@ -43,6 +43,9 @@ const Admin = load(() => import('pages/Admin'));
 const FourOfour = load(() => import('pages/404'));
 const Business = load(() => import('pages/Business'));
 const BusinessNetwork = load(() => import('pages/BusinessNetwork'));
+const PendingConnections = load(() =>
+  import('pages/BusinessNetwork/PendingConnections')
+);
 const ConnectedUsers = load(() =>
   import('pages/BusinessNetwork/ConnectedUsers')
 );
@@ -89,6 +92,11 @@ class Routes extends Component<{}> {
           exact
           path="/b/network/connections"
           render={props => <ConnectedUsers {...props} />}
+        />
+        <PrivateRoute
+          exact
+          path="/b/pending"
+          render={props => <PendingConnections {...props} />}
         />
         <Route path="/b/:slug" render={props => <Business {...props} />} />
         <Route path="/f/:slug" render={props => <User {...props} />} />

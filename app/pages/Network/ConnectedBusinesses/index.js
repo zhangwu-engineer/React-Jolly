@@ -17,7 +17,7 @@ import { capitalize, debounce } from 'lodash-es';
 import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
 import Tabs from 'components/Tabs';
-import BusinessCard from 'components/BusinessCard';
+import BusinessConnectedCard from 'components/BusinessConnectedCard';
 import ConnectionCard from 'components/ConnectionCard';
 import ConnectionFromBusinessCard from 'components/ConnectionFromBusinessCard';
 import InviteForm from 'components/InviteForm';
@@ -607,7 +607,7 @@ class ConnectedBusinessesPage extends Component<Props, State> {
                 {connectedConnections &&
                   connectedConnections.map(connection => (
                     <Grid item key={generate()} xs={12} lg={6}>
-                      <BusinessCard business={connection} />
+                      <BusinessConnectedCard business={connection} />
                     </Grid>
                   ))}
               </Grid>
