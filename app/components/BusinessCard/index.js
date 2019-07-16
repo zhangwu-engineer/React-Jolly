@@ -71,8 +71,10 @@ type Props = {
 
 class BusinessCard extends Component<Props> {
   handleClick = () => {
-    const { business } = this.props;
-    this.props.onSelect(business);
+    const { business, selected } = this.props;
+    if (!selected) {
+      this.props.onSelect(business);
+    }
   };
   render() {
     const { business, selected, classes } = this.props;
