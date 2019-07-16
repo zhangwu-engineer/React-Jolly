@@ -23,6 +23,7 @@ const styles = theme => ({
 type Props = {
   data: Object,
   classes: Object,
+  handleTrustFreelancerAction: Function,
 };
 
 type State = {
@@ -56,7 +57,7 @@ class ActionMenu extends Component<Props, State> {
   render() {
     const { classes, data } = this.props;
     const { open } = this.state;
-    const userId = data._original.get('_id');
+    const userId = data._original.get('_id'); // eslint-disable-line
     return (
       <div className={classes.root}>
         <div>
@@ -96,12 +97,14 @@ class ActionMenu extends Component<Props, State> {
                   </ClickAwayListener>
                   <ClickAwayListener onClickAway={this.handleClose}>
                     <MenuList>
-                      {data._original.get('trusted') ? (
-                        <MenuItem>
-                          Trusted Freelancer
-                        </MenuItem>
-                        ) : (
-                        <MenuItem onClick={() => this.props.handleTrustFreelancerAction(userId)}>
+                      {data._original.get('trusted') ? ( // eslint-disable-line
+                        <MenuItem> Trusted Freelancer </MenuItem>
+                      ) : (
+                        <MenuItem
+                          onClick={() =>
+                            this.props.handleTrustFreelancerAction(userId)
+                          }
+                        >
                           Trust Freelancer
                         </MenuItem>
                       )}
