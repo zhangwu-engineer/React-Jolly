@@ -237,6 +237,7 @@ class MemberProfileInfo extends Component<Props, State> {
       const businesses =
         currentUser.get('businesses') && currentUser.get('businesses').toJSON();
       connectParams.from = businesses[0].id;
+      connectParams.fromUserId = currentUser.get('id');
     }
 
     if (currentUser && currentUser.get('id') !== member.get('id')) {
