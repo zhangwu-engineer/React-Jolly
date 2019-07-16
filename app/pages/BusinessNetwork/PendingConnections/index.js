@@ -26,10 +26,12 @@ const styles = theme => ({
     display: 'flex',
   },
   content: {
+    width: '100%',
     maxWidth: 1064,
     margin: '0 auto',
-    display: 'flex',
     marginTop: 70,
+    paddingLeft: 8,
+    paddingRight: 8,
     paddingBottom: 137,
     [theme.breakpoints.down('xs')]: {
       display: 'block',
@@ -330,34 +332,32 @@ class PendingConnections extends Component<Props, State> {
             </div>
           )}
           <div className={classes.content}>
-            <div>
-              <Typography className={classes.pendingConnectionsTitle}>
-                Pending freelancer connections &nbsp;
-                {pendingConnections && pendingConnections.size}
-              </Typography>
-              {pendingConnections &&
-                pendingConnections.size > 0 && (
-                  <React.Fragment>
-                    <Grid
-                      container
-                      spacing={8}
-                      className={classes.pendingConnections}
-                    >
-                      {pendingConnections.map(connection => (
-                        <Grid item key={generate()} xs={12} lg={12}>
-                          {connection.get('connectionType') === 'f2b' && (
-                            <ConnectionCard
-                              connection={connection}
-                              ignore={this.props.requestRemoveConnection}
-                              accept={this.props.requestAcceptConnection}
-                            />
-                          )}
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </React.Fragment>
-                )}
-            </div>
+            <Typography className={classes.pendingConnectionsTitle}>
+              Pending freelancer connections &nbsp;
+              {pendingConnections && pendingConnections.size}
+            </Typography>
+            {pendingConnections &&
+              pendingConnections.size > 0 && (
+                <React.Fragment>
+                  <Grid
+                    container
+                    spacing={8}
+                    className={classes.pendingConnections}
+                  >
+                    {pendingConnections.map(connection => (
+                      <Grid item key={generate()} xs={12} lg={12}>
+                        {connection.get('connectionType') === 'f2b' && (
+                          <ConnectionCard
+                            connection={connection}
+                            ignore={this.props.requestRemoveConnection}
+                            accept={this.props.requestAcceptConnection}
+                          />
+                        )}
+                      </Grid>
+                    ))}
+                  </Grid>
+                </React.Fragment>
+              )}
           </div>
         </div>
       </React.Fragment>
