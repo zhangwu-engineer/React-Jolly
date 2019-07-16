@@ -10,8 +10,6 @@ import Typography from '@material-ui/core/Typography';
 
 import Table from 'components/Table';
 import ActionMenu from 'components/ActionMenu';
-import Link from 'components/Link';
-import { API_URL } from 'enum/constants';
 import injectSagas from 'utils/injectSagas';
 import saga, { reducer, requestUsers, requestSetUserTrusted } from './sagas';
 
@@ -107,16 +105,11 @@ class User extends Component<Props, State> {
   render() {
     const { users, page, pages, isLoading, classes } = this.props;
     const { pageSize, sort } = this.state;
-    const token = JSON.parse(window.localStorage.getItem('adminToken'));
-    const csvUrl = `${API_URL}/admin/users/csv?token=${token}`;
     return (
       <div className={classes.root}>
         <Typography variant="h6" classes={{ root: classes.title }}>
           Users
         </Typography>
-        <Link target="_blank" to={csvUrl} className={classes.exportCsv}>
-          Export csv
-        </Link>
         <Table
           columns={[
             {

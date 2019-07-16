@@ -98,7 +98,7 @@ class ActionMenu extends Component<Props, State> {
                   <ClickAwayListener onClickAway={this.handleClose}>
                     <MenuList>
                       {data._original.get('trusted') ? ( // eslint-disable-line
-                        <MenuItem>Trusted Freelancer</MenuItem>
+                        <MenuItem> Trusted Freelancer </MenuItem>
                       ) : (
                         <MenuItem
                           onClick={() =>
