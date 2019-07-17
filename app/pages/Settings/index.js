@@ -12,6 +12,7 @@ import Grid from '@material-ui/core/Grid';
 
 import UserGeneralForm from 'components/UserForm/General';
 import UserProfileForm from 'components/UserForm/Profile';
+import NotificationForm from 'components/UserForm/Notification';
 import Link from 'components/Link';
 import UserAvatar from 'components/UserAvatar';
 
@@ -162,9 +163,16 @@ class SettingsPage extends Component<Props> {
           window.scrollTo(0, this.profileForm.current.offsetTop);
         }
       }, 50);
+    } else if (hash === '#notifications') {
+      setTimeout(() => {
+        if (this.notificationForm.current) {
+          window.scrollTo(0, this.notificationForm.current.offsetTop);
+        }
+      }, 50);
     }
   }
   profileForm = React.createRef();
+  notificationForm = React.createRef();
   render() {
     const {
       user,
@@ -179,6 +187,9 @@ class SettingsPage extends Component<Props> {
           </Link>
           <Link to="/settings/profile" className={classes.mobileMenuItem}>
             Edit Profile
+          </Link>
+          <Link to="/settings/notifications" className={classes.mobileMenuItem}>
+            Notification Settings
           </Link>
         </div>
         <div className={classes.leftPanel}>
@@ -225,6 +236,15 @@ class SettingsPage extends Component<Props> {
               {hash === '#profile' && <div className={classes.line} />}
               Profile
             </Link>
+            <Link
+              className={cx(classes.menuItem, {
+                [classes.activeMenuItem]: hash === '#notifications',
+              })}
+              to="/settings#notifications"
+            >
+              {hash === '#notifications' && <div className={classes.line} />}
+              Notification
+            </Link>
           </div>
         </div>
         <div className={classes.rightPanel}>
@@ -246,6 +266,15 @@ class SettingsPage extends Component<Props> {
               Edit Profile
             </Typography>
             <UserProfileForm user={user} updateUser={this.props.updateUser} />
+          </div>
+          <div className={classes.section} ref={this.notificationForm}>
+            <Typography
+              variant="h6"
+              className={cx(classes.title, classes.editProfile)}
+            >
+              Notification Settings
+            </Typography>
+            <NotificationForm user={user} updateUser={this.props.updateUser} />
           </div>
         </div>
       </div>
