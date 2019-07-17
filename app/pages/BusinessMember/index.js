@@ -12,11 +12,18 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 
+import Notification from 'components/Notification';
 import BusinessProfileInfo from 'components/BusinessProfileInfo';
 import BusinessMemberProfileInfo from 'components/BusinessMemberProfileInfo';
 import BusinessSidebar from 'components/BusinessSidebar';
+import { CONNECTION_REQUEST_MSG } from 'enum/connection';
 import injectSagas from 'utils/injectSagas';
-import saga, { reducer } from 'containers/App/sagas';
+
+import saga, {
+  reducer,
+  requestCreateConnection,
+  requestCheckConnection,
+} from 'containers/Member/sagas';
 
 const styles = theme => ({
   root: {
@@ -257,6 +264,9 @@ type Props = {
   business: Object,
   classes: Object,
   match: Object,
+  connectionInformation: Object,
+  requestCreateConnection: Function,
+  requestCheckConnection: Function,
 };
 
 type State = {
@@ -270,39 +280,47 @@ type State = {
 
 class BusinessMember extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State) {
+    const {
+      match: { url },
+      currentUser,
+    } = nextProps;
+    const {
+      params: { slug },
+    } = matchPath(url, {
+      path: '/b/:slug',
+    });
+    const from = currentUser && currentUser.get('id');
+    const state = { connection: { to: slug, from, type: 'f2b' } };
+
     if (nextProps.isCreatingConnection) {
-      return {
-        isInviting: true,
-      };
+      state.isInviting = true;
+      return state;
     }
     if (
       !nextProps.isCreatingConnection &&
       !nextProps.createConnectionError &&
       prevState.isInviting
     ) {
-      return {
-        showNotification: true,
-        isInviting: false,
-        isConnectionSent: true,
-      };
+      state.showNotification = true;
+      state.isInviting = false;
+      state.isConnectionSent = true;
     }
     if (
       !nextProps.isCreatingConnection &&
       nextProps.createConnectionError &&
       prevState.isInviting
     ) {
-      return {
-        showNotification: false,
-        isInviting: false,
-      };
+      state.showNotification = false;
+      state.isInviting = false;
     }
-    return null;
+    return state;
   }
   state = {
     fixedTopBanner: false,
     isInviting: false, // eslint-disable-line
     isConnectionSent: false,
     isPublicViewMode: false,
+    showNotification: false,
   };
   componentDidMount() {
     const {
@@ -323,6 +341,7 @@ class BusinessMember extends Component<Props, State> {
       businesses && businesses.find(element => element.slug === slug);
     const isPrivate = (currentBusiness && !isPublicViewMode) || false;
     if (isPrivate) window.localStorage.setItem('isBusinessActive', 'yes');
+    this.props.requestCheckConnection(this.state.connection);
   }
   toggleViewMode = () => {
     const { currentUser } = this.props;
@@ -339,14 +358,29 @@ class BusinessMember extends Component<Props, State> {
       }
     );
   };
+  handleConnect = params => {
+    this.props.requestCreateConnection(params);
+  };
+  closeNotification = () => {
+    this.setState({
+      isInviting: false, // eslint-disable-line
+      showNotification: false,
+    });
+  };
   render() {
     const {
       currentUser,
       business,
       classes,
+      connectionInformation,
       match: { url },
     } = this.props;
-    const { fixedTopBanner, isConnectionSent, isPublicViewMode } = this.state;
+    const {
+      fixedTopBanner,
+      isConnectionSent,
+      isPublicViewMode,
+      showNotification,
+    } = this.state;
     const {
       params: { slug },
     } = matchPath(url, {
@@ -401,6 +435,13 @@ class BusinessMember extends Component<Props, State> {
               </Grid>
             </Grid>
           )}
+        {showNotification &&
+          isConnectionSent && (
+            <Notification
+              msg={CONNECTION_REQUEST_MSG}
+              close={this.closeNotification}
+            />
+          )}
         <div className={classes.root}>
           {isPrivate && (
             <div className={classes.businessSidebar}>
@@ -422,6 +463,8 @@ class BusinessMember extends Component<Props, State> {
                   business={business}
                   openPhotoModal={this.openPhotoModal}
                   isConnectionSent={isConnectionSent}
+                  connect={this.handleConnect}
+                  connectionInformation={connectionInformation}
                 />
               )}
             </div>
@@ -439,11 +482,23 @@ const mapStateToProps = state => ({
   currentUser: state.getIn(['app', 'user']),
   business: state.getIn(['app', 'businessData']),
   error: state.getIn(['business', 'businessError']),
+  connectionInformation: state.getIn(['member', 'connectionInformation']),
+  isCreatingConnection: state.getIn(['member', 'isCreatingConnection']),
+  createConnectionError: state.getIn(['member', 'createConnectionError']),
+});
+
+const mapDispatchToProps = dispatch => ({
+  requestCreateConnection: payload =>
+    dispatch(requestCreateConnection(payload)),
+  requestCheckConnection: payload => dispatch(requestCheckConnection(payload)),
 });
 
 export default compose(
   withRouter,
-  injectSagas({ key: 'app', saga, reducer }),
-  connect(mapStateToProps),
+  injectSagas({ key: 'member', saga, reducer }),
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  ),
   withStyles(styles)
 )(BusinessMember);

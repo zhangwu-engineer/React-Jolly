@@ -644,6 +644,7 @@ class Header extends Component<Props, State> {
 
     let isPrivateBusinessPage = false;
     let isBusinessNetworkPage = false;
+    let isBusinessPendingsPage = false;
     let currentBusiness = null;
     let isFreelancer = user && true;
     if (matchBusiness) {
@@ -665,12 +666,14 @@ class Header extends Component<Props, State> {
         isBusinessUser && isBusinessPage && currentBusiness;
 
       isBusinessNetworkPage = isBusinessUser && slug === 'network';
-      if (isBusinessNetworkPage) {
+      isBusinessPendingsPage = isBusinessUser && slug === 'pending';
+
+      if (isBusinessNetworkPage || isBusinessPendingsPage) {
         currentBusiness = businesses[0];
       }
     }
     const isShowingBusinessSidebar =
-      isPrivateBusinessPage || isBusinessNetworkPage;
+      isPrivateBusinessPage || isBusinessNetworkPage || isBusinessPendingsPage;
 
     const isWorkDetailPage = workDetailMatch && workDetailMatch.isExact;
     const showFeedButton =

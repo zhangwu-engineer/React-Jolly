@@ -387,6 +387,7 @@ class BusinessNetworkPage extends Component<Props, State> {
           toUserId: toUser.get('id'),
           isCoworker,
           from: currentBusiness.id,
+          fromUserId: user.get('id'),
           connectionType: 'b2f',
         });
       }
