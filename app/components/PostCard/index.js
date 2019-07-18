@@ -172,6 +172,13 @@ const styles = theme => ({
     color: theme.palette.primary.main,
     cursor: 'pointer',
   },
+  buttonCommentSubmit: {
+    display: 'none',
+    marginLeft: '10px',
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+    },
+  },
 });
 
 type Props = {
@@ -484,6 +491,16 @@ class PostCard extends Component<Props, State> {
                     }
                   }}
                 />
+              </Grid>
+              <Grid item>
+                <Button
+                  className={classes.buttonCommentSubmit}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => this.handleCommentSubmit()}
+                >
+                  Post
+                </Button>
               </Grid>
             </Grid>
             {post
