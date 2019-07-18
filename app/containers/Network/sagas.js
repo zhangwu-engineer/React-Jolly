@@ -9,6 +9,7 @@ import { API_URL, REQUESTED, SUCCEDED, FAILED, ERROR } from 'enum/constants';
 import type { Action, State } from 'types/common';
 import type { Saga } from 'redux-saga';
 import { getToken } from 'containers/App/selectors';
+import { getConnection } from 'containers/Member/selectors';
 
 // ------------------------------------
 // Constants
@@ -16,6 +17,7 @@ import { getToken } from 'containers/App/selectors';
 const CREATE_CONNECTION = 'Jolly/Network/CREATE_CONNECTION';
 const REMOVE_CONNECTION = 'Jolly/Network/REMOVE_CONNECTION';
 const ACCEPT_CONNECTION = 'Jolly/Network/ACCEPT_CONNECTION';
+const CHECK_CONNECTION = 'Jolly/Network/CHECK_CONNECTION';
 const ALL_CONNECTIONS = 'Jolly/Network/ALL_CONNECTIONS';
 const BUSINESS_CONNECTIONS = 'Jolly/Network/BUSINESS_CONNECTIONS';
 const CONNECTED_CONNECTIONS = 'Jolly/Network/CONNECTED_CONNECTIONS';
@@ -104,6 +106,23 @@ const businessConnectionsRequestFailed = (error: string) => ({
 });
 const businessConnectionsRequestError = (error: string) => ({
   type: BUSINESS_CONNECTIONS + ERROR,
+  payload: error,
+});
+
+export const requestCheckConnection = (payload: Object) => ({
+  type: CHECK_CONNECTION + REQUESTED,
+  payload,
+});
+const connectionCheckRequestSuccess = (payload: Object) => ({
+  type: CHECK_CONNECTION + SUCCEDED,
+  payload,
+});
+const connectionCheckRequestFailed = (error: string) => ({
+  type: CHECK_CONNECTION + FAILED,
+  payload: error,
+});
+const connectionCheckRequestError = (error: string) => ({
+  type: CHECK_CONNECTION + ERROR,
   payload: error,
 });
 
@@ -264,6 +283,24 @@ export const reducer = (
         Please try again later or contact support and provide the following error information: ${payload}`
       );
 
+    case CHECK_CONNECTION + REQUESTED:
+      return state.set('connection', payload).set('isChecking', true);
+
+    case CHECK_CONNECTION + SUCCEDED:
+      return state
+        .set('isChecking', false)
+        .set('connectionInformation', fromJS(payload.connections[0]))
+        .set('checkError', '');
+
+    case CHECK_CONNECTION + FAILED:
+      return state.set('isChecking', false).set('checkError', payload.message);
+
+    case CHECK_CONNECTION + ERROR:
+      return state.set('isChecking', false).set(
+        'checkError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
     default:
       return state;
   }
@@ -287,6 +324,8 @@ function* CreateConnectionRequest({ payload }) {
     });
     if (response.status === 200) {
       yield put(connectionCreateRequestSuccess(response.data.response));
+      const connection = yield select(getConnection);
+      yield put(requestCheckConnection(connection));
     } else {
       yield put(connectionCreateRequestFailed(response.data.error));
     }
@@ -389,6 +428,29 @@ function* ConnectedConnectionsRequest({ payload }) {
   }
 }
 
+function* CheckConnectionRequest({ payload }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/connection/${payload.to}/info`,
+      params: {
+        from: payload.from,
+        type: payload.type,
+      },
+      headers: { 'x-access-token': token },
+    });
+
+    if (response.status === 200) {
+      yield put(connectionCheckRequestSuccess(response.data.response));
+    } else {
+      yield put(connectionCheckRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(connectionCheckRequestError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(CREATE_CONNECTION + REQUESTED, CreateConnectionRequest),
@@ -397,5 +459,6 @@ export default function*(): Saga<void> {
     takeLatest(ALL_CONNECTIONS + REQUESTED, ConnectionsRequest),
     takeLatest(BUSINESS_CONNECTIONS + REQUESTED, BusinessConnectionsRequest),
     takeLatest(CONNECTED_CONNECTIONS + REQUESTED, ConnectedConnectionsRequest),
+    takeLatest(CHECK_CONNECTION + REQUESTED, CheckConnectionRequest),
   ]);
 }
