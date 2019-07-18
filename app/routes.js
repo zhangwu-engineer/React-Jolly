@@ -29,7 +29,11 @@ const ObPage1 = load(() => import('pages/Ob/Page1'));
 const ObPage2 = load(() => import('pages/Ob/Page2'));
 const ObPage3 = load(() => import('pages/Ob/Page3'));
 const Network = load(() => import('pages/Network'));
+const NetworkBusinesses = load(() => import('pages/Network/Businesses'));
 const Coworkers = load(() => import('pages/Network/Coworkers'));
+const ConnectedBusinesses = load(() =>
+  import('pages/Network/ConnectedBusinesses')
+);
 const NetworkInvite = load(() => import('pages/Network/Invite'));
 const Feed = load(() => import('pages/Feed'));
 const FeedDetail = load(() => import('pages/FeedDetail'));
@@ -39,7 +43,9 @@ const Admin = load(() => import('pages/Admin'));
 const FourOfour = load(() => import('pages/404'));
 const Business = load(() => import('pages/Business'));
 const BusinessNetwork = load(() => import('pages/BusinessNetwork'));
-
+const ConnectedUsers = load(() =>
+  import('pages/BusinessNetwork/ConnectedUsers')
+);
 class Routes extends Component<{}> {
   render() {
     return (
@@ -78,6 +84,11 @@ class Routes extends Component<{}> {
           exact
           path="/b/network"
           render={props => <BusinessNetwork {...props} />}
+        />
+        <PrivateRoute
+          exact
+          path="/b/network/connections"
+          render={props => <ConnectedUsers {...props} />}
         />
         <Route path="/b/:slug" render={props => <Business {...props} />} />
         <Route path="/f/:slug" render={props => <User {...props} />} />
@@ -139,8 +150,18 @@ class Routes extends Component<{}> {
         />
         <PrivateRoute
           exact
+          path="/network/businesses"
+          render={props => <NetworkBusinesses {...props} />}
+        />
+        <PrivateRoute
+          exact
           path="/network/connections"
           render={props => <Coworkers {...props} />}
+        />
+        <PrivateRoute
+          exact
+          path="/network/business-connections"
+          render={props => <ConnectedBusinesses {...props} />}
         />
         <PrivateRoute
           exact

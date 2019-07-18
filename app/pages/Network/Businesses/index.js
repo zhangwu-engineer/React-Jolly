@@ -3,48 +3,49 @@ import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { generate } from 'shortid';
+import cx from 'classnames';
+import { debounce, capitalize } from 'lodash-es';
 import update from 'immutability-helper';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import Input from '@material-ui/core/Input';
+import FormControl from '@material-ui/core/FormControl';
 import SearchIcon from '@material-ui/icons/Search';
-import cx from 'classnames';
-import { capitalize, debounce } from 'lodash-es';
+import Button from '@material-ui/core/Button';
 
 import { history } from 'components/ConnectedRouter';
+import Preloader from 'components/Preloader';
 import Link from 'components/Link';
 import Tabs from 'components/Tabs';
-import CoworkerCard from 'components/CoworkerCard';
+import EditableInput from 'components/EditableInput';
+import BusinessCard from 'components/BusinessCard';
 import ConnectionCard from 'components/ConnectionCard';
 import ConnectionFromBusinessCard from 'components/ConnectionFromBusinessCard';
+import VouchInviteFormModal from 'components/VouchInviteFormModal';
 import InviteForm from 'components/InviteForm';
 import Notification from 'components/Notification';
 import NetworkNav from 'components/NetworkNav';
 import CustomSelect from 'components/CustomSelect';
-import EditableInput from 'components/EditableInput';
 
 import ROLES from 'enum/roles';
 import ConnectionTabs from 'enum/ConnectionTabs';
-import CONNECTIONS from 'enum/connections';
 
+import { requestCityBusinesses } from 'containers/App/sagas';
 import saga, {
   reducer,
   requestCreateConnection,
-  requestConnectedConnections,
-  requestConnections,
   requestRemoveConnection,
   requestAcceptConnection,
+  requestConnections,
 } from 'containers/Network/sagas';
 import injectSagas from 'utils/injectSagas';
 
-const roles = ROLES.sort().map(role => ({ value: role, label: role }));
-const connectionSelect = CONNECTIONS.sort().map(connection => ({
-  value: connection,
-  label: connection,
-}));
+let roles = ROLES.sort().map(role => ({ value: role, label: role }));
+roles = [{ value: '', label: 'All Positions' }].concat(roles);
+
+const perPage = 16;
 const styles = theme => ({
   content: {
     maxWidth: 1064,
@@ -91,28 +92,8 @@ const styles = theme => ({
       paddingTop: 30,
     },
   },
-  title: {
-    fontSize: 16,
-    fontWeight: 500,
-    letterSpacing: 0.4,
-    color: '#1b1b1b',
-    paddingTop: 30,
-    paddingBottom: 20,
-    [theme.breakpoints.down('xs')]: {
-      fontWeight: 600,
-      letterSpacing: 0.3,
-    },
-  },
-  myNetworkTitle: {
-    fontWeight: 600,
-    letterSpacing: 0.33,
-    marginBottom: 18,
-    height: 19,
-    color: '#272727',
-  },
-  emailCard: {
-    padding: 0,
-    marginBottom: 12,
+  filterContainer: {
+    marginBottom: 10,
   },
   pendingConnectionsTitle: {
     fontSize: 16,
@@ -128,6 +109,42 @@ const styles = theme => ({
   pendingConnections: {
     marginBottom: 50,
   },
+  title: {
+    fontSize: 16,
+    fontWeight: 500,
+    letterSpacing: 0.4,
+    color: '#1b1b1b',
+    [theme.breakpoints.down('xs')]: {
+      fontWeight: 600,
+      letterSpacing: 0.3,
+    },
+  },
+  findTitle: {
+    fontWeight: 600,
+    letterSpacing: 0.33,
+    marginBottom: 18,
+    height: 19,
+    color: '#272727',
+  },
+  loadMoreButton: {
+    backgroundColor: theme.palette.common.white,
+    textTransform: 'none',
+    borderRadius: 0,
+    fontSize: 14,
+    fontWeight: 600,
+    letterSpacing: 0.3,
+    paddingTop: 20,
+    paddingBottom: 20,
+    marginTop: 10,
+    [theme.breakpoints.down('xs')]: {
+      paddingTop: 15,
+      paddingBottom: 15,
+    },
+  },
+  emailCard: {
+    padding: 0,
+    marginBottom: 12,
+  },
   avatar: {
     width: 40,
     height: 40,
@@ -138,46 +155,30 @@ const styles = theme => ({
     fontWeight: 500,
     color: '#383838',
   },
-  emptyCoworkersPanel: {
+  tabs: {
     backgroundColor: theme.palette.common.white,
-    height: 356,
-    display: 'flex',
-    alignItems: 'center',
-    marginTop: 5,
-    justifyContent: 'center',
-    [theme.breakpoints.down('xs')]: {
-      height: 190,
-    },
+    marginBottom: 3,
   },
-  emptyCoworkers: {
-    textAlign: 'center',
-  },
-  descText: {
+  tab: {
     fontSize: 14,
+    fontWeight: 500,
+    letterSpacing: 0.4,
+    color: '#4c4c4c',
+    textTransform: 'none',
+  },
+  selectedTab: {
     fontWeight: 600,
-    lineHeight: 1.5,
-    color: '#2f2f2f',
-    maxWidth: 280,
-    textAlign: 'center',
-    marginBottom: 20,
+    color: '#484848',
   },
-  active: {
-    backgroundColor: '#1575d9',
-  },
-  activeLink: {
-    color: theme.palette.common.white,
-    '&:hover, &:focus': {
-      color: theme.palette.common.white,
-    },
-  },
-  searchInputWrapper: {
-    position: 'relative',
+  tabIndicator: {
+    height: 3,
+    backgroundColor: '#6b6b6b',
   },
   formControl: {
     marginBottom: 10,
   },
   textInput: {
-    top: '25px',
+    top: 9,
     fontSize: 14,
     fontWeight: 500,
     color: '#484848',
@@ -211,29 +212,53 @@ const styles = theme => ({
       display: 'inline-flex',
     },
   },
-  filterWrapper: {
-    marginTop: 21,
-    marginBottom: 10,
+  searchInputWrapper: {
+    position: 'relative',
   },
-  filterWrapperMobile: {
-    [theme.breakpoints.down('xs')]: {
-      flexDirection: 'column-reverse',
-      marginBottom: 10,
+  searchResultList: {
+    backgroundColor: theme.palette.common.white,
+    border: '1px solid #e5e5e5',
+    position: 'absolute',
+    maxHeight: 200,
+    top: '60px',
+    zIndex: 10,
+    overflowY: 'scroll',
+    '&::-webkit-scrollbar-track': {
+      backgroundColor: '#F5F5F5',
+    },
+    '&::-webkit-scrollbar': {
+      width: 6,
+      backgroundColor: '#F5F5F5',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#a4acb3',
     },
   },
-  selectedTab: {
-    fontWeight: 600,
-    color: '#484848',
+  active: {
+    backgroundColor: '#1575d9',
   },
-  editableInput: {
-    backgroundColor: 'white',
+  activeLink: {
+    color: theme.palette.common.white,
+    '&:hover, &:focus': {
+      color: theme.palette.common.white,
+    },
+  },
+  progressContainer: {
+    position: 'absolute',
+    justifyContent: 'center',
+    zIndex: 1000,
+    marginLeft: -24,
   },
 });
 
 type Props = {
   user: Object, // eslint-disable-line
+  cityBusinesses: List<Object>,
+  total: number, // eslint-disable-line
+  page: number, // eslint-disable-line
+  isCityBusinessesLoading: boolean, // eslint-disable-line
+  cityBusinessesError: string, // eslint-disable-line
   connections: List<Object>,
-  connectedConnections: List<Object>,
   isCreating: boolean, // eslint-disable-line
   createError: string, // eslint-disable-line
   isRemoving: boolean,
@@ -241,15 +266,19 @@ type Props = {
   isAccepting: boolean,
   acceptError: string,
   classes: Object,
-  requestConnectedConnections: Function,
+  requestCityBusinesses: Function,
   requestCreateConnection: Function,
-  requestConnections: Function,
   requestRemoveConnection: Function,
   requestAcceptConnection: Function,
+  requestConnections: Function,
+  currentUser: Object,
 };
 
 type State = {
   isFormOpen: boolean,
+  selectedUser: ?Object,
+  initialValues: Object,
+  jobs: Array<Object>,
   sentTo: ?string,
   isInviting: boolean,
   showNotification: boolean,
@@ -257,11 +286,11 @@ type State = {
   invitedUserIds: Array<string>,
   selectedTab: number,
   filter: Object,
-  connectionType: string,
   query: string,
+  page: number,
 };
 
-class CoworkersPage extends Component<Props, State> {
+class NetworkBusinessesPage extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State) {
     if (nextProps.isCreating && prevState.sentTo) {
       return {
@@ -292,80 +321,62 @@ class CoworkersPage extends Component<Props, State> {
     return null;
   }
   state = {
+    isFormOpen: false,
+    selectedUser: null,
     sentTo: null,
     isInviting: false,
+    isCoworker: false,
     showNotification: false,
-    selectedTab: 1,
     query: '',
     filter: {
       location: '',
       selectedRole: '',
-      connection: '',
     },
-    connectionType: 'f2f',
+    page: 1,
   };
   componentDidMount() {
-    const { query, filter, connectionType } = this.state;
-    this.props.requestConnectedConnections(
-      filter.location,
-      query,
-      filter.selectedRole,
-      filter.connection,
-      connectionType
-    );
+    const { user } = this.props;
+    const { query, filter, page } = this.state;
+    if (user.getIn(['profile', 'location'])) {
+      this.props.requestCityBusinesses(
+        filter.location,
+        query,
+        page,
+        perPage,
+        filter.selectedRole
+      );
+    }
     this.props.requestConnections();
     window.localStorage.setItem('isBusinessActive', 'no');
   }
   componentDidUpdate(prevProps: Props) {
-    const { query, filter, connectionType } = this.state;
     const { isRemoving, removeError, isAccepting, acceptError } = this.props;
-
-    if (prevProps.isRemoving && !isRemoving && !removeError) {
-      this.props.requestConnectedConnections(
-        filter.location,
-        query,
-        filter.selectedRole,
-        filter.connection,
-        connectionType
-      );
-    }
     if (prevProps.isRemoving && !isRemoving && !removeError) {
       this.props.requestConnections();
     }
     if (prevProps.isAccepting && !isAccepting && !acceptError) {
       this.props.requestConnections();
-      this.props.requestConnectedConnections(
-        filter.location,
-        query,
-        filter.selectedRole,
-        filter.connection,
-        connectionType
-      );
     }
   }
-  debouncedSearch = debounce(() => {
-    const { query, filter, connectionType } = this.state;
-    const connection = filter.connection
-      .split(' ')
-      .join('')
-      .toLowerCase();
-    this.props.requestConnectedConnections(
-      filter.location,
-      query,
-      filter.selectedRole,
-      connection,
-      connectionType
-    );
-  }, 500);
-  handleConnectionInvite = user => {
+  closeFormModal = () => {
+    this.setState({ isFormOpen: false });
+  };
+  openFormModal = user => {
+    this.setState({ selectedUser: user, isFormOpen: true });
+  };
+  handleConnectionInvite = (user, isCoworker) => {
     this.setState(
       update(this.state, {
         invitedUserIds: { $push: [user.get('id')] },
         connectedTo: { $set: capitalize(user.get('firstName')) },
         isFormOpen: { $set: false },
+        isCoworker: { $set: isCoworker },
       }),
       () => {
-        this.props.requestCreateConnection(user.get('id'));
+        this.props.requestCreateConnection({
+          toUserId: user.get('id'),
+          isCoworker,
+        });
       }
     );
   };
@@ -384,6 +395,7 @@ class CoworkersPage extends Component<Props, State> {
       sentTo: null,
       isInviting: false,
       showNotification: false,
+      isCoworker: false,
     });
   };
   closeConnectionNotification = () => {
@@ -394,9 +406,32 @@ class CoworkersPage extends Component<Props, State> {
   handleChangeTab = link => {
     history.push(link);
   };
+  filterRole = e => {
+    const { id, value } = e.target;
+    if (id) {
+      this.setState(state => ({
+        ...state,
+        page: 1,
+        filter: {
+          ...state.filter,
+          [id]: value,
+        },
+      }));
+    }
+  };
+  debouncedSearch = debounce(() => {
+    const { query, filter, page } = this.state;
+    this.props.requestCityBusinesses(
+      filter.location,
+      query,
+      page,
+      perPage,
+      filter.selectedRole
+    );
+  }, 500);
   handleChange = e => {
     e.persist();
-    this.setState({ query: e.target.value }, () => {
+    this.setState({ query: e.target.value, page: 1 }, () => {
       this.debouncedSearch();
     });
   };
@@ -420,6 +455,7 @@ class CoworkersPage extends Component<Props, State> {
     this.setState(
       state => ({
         ...state,
+        page: 1,
         filter: {
           ...state.filter,
           selectedRole: role,
@@ -428,60 +464,75 @@ class CoworkersPage extends Component<Props, State> {
       () => this.debouncedSearch()
     );
   };
-  handleConnectionsChange = connection => {
+  loadMoreData = () => {
     this.setState(
       state => ({
         ...state,
-        filter: {
-          ...state.filter,
-          connection,
-        },
+        page: state.page + 1,
       }),
       () => this.debouncedSearch()
     );
   };
-
   render() {
-    const { connections, connectedConnections, classes } = this.props;
     const {
+      connections,
+      cityBusinesses,
+      isCityBusinessesLoading,
+      classes,
+      total,
+      currentUser,
+    } = this.props;
+    const {
+      isFormOpen,
+      selectedUser,
       sentTo,
       isInviting,
+      isCoworker,
       showNotification,
-      selectedTab,
       connectedTo,
       query,
       filter,
+      page,
     } = this.state;
     const pendingConnections =
       connections &&
       connections.filter(connection => connection.get('status') === 'PENDING');
+    const loadMore = total > page * perPage;
     return (
       <React.Fragment>
         <NetworkNav />
         {showNotification && (
           <Notification
-            msg={`Invite sent to ${sentTo}`}
+            msg={`Coworker connection request sent to ${sentTo}`}
             close={this.closeNotification}
           />
         )}
-        {connectedTo && (
-          <Notification
-            msg={`Coworker connection request sent to ${connectedTo}`}
-            close={this.closeConnectionNotification}
-          />
-        )}
+        {connectedTo &&
+          isCoworker && (
+            <Notification
+              msg={`Coworker connection request sent to ${connectedTo}`}
+              close={this.closeConnectionNotification}
+            />
+          )}
+        {connectedTo &&
+          !isCoworker && (
+            <Notification
+              msg={`Connection Request sent to ${connectedTo}`}
+              close={this.closeConnectionNotification}
+            />
+          )}
         <div className={classes.content}>
           <div className={classes.leftPanel}>
-            <Link to="/network" className={classes.coworkersTitle}>
-              <div className={classes.coworkersBox}>Find Connections</div>
-            </Link>
             <Link
-              to="/network/connections"
+              to="/network/"
               className={`${classes.activeLink} ${classes.coworkersTitle}`}
             >
               <div className={`${classes.coworkersBox} ${classes.active}`}>
-                My Connections
+                Find Connections
               </div>
+            </Link>
+            <Link to="/network/connections" className={classes.coworkersTitle}>
+              <div className={classes.coworkersBox}>My Connections</div>
             </Link>
             <div className={classes.inviteBox}>
               <InviteForm
@@ -527,173 +578,136 @@ class CoworkersPage extends Component<Props, State> {
                   </Grid>
                 </React.Fragment>
               )}
-            <Typography
-              className={cx(classes.showForSmall, classes.myNetworkTitle)}
-            >
-              My Network
+
+            <Typography className={cx(classes.showForSmall, classes.findTitle)}>
+              Find Connections
             </Typography>
             <Tabs
-              items={ConnectionTabs.CONNECTIONS}
+              items={ConnectionTabs.NETWORK}
               handleChange={link => this.handleChangeTab(link)}
-              activeIndex={0}
+              activeIndex={1}
             />
-            <Grid container spacing={8} className={classes.filterWrapperMobile}>
-              <Grid item xs={12} lg={12}>
-                <Grid container spacing={8} justify="flex-end">
-                  <Grid item xs={12} lg={4}>
-                    <FormControl
-                      classes={{ root: classes.formControl }}
-                      fullWidth
-                    >
-                      <Input
-                        value={query}
-                        onChange={this.handleChange}
-                        className={cx(classes.textInput, classes.hideForSmall)}
-                        placeholder="Search by name"
-                        fullWidth
-                        startAdornment={
-                          <InputAdornment
-                            position="start"
-                            className={classes.adornment}
-                          >
-                            <SearchIcon />
-                          </InputAdornment>
-                        }
-                      />
-                      <Input
-                        value={query}
-                        onChange={this.handleChange}
-                        className={cx(classes.textInput, classes.showForSmall)}
-                        placeholder="Search"
-                        fullWidth
-                        startAdornment={
-                          <InputAdornment
-                            position="start"
-                            className={classes.adornment}
-                          >
-                            <SearchIcon />
-                          </InputAdornment>
-                        }
-                      />
-                    </FormControl>
-                  </Grid>
-                </Grid>
+
+            <Grid container spacing={8} className={classes.filterContainer}>
+              <Grid item xs={6} lg={4}>
+                <EditableInput
+                  label="City"
+                  id="location"
+                  name="location"
+                  value={filter.location}
+                  onChange={this.handleLocationChange}
+                  select
+                />
               </Grid>
-              <Grid item xs={12} lg={12} className={classes.filterWrapper}>
-                <Grid container spacing={8}>
-                  <Grid item xs={6} lg={4}>
-                    <EditableInput
-                      label="City"
-                      id="location"
-                      name="location"
-                      value={filter.location}
-                      onChange={this.handleLocationChange}
-                      select
-                    />
-                  </Grid>
-                  <Grid
-                    item
-                    xs={6}
-                    lg={4}
-                    className={classes.searchInputWrapper}
-                  >
-                    <CustomSelect
-                      placeholder="All Positions"
-                      options={roles}
-                      value={
-                        filter.selectedRole
-                          ? {
-                              value: filter.selectedRole,
-                              label: filter.selectedRole,
-                            }
-                          : null
-                      }
-                      onChange={value => this.handleRoleChange(value.value)}
-                      isMulti={false}
-                      isClearable={false}
-                      stylesOverride={{
-                        container: () => ({
-                          backgroundColor: 'white',
-                        }),
-                      }}
-                    />
-                  </Grid>
-                  <Grid
-                    item
-                    xs={12}
-                    lg={4}
-                    className={classes.searchInputWrapper}
-                  >
-                    <CustomSelect
-                      placeholder="All Connections"
-                      options={connectionSelect}
-                      value={
-                        filter.connection
-                          ? {
-                              value: filter.connection,
-                              label: filter.connection,
-                            }
-                          : null
-                      }
-                      onChange={value =>
-                        this.handleConnectionsChange(value.value)
-                      }
-                      isMulti={false}
-                      isClearable={false}
-                      isSearchable={false}
-                      stylesOverride={{
-                        container: () => ({
-                          backgroundColor: 'white',
-                        }),
-                      }}
-                    />
-                  </Grid>
-                </Grid>
+              <Grid item xs={6} lg={4} className={classes.searchInputWrapper}>
+                <CustomSelect
+                  placeholder="All Positions"
+                  options={roles}
+                  value={
+                    filter.selectedRole
+                      ? {
+                          value: filter.selectedRole,
+                          label: filter.selectedRole,
+                        }
+                      : null
+                  }
+                  onChange={value => this.handleRoleChange(value.value)}
+                  isMulti={false}
+                  isClearable={false}
+                  stylesOverride={{
+                    container: () => ({
+                      backgroundColor: 'white',
+                    }),
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} lg={4}>
+                <FormControl classes={{ root: classes.formControl }} fullWidth>
+                  <Input
+                    value={query}
+                    onChange={this.handleChange}
+                    className={cx(classes.textInput, classes.hideForSmall)}
+                    placeholder="Search by name"
+                    fullWidth
+                    startAdornment={
+                      <InputAdornment
+                        position="start"
+                        className={classes.adornment}
+                      >
+                        <SearchIcon />
+                      </InputAdornment>
+                    }
+                  />
+                  <Input
+                    value={query}
+                    onChange={this.handleChange}
+                    className={cx(classes.textInput, classes.showForSmall)}
+                    placeholder="Search"
+                    fullWidth
+                    startAdornment={
+                      <InputAdornment
+                        position="start"
+                        className={classes.adornment}
+                      >
+                        <SearchIcon />
+                      </InputAdornment>
+                    }
+                  />
+                </FormControl>
               </Grid>
             </Grid>
-            {selectedTab === 1 && (
-              <Grid container spacing={8}>
-                {connectedConnections &&
-                  connectedConnections.map(connection => {
-                    if (connection.get('profile'))
-                      return (
-                        <Grid item key={generate()} xs={12} lg={6}>
-                          <CoworkerCard user={connection} />
-                        </Grid>
-                      );
-                    return null;
-                  })}
+            {isCityBusinessesLoading && (
+              <Grid container className={classes.progressContainer}>
+                <Preloader />
               </Grid>
             )}
-            {connectedConnections &&
-              connectedConnections.size === 0 && (
-                <Grid container spacing={8}>
-                  <Grid item xs={12} lg={12}>
-                    <div className={classes.emptyCoworkersPanel}>
-                      <div className={classes.emptyCoworkers}>
-                        <Typography className={classes.descText}>
-                          Build your network to <br />
-                          find your next gig &amp; stay in the know!
-                        </Typography>
-                        <Link to="/network" className={classes.coworkersTitle}>
-                          Find Connections
-                        </Link>
-                      </div>
-                    </div>
+            <Grid container spacing={8}>
+              {cityBusinesses &&
+                cityBusinesses.map(cityBusiness => (
+                  <Grid item key={generate()} xs={12} lg={6}>
+                    <BusinessCard
+                      business={cityBusiness}
+                      onSelect={this.openFormModal}
+                    />
                   </Grid>
-                </Grid>
-              )}
+                ))}
+            </Grid>
+            {loadMore && (
+              <Grid item xs={12} lg={12}>
+                <Button
+                  fullWidth
+                  color="primary"
+                  className={`${classes.loadMoreButton}`}
+                  mt={1}
+                  onClick={() => this.loadMoreData()}
+                >
+                  See More
+                </Button>
+              </Grid>
+            )}
           </div>
         </div>
+        <VouchInviteFormModal
+          isOpen={isFormOpen}
+          user={selectedUser}
+          currentUser={currentUser}
+          onCloseModal={this.closeFormModal}
+          onInvite={this.handleConnectionInvite}
+        />
       </React.Fragment>
     );
   }
 }
 
 const mapStateToProps = state => ({
+  currentUser: state.getIn(['app', 'user']),
   user: state.getIn(['app', 'user']),
+  cityBusinesses: state.getIn(['app', 'cityBusinesses', 'businesses']),
+  total: state.getIn(['app', 'cityBusinesses', 'total']),
+  page: state.getIn(['app', 'cityBusinesses', 'page']),
+  isCityBusinessesLoading: state.getIn(['app', 'isCityBusinessesLoading']),
+  cityBusinessesError: state.getIn(['app', 'cityBusinessesError']),
   connections: state.getIn(['network', 'connections']),
-  connectedConnections: state.getIn(['network', 'connectedConnections']),
   isCreating: state.getIn(['network', 'isCreating']),
   createError: state.getIn(['network', 'createError']),
   isRemoving: state.getIn(['network', 'isRemoving']),
@@ -705,21 +719,13 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
-  requestConnectedConnections: (
-    city,
-    query,
-    role,
-    connection,
-    connectionType
-  ) =>
-    dispatch(
-      requestConnectedConnections(city, query, role, connection, connectionType)
-    ),
-  requestConnections: () => dispatch(requestConnections()),
   requestRemoveConnection: connectionId =>
     dispatch(requestRemoveConnection(connectionId)),
   requestAcceptConnection: connectionId =>
     dispatch(requestAcceptConnection(connectionId)),
+  requestConnections: () => dispatch(requestConnections()),
+  requestCityBusinesses: (city, query, page, usersPerPage, role) =>
+    dispatch(requestCityBusinesses(city, query, page, usersPerPage, role)),
 });
 
 export default compose(
@@ -729,4 +735,4 @@ export default compose(
     mapDispatchToProps
   ),
   withStyles(styles)
-)(CoworkersPage);
+)(NetworkBusinessesPage);
