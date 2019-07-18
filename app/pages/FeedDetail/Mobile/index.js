@@ -5,20 +5,13 @@ import { connect } from 'react-redux';
 import { generate } from 'shortid';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import Typography from '@material-ui/core/Typography';
 
-import UserAvatar from 'components/UserAvatar';
-import UserCredStats from 'components/UserCredStats';
 import PostFormModal from 'components/PostFormModal';
 import PostCard from 'components/PostCard';
-import FeedFilterModal from 'components/FeedFilterModal';
-import UserCredModal from 'components/UserCredModal';
 import Link from 'components/Link';
-import Icon from 'components/Icon';
-import PlusIcon from 'images/sprite/plus_white.svg';
-import FilterIcon from 'images/sprite/filter.svg';
-import CredIcon from 'images/sprite/cred_white.svg';
 
 import saga, {
   reducer,
@@ -37,44 +30,42 @@ import { CATEGORY_OPTIONS } from 'enum/constants';
 
 const styles = theme => ({
   root: {
-    width: 1064,
-    margin: '0 auto',
-    paddingTop: 25,
-    display: 'flex',
     [theme.breakpoints.down('xs')]: {
       paddingTop: 0,
       width: '100%',
       display: 'block',
     },
   },
-  leftPanel: {
-    width: 223,
-    marginRight: 26,
-    [theme.breakpoints.down('xs')]: {
-      display: 'none',
+  header: {
+    flexGrow: 1,
+    padding: '3px 15px',
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.common.white,
+    marginBottom: '10px',
+    position: 'relative',
+  },
+  backButton: {
+    color: theme.palette.common.white,
+    textTransform: 'none',
+    paddingLeft: 0,
+    '&:hover': {
+      color: theme.palette.common.white,
     },
   },
-  profileInfo: {
-    marginBottom: 30,
-    paddingLeft: 12,
+  logoContainer: {
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
   },
-  avatar: {
-    width: 60,
-    height: 60,
-    marginRight: 20,
-  },
-  greetings: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#373737',
-    textTransform: 'capitalize',
-  },
-  link: {
-    fontSize: 14,
+  logoText: {
+    color: theme.palette.common.white,
+    fontSize: 20,
     fontWeight: 600,
-    letterSpacing: '0.7px',
-    textTransform: 'none',
-    textDecoration: 'none',
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+    },
   },
   content: {
     flex: 1,
@@ -82,30 +73,6 @@ const styles = theme => ({
       height: 'calc(100vh - 103px)',
       overflowY: 'scroll',
     },
-  },
-  rightPanel: {
-    width: 223,
-    marginLeft: 26,
-    [theme.breakpoints.down('xs')]: {
-      display: 'none',
-    },
-  },
-  mobileMenu: {
-    backgroundColor: '#083f76',
-    height: 55,
-    display: 'none',
-    [theme.breakpoints.down('xs')]: {
-      display: 'flex',
-    },
-  },
-  mobileButtonWrapper: {
-    marginLeft: 10,
-    marginRight: 10,
-  },
-  mobileButton: {
-    fontWeight: 600,
-    color: theme.palette.common.white,
-    textTransform: 'none',
   },
 });
 
@@ -133,13 +100,10 @@ type Props = {
 
 type State = {
   isOpen: boolean,
-  isFilterOpen: boolean,
-  isCredOpen: boolean,
-  query: ?Object,
   editingPost: Object,
 };
 
-class FeedDetailPage extends Component<Props, State> {
+class FeedDetailMobile extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State) {
     if (nextProps.user && prevState.query === undefined) {
       return {
@@ -154,8 +118,6 @@ class FeedDetailPage extends Component<Props, State> {
   }
   state = {
     isOpen: false,
-    isFilterOpen: false,
-    isCredOpen: false,
     query: undefined,
     editingPost: null,
   };
@@ -195,18 +157,6 @@ class FeedDetailPage extends Component<Props, State> {
   closeModal = () => {
     this.setState({ isOpen: false });
   };
-  openFilterModal = () => {
-    this.setState({ isFilterOpen: true });
-  };
-  closeFilterModal = () => {
-    this.setState({ isFilterOpen: false });
-  };
-  openCredModal = () => {
-    this.setState({ isCredOpen: true });
-  };
-  closeCredModal = () => {
-    this.setState({ isCredOpen: false });
-  };
   updatePost = (id, data) => {
     this.closeModal();
     this.props.requestUpdatePost(id, data);
@@ -224,66 +174,30 @@ class FeedDetailPage extends Component<Props, State> {
   };
   render() {
     const { user, posts, classes } = this.props;
-    const { isOpen, isFilterOpen, isCredOpen, query, editingPost } = this.state;
+    const { isOpen, editingPost } = this.state;
     return (
       <React.Fragment>
         <div className={classes.root}>
           <Grid
+            className={classes.header}
             container
+            justify="space-between"
             alignItems="center"
-            justify="center"
-            className={classes.mobileMenu}
           >
-            <Grid item className={classes.mobileButtonWrapper}>
-              <Button className={classes.mobileButton} onClick={this.openModal}>
-                <Icon glyph={PlusIcon} size={20} />
-                &nbsp;&nbsp;Post
+            <Grid item>
+              <Button
+                className={classes.backButton}
+                component={props => <Link to="/feed" {...props} />}
+              >
+                <ArrowBackIcon />
               </Button>
             </Grid>
-            <Grid item className={classes.mobileButtonWrapper}>
-              <Button
-                className={classes.mobileButton}
-                onClick={this.openFilterModal}
-              >
-                <Icon glyph={FilterIcon} size={20} />
-                &nbsp;&nbsp;Filter
-              </Button>
-            </Grid>
-            <Grid item className={classes.mobileButtonWrapper}>
-              <Button
-                className={classes.mobileButton}
-                onClick={this.openCredModal}
-              >
-                <Icon glyph={CredIcon} size={19} />
-                &nbsp;&nbsp;
-                {`${user.getIn(['profile', 'cred'])} Cred`}
-              </Button>
+            <Grid item className={classes.logoContainer}>
+              <Link to="/">
+                <Typography className={classes.logoText}>J</Typography>
+              </Link>
             </Grid>
           </Grid>
-          <div className={classes.leftPanel}>
-            <Grid
-              container
-              alignItems="center"
-              classes={{
-                container: classes.profileInfo,
-              }}
-            >
-              <Grid item>
-                <UserAvatar
-                  className={classes.avatar}
-                  src={user.getIn(['profile', 'avatar'])}
-                />
-              </Grid>
-              <Grid item>
-                <Typography variant="h6" className={classes.greetings}>
-                  {`Hi, ${user.get('firstName')}!`}
-                </Typography>
-                <Link to="/edit" className={classes.link}>
-                  View Profile
-                </Link>
-              </Grid>
-            </Grid>
-          </div>
           <div className={classes.content}>
             {posts &&
               posts.map(post => (
@@ -300,9 +214,6 @@ class FeedDetailPage extends Component<Props, State> {
                 />
               ))}
           </div>
-          <div className={classes.rightPanel}>
-            <UserCredStats user={user} onClick={this.openModal} />
-          </div>
         </div>
         <PostFormModal
           isOpen={isOpen}
@@ -310,19 +221,6 @@ class FeedDetailPage extends Component<Props, State> {
           post={editingPost}
           onCloseModal={this.closeModal}
           onUpdate={this.updatePost}
-        />
-        <FeedFilterModal
-          isOpen={isFilterOpen}
-          user={user}
-          query={query}
-          onCloseModal={this.closeFilterModal}
-          onChange={this.handleFilterChange}
-        />
-        <UserCredModal
-          isOpen={isCredOpen}
-          user={user}
-          onCloseModal={this.closeCredModal}
-          openPostModal={this.openModal}
         />
       </React.Fragment>
     );
@@ -360,4 +258,4 @@ export default compose(
     mapDispatchToProps
   ),
   withStyles(styles)
-)(FeedDetailPage);
+)(FeedDetailMobile);

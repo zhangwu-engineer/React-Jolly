@@ -84,3 +84,5 @@ export const ACTIVE_OPTIONS = [
     value: 'Inactive',
   },
 ];
+
+export const SET_USER_TRUSTED = 'SET_USER_TRUSTED';
