@@ -25,7 +25,6 @@ import InviteForm from 'components/InviteForm';
 import Notification from 'components/Notification';
 import NetworkNav from 'components/NetworkNav';
 import CustomSelect from 'components/CustomSelect';
-import { CONNECTION_REQUEST_MSG, COWORKER_REQUEST_MSG } from 'enum/connection';
 
 import ROLES from 'enum/roles';
 
@@ -272,7 +271,7 @@ type State = {
   initialValues: Object,
   jobs: Array<Object>,
   sentTo: ?string,
-  coworkerInvitationSent: boolean,
+  isCoworker: boolean,
   isInviting: boolean,
   showNotification: boolean,
   connectedTo: ?string,
@@ -318,8 +317,8 @@ class NetworkPage extends Component<Props, State> {
     selectedUser: null,
     invitedUserIds: [],
     sentTo: null,
-    coworkerInvitationSent: false,
     isInviting: false,
+    isCoworker: false,
     showNotification: false,
     selectedTab: 0,
     query: '',
@@ -343,6 +342,7 @@ class NetworkPage extends Component<Props, State> {
     }
     this.props.requestConnections();
     this.props.requestUserCoworkers(user.get('slug'));
+    window.localStorage.setItem('isBusinessActive', 'no');
   }
   componentDidUpdate(prevProps: Props) {
     const {
@@ -373,7 +373,7 @@ class NetworkPage extends Component<Props, State> {
         invitedUserIds: { $push: [user.get('id')] },
         connectedTo: { $set: capitalize(user.get('firstName')) },
         isFormOpen: { $set: false },
-        coworkerInvitationSent: { $set: isCoworker },
+        isCoworker: { $set: isCoworker },
       }),
       () => {
         this.props.requestCreateConnection({
@@ -398,6 +398,7 @@ class NetworkPage extends Component<Props, State> {
       sentTo: null,
       isInviting: false,
       showNotification: false,
+      isCoworker: false,
     });
   };
   closeConnectionNotification = () => {
@@ -490,10 +491,10 @@ class NetworkPage extends Component<Props, State> {
       selectedUser,
       sentTo,
       isInviting,
+      isCoworker,
       showNotification,
       invitedUserIds,
       connectedTo,
-      coworkerInvitationSent,
       selectedTab,
       query,
       filter,
@@ -514,16 +515,16 @@ class NetworkPage extends Component<Props, State> {
           />
         )}
         {connectedTo &&
-          !coworkerInvitationSent && (
+          isCoworker && (
             <Notification
-              msg={`${CONNECTION_REQUEST_MSG} to ${connectedTo}`}
+              msg={`Coworker connection request sent to ${connectedTo}`}
               close={this.closeConnectionNotification}
             />
           )}
         {connectedTo &&
-          coworkerInvitationSent && (
+          !isCoworker && (
             <Notification
-              msg={`${COWORKER_REQUEST_MSG} to ${connectedTo}`}
+              msg={`Connection Request sent to ${connectedTo}`}
               close={this.closeConnectionNotification}
             />
           )}
