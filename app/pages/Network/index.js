@@ -31,7 +31,7 @@ import CustomSelect from 'components/CustomSelect';
 
 import ROLES from 'enum/roles';
 import ConnectionTabs from 'enum/ConnectionTabs';
-
+import { CONNECTION_REQUEST_MSG, COWORKER_REQUEST_MSG } from 'enum/connection';
 import { requestCityUsers } from 'containers/App/sagas';
 import saga, {
   reducer,
@@ -513,16 +513,16 @@ class NetworkPage extends Component<Props, State> {
           />
         )}
         {connectedTo &&
-          isCoworker && (
+          !isCoworker && (
             <Notification
-              msg={`Coworker connection request sent to ${connectedTo}`}
+              msg={`${CONNECTION_REQUEST_MSG} to ${connectedTo}`}
               close={this.closeConnectionNotification}
             />
           )}
         {connectedTo &&
-          !isCoworker && (
+          isCoworker && (
             <Notification
-              msg={`Connection Request sent to ${connectedTo}`}
+              msg={`${COWORKER_REQUEST_MSG} to ${connectedTo}`}
               close={this.closeConnectionNotification}
             />
           )}

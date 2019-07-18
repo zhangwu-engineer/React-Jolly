@@ -567,6 +567,7 @@ function* CheckConnectionRequest({ payload }) {
       url: `${API_URL}/connection/${payload.to}/info`,
       params: {
         from: payload.from,
+        type: payload.type,
       },
       headers: { 'x-access-token': token },
     });
