@@ -10,9 +10,8 @@ import Typography from '@material-ui/core/Typography';
 
 import Table from 'components/Table';
 import ActionMenu from 'components/ActionMenu';
-
 import injectSagas from 'utils/injectSagas';
-import saga, { reducer, requestUsers } from './sagas';
+import saga, { reducer, requestUsers, requestSetUserTrusted } from './sagas';
 
 const styles = theme => ({
   root: {
@@ -27,6 +26,10 @@ const styles = theme => ({
   title: {
     marginBottom: 30,
   },
+  exportCsv: {
+    marginBottom: 10,
+    textDecoration: 'none'
+  }
 });
 
 type Props = {
@@ -36,6 +39,7 @@ type Props = {
   isLoading: boolean,
   classes: Object,
   requestUsers: Function,
+  requestSetUserTrusted: Function,
 };
 
 type State = {
@@ -76,6 +80,10 @@ class User extends Component<Props, State> {
   handleSortChange = sort => {
     this.setState({ sort }, () => this.fetchUsers(1));
   };
+  handleTrustFreelancerAction = userId => {
+    this.props.requestSetUserTrusted(userId);
+    this.debounceSearch();
+  };
 
   debounceSearch = debounce(() => {
     this.fetchUsers(1);
@@ -110,17 +118,38 @@ class User extends Component<Props, State> {
               accessor: d => d.get('email'),
             },
             {
-              Header: 'First Name',
+              Header: 'First',
               id: 'firstName',
               accessor: d => d.get('firstName'),
             },
             {
-              Header: 'Last Name',
+              Header: 'Last',
               id: 'lastName',
               accessor: d => d.get('lastName'),
             },
             {
-              Header: 'Jobs Entered',
+              Header: 'City',
+              id: 'city',
+              filterable: false,
+              sortable: false,
+              accessor: d => d.get('city'),
+            },
+            {
+              Header: 'Connections',
+              id: 'connections',
+              filterable: false,
+              sortable: false,
+              accessor: d => d.get('connections'),
+            },
+            {
+              Header: 'Trusted',
+              id: 'trusted',
+              filterable: false,
+              sortable: false,
+              accessor: d => d.get('trusted') ? 'Y' : '',
+            },
+            {
+              Header: 'Jobs',
               id: 'jobs',
               filterable: false,
               sortable: false,
@@ -141,14 +170,14 @@ class User extends Component<Props, State> {
               accessor: d => d.get('top2ndPosition'),
             },
             {
-              Header: 'Posts Made',
+              Header: 'Posts',
               id: 'posts',
               filterable: false,
               sortable: false,
               accessor: d => d.get('posts'),
             },
             {
-              Header: 'Coworker Connections',
+              Header: 'Coworkers',
               id: 'coworkers',
               filterable: false,
               sortable: false,
@@ -165,7 +194,7 @@ class User extends Component<Props, State> {
               Header: 'Actions',
               filterable: false,
               sortable: false,
-              Cell: props => <ActionMenu data={props.row} />,
+              Cell: props => <ActionMenu data={props.row} handleTrustFreelancerAction={ this.handleTrustFreelancerAction} />,
             },
           ]}
           manual // Forces table not to paginate or sort automatically, so we can handle it server-side
@@ -204,6 +233,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   requestUsers: payload => dispatch(requestUsers(payload)),
+  requestSetUserTrusted: userId => dispatch(requestSetUserTrusted(userId)),
 });
 
 export default compose(
