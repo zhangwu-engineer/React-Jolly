@@ -44,6 +44,7 @@ import injectSagas from 'utils/injectSagas';
 
 let roles = ROLES.sort().map(role => ({ value: role, label: role }));
 roles = [{ value: '', label: 'All Positions' }].concat(roles);
+const mailTo = 'mailto:community@jollyhq.com';
 
 const perPage = 16;
 const styles = theme => ({
@@ -271,6 +272,18 @@ const styles = theme => ({
     marginTop: 40,
     borderRadius: 0,
     boxShadow: 'none',
+  },
+  alertHeading: {
+    marginBottom: 12,
+  },
+  mailToLink: {
+    fontSize: 14,
+    color: 'white',
+    textDecoration: 'none',
+    textTransform: 'none',
+    '&:hover': {
+      color: 'white',
+    },
   },
 });
 
@@ -622,10 +635,12 @@ class NetworkBusinessesPage extends Component<Props, State> {
                   <div className={classes.underContructionPanel}>
                     <div className={classes.underConstruction}>
                       <Typography>
-                        Businesses are comming soon to Jolly <br />
+                        <Typography className={classes.alertHeading}>
+                          Businesses are coming soon to Jolly!
+                        </Typography>
                         <strong>Want early exposure to hirers on Jolly?</strong>
                         <br />
-                        Set up an interview with our Community Team to
+                        Set up an interview by emailing our Community Team to
                         <br /> become a Trusted Jolly Freelancer!
                       </Typography>
                       <Button
@@ -633,7 +648,9 @@ class NetworkBusinessesPage extends Component<Props, State> {
                         color="primary"
                         className={classes.setUpInterviewButton}
                       >
-                        Set Up Interview
+                        <a href={`${mailTo}`} className={classes.mailToLink}>
+                          Email Us
+                        </a>
                       </Button>
                     </div>
                   </div>
