@@ -13,6 +13,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
 import cx from 'classnames';
 import { capitalize, debounce } from 'lodash-es';
+import Button from '@material-ui/core/Button';
 
 import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
@@ -224,6 +225,29 @@ const styles = theme => ({
   editableInput: {
     backgroundColor: 'white',
   },
+  underContructionPanel: {
+    backgroundColor: theme.palette.common.white,
+    height: 356,
+    display: 'flex',
+    alignItems: 'center',
+    marginTop: 5,
+    justifyContent: 'center',
+    [theme.breakpoints.down('xs')]: {
+      height: 300,
+    },
+  },
+  underConstruction: {
+    textAlign: 'center',
+  },
+  setUpInterviewButton: {
+    fontSize: 14,
+    fontWeight: 600,
+    textTransform: 'none',
+    padding: '11px 35px',
+    marginTop: 40,
+    borderRadius: 0,
+    boxShadow: 'none',
+  },
 });
 
 type Props = {
@@ -255,6 +279,7 @@ type State = {
   filter: Object,
   connectionType: string,
   query: string,
+  isUnderConstruction: boolean,
 };
 
 class ConnectedBusinessesPage extends Component<Props, State> {
@@ -299,6 +324,7 @@ class ConnectedBusinessesPage extends Component<Props, State> {
       connection: '',
     },
     connectionType: 'b2f',
+    isUnderConstruction: true,
   };
   componentDidMount() {
     const { query, filter, connectionType } = this.state;
@@ -447,6 +473,7 @@ class ConnectedBusinessesPage extends Component<Props, State> {
       connectedTo,
       query,
       filter,
+      isUnderConstruction,
     } = this.state;
     const pendingConnections =
       connections &&
@@ -533,86 +560,116 @@ class ConnectedBusinessesPage extends Component<Props, State> {
               handleChange={link => this.handleChangeTab(link)}
               activeIndex={1}
             />
-            <Grid container spacing={8} className={classes.filterWrapper}>
-              <Grid item xs={6} lg={4}>
-                <EditableInput
-                  label="City"
-                  id="location"
-                  name="location"
-                  value={filter.location}
-                  onChange={this.handleLocationChange}
-                  select
-                />
-              </Grid>
-              <Grid item xs={6} lg={4} className={classes.searchInputWrapper}>
-                <CustomSelect
-                  placeholder="All Positions"
-                  options={roles}
-                  value={
-                    filter.selectedRole
-                      ? {
-                          value: filter.selectedRole,
-                          label: filter.selectedRole,
-                        }
-                      : null
-                  }
-                  onChange={value => this.handleRoleChange(value.value)}
-                  isMulti={false}
-                  isClearable={false}
-                  stylesOverride={{
-                    container: () => ({
-                      backgroundColor: 'white',
-                    }),
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} lg={4}>
-                <FormControl classes={{ root: classes.formControl }} fullWidth>
-                  <Input
-                    value={query}
-                    onChange={this.handleChange}
-                    className={cx(classes.textInput, classes.hideForSmall)}
-                    placeholder="Search by name"
-                    fullWidth
-                    startAdornment={
-                      <InputAdornment
-                        position="start"
-                        className={classes.adornment}
-                      >
-                        <SearchIcon />
-                      </InputAdornment>
-                    }
-                  />
-                  <Input
-                    value={query}
-                    onChange={this.handleChange}
-                    className={cx(classes.textInput, classes.showForSmall)}
-                    placeholder="Search"
-                    fullWidth
-                    startAdornment={
-                      <InputAdornment
-                        position="start"
-                        className={classes.adornment}
-                      >
-                        <SearchIcon />
-                      </InputAdornment>
-                    }
-                  />
-                </FormControl>
-              </Grid>
-            </Grid>
-
-            {selectedTab === 1 && (
+            {isUnderConstruction && (
               <Grid container spacing={8}>
-                {connectedConnections &&
-                  connectedConnections.map(connection => (
-                    <Grid item key={generate()} xs={12} lg={6}>
-                      <BusinessConnectedCard business={connection} />
-                    </Grid>
-                  ))}
+                <Grid item xs={12} lg={12}>
+                  <div className={classes.underContructionPanel}>
+                    <div className={classes.underConstruction}>
+                      <Typography>
+                        Businesses are comming soon to Jolly <br />
+                        <strong>Want early exposure to hirers on Jolly?</strong>
+                        <br />
+                        Set up an interview with our Community Team to
+                        <br /> become a Trusted Jolly Freelancer!
+                      </Typography>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.setUpInterviewButton}
+                      >
+                        Set Up Interview
+                      </Button>
+                    </div>
+                  </div>
+                </Grid>
               </Grid>
             )}
-            {connectedConnections &&
+            {!isUnderConstruction && (
+              <Grid container spacing={8} className={classes.filterWrapper}>
+                <Grid item xs={6} lg={4}>
+                  <EditableInput
+                    label="City"
+                    id="location"
+                    name="location"
+                    value={filter.location}
+                    onChange={this.handleLocationChange}
+                    select
+                  />
+                </Grid>
+                <Grid item xs={6} lg={4} className={classes.searchInputWrapper}>
+                  <CustomSelect
+                    placeholder="All Positions"
+                    options={roles}
+                    value={
+                      filter.selectedRole
+                        ? {
+                            value: filter.selectedRole,
+                            label: filter.selectedRole,
+                          }
+                        : null
+                    }
+                    onChange={value => this.handleRoleChange(value.value)}
+                    isMulti={false}
+                    isClearable={false}
+                    stylesOverride={{
+                      container: () => ({
+                        backgroundColor: 'white',
+                      }),
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} lg={4}>
+                  <FormControl
+                    classes={{ root: classes.formControl }}
+                    fullWidth
+                  >
+                    <Input
+                      value={query}
+                      onChange={this.handleChange}
+                      className={cx(classes.textInput, classes.hideForSmall)}
+                      placeholder="Search by name"
+                      fullWidth
+                      startAdornment={
+                        <InputAdornment
+                          position="start"
+                          className={classes.adornment}
+                        >
+                          <SearchIcon />
+                        </InputAdornment>
+                      }
+                    />
+                    <Input
+                      value={query}
+                      onChange={this.handleChange}
+                      className={cx(classes.textInput, classes.showForSmall)}
+                      placeholder="Search"
+                      fullWidth
+                      startAdornment={
+                        <InputAdornment
+                          position="start"
+                          className={classes.adornment}
+                        >
+                          <SearchIcon />
+                        </InputAdornment>
+                      }
+                    />
+                  </FormControl>
+                </Grid>
+              </Grid>
+            )}
+            {!isUnderConstruction &&
+              selectedTab === 1 && (
+                <Grid container spacing={8}>
+                  {connectedConnections &&
+                    connectedConnections.map(connection => (
+                      <Grid item key={generate()} xs={12} lg={6}>
+                        <BusinessConnectedCard business={connection} />
+                      </Grid>
+                    ))}
+                </Grid>
+              )}
+            {!isUnderConstruction &&
+              connectedConnections &&
               connectedConnections.size === 0 && (
                 <Grid container spacing={8}>
                   <Grid item xs={12} lg={12}>
