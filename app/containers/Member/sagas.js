@@ -22,7 +22,7 @@ const WORKS = 'Jolly/Member/WORKS';
 const ENDORSEMENTS = 'Jolly/Member/ENDORSEMENTS';
 const CREATE_CONNECTION = 'Jolly/Member/CREATE_CONNECTION';
 const DELETE_CONNECTION = 'Jolly/Member/DELETE_CONNECTION';
-const CHECK_CONNECTION = 'Jolly/Member/CHECK_CONNECTION';
+const CHECK_CONNECTION = 'Jolly/Network/CHECK_CONNECTION';
 
 // ------------------------------------
 // Actions
