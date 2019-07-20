@@ -312,7 +312,7 @@ class PendingConnections extends Component<Props, State> {
       connections.filter(connection => connection.get('status') === 'PENDING');
     return (
       <React.Fragment>
-        <NetworkNav />
+        <NetworkNav isBusinessNetwork />
         {showNotification && (
           <Notification
             msg={`Coworker connection request sent to ${sentTo}`}

@@ -28,8 +28,8 @@ const styles = theme => ({
   },
   exportCsv: {
     marginBottom: 10,
-    textDecoration: 'none'
-  }
+    textDecoration: 'none',
+  },
 });
 
 type Props = {
@@ -146,7 +146,7 @@ class User extends Component<Props, State> {
               id: 'trusted',
               filterable: false,
               sortable: false,
-              accessor: d => d.get('trusted') ? 'Y' : '',
+              accessor: d => (d.get('trusted') ? 'Y' : ''),
             },
             {
               Header: 'Jobs',
@@ -194,7 +194,12 @@ class User extends Component<Props, State> {
               Header: 'Actions',
               filterable: false,
               sortable: false,
-              Cell: props => <ActionMenu data={props.row} handleTrustFreelancerAction={ this.handleTrustFreelancerAction} />,
+              Cell: props => (
+                <ActionMenu
+                  data={props.row}
+                  handleTrustFreelancerAction={this.handleTrustFreelancerAction}
+                />
+              ),
             },
           ]}
           manual // Forces table not to paginate or sort automatically, so we can handle it server-side
