@@ -249,6 +249,29 @@ const styles = theme => ({
     zIndex: 1000,
     marginLeft: -24,
   },
+  emptyPanel: {
+    backgroundColor: theme.palette.common.white,
+    height: 356,
+    display: 'flex',
+    alignItems: 'center',
+    marginTop: 5,
+    justifyContent: 'center',
+    [theme.breakpoints.down('xs')]: {
+      height: 300,
+    },
+  },
+  emptyContainer: {
+    textAlign: 'center',
+  },
+  panelButton: {
+    fontSize: 14,
+    fontWeight: 600,
+    textTransform: 'none',
+    padding: '11px 35px',
+    marginTop: 40,
+    borderRadius: 0,
+    boxShadow: 'none',
+  },
 });
 
 type Props = {
@@ -666,6 +689,30 @@ class NetworkBusinessesPage extends Component<Props, State> {
             )}
             <Grid container spacing={8}>
               {cityBusinesses &&
+                cityBusinesses.size === 0 && (
+                  <Grid container spacing={8}>
+                    <Grid item xs={12} lg={12}>
+                      <div className={classes.emptyPanel}>
+                        <div className={classes.emptyContainer}>
+                          <Typography>
+                            No businesses match your selection. <br />
+                            Please modify the filters or your search, <br />
+                            or invite a business to join:
+                          </Typography>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            className={classes.panelButton}
+                          >
+                            Invite Business
+                          </Button>
+                        </div>
+                      </div>
+                    </Grid>
+                  </Grid>
+                )}
+              {cityBusinesses &&
+                cityBusinesses.size > 0 &&
                 cityBusinesses.map(cityBusiness => (
                   <Grid item key={generate()} xs={12} lg={6}>
                     <BusinessCard

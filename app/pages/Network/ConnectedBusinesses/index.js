@@ -13,6 +13,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
 import cx from 'classnames';
 import { capitalize, debounce } from 'lodash-es';
+import Button from '@material-ui/core/Button';
 
 import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
@@ -223,6 +224,29 @@ const styles = theme => ({
   },
   editableInput: {
     backgroundColor: 'white',
+  },
+  emptyPanel: {
+    backgroundColor: theme.palette.common.white,
+    height: 356,
+    display: 'flex',
+    alignItems: 'center',
+    marginTop: 5,
+    justifyContent: 'center',
+    [theme.breakpoints.down('xs')]: {
+      height: 300,
+    },
+  },
+  emptyContainer: {
+    textAlign: 'center',
+  },
+  panelButton: {
+    fontSize: 14,
+    fontWeight: 600,
+    textTransform: 'none',
+    padding: '11px 35px',
+    marginTop: 40,
+    borderRadius: 0,
+    boxShadow: 'none',
   },
 });
 
@@ -616,15 +640,20 @@ class ConnectedBusinessesPage extends Component<Props, State> {
               connectedConnections.size === 0 && (
                 <Grid container spacing={8}>
                   <Grid item xs={12} lg={12}>
-                    <div className={classes.emptyCoworkersPanel}>
-                      <div className={classes.emptyCoworkers}>
-                        <Typography className={classes.descText}>
-                          Build your network to <br />
-                          find your next gig &amp; stay in the know!
+                    <div className={classes.emptyPanel}>
+                      <div className={classes.emptyContainer}>
+                        <Typography>
+                          No businesses match your selection. <br />
+                          Please modify the filters or your search, <br />
+                          or invite a business to join:
                         </Typography>
-                        <Link to="/network" className={classes.coworkersTitle}>
-                          Find Connections
-                        </Link>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          className={classes.panelButton}
+                        >
+                          Invite Business
+                        </Button>
                       </div>
                     </div>
                   </Grid>
