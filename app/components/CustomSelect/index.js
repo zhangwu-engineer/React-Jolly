@@ -22,10 +22,11 @@ const styles = theme => ({
     fontSize: 14,
     fontWeight: 500,
     color: '#434343',
-    height: 40,
+    height: 'auto',
     alignItems: 'center',
     paddingLeft: 10,
-    paddingTop: 10,
+    paddingTop: 8,
+    paddingBottom: 8,
     boxSizing: 'border-box',
   },
   valueContainer: {
@@ -85,7 +86,11 @@ const NoOptionsMessage = (props: any) => (
 );
 
 const inputComponent = ({ inputRef, ...props }: any) => (
-  <div ref={inputRef} {...props} />
+  <div
+    ref={inputRef}
+    {...props}
+    style={{ height: props.children[0].props.isMulti ? 'auto' : 40 }}
+  />
 );
 
 const Control = (props: any) => (
@@ -226,6 +231,12 @@ class CustomSelect extends React.Component<Props> {
           options={options}
           components={components}
           value={value}
+          TextFieldProps={{
+            label: 'Other Cities Active',
+            InputLabelProps: {
+              shrink: true,
+            },
+          }}
           onChange={this.props.onChange}
           placeholder={placeholder}
           isClearable={isClearable}
