@@ -27,6 +27,9 @@ const NotificationSettingsPage = load(() =>
   import('pages/Settings/Notification')
 );
 const BusinessSettings = load(() => import('pages/BusinessSettings'));
+const BusinessSettingsProfile = load(() =>
+  import('pages/BusinessSettings/BusinessSettingsProfile')
+);
 const Mobile = load(() => import('pages/Mobile'));
 const Roles = load(() => import('pages/Roles'));
 const ObPage1 = load(() => import('pages/Ob/Page1'));
@@ -106,6 +109,11 @@ class Routes extends Component<{}> {
           exact
           path="/b/settings"
           render={props => <BusinessSettings {...props} />}
+        />
+        <PrivateRoute
+          exact
+          path="/b/settings/profile"
+          render={props => <BusinessSettingsProfile {...props} />}
         />
         <Route path="/b/:slug" render={props => <Business {...props} />} />
         <Route path="/f/:slug" render={props => <User {...props} />} />

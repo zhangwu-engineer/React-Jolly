@@ -12,13 +12,14 @@ import Grid from '@material-ui/core/Grid';
 import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
 import UserAvatar from 'components/UserAvatar';
+import BusinessProfileForm from 'components/BusinessProfileForm';
 
-import { requestUser } from 'containers/App/sagas';
+import { requestUser, requestBusinessDataUpdate } from 'containers/App/sagas';
 
 const styles = theme => ({
   root: {
     maxWidth: 1064,
-    margin: '10px auto 300px auto',
+    margin: '21px auto 300px auto',
     display: 'flex',
     [theme.breakpoints.down('xs')]: {
       margin: 0,
@@ -142,6 +143,7 @@ type Props = {
   location: Object,
   classes: Object,
   requestUser: Function,
+  updateBusiness: Function,
 };
 
 class SettingsPage extends Component<Props> {
@@ -289,6 +291,10 @@ class SettingsPage extends Component<Props> {
             <Typography variant="h6" className={classes.title}>
               Business Profile
             </Typography>
+            <BusinessProfileForm
+              business={currentBusiness}
+              updateBusiness={this.props.updateBusiness}
+            />
           </div>
           <div className={classes.section} ref={this.positionsForm}>
             <Typography
@@ -326,6 +332,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   requestUser: () => dispatch(requestUser()),
+  updateBusiness: payload => dispatch(requestBusinessDataUpdate(payload)),
 });
 
 export default compose(
