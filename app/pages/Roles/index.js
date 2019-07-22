@@ -162,6 +162,7 @@ type State = {
   newRole: ?Object,
   isOpen: boolean,
   helpText: string,
+  activeEditId: any
 };
 
 class RolesPage extends Component<Props, State> {
@@ -169,6 +170,7 @@ class RolesPage extends Component<Props, State> {
     newRole: null,
     isOpen: false,
     helpText: '',
+    activeEditId: null
   };
   componentDidMount() {
     this.props.requestRoles();
@@ -192,6 +194,9 @@ class RolesPage extends Component<Props, State> {
       this.props.requestRoles();
     }
   }
+  onEdit = (activeEditId) => {
+    this.setState({activeEditId});
+  };
   onCancelEdit = () => {
     this.setState({ newRole: null });
   };
@@ -212,7 +217,7 @@ class RolesPage extends Component<Props, State> {
   };
   render() {
     const { roles, classes } = this.props;
-    const { newRole, isOpen, helpText } = this.state;
+    const { newRole, isOpen, helpText, activeEditId } = this.state;
     return (
       <div className={classes.root}>
         <div className={classes.section}>
@@ -242,12 +247,14 @@ class RolesPage extends Component<Props, State> {
           </div>
           <div className={classes.sectionBody}>
             {roles &&
-              roles.map(role => (
+              roles.map( (role,index) => (
                 <RoleInput
                   key={generate()}
-                  mode="read"
+                  id={index}
+                  activeEditId={activeEditId}
                   data={role.toJS()}
                   units={[]}
+                  onEdit={this.onEdit}
                   onCancel={this.onCancelEdit}
                   updateRole={this.props.updateRole}
                   deleteRole={this.props.deleteRole}
@@ -255,7 +262,6 @@ class RolesPage extends Component<Props, State> {
               ))}
             {newRole && (
               <RoleInput
-                mode="edit"
                 data={newRole}
                 units={[]}
                 onCancel={this.onCancelEdit}
