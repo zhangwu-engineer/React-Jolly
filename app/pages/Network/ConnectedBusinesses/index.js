@@ -13,7 +13,6 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
 import cx from 'classnames';
 import { capitalize, debounce } from 'lodash-es';
-import Button from '@material-ui/core/Button';
 
 import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
@@ -644,16 +643,8 @@ class ConnectedBusinessesPage extends Component<Props, State> {
                       <div className={classes.emptyContainer}>
                         <Typography>
                           No businesses match your selection. <br />
-                          Please modify the filters or your search, <br />
-                          or invite a business to join:
+                          Please modify the filters or your search.
                         </Typography>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          className={classes.panelButton}
-                        >
-                          Invite Business
-                        </Button>
                       </div>
                     </div>
                   </Grid>
