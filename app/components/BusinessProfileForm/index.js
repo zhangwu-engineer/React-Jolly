@@ -110,6 +110,7 @@ class BusinessProfileForm extends Component<Props> {
               onChange={handleChange}
               onBlur={handleBlur}
               limit={400}
+              assistiveText="i.e. Cash on site, Net 30, etc."
             />
             <EditableFormInput
               label="Website"

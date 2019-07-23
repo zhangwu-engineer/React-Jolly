@@ -10,6 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
+import Grid from '@material-ui/core/Grid';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -107,13 +108,21 @@ const styles = theme => ({
   marginTop: {
     marginTop: '12px !important',
   },
+  assistLabel: {
+    fontSize: 12,
+    marginLeft: 14,
+  },
   limitLabel: {
     fontSize: 12,
     display: 'flex',
     justifyContent: 'flex-end',
     marginRight: 28,
-    marginTop: -6,
+  },
+  additionalText: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 8,
+    marginTop: -6,
   },
 });
 
@@ -128,6 +137,7 @@ type Props = {
   disabled?: boolean,
   rows?: number,
   limit?: number,
+  assistiveText?: string,
   placeholder?: string,
   startWith?: string,
   onChange: Function,
@@ -321,7 +331,15 @@ class EditableFormInput extends Component<Props> {
     );
   };
   render() {
-    const { label, id, disabled, classes, select, limit } = this.props;
+    const {
+      label,
+      id,
+      disabled,
+      classes,
+      select,
+      limit,
+      assistiveText,
+    } = this.props;
     const { charCount } = this.state;
     let cssStyles = {};
 
@@ -351,11 +369,22 @@ class EditableFormInput extends Component<Props> {
           )}
           {this.renderInput()}
         </FormControl>
-        {limit && (
-          <InputLabel className={classes.limitLabel}>
-            {`${charCount}/${limit}`}
-          </InputLabel>
-        )}
+        <Grid container className={classes.additionalText}>
+          <Grid>
+            {assistiveText && (
+              <InputLabel className={classes.assistLabel}>
+                {assistiveText}
+              </InputLabel>
+            )}
+          </Grid>
+          <Grid>
+            {limit && (
+              <InputLabel className={classes.limitLabel}>
+                {`${charCount}/${limit}`}
+              </InputLabel>
+            )}
+          </Grid>
+        </Grid>
       </div>
     );
   }
