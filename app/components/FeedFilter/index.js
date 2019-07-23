@@ -137,7 +137,16 @@ class FeedFilter extends Component<Props, State> {
                   }
                 />
               }
-              label={`All in ${user.getIn(['profile', 'location'])}`}
+              label={
+                <label>
+                  <Typography style={{display: 'inline-block'}}>
+                    Within 50 mi. of
+                  </Typography>&nbsp;
+                  <Typography style={{display: 'inline-block', fontWeight: 600}}>
+                    {user.getIn(['profile', 'location']).split(',').slice(0, 2).join()}
+                  </Typography>
+                </label>
+              }
               classes={{
                 label: classes.optionLabel,
               }}

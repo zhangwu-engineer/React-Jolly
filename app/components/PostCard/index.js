@@ -356,7 +356,12 @@ class PostCard extends Component<Props, State> {
             secondary={
               <Grid item>
                 <Link to={`/feed/${post.get('id')}`} className={classes.time}>
-                  {`${timeAgo} ago`}
+                  <Typography style={{display: 'inline-block', fontWeight: 600}}>
+                    {`${timeAgo} ago`}
+                  </Typography>&nbsp;
+                  <Typography style={{display: 'inline-block'}}>
+                    {` in ${post.get('location').split(',').slice(0, 2).join()}`}
+                  </Typography>
                 </Link>
               </Grid>
             }
