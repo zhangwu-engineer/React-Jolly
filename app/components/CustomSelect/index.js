@@ -6,6 +6,7 @@ import Select from 'react-select';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
+import InputLabel from '@material-ui/core/InputLabel';
 import Paper from '@material-ui/core/Paper';
 import Chip from '@material-ui/core/Chip';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -22,11 +23,21 @@ const styles = theme => ({
     fontSize: 14,
     fontWeight: 500,
     color: '#434343',
-    height: 'auto',
+    height: 40,
     alignItems: 'center',
     paddingLeft: 10,
-    paddingTop: 8,
-    paddingBottom: 8,
+    paddingTop: 10,
+    boxSizing: 'border-box',
+  },
+  inputMultiple: {
+    display: 'flex',
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#434343',
+    height: 'auto',
+    alignItems: 'center',
+    paddingLeft: 16,
+    paddingTop: 26,
     boxSizing: 'border-box',
   },
   valueContainer: {
@@ -73,6 +84,15 @@ const styles = theme => ({
   divider: {
     height: theme.spacing.unit * 2,
   },
+  shrink: {
+    position: 'absolute',
+    fontSize: 13,
+    color: '#9b9b9b',
+    paddingLeft: 20,
+    paddingTop: 10,
+    fontWeight: 600,
+    transform: 'translate(0px, 2px) scale(0.85)',
+  },
 });
 
 const NoOptionsMessage = (props: any) => (
@@ -86,11 +106,7 @@ const NoOptionsMessage = (props: any) => (
 );
 
 const inputComponent = ({ inputRef, ...props }: any) => (
-  <div
-    ref={inputRef}
-    {...props}
-    style={{ height: props.children[0].props.isMulti ? 'auto' : 40 }}
-  />
+  <div ref={inputRef} {...props} />
 );
 
 const Control = (props: any) => (
@@ -99,7 +115,9 @@ const Control = (props: any) => (
     InputProps={{
       inputComponent,
       inputProps: {
-        className: props.selectProps.classes.input,
+        className: props.children[0].props.isMulti
+          ? props.selectProps.classes.inputMultiple
+          : props.selectProps.classes.input,
         inputRef: props.innerRef,
         children: props.children,
         ...props.innerProps,
@@ -222,6 +240,9 @@ class CustomSelect extends React.Component<Props> {
 
     return (
       <div className={classes.root}>
+        {isMulti && (
+          <InputLabel className={classes.shrink}>{placeholder}</InputLabel>
+        )}
         <Select
           classes={classes}
           styles={{
