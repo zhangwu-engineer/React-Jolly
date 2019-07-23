@@ -109,6 +109,7 @@ class BusinessProfileForm extends Component<Props> {
               value={values.aboutUs}
               onChange={handleChange}
               onBlur={handleBlur}
+              limit={400}
             />
             <EditableFormInput
               label="Website"
@@ -123,6 +124,7 @@ class BusinessProfileForm extends Component<Props> {
               value={values.freelancerPaymentTerms}
               onChange={handleChange}
               onBlur={handleBlur}
+              limit={100}
             />
             <Grid container justify="flex-end">
               <Grid item>

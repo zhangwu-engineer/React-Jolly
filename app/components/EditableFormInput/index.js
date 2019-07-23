@@ -107,6 +107,14 @@ const styles = theme => ({
   marginTop: {
     marginTop: '12px !important',
   },
+  limitLabel: {
+    fontSize: 12,
+    display: 'flex',
+    justifyContent: 'flex-end',
+    marginRight: 28,
+    marginTop: -6,
+    marginBottom: 8,
+  },
 });
 
 type Props = {
@@ -119,6 +127,7 @@ type Props = {
   multiline: boolean,
   disabled?: boolean,
   rows?: number,
+  limit?: number,
   placeholder?: string,
   startWith?: string,
   onChange: Function,
@@ -130,10 +139,25 @@ class EditableFormInput extends Component<Props> {
   static defaultProps = {
     multiline: false,
   };
+  state = {
+    charCount: 0,
+  };
+  componentWillReceiveProps(props) {
+    const { value } = props;
+    this.setState({ charCount: value ? value.length : 0 });
+  }
   handleEditPhone = () => {
     const { backURL } = this.props;
     storage.set('mobilePrevPath', backURL);
     history.push('/mobile');
+  };
+  handleChange = e => {
+    const { value } = e.target;
+    const { limit } = this.props;
+    this.setState({ charCount: value.length > limit ? limit : value.length });
+    if (!limit || value.length <= limit) {
+      this.props.onChange(e);
+    }
   };
   renderInput = () => {
     const {
@@ -264,7 +288,7 @@ class EditableFormInput extends Component<Props> {
         id={id}
         name={name}
         value={value}
-        onChange={this.props.onChange}
+        onChange={this.handleChange}
         multiline={multiline}
         onBlur={this.props.onBlur}
         startAdornment={
@@ -297,7 +321,8 @@ class EditableFormInput extends Component<Props> {
     );
   };
   render() {
-    const { label, id, disabled, classes, select } = this.props;
+    const { label, id, disabled, classes, select, limit } = this.props;
+    const { charCount } = this.state;
     let cssStyles = {};
 
     if (select) {
@@ -311,20 +336,27 @@ class EditableFormInput extends Component<Props> {
     }
 
     return (
-      <FormControl classes={cssStyles} fullWidth>
-        {label && (
-          <InputLabel
-            htmlFor={id}
-            classes={{
-              root: classes.labelField,
-              shrink: classes.shrink,
-            }}
-          >
-            {label}
+      <div>
+        <FormControl classes={cssStyles} fullWidth>
+          {label && (
+            <InputLabel
+              htmlFor={id}
+              classes={{
+                root: classes.labelField,
+                shrink: classes.shrink,
+              }}
+            >
+              {label}
+            </InputLabel>
+          )}
+          {this.renderInput()}
+        </FormControl>
+        {limit && (
+          <InputLabel className={classes.limitLabel}>
+            {`${charCount}/${limit}`}
           </InputLabel>
         )}
-        {this.renderInput()}
-      </FormControl>
+      </div>
     );
   }
 }
