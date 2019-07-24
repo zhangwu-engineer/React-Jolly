@@ -252,12 +252,6 @@ class CustomSelect extends React.Component<Props> {
           options={options}
           components={components}
           value={value}
-          TextFieldProps={{
-            label: 'Other Cities Active',
-            InputLabelProps: {
-              shrink: true,
-            },
-          }}
           onChange={this.props.onChange}
           placeholder={placeholder}
           isClearable={isClearable}
