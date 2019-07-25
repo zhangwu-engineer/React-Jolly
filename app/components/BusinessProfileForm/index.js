@@ -102,7 +102,7 @@ class BusinessProfileForm extends Component<Props> {
               onBlur={handleBlur}
             />
             <EditableFormInput
-              label="Other Cities Active"
+              label="Other Cities we're hiring in"
               id="otherLocations"
               value={values.otherLocations}
               onChange={handleChange}
