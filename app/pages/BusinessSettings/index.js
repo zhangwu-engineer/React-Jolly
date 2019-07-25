@@ -164,26 +164,12 @@ class SettingsPage extends Component<Props> {
           window.scrollTo(0, this.positionsForm.current.offsetTop);
         }
       }, 50);
-    } else if (hash === '#freelancer-matching') {
-      setTimeout(() => {
-        if (this.freelancerMatchingForm.current) {
-          window.scrollTo(0, this.freelancerMatchingForm.current.offsetTop);
-        }
-      }, 50);
-    } else if (hash === '#pro-subscription') {
-      setTimeout(() => {
-        if (this.proSubscriptionForm.current) {
-          window.scrollTo(0, this.proSubscriptionForm.current.offsetTop);
-        }
-      }, 50);
     }
   }
   goToProfilePage = slug => {
     history.push(`/b/${slug}`);
   };
   positionsForm = React.createRef();
-  freelancerMatchingForm = React.createRef();
-  proSubscriptionForm = React.createRef();
   render() {
     const {
       user,
@@ -203,18 +189,6 @@ class SettingsPage extends Component<Props> {
           </Link>
           <Link to="/b/settings/positions" className={classes.mobileMenuItem}>
             Positions
-          </Link>
-          <Link
-            to="/b/settings/freelancer-matching"
-            className={classes.mobileMenuItem}
-          >
-            Freelancer Matching
-          </Link>
-          <Link
-            to="/b/settings/pro-subscrtipion"
-            className={classes.mobileMenuItem}
-          >
-            Pro Subscription
           </Link>
         </div>
         <div className={classes.leftPanel}>
@@ -264,26 +238,6 @@ class SettingsPage extends Component<Props> {
               {hash === '#positions' && <div className={classes.line} />}
               Positions
             </Link>
-            <Link
-              className={cx(classes.menuItem, {
-                [classes.activeMenuItem]: hash === '#freelancer-matching',
-              })}
-              to="/b/settings#freelancer-matching"
-            >
-              {hash === '#freelancer-matching' && (
-                <div className={classes.line} />
-              )}
-              Freelancer Matching
-            </Link>
-            <Link
-              className={cx(classes.menuItem, {
-                [classes.activeMenuItem]: hash === '#pro-subscription',
-              })}
-              to="/b/settings#pro-subscription"
-            >
-              {hash === '#pro-subscription' && <div className={classes.line} />}
-              Pro Subscription
-            </Link>
           </div>
         </div>
         <div className={classes.rightPanel}>
@@ -302,22 +256,6 @@ class SettingsPage extends Component<Props> {
               className={cx(classes.title, classes.editProfile)}
             >
               Positions
-            </Typography>
-          </div>
-          <div className={classes.section} ref={this.freelancerMatchingForm}>
-            <Typography
-              variant="h6"
-              className={cx(classes.title, classes.editProfile)}
-            >
-              Freelancer Matching
-            </Typography>
-          </div>
-          <div className={classes.section} ref={this.proSubscriptionForm}>
-            <Typography
-              variant="h6"
-              className={cx(classes.title, classes.editProfile)}
-            >
-              Pro Subscription
             </Typography>
           </div>
         </div>
