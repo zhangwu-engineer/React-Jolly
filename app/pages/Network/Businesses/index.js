@@ -759,22 +759,6 @@ class NetworkBusinessesPage extends Component<Props, State> {
                   <Preloader />
                 </Grid>
               )}
-            {!isUnderConstruction && (
-              <Grid container spacing={8}>
-                {cityBusinesses &&
-                  cityBusinesses.map(cityBusiness => (
-                    <Grid item key={generate()} xs={12} lg={6}>
-                      <BusinessCard
-                        business={cityBusiness}
-                        onSelect={this.openFormModal}
-                        selected={invitedBusinessIds.includes(
-                          cityBusiness.get('id')
-                        )}
-                      />
-                    </Grid>
-                  ))}
-              </Grid>
-            )}
             <Grid container spacing={8}>
               {!isUnderConstruction &&
                 cityBusinesses &&

@@ -701,6 +701,7 @@ class ConnectedBusinessesPage extends Component<Props, State> {
               selectedTab === 1 && (
                 <Grid container spacing={8}>
                   {connectedConnections &&
+                    connectedConnections.size > 0 &&
                     connectedConnections.map(connection => (
                       <Grid item key={generate()} xs={12} lg={6}>
                         <BusinessConnectedCard business={connection} />
