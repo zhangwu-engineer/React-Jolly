@@ -331,11 +331,14 @@ class BusinessNetworkPage extends Component<Props, State> {
     }
     const { user } = nextProps;
     const { filter } = prevState;
+    const businesses =
+      user && user.get('businesses') && user.get('businesses').toJSON();
+    const currentBusiness = businesses && businesses[0];
     if (filter.location === null) {
       return {
         filter: {
           ...filter,
-          location: user.getIn(['profile', 'location']),
+          location: currentBusiness.location,
         },
       };
     }
