@@ -2,13 +2,12 @@
 
 import React, { Component } from 'react';
 import { Formik } from 'formik';
-
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 
 import EditableFormInput from 'components/EditableFormInput';
-import CustomSelect from 'components/CustomSelect';
+import MultiSelect from 'components/MultiSelect';
 
 const styles = () => ({
   saveButton: {
@@ -21,15 +20,9 @@ const styles = () => ({
   },
   searchInputWrapper: {
     position: 'relative',
-    marginBottom: 15,
+    marginBottom: 10,
   },
 });
-
-const placeSuggestions = [
-  { label: 'Austin, Tx', value: 'Austin, Tx' },
-  { label: 'Toledo, Spain', value: 'Toledo, Spain' },
-  { label: 'Tokyo, Japan', value: 'Tokyo, Japan' },
-];
 
 type Props = {
   business: Object,
@@ -39,13 +32,30 @@ type Props = {
 
 class BusinessProfileForm extends Component<Props> {
   state = {
-    selectedCity: null,
+    selectedCity: [],
   };
+  componentWillReceiveProps(props) {
+    const { business } = props;
+    const otherLocations = business.otherLocations
+      ? business.otherLocations
+      : [];
+    this.setState({
+      selectedCity: otherLocations.map(location => ({
+        label: location,
+        value: location,
+      })),
+    });
+  }
   handleSave = (values, { resetForm }) => {
     const { business } = this.props;
+    const { selectedCity } = this.state;
     this.props.updateBusiness({
       id: business && business.id,
       ...values,
+      otherLocations:
+        selectedCity.length > 0
+          ? selectedCity.map(location => location.value)
+          : [],
     });
     resetForm(values);
   };
@@ -58,6 +68,10 @@ class BusinessProfileForm extends Component<Props> {
     const businessData = {
       name: business.name,
       location: business.location,
+      otherLocations: '',
+      aboutUs: business.aboutUs,
+      website: business.website,
+      freelancerPaymentTerms: business.freelancerPaymentTerms,
     };
     return (
       <Formik initialValues={businessData} onSubmit={this.handleSave}>
@@ -87,22 +101,43 @@ class BusinessProfileForm extends Component<Props> {
               onChange={handleChange}
               onBlur={handleBlur}
             />
-            <Grid item xs={12} lg={12} className={classes.searchInputWrapper}>
-              <CustomSelect
-                placeholder="Other Cities Active"
-                options={placeSuggestions}
-                value={selectedCity}
-                onChange={value => this.handleRoleChange(value)}
-                isMulti
-                isClearable={false}
-                stylesOverride={{
-                  container: () => ({
-                    backgroundColor: '#f1f1f1',
-                    width: '100%',
-                  }),
-                }}
-              />
-            </Grid>
+            <EditableFormInput
+              label="Other Cities Active"
+              id="otherLocations"
+              value={values.otherLocations}
+              onChange={handleChange}
+              onLocationSelect={address => {
+                const newCity = {
+                  label: address,
+                  value: address,
+                };
+                this.handleRoleChange([newCity].concat(selectedCity));
+              }}
+              onBlur={handleBlur}
+            />
+            {selectedCity &&
+              selectedCity.length > 0 && (
+                <Grid
+                  item
+                  xs={12}
+                  lg={12}
+                  className={classes.searchInputWrapper}
+                >
+                  <MultiSelect
+                    palceholder=" "
+                    value={selectedCity}
+                    onChange={value => this.handleRoleChange(value)}
+                    isMulti
+                    isClearable={false}
+                    stylesOverride={{
+                      container: () => ({
+                        backgroundColor: '#f1f1f1',
+                        width: '100%',
+                      }),
+                    }}
+                  />
+                </Grid>
+              )}
             <EditableFormInput
               label="About Us"
               id="aboutUs"

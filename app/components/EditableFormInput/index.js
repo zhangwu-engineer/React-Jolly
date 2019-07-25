@@ -141,6 +141,7 @@ type Props = {
   placeholder?: string,
   startWith?: string,
   onChange: Function,
+  onLocationSelect: Function,
   onBlur: Function,
   select: boolean,
 };
@@ -181,13 +182,13 @@ class EditableFormInput extends Component<Props> {
       rows,
       placeholder,
     } = this.props;
-    if (id === 'location') {
+    if (id === 'location' || id === 'otherLocations') {
       return (
         <PlacesAutocomplete
           value={value}
           onChange={address => {
             this.props.onChange({
-              target: { value: address, id: 'location', name: 'location' },
+              target: { value: address, id, name: id },
             });
             if (address === '') {
               this.props.onChange({
@@ -197,8 +198,9 @@ class EditableFormInput extends Component<Props> {
           }}
           onSelect={address => {
             this.props.onChange({
-              target: { value: address, id: 'location', name: 'location' },
+              target: { value: address, id, name: id },
             });
+            this.props.onLocationSelect(address);
             this.props.onChange({
               target: { value: '', id: 'distance', name: 'distance' },
             });
