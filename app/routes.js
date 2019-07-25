@@ -23,9 +23,7 @@ const ProfileGallery = load(() => import('pages/ProfileGallery'));
 const Settings = load(() => import('pages/Settings'));
 const GeneralSettings = load(() => import('pages/Settings/General'));
 const ProfileSettings = load(() => import('pages/Settings/Profile'));
-const NotificationSettingsPage = load(() =>
-  import('pages/Settings/Notification')
-);
+const NotificationSettings = load(() => import('pages/Settings/Notification'));
 const BusinessSettings = load(() => import('pages/BusinessSettings'));
 const BusinessSettingsProfile = load(() =>
   import('pages/BusinessSettings/BusinessSettingsProfile')
@@ -161,7 +159,7 @@ class Routes extends Component<{}> {
         <PrivateRoute
           exact
           path="/settings/notifications"
-          render={props => <NotificationSettingsPage {...props} />}
+          render={props => <NotificationSettings {...props} />}
         />
         <PrivateRoute
           exact
