@@ -261,10 +261,33 @@ const styles = theme => ({
       height: 300,
     },
   },
+  emptyPanel: {
+    backgroundColor: theme.palette.common.white,
+    height: 356,
+    display: 'flex',
+    alignItems: 'center',
+    marginTop: 5,
+    justifyContent: 'center',
+    [theme.breakpoints.down('xs')]: {
+      height: 300,
+    },
+  },
   underConstruction: {
     textAlign: 'center',
   },
   setUpInterviewButton: {
+    fontSize: 14,
+    fontWeight: 600,
+    textTransform: 'none',
+    padding: '11px 35px',
+    marginTop: 40,
+    borderRadius: 0,
+    boxShadow: 'none',
+  },
+  emptyContainer: {
+    textAlign: 'center',
+  },
+  panelButton: {
     fontSize: 14,
     fontWeight: 600,
     textTransform: 'none',
@@ -370,7 +393,7 @@ class NetworkBusinessesPage extends Component<Props, State> {
       selectedRole: '',
     },
     page: 1,
-    isUnderConstruction: true,
+    isUnderConstruction: false,
   };
   componentDidMount() {
     const { user } = this.props;
@@ -752,6 +775,38 @@ class NetworkBusinessesPage extends Component<Props, State> {
                   ))}
               </Grid>
             )}
+            <Grid container spacing={8}>
+              {!isUnderConstruction &&
+                cityBusinesses &&
+                cityBusinesses.size === 0 && (
+                  <Grid container spacing={8}>
+                    <Grid item xs={12} lg={12}>
+                      <div className={classes.emptyPanel}>
+                        <div className={classes.emptyContainer}>
+                          <Typography>
+                            No businesses match your selection. <br />
+                            Please modify the filters or your search.
+                          </Typography>
+                        </div>
+                      </div>
+                    </Grid>
+                  </Grid>
+                )}
+              {!isUnderConstruction &&
+                cityBusinesses &&
+                cityBusinesses.size > 0 &&
+                cityBusinesses.map(cityBusiness => (
+                  <Grid item key={generate()} xs={12} lg={6}>
+                    <BusinessCard
+                      business={cityBusiness}
+                      onSelect={this.openFormModal}
+                      selected={invitedBusinessIds.includes(
+                        cityBusiness.get('id')
+                      )}
+                    />
+                  </Grid>
+                ))}
+            </Grid>
             {!isUnderConstruction &&
               loadMore && (
                 <Grid item xs={12} lg={12}>
