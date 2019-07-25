@@ -7,7 +7,6 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
-import Paper from '@material-ui/core/Paper';
 import Chip from '@material-ui/core/Chip';
 import MenuItem from '@material-ui/core/MenuItem';
 import CancelIcon from '@material-ui/icons/Cancel';
@@ -16,7 +15,6 @@ import { emphasize } from '@material-ui/core/styles/colorManipulator';
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    backgroundColor: '#efefef',
   },
   input: {
     display: 'flex',
@@ -34,11 +32,15 @@ const styles = theme => ({
     fontSize: 14,
     fontWeight: 500,
     color: '#434343',
+    backgroundColor: 'white',
     height: 'auto',
     alignItems: 'center',
-    paddingLeft: 16,
-    paddingTop: 26,
+    paddingLeft: 0,
+    paddingTop: 0,
     boxSizing: 'border-box',
+    '& >div:nth-child(2) svg': {
+      display: 'none',
+    },
   },
   valueContainer: {
     display: 'flex',
@@ -142,16 +144,6 @@ const Option = (props: any) => (
   </MenuItem>
 );
 
-const Placeholder = (props: any) => (
-  <Typography
-    color="textSecondary"
-    className={props.selectProps.classes.placeholder}
-    {...props.innerProps}
-  >
-    {props.children}
-  </Typography>
-);
-
 const SingleValue = (props: any) => (
   <Typography
     className={props.selectProps.classes.singleValue}
@@ -179,23 +171,13 @@ const MultiValue = (props: any) => (
   />
 );
 
-const Menu = (props: any) => (
-  <Paper
-    square
-    className={props.selectProps.classes.paper}
-    {...props.innerProps}
-  >
-    {props.children}
-  </Paper>
-);
-
 const components = {
   Control,
-  Menu,
+  Menu: () => null,
   MultiValue,
   NoOptionsMessage,
   Option,
-  Placeholder,
+  Placeholder: () => null,
   SingleValue,
   ValueContainer,
   IndicatorSeparator: () => null,
@@ -214,7 +196,7 @@ type Props = {
   isSearchable: boolean,
 };
 
-class CustomSelect extends React.Component<Props> {
+class MultiSelect extends React.Component<Props> {
   render() {
     const {
       options,
@@ -234,6 +216,7 @@ class CustomSelect extends React.Component<Props> {
         color: theme.palette.text.primary,
         '& input': {
           font: 'inherit',
+          display: 'none',
         },
       }),
     };
@@ -263,4 +246,4 @@ class CustomSelect extends React.Component<Props> {
   }
 }
 
-export default withStyles(styles, { withTheme: true })(CustomSelect);
+export default withStyles(styles, { withTheme: true })(MultiSelect);

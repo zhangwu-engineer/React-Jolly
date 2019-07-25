@@ -8,7 +8,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 
-import EditableInput from 'components/EditableInput';
+import EditableFormInput from 'components/EditableFormInput';
 
 const styles = () => ({
   saveButton: {
@@ -63,14 +63,14 @@ class UserGeneralForm extends Component<Props> {
           /* and other goodies */
         }) => (
           <React.Fragment>
-            <EditableInput
+            <EditableFormInput
               label="Name"
               id="name"
               value={values.name}
               onChange={handleChange}
               onBlur={handleBlur}
             />
-            <EditableInput
+            <EditableFormInput
               label="Email"
               id="email"
               value={values.email}
@@ -78,7 +78,7 @@ class UserGeneralForm extends Component<Props> {
               onBlur={handleBlur}
               disabled
             />
-            <EditableInput
+            <EditableFormInput
               label={
                 user.getIn(['profile', 'verifiedPhone'])
                   ? 'Phone (verified)'

@@ -10,7 +10,7 @@ import Button from '@material-ui/core/Button';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 
-import EditableInput from 'components/EditableInput';
+import EditableFormInput from 'components/EditableFormInput';
 
 const styles = theme => ({
   contactOptionsTitle: {
@@ -181,7 +181,7 @@ class UserProfileForm extends Component<Props> {
                 />
               </Grid>
             </Grid>
-            <EditableInput
+            <EditableFormInput
               id="bio"
               name="bio"
               placeholder="This is where you introduce yourself to potential employers! Tell us about the event work you’ve done, how many years you’ve done it, and what kind of gigs you like to do."
@@ -192,7 +192,7 @@ class UserProfileForm extends Component<Props> {
             />
             <Grid container>
               <Grid item lg={6} xs={12} className={classes.cityField}>
-                <EditableInput
+                <EditableFormInput
                   label="Nearest City"
                   id="location"
                   name="location"
@@ -201,7 +201,7 @@ class UserProfileForm extends Component<Props> {
                 />
               </Grid>
               <Grid item lg={6} xs={12} className={classes.distanceField}>
-                <EditableInput
+                <EditableFormInput
                   label="Travel Radius (miles)"
                   id="distance"
                   name="distance"
@@ -211,7 +211,7 @@ class UserProfileForm extends Component<Props> {
                 />
               </Grid>
             </Grid>
-            <EditableInput
+            <EditableFormInput
               label="Facebook"
               id="facebook"
               name="facebook"
@@ -219,7 +219,7 @@ class UserProfileForm extends Component<Props> {
               startWith="/"
               onChange={handleChange}
             />
-            <EditableInput
+            <EditableFormInput
               label="Twitter"
               id="twitter"
               name="twitter"
@@ -227,7 +227,7 @@ class UserProfileForm extends Component<Props> {
               startWith="@"
               onChange={handleChange}
             />
-            <EditableInput
+            <EditableFormInput
               label="Linkedin"
               id="linkedin"
               name="linkedin"
@@ -235,7 +235,7 @@ class UserProfileForm extends Component<Props> {
               startWith="/in/"
               onChange={handleChange}
             />
-            <EditableInput
+            <EditableFormInput
               label="Youtube"
               id="youtube"
               name="youtube"

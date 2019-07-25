@@ -15,6 +15,7 @@ import Grid from '@material-ui/core/Grid';
 import Notification from 'components/Notification';
 import BusinessProfileInfo from 'components/BusinessProfileInfo';
 import BusinessMemberProfileInfo from 'components/BusinessMemberProfileInfo';
+import BusinessProfileOtherInfo from 'components/BusinessProfileOtherInfo';
 import BusinessSidebar from 'components/BusinessSidebar';
 import { CONNECTION_REQUEST_MSG } from 'enum/connection';
 import injectSagas from 'utils/injectSagas';
@@ -469,7 +470,13 @@ class BusinessMember extends Component<Props, State> {
               )}
             </div>
             <div className={classes.panel}>
-              <div className={classes.leftPanel} />
+              <div className={classes.leftPanel}>
+                <BusinessProfileOtherInfo
+                  business={business}
+                  isPrivate={isPrivate}
+                />
+              </div>
+              <div className={classes.rightPanel} />
             </div>
           </div>
         </div>
