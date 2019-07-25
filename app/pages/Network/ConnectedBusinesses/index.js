@@ -41,6 +41,7 @@ import saga, {
 import injectSagas from 'utils/injectSagas';
 
 const roles = ROLES.sort().map(role => ({ value: role, label: role }));
+const mailTo = 'mailto:community@jollyhq.com';
 
 const styles = theme => ({
   content: {
@@ -225,6 +226,17 @@ const styles = theme => ({
   editableInput: {
     backgroundColor: 'white',
   },
+  underContructionPanel: {
+    backgroundColor: theme.palette.common.white,
+    height: 356,
+    display: 'flex',
+    alignItems: 'center',
+    marginTop: 5,
+    justifyContent: 'center',
+    [theme.breakpoints.down('xs')]: {
+      height: 300,
+    },
+  },
   emptyPanel: {
     backgroundColor: theme.palette.common.white,
     height: 356,
@@ -235,6 +247,18 @@ const styles = theme => ({
     [theme.breakpoints.down('xs')]: {
       height: 300,
     },
+  },
+  underConstruction: {
+    textAlign: 'center',
+  },
+  setUpInterviewButton: {
+    fontSize: 14,
+    fontWeight: 600,
+    textTransform: 'none',
+    padding: '11px 35px',
+    marginTop: 40,
+    borderRadius: 0,
+    boxShadow: 'none',
   },
   emptyContainer: {
     textAlign: 'center',
@@ -247,6 +271,18 @@ const styles = theme => ({
     marginTop: 40,
     borderRadius: 0,
     boxShadow: 'none',
+  },
+  alertHeading: {
+    marginBottom: 12,
+  },
+  mailToLink: {
+    fontSize: 14,
+    color: 'white',
+    textDecoration: 'none',
+    textTransform: 'none',
+    '&:hover': {
+      color: 'white',
+    },
   },
 });
 
@@ -279,6 +315,7 @@ type State = {
   filter: Object,
   connectionType: string,
   query: string,
+  isUnderConstruction: boolean,
 };
 
 class ConnectedBusinessesPage extends Component<Props, State> {
@@ -323,6 +360,7 @@ class ConnectedBusinessesPage extends Component<Props, State> {
       connection: '',
     },
     connectionType: 'b2f',
+    isUnderConstruction: false,
   };
   componentDidMount() {
     const { query, filter, connectionType } = this.state;
@@ -471,6 +509,7 @@ class ConnectedBusinessesPage extends Component<Props, State> {
       connectedTo,
       query,
       filter,
+      isUnderConstruction,
     } = this.state;
     const pendingConnections =
       connections &&
@@ -557,86 +596,121 @@ class ConnectedBusinessesPage extends Component<Props, State> {
               handleChange={link => this.handleChangeTab(link)}
               activeIndex={1}
             />
-            <Grid container spacing={8} className={classes.filterWrapper}>
-              <Grid item xs={6} lg={4}>
-                <EditableInput
-                  label="City"
-                  id="location"
-                  name="location"
-                  value={filter.location}
-                  onChange={this.handleLocationChange}
-                  select
-                />
-              </Grid>
-              <Grid item xs={6} lg={4} className={classes.searchInputWrapper}>
-                <CustomSelect
-                  placeholder="All Positions"
-                  options={roles}
-                  value={
-                    filter.selectedRole
-                      ? {
-                          value: filter.selectedRole,
-                          label: filter.selectedRole,
-                        }
-                      : null
-                  }
-                  onChange={value => this.handleRoleChange(value.value)}
-                  isMulti={false}
-                  isClearable={false}
-                  stylesOverride={{
-                    container: () => ({
-                      backgroundColor: 'white',
-                    }),
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} lg={4}>
-                <FormControl classes={{ root: classes.formControl }} fullWidth>
-                  <Input
-                    value={query}
-                    onChange={this.handleChange}
-                    className={cx(classes.textInput, classes.hideForSmall)}
-                    placeholder="Search by name"
-                    fullWidth
-                    startAdornment={
-                      <InputAdornment
-                        position="start"
-                        className={classes.adornment}
-                      >
-                        <SearchIcon />
-                      </InputAdornment>
-                    }
-                  />
-                  <Input
-                    value={query}
-                    onChange={this.handleChange}
-                    className={cx(classes.textInput, classes.showForSmall)}
-                    placeholder="Search"
-                    fullWidth
-                    startAdornment={
-                      <InputAdornment
-                        position="start"
-                        className={classes.adornment}
-                      >
-                        <SearchIcon />
-                      </InputAdornment>
-                    }
-                  />
-                </FormControl>
-              </Grid>
-            </Grid>
-
-            {selectedTab === 1 && (
+            {isUnderConstruction && (
               <Grid container spacing={8}>
-                {connectedConnections &&
-                  connectedConnections.map(connection => (
-                    <Grid item key={generate()} xs={12} lg={6}>
-                      <BusinessConnectedCard business={connection} />
-                    </Grid>
-                  ))}
+                <Grid item xs={12} lg={12}>
+                  <div className={classes.underContructionPanel}>
+                    <div className={classes.underConstruction}>
+                      <Typography>
+                        <Typography className={classes.alertHeading}>
+                          Businesses are coming soon to Jolly!
+                        </Typography>
+                        <strong>Want early exposure to hirers on Jolly?</strong>
+                        <br />
+                        Set up an interview by emailing our Community Team to
+                        <br /> become a Trusted Jolly Freelancer!
+                      </Typography>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.setUpInterviewButton}
+                      >
+                        <a href={`${mailTo}`} className={classes.mailToLink}>
+                          Email Us
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                </Grid>
               </Grid>
             )}
-            {connectedConnections &&
+            {!isUnderConstruction && (
+              <Grid container spacing={8} className={classes.filterWrapper}>
+                <Grid item xs={6} lg={4}>
+                  <EditableInput
+                    label="City"
+                    id="location"
+                    name="location"
+                    value={filter.location}
+                    onChange={this.handleLocationChange}
+                    select
+                  />
+                </Grid>
+                <Grid item xs={6} lg={4} className={classes.searchInputWrapper}>
+                  <CustomSelect
+                    placeholder="All Positions"
+                    options={roles}
+                    value={
+                      filter.selectedRole
+                        ? {
+                            value: filter.selectedRole,
+                            label: filter.selectedRole,
+                          }
+                        : null
+                    }
+                    onChange={value => this.handleRoleChange(value.value)}
+                    isMulti={false}
+                    isClearable={false}
+                    stylesOverride={{
+                      container: () => ({
+                        backgroundColor: 'white',
+                      }),
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} lg={4}>
+                  <FormControl
+                    classes={{ root: classes.formControl }}
+                    fullWidth
+                  >
+                    <Input
+                      value={query}
+                      onChange={this.handleChange}
+                      className={cx(classes.textInput, classes.hideForSmall)}
+                      placeholder="Search by name"
+                      fullWidth
+                      startAdornment={
+                        <InputAdornment
+                          position="start"
+                          className={classes.adornment}
+                        >
+                          <SearchIcon />
+                        </InputAdornment>
+                      }
+                    />
+                    <Input
+                      value={query}
+                      onChange={this.handleChange}
+                      className={cx(classes.textInput, classes.showForSmall)}
+                      placeholder="Search"
+                      fullWidth
+                      startAdornment={
+                        <InputAdornment
+                          position="start"
+                          className={classes.adornment}
+                        >
+                          <SearchIcon />
+                        </InputAdornment>
+                      }
+                    />
+                  </FormControl>
+                </Grid>
+              </Grid>
+            )}
+            {!isUnderConstruction &&
+              selectedTab === 1 && (
+                <Grid container spacing={8}>
+                  {connectedConnections &&
+                    connectedConnections.size > 0 &&
+                    connectedConnections.map(connection => (
+                      <Grid item key={generate()} xs={12} lg={6}>
+                        <BusinessConnectedCard business={connection} />
+                      </Grid>
+                    ))}
+                </Grid>
+              )}
+            {!isUnderConstruction &&
+              connectedConnections &&
               connectedConnections.size === 0 && (
                 <Grid container spacing={8}>
                   <Grid item xs={12} lg={12}>
@@ -644,16 +718,8 @@ class ConnectedBusinessesPage extends Component<Props, State> {
                       <div className={classes.emptyContainer}>
                         <Typography>
                           No businesses match your selection. <br />
-                          Please modify the filters or your search, <br />
-                          or invite a business to join:
+                          Please modify the filters or your search.
                         </Typography>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          className={classes.panelButton}
-                        >
-                          Invite Business
-                        </Button>
                       </div>
                     </div>
                   </Grid>

@@ -44,6 +44,7 @@ import injectSagas from 'utils/injectSagas';
 
 let roles = ROLES.sort().map(role => ({ value: role, label: role }));
 roles = [{ value: '', label: 'All Positions' }].concat(roles);
+const mailTo = 'mailto:community@jollyhq.com';
 
 const perPage = 16;
 const styles = theme => ({
@@ -249,6 +250,17 @@ const styles = theme => ({
     zIndex: 1000,
     marginLeft: -24,
   },
+  underContructionPanel: {
+    backgroundColor: theme.palette.common.white,
+    height: 356,
+    display: 'flex',
+    alignItems: 'center',
+    marginTop: 5,
+    justifyContent: 'center',
+    [theme.breakpoints.down('xs')]: {
+      height: 300,
+    },
+  },
   emptyPanel: {
     backgroundColor: theme.palette.common.white,
     height: 356,
@@ -259,6 +271,18 @@ const styles = theme => ({
     [theme.breakpoints.down('xs')]: {
       height: 300,
     },
+  },
+  underConstruction: {
+    textAlign: 'center',
+  },
+  setUpInterviewButton: {
+    fontSize: 14,
+    fontWeight: 600,
+    textTransform: 'none',
+    padding: '11px 35px',
+    marginTop: 40,
+    borderRadius: 0,
+    boxShadow: 'none',
   },
   emptyContainer: {
     textAlign: 'center',
@@ -271,6 +295,18 @@ const styles = theme => ({
     marginTop: 40,
     borderRadius: 0,
     boxShadow: 'none',
+  },
+  alertHeading: {
+    marginBottom: 12,
+  },
+  mailToLink: {
+    fontSize: 14,
+    color: 'white',
+    textDecoration: 'none',
+    textTransform: 'none',
+    '&:hover': {
+      color: 'white',
+    },
   },
 });
 
@@ -310,6 +346,7 @@ type State = {
   filter: Object,
   query: string,
   page: number,
+  isUnderConstruction: boolean,
 };
 
 class NetworkBusinessesPage extends Component<Props, State> {
@@ -356,6 +393,7 @@ class NetworkBusinessesPage extends Component<Props, State> {
       selectedRole: '',
     },
     page: 1,
+    isUnderConstruction: false,
   };
   componentDidMount() {
     const { user } = this.props;
@@ -519,6 +557,7 @@ class NetworkBusinessesPage extends Component<Props, State> {
       query,
       filter,
       page,
+      isUnderConstruction,
     } = this.state;
     const pendingConnections =
       connections &&
@@ -613,105 +652,116 @@ class NetworkBusinessesPage extends Component<Props, State> {
               handleChange={link => this.handleChangeTab(link)}
               activeIndex={1}
             />
-
-            <Grid container spacing={8} className={classes.filterContainer}>
-              <Grid item xs={6} lg={4}>
-                <EditableInput
-                  label="City"
-                  id="location"
-                  name="location"
-                  value={filter.location}
-                  onChange={this.handleLocationChange}
-                  select
-                />
-              </Grid>
-              <Grid item xs={6} lg={4} className={classes.searchInputWrapper}>
-                <CustomSelect
-                  placeholder="All Positions"
-                  options={roles}
-                  value={
-                    filter.selectedRole
-                      ? {
-                          value: filter.selectedRole,
-                          label: filter.selectedRole,
-                        }
-                      : null
-                  }
-                  onChange={value => this.handleRoleChange(value.value)}
-                  isMulti={false}
-                  isClearable={false}
-                  stylesOverride={{
-                    container: () => ({
-                      backgroundColor: 'white',
-                    }),
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} lg={4}>
-                <FormControl classes={{ root: classes.formControl }} fullWidth>
-                  <Input
-                    value={query}
-                    onChange={this.handleChange}
-                    className={cx(classes.textInput, classes.hideForSmall)}
-                    placeholder="Search by name"
-                    fullWidth
-                    startAdornment={
-                      <InputAdornment
-                        position="start"
-                        className={classes.adornment}
+            {isUnderConstruction && (
+              <Grid container spacing={8}>
+                <Grid item xs={12} lg={12}>
+                  <div className={classes.underContructionPanel}>
+                    <div className={classes.underConstruction}>
+                      <Typography>
+                        <Typography className={classes.alertHeading}>
+                          Businesses are coming soon to Jolly!
+                        </Typography>
+                        <strong>Want early exposure to hirers on Jolly?</strong>
+                        <br />
+                        Set up an interview by emailing our Community Team to
+                        <br /> become a Trusted Jolly Freelancer!
+                      </Typography>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.setUpInterviewButton}
                       >
-                        <SearchIcon />
-                      </InputAdornment>
-                    }
-                  />
-                  <Input
-                    value={query}
-                    onChange={this.handleChange}
-                    className={cx(classes.textInput, classes.showForSmall)}
-                    placeholder="Search"
-                    fullWidth
-                    startAdornment={
-                      <InputAdornment
-                        position="start"
-                        className={classes.adornment}
-                      >
-                        <SearchIcon />
-                      </InputAdornment>
-                    }
-                  />
-                </FormControl>
-              </Grid>
-            </Grid>
-            {isCityBusinessesLoading && (
-              <Grid container className={classes.progressContainer}>
-                <Preloader />
+                        <a href={`${mailTo}`} className={classes.mailToLink}>
+                          Email Us
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                </Grid>
               </Grid>
             )}
+            {!isUnderConstruction && (
+              <Grid container spacing={8} className={classes.filterContainer}>
+                <Grid item xs={6} lg={4}>
+                  <EditableInput
+                    label="City"
+                    id="location"
+                    name="location"
+                    value={filter.location}
+                    onChange={this.handleLocationChange}
+                    select
+                  />
+                </Grid>
+                <Grid item xs={6} lg={4} className={classes.searchInputWrapper}>
+                  <CustomSelect
+                    placeholder="All Positions"
+                    options={roles}
+                    value={
+                      filter.selectedRole
+                        ? {
+                            value: filter.selectedRole,
+                            label: filter.selectedRole,
+                          }
+                        : null
+                    }
+                    onChange={value => this.handleRoleChange(value.value)}
+                    isMulti={false}
+                    isClearable={false}
+                    stylesOverride={{
+                      container: () => ({
+                        backgroundColor: 'white',
+                      }),
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} lg={4}>
+                  <FormControl
+                    classes={{ root: classes.formControl }}
+                    fullWidth
+                  >
+                    <Input
+                      value={query}
+                      onChange={this.handleChange}
+                      className={cx(classes.textInput, classes.hideForSmall)}
+                      placeholder="Search by name"
+                      fullWidth
+                      startAdornment={
+                        <InputAdornment
+                          position="start"
+                          className={classes.adornment}
+                        >
+                          <SearchIcon />
+                        </InputAdornment>
+                      }
+                    />
+                    <Input
+                      value={query}
+                      onChange={this.handleChange}
+                      className={cx(classes.textInput, classes.showForSmall)}
+                      placeholder="Search"
+                      fullWidth
+                      startAdornment={
+                        <InputAdornment
+                          position="start"
+                          className={classes.adornment}
+                        >
+                          <SearchIcon />
+                        </InputAdornment>
+                      }
+                    />
+                  </FormControl>
+                </Grid>
+              </Grid>
+            )}
+            {!isUnderConstruction &&
+              isCityBusinessesLoading && (
+                <Grid container className={classes.progressContainer}>
+                  <Preloader />
+                </Grid>
+              )}
             <Grid container spacing={8}>
-              {cityBusinesses &&
-                cityBusinesses.size === 0 && (
-                  <Grid container spacing={8}>
-                    <Grid item xs={12} lg={12}>
-                      <div className={classes.emptyPanel}>
-                        <div className={classes.emptyContainer}>
-                          <Typography>
-                            No businesses match your selection. <br />
-                            Please modify the filters or your search, <br />
-                            or invite a business to join:
-                          </Typography>
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            className={classes.panelButton}
-                          >
-                            Invite Business
-                          </Button>
-                        </div>
-                      </div>
-                    </Grid>
-                  </Grid>
-                )}
-              {cityBusinesses &&
+              {!isUnderConstruction &&
+                cityBusinesses &&
                 cityBusinesses.size > 0 &&
                 cityBusinesses.map(cityBusiness => (
                   <Grid item key={generate()} xs={12} lg={6}>
@@ -724,20 +774,37 @@ class NetworkBusinessesPage extends Component<Props, State> {
                     />
                   </Grid>
                 ))}
+              {!isUnderConstruction &&
+                cityBusinesses &&
+                cityBusinesses.size === 0 && (
+                  <Grid container spacing={8}>
+                    <Grid item xs={12} lg={12}>
+                      <div className={classes.emptyPanel}>
+                        <div className={classes.emptyContainer}>
+                          <Typography>
+                            No businesses match your selection. <br />
+                            Please modify the filters or your search.
+                          </Typography>
+                        </div>
+                      </div>
+                    </Grid>
+                  </Grid>
+                )}
             </Grid>
-            {loadMore && (
-              <Grid item xs={12} lg={12}>
-                <Button
-                  fullWidth
-                  color="primary"
-                  className={`${classes.loadMoreButton}`}
-                  mt={1}
-                  onClick={() => this.loadMoreData()}
-                >
-                  See More
-                </Button>
-              </Grid>
-            )}
+            {!isUnderConstruction &&
+              loadMore && (
+                <Grid item xs={12} lg={12}>
+                  <Button
+                    fullWidth
+                    color="primary"
+                    className={`${classes.loadMoreButton}`}
+                    mt={1}
+                    onClick={() => this.loadMoreData()}
+                  >
+                    See More
+                  </Button>
+                </Grid>
+              )}
           </div>
         </div>
         <VouchBusinessInviteFormModal
