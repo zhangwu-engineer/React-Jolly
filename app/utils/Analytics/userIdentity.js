@@ -15,7 +15,6 @@ class UserIdentity {
       profile_picture: user.getIn(['profile', 'avatar']),
       source: user.get('source'),
       cred_count: user.getIn(['profile', 'cred']),
-      returning_user: user.get('loginCount'),
       created_at: user.get('date_created'),
       isHirer: user.getIn(['profile', 'isHirer']),
     };
