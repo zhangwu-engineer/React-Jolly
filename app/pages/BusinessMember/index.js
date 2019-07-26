@@ -25,6 +25,7 @@ import saga, {
   requestCreateConnection,
   requestCheckConnection,
 } from 'containers/Member/sagas';
+import { requestBusinessProfile } from 'containers/App/sagas';
 
 const styles = theme => ({
   root: {
@@ -268,6 +269,7 @@ type Props = {
   connectionInformation: Object,
   requestCreateConnection: Function,
   requestCheckConnection: Function,
+  requestBusinessProfile: Function,
 };
 
 type State = {
@@ -343,6 +345,7 @@ class BusinessMember extends Component<Props, State> {
     const isPrivate = (currentBusiness && !isPublicViewMode) || false;
     if (isPrivate) window.localStorage.setItem('isBusinessActive', 'yes');
     this.props.requestCheckConnection(this.state.connection);
+    this.props.requestBusinessProfile(slug);
   }
   toggleViewMode = () => {
     const { currentUser } = this.props;
@@ -498,6 +501,7 @@ const mapDispatchToProps = dispatch => ({
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
   requestCheckConnection: payload => dispatch(requestCheckConnection(payload)),
+  requestBusinessProfile: slug => dispatch(requestBusinessProfile(slug)),
 });
 
 export default compose(
