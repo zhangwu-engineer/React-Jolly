@@ -500,7 +500,7 @@ class ConnectedBusinessesPage extends Component<Props, State> {
     );
   };
   blockTestBusinesses(cityBusinesses) {
-    return cityBusinesses.size > 0
+    return cityBusinesses
       ? cityBusinesses.filter(
           business =>
             !BLOCK_IDS.includes(business.get('user')) &&
