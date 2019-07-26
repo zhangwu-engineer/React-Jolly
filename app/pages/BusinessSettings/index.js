@@ -20,7 +20,7 @@ import { requestUser, requestBusinessDataUpdate } from 'containers/App/sagas';
 const styles = theme => ({
   root: {
     maxWidth: 1064,
-    margin: '21px auto 300px auto',
+    margin: '10px auto 300px auto',
     display: 'flex',
     [theme.breakpoints.down('xs')]: {
       margin: 0,
