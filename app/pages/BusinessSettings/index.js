@@ -13,6 +13,7 @@ import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
 import UserAvatar from 'components/UserAvatar';
 import BusinessProfileForm from 'components/BusinessProfileForm';
+import BusinessPositionsForm from 'components/BusinessPositionsForm';
 
 import { requestUser, requestBusinessDataUpdate } from 'containers/App/sagas';
 
@@ -251,12 +252,7 @@ class SettingsPage extends Component<Props> {
             />
           </div>
           <div className={classes.section} ref={this.positionsForm}>
-            <Typography
-              variant="h6"
-              className={cx(classes.title, classes.editProfile)}
-            >
-              Positions
-            </Typography>
+            <BusinessPositionsForm />
           </div>
         </div>
       </div>
