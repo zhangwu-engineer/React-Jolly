@@ -25,7 +25,7 @@ const styles = theme => ({
     backgroundColor: '#f1f1f1',
     marginBottom: 15,
     '& label': {
-      marginTop: 9,
+      marginTop: 8,
       paddingLeft: 20,
     },
   },
