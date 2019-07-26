@@ -10,7 +10,11 @@ import { API_URL, REQUESTED, SUCCEDED, FAILED, ERROR } from 'enum/constants';
 import { LOCATION_CHANGE } from 'react-router-redux';
 import type { Action, State } from 'types/common';
 import type { Saga } from 'redux-saga';
-import { getToken, getUserId, getAdminToken } from 'containers/App/selectors';
+import {
+  getUserId,
+  getAdminToken,
+  getUserHeaders,
+} from 'containers/App/selectors';
 import { requestMemberFiles } from 'containers/Member/sagas';
 // ------------------------------------
 // Constants
@@ -1187,11 +1191,11 @@ function* SocialLoginRequest({ payload, meta: { type, isBusiness, invite } }) {
 }
 
 function* UserRequest() {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       url: `${API_URL}/user/me`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(userRequestSuccess(response.data.response));
@@ -1207,14 +1211,14 @@ function* UserRequest() {
 }
 
 function* UpdateUserDataRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   const userId = yield select(getUserId);
   try {
     const response = yield call(request, {
       method: 'PUT',
       url: `${API_URL}/user/${userId}`,
       data: payload,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(userDataUpdateSuccess(response.data.response));
@@ -1230,7 +1234,7 @@ function* UpdateUserDataRequest({ payload }) {
 }
 
 function* UploadUserPhotoRequest({ payload, meta }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
@@ -1238,7 +1242,7 @@ function* UploadUserPhotoRequest({ payload, meta }) {
       data: {
         image: payload,
       },
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(userPhotoUploadSuccess(response.data.response));
@@ -1263,13 +1267,13 @@ function* UploadUserPhotoRequest({ payload, meta }) {
 }
 
 function* DeleteUserPhotoRequest({ payload, slug }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'DELETE',
       url: `${API_URL}/user/image/delete`,
       params: payload,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield all([
@@ -1287,7 +1291,7 @@ function* DeleteUserPhotoRequest({ payload, slug }) {
 }
 
 function* UploadUserResumeRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
@@ -1295,7 +1299,7 @@ function* UploadUserResumeRequest({ payload }) {
       data: {
         resume: payload,
       },
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(userResumeUploadSuccess(response.data.response));
@@ -1309,13 +1313,13 @@ function* UploadUserResumeRequest({ payload }) {
 }
 
 function* DeleteUserResumeRequest() {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   const userId = yield select(getUserId);
   try {
     const response = yield call(request, {
       method: 'DELETE',
       url: `${API_URL}/user/${userId}/resume`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(userResumeDeleteSuccess(response.data.response));
@@ -1329,12 +1333,12 @@ function* DeleteUserResumeRequest() {
 }
 
 function* UserFilesRequest() {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/user/files`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(userFilesRequestSuccess(response.data.response));
@@ -1347,12 +1351,12 @@ function* UserFilesRequest() {
 }
 
 function* UserCoworkersRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/user/${payload}/coworkers`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(userCoworkersRequestSuccess(response.data.response));
@@ -1384,12 +1388,12 @@ function* UserEmailVerificationRequest({ payload }) {
 }
 
 function* MemberRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/user/slug/${payload}`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(memberRequestSuccess(response.data.response));
@@ -1402,12 +1406,12 @@ function* MemberRequest({ payload }) {
 }
 
 function* WorksRequest() {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/work`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(worksRequestSuccess(response.data.response));
@@ -1420,12 +1424,12 @@ function* WorksRequest() {
 }
 
 function* EndorsementsRequest() {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/endorsement`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(endorsementsRequestSuccess(response.data.response));
@@ -1438,7 +1442,7 @@ function* EndorsementsRequest() {
 }
 
 function* CityUsersRequest({ payload, meta }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
@@ -1452,7 +1456,7 @@ function* CityUsersRequest({ payload, meta }) {
         activeStatus: meta.activeStatus,
         businessId: meta.businessId,
       },
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(cityUsersRequestSuccess(response.data.response));
@@ -1465,7 +1469,7 @@ function* CityUsersRequest({ payload, meta }) {
 }
 
 function* CityUsersConnectedRequest({ payload, meta }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
@@ -1479,7 +1483,7 @@ function* CityUsersConnectedRequest({ payload, meta }) {
         activeStatus: meta.activeStatus,
         businessId: meta.businessId,
       },
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(cityUsersConnectedRequestSuccess(response.data.response));
@@ -1492,7 +1496,7 @@ function* CityUsersConnectedRequest({ payload, meta }) {
 }
 
 function* CityBusinessesRequest({ payload, meta }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
@@ -1504,7 +1508,7 @@ function* CityBusinessesRequest({ payload, meta }) {
         perPage: meta.perPage,
         role: meta.role,
       },
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(cityBusinessesRequestSuccess(response.data.response));
@@ -1517,7 +1521,7 @@ function* CityBusinessesRequest({ payload, meta }) {
 }
 
 function* SignupInviteRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
@@ -1525,7 +1529,7 @@ function* SignupInviteRequest({ payload }) {
       data: {
         email: payload,
       },
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(signupInviteRequestSuccess(response.data.response));
@@ -1576,12 +1580,12 @@ function* AdminUserRequest() {
 }
 
 function* BusinessProfileRequest({ payload, meta }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/business/slug/${payload}`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(businessProfileRequestSuccess(response.data.response, meta));

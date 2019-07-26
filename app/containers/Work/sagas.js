@@ -8,7 +8,7 @@ import request from 'utils/request';
 import { API_URL, REQUESTED, SUCCEDED, FAILED, ERROR } from 'enum/constants';
 import type { Action, State } from 'types/common';
 import type { Saga } from 'redux-saga';
-import { getToken } from 'containers/App/selectors';
+import { getUserHeaders } from 'containers/App/selectors';
 
 // ------------------------------------
 // Constants
@@ -570,7 +570,7 @@ export const reducer = (
 // Sagas
 // ------------------------------------
 function* CreateWorkRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
@@ -578,7 +578,7 @@ function* CreateWorkRequest({ payload }) {
       data: {
         jobs: payload,
       },
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(workCreateRequestSuccess(response.data.response));
@@ -591,12 +591,12 @@ function* CreateWorkRequest({ payload }) {
 }
 
 function* WorksRequest() {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/work`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(worksRequestSuccess(response.data.response));
@@ -609,12 +609,12 @@ function* WorksRequest() {
 }
 
 function* RolesRequest() {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/role`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(rolesRequestSuccess(response.data.response));
@@ -627,7 +627,7 @@ function* RolesRequest() {
 }
 
 function* UsersSearchRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
@@ -635,7 +635,7 @@ function* UsersSearchRequest({ payload }) {
       data: {
         keyword: payload,
       },
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(usersSearchRequestSuccess(response.data.response));
@@ -648,13 +648,13 @@ function* UsersSearchRequest({ payload }) {
 }
 
 function* WorkRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/work/search`,
       data: payload,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(workRequestSuccess(response.data.response));
@@ -667,12 +667,12 @@ function* WorkRequest({ payload }) {
 }
 
 function* RelatedUsersRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/work/${payload}/user`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(relatedUsersRequestSuccess(response.data.response));
@@ -685,7 +685,7 @@ function* RelatedUsersRequest({ payload }) {
 }
 
 function* CoworkerAddRequest({ payload, meta }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
@@ -693,7 +693,7 @@ function* CoworkerAddRequest({ payload, meta }) {
       data: {
         coworker: meta,
       },
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(coworkerAddRequestSuccess(response.data.response));
@@ -706,13 +706,13 @@ function* CoworkerAddRequest({ payload, meta }) {
 }
 
 function* CoworkerVerifyRequest({ payload, meta }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/work/${meta}/verifyCoworker`,
       data: payload,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(coworkerVerifyRequestSuccess(response.data.response));
@@ -725,13 +725,13 @@ function* CoworkerVerifyRequest({ payload, meta }) {
 }
 
 function* EndorseUserRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/endorsement`,
       data: payload,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(userEndorseRequestSuccess(response.data.response));
@@ -744,13 +744,13 @@ function* EndorseUserRequest({ payload }) {
 }
 
 function* EndorsementsRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/endorsement/work/${payload}`,
       data: payload,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(endorsementsRequestSuccess(response.data.response));
@@ -763,13 +763,13 @@ function* EndorsementsRequest({ payload }) {
 }
 
 function* EndorsersRequest({ payload, meta }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/endorsement/work/${payload}/endorsers`,
       data: { userSlug: meta },
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(endorsersRequestSuccess(response.data.response));
@@ -782,13 +782,13 @@ function* EndorsersRequest({ payload, meta }) {
 }
 
 function* InviteInformationRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/work/invite`,
       data: { token: payload },
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(inviteInformationRequestSuccess(response.data.response));
@@ -801,13 +801,13 @@ function* InviteInformationRequest({ payload }) {
 }
 
 function* InviteAcceptRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/work/invite/accept`,
       data: payload,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(inviteAcceptRequestSuccess(response.data.response));

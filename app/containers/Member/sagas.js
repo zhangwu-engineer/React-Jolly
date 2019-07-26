@@ -8,7 +8,7 @@ import request from 'utils/request';
 import { API_URL, REQUESTED, SUCCEDED, FAILED, ERROR } from 'enum/constants';
 import type { Action, State } from 'types/common';
 import type { Saga } from 'redux-saga';
-import { getToken } from 'containers/App/selectors';
+import { getUserHeaders } from 'containers/App/selectors';
 import { getConnection } from 'containers/Member/selectors';
 
 // ------------------------------------
@@ -415,12 +415,12 @@ export const reducer = (
 // Sagas
 // ------------------------------------
 function* MemberRolesRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/role/user/${payload}`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(memberRolesRequestSuccess(response.data.response));
@@ -433,12 +433,12 @@ function* MemberRolesRequest({ payload }) {
 }
 
 function* MemberProfileRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/user/slug/${payload}`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield all([put(memberProfileRequestSuccess(response.data.response))]);
@@ -451,12 +451,12 @@ function* MemberProfileRequest({ payload }) {
 }
 
 function* MemberBadgesRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/user/${payload}/badges`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(memberBadgesRequestSuccess(response.data.response));
@@ -469,12 +469,12 @@ function* MemberBadgesRequest({ payload }) {
 }
 
 function* MemberFilesRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/user/slug/${payload}/files`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(memberFilesRequestSuccess(response.data.response));
@@ -519,13 +519,13 @@ function* EndorsementsRequest({ payload }) {
 }
 
 function* CreateConnectionRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/connection`,
       data: payload,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(connectionCreateRequestSuccess(response.data.response));
@@ -540,12 +540,12 @@ function* CreateConnectionRequest({ payload }) {
 }
 
 function* DeleteConnectionRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/connection/${payload}/disconnect`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(connectionDeleteRequestSuccess(response.data.response));
@@ -560,7 +560,7 @@ function* DeleteConnectionRequest({ payload }) {
 }
 
 function* CheckConnectionRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
@@ -569,7 +569,7 @@ function* CheckConnectionRequest({ payload }) {
         from: payload.from,
         type: payload.type,
       },
-      headers: { 'x-access-token': token },
+      headers: header,
     });
 
     if (response.status === 200) {
