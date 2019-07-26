@@ -60,23 +60,22 @@ const styles = theme => ({
   },
   profileInfo: {
     marginBottom: 30,
-    paddingLeft: 5,
+    paddingLeft: 12,
   },
   avatar: {
-    width: 65,
-    height: 65,
+    width: 60,
+    height: 60,
     marginRight: 20,
-    paddingTop: 2,
     fontWeight: 600,
     backgroundColor: theme.palette.primary.main,
   },
   greetings: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 600,
     color: '#323232',
   },
   link: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 600,
     letterSpacing: '0.3px',
     textTransform: 'none',
