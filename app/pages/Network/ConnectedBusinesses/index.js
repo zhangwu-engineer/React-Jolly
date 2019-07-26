@@ -504,8 +504,12 @@ class ConnectedBusinessesPage extends Component<Props, State> {
       ? cityBusinesses.filter(
           business =>
             !BLOCK_IDS.includes(business.get('user')) &&
-            !business.getIn(['userData', 'email']).includes('@srvbl.com') &&
-            !business.getIn(['userData', 'email']).includes('@jollyhq.com')
+            (business.getIn(['userData', 'email'])
+              ? !business.getIn(['userData', 'email']).includes('@srvbl.com')
+              : true) &&
+            (business.getIn(['userData', 'email'])
+              ? !business.getIn(['userData', 'email']).includes('@jollyhq.com')
+              : true)
         )
       : cityBusinesses;
   }
