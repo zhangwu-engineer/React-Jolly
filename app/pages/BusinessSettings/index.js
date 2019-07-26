@@ -13,13 +13,14 @@ import { history } from 'components/ConnectedRouter';
 import Link from 'components/Link';
 import UserAvatar from 'components/UserAvatar';
 import BusinessProfileForm from 'components/BusinessProfileForm';
+import BusinessPositionsForm from 'components/BusinessPositionsForm';
 
 import { requestUser, requestBusinessDataUpdate } from 'containers/App/sagas';
 
 const styles = theme => ({
   root: {
     maxWidth: 1064,
-    margin: '21px auto 300px auto',
+    margin: '10px auto 300px auto',
     display: 'flex',
     [theme.breakpoints.down('xs')]: {
       margin: 0,
@@ -59,23 +60,22 @@ const styles = theme => ({
   },
   profileInfo: {
     marginBottom: 30,
-    paddingLeft: 5,
+    paddingLeft: 12,
   },
   avatar: {
-    width: 65,
-    height: 65,
+    width: 60,
+    height: 60,
     marginRight: 20,
-    paddingTop: 2,
     fontWeight: 600,
     backgroundColor: theme.palette.primary.main,
   },
   greetings: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 600,
     color: '#323232',
   },
   link: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 600,
     letterSpacing: '0.3px',
     textTransform: 'none',
@@ -251,12 +251,7 @@ class SettingsPage extends Component<Props> {
             />
           </div>
           <div className={classes.section} ref={this.positionsForm}>
-            <Typography
-              variant="h6"
-              className={cx(classes.title, classes.editProfile)}
-            >
-              Positions
-            </Typography>
+            <BusinessPositionsForm />
           </div>
         </div>
       </div>
