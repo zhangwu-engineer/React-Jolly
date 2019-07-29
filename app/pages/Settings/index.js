@@ -243,7 +243,7 @@ class SettingsPage extends Component<Props> {
               to="/settings#notifications"
             >
               {hash === '#notifications' && <div className={classes.line} />}
-              Notification
+              Notifications
             </Link>
           </div>
         </div>
