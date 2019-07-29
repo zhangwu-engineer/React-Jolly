@@ -14,6 +14,7 @@ import { getToken } from 'containers/App/selectors';
 // Constants
 // ------------------------------------
 const ROLES = 'Jolly/Role/ROLES';
+const BUSINESS_ROLES = 'Jolly/Role/BUSINESS_ROLES';
 const UPDATE_ROLE = 'Jolly/Role/UPDATE_ROLE';
 const CREATE_ROLE = 'Jolly/Role/CREATE_ROLE';
 const DELETE_ROLE = 'Jolly/Role/DELETE_ROLE';
@@ -40,6 +41,25 @@ const rolesRequestError = (error: string) => ({
   payload: error,
 });
 
+export const requestBusinessRoles = (slug: string) => ({
+  type: BUSINESS_ROLES + REQUESTED,
+  meta: {
+    slug,
+  },
+});
+const rolesBusinessRequestSuccess = (payload: Object) => ({
+  type: BUSINESS_ROLES + SUCCEDED,
+  payload,
+});
+const rolesBusinessRequestFailed = (error: string) => ({
+  type: BUSINESS_ROLES + FAILED,
+  payload: error,
+});
+const rolesBusinessRequestError = (error: string) => ({
+  type: BUSINESS_ROLES + ERROR,
+  payload: error,
+});
+
 export const requestUpdateRole = (id: string, payload: Object) => ({
   type: UPDATE_ROLE + REQUESTED,
   payload,
@@ -60,9 +80,15 @@ const roleUpdateRequestError = (error: string) => ({
   payload: error,
 });
 
-export const requestCreateRole = (payload: Array<Object>) => ({
+export const requestCreateRole = (
+  payload: Array<Object>,
+  businessId: string
+) => ({
   type: CREATE_ROLE + REQUESTED,
   payload,
+  meta: {
+    businessId,
+  },
 });
 const roleCreateRequestSuccess = (payload: Object) => ({
   type: CREATE_ROLE + SUCCEDED,
@@ -205,6 +231,25 @@ export const reducer = (
       return state.set('isLoading', false).set('error', payload);
 
     case ROLES + ERROR:
+      return state.set('isLoading', false).set(
+        'error',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case BUSINESS_ROLES + REQUESTED:
+      return state.set('isLoading', true);
+
+    case BUSINESS_ROLES + SUCCEDED:
+      return state
+        .set('isLoading', false)
+        .set('roles', fromJS(payload.roles))
+        .set('error', '');
+
+    case BUSINESS_ROLES + FAILED:
+      return state.set('isLoading', false).set('error', payload);
+
+    case BUSINESS_ROLES + ERROR:
       return state.set('isLoading', false).set(
         'error',
         `Something went wrong.
@@ -356,6 +401,24 @@ function* RolesRequest() {
   }
 }
 
+function* BusinessRolesRequest({ meta }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/role/business/${meta.slug}`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(rolesBusinessRequestSuccess(response.data.response));
+    } else {
+      yield put(rolesBusinessRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(rolesBusinessRequestError(error));
+  }
+}
+
 function* UpdateRoleRequest({ payload, meta }) {
   const token = yield select(getToken);
   try {
@@ -389,7 +452,7 @@ function* UpdateRoleRequest({ payload, meta }) {
   }
 }
 
-function* CreateRoleRequest({ payload }) {
+function* CreateRoleRequest({ payload, meta }) {
   const token = yield select(getToken);
   try {
     const response = yield call(request, {
@@ -397,6 +460,7 @@ function* CreateRoleRequest({ payload }) {
       url: `${API_URL}/role`,
       data: {
         roles: payload,
+        business_id: meta.businessId,
       },
       headers: { 'x-access-token': token },
     });
@@ -521,6 +585,7 @@ function* DeleteUnitRequest({ payload }) {
 export default function*(): Saga<void> {
   yield all([
     takeLatest(ROLES + REQUESTED, RolesRequest),
+    takeLatest(BUSINESS_ROLES + REQUESTED, BusinessRolesRequest),
     takeLatest(UPDATE_ROLE + REQUESTED, UpdateRoleRequest),
     takeLatest(CREATE_ROLE + REQUESTED, CreateRoleRequest),
     takeLatest(DELETE_ROLE + REQUESTED, DeleteRoleRequest),

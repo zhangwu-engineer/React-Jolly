@@ -157,6 +157,7 @@ type Props = {
   editable: boolean,
   classes: Object,
   onCancel: Function,
+  businessId?: string,
   addRole?: Function,
   updateRole?: Function,
   deleteRole?: Function,
@@ -203,7 +204,7 @@ class BusinessRoleInput extends Component<Props, State> {
   // }
   onConfirm = (e: Object) => {
     e.stopPropagation();
-    const { data, addRole, updateRole } = this.props;
+    const { data, addRole, updateRole, businessId } = this.props;
     const { model } = this.state;
     if (!this.isEmpty() && this.isUpdated()) {
       if (data.id) {
@@ -218,7 +219,7 @@ class BusinessRoleInput extends Component<Props, State> {
         if (model && model.rate) {
           model.rate = parseFloat(model.rate);
         }
-        addRole([model]);
+        addRole([model], businessId);
       }
       document.getElementById('addButton').style.display = 'flex';
     } else if (data.id) {

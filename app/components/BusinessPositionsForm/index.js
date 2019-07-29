@@ -16,7 +16,7 @@ import BaseModal from 'components/BaseModal';
 
 import saga, {
   reducer,
-  requestRoles,
+  requestBusinessRoles,
   requestUpdateRole,
   requestCreateRole,
   requestDeleteRole,
@@ -134,6 +134,7 @@ const styles = theme => ({
 });
 
 type Props = {
+  business: Object,
   roles: Object,
   isSaving: boolean,
   saveError: string,
@@ -142,7 +143,7 @@ type Props = {
   isDeleting: boolean,
   deleteError: string,
   classes: Object,
-  requestRoles: Function,
+  requestBusinessRoles: Function,
   updateRole: Function,
   addRole: Function,
   deleteRole: Function,
@@ -161,7 +162,9 @@ class BusinessPositionsForm extends Component<Props, State> {
     helpText: '',
   };
   componentDidMount() {
-    this.props.requestRoles();
+    const { business } = this.props;
+    const slug = business && business.slug;
+    this.props.requestBusinessRoles(slug);
   }
   componentDidUpdate(prevProps: Props) {
     const {
@@ -171,15 +174,17 @@ class BusinessPositionsForm extends Component<Props, State> {
       createError,
       isDeleting,
       deleteError,
+      business,
     } = this.props;
+    const slug = business && business.slug;
     if (prevProps.isSaving && !isSaving && !saveError) {
-      this.props.requestRoles();
+      this.props.requestBusinessRoles(slug);
     }
     if (prevProps.isDeleting && !isDeleting && !deleteError) {
-      this.props.requestRoles();
+      this.props.requestBusinessRoles(slug);
     }
     if (prevProps.isCreating && !isCreating && !createError) {
-      this.props.requestRoles();
+      this.props.requestBusinessRoles(slug);
     }
   }
   onCancelEdit = () => {
@@ -201,8 +206,9 @@ class BusinessPositionsForm extends Component<Props, State> {
     document.getElementById('addButton').style.display = 'none';
   };
   render() {
-    const { roles, classes } = this.props;
+    const { roles, classes, business } = this.props;
     const { newRole, isOpen, helpText } = this.state;
+    const businessId = business && business.id;
     return (
       <div className={classes.root}>
         <div className={classes.section}>
@@ -247,6 +253,7 @@ class BusinessPositionsForm extends Component<Props, State> {
                 data={newRole}
                 units={[]}
                 onCancel={this.onCancelEdit}
+                businessId={businessId}
                 addRole={this.props.addRole}
               />
             )}
@@ -278,9 +285,10 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  requestRoles: () => dispatch(requestRoles()),
+  requestBusinessRoles: slug => dispatch(requestBusinessRoles(slug)),
   updateRole: (id, payload) => dispatch(requestUpdateRole(id, payload)),
-  addRole: payload => dispatch(requestCreateRole(payload)),
+  addRole: (payload, businessId) =>
+    dispatch(requestCreateRole(payload, businessId)),
   deleteRole: payload => dispatch(requestDeleteRole(payload)),
 });
 
