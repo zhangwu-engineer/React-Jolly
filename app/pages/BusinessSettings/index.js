@@ -251,7 +251,7 @@ class SettingsPage extends Component<Props> {
             />
           </div>
           <div className={classes.section} ref={this.positionsForm}>
-            <BusinessPositionsForm />
+            <BusinessPositionsForm business={currentBusiness} />
           </div>
         </div>
       </div>
