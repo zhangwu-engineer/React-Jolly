@@ -806,20 +806,6 @@ class NetworkBusinessesPage extends Component<Props, State> {
                     </Grid>
                   </Grid>
                 )}
-              {!isUnderConstruction &&
-                cityBusinesses &&
-                cityBusinesses.size > 0 &&
-                cityBusinesses.map(cityBusiness => (
-                  <Grid item key={generate()} xs={12} lg={6}>
-                    <BusinessCard
-                      business={cityBusiness}
-                      onSelect={this.openFormModal}
-                      selected={invitedBusinessIds.includes(
-                        cityBusiness.get('id')
-                      )}
-                    />
-                  </Grid>
-                ))}
             </Grid>
             {!isUnderConstruction &&
               loadMore && (
