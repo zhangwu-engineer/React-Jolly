@@ -16,6 +16,7 @@ import { getConnection } from 'containers/Member/selectors';
 // ------------------------------------
 const ROLES = 'Jolly/Member/ROLES';
 const MEMBER_PROFILE = 'Jolly/Member/MEMBER_PROFILE';
+const BUSINESS_ROLES = 'Jolly/Member/BUSINESS_ROLES';
 const MEMBER_BADGES = 'Jolly/Member/MEMBER_BADGES';
 const FILES = 'Jolly/Member/FILES';
 const WORKS = 'Jolly/Member/WORKS';
@@ -41,6 +42,25 @@ const memberProfileRequestFailed = (error: string) => ({
 });
 const memberProfileRequestError = (error: string) => ({
   type: MEMBER_PROFILE + ERROR,
+  payload: error,
+});
+
+export const requestBusinessRoles = (slug: string) => ({
+  type: BUSINESS_ROLES + REQUESTED,
+  meta: {
+    slug,
+  },
+});
+const rolesBusinessRequestSuccess = (payload: Object) => ({
+  type: BUSINESS_ROLES + SUCCEDED,
+  payload,
+});
+const rolesBusinessRequestFailed = (error: string) => ({
+  type: BUSINESS_ROLES + FAILED,
+  payload: error,
+});
+const rolesBusinessRequestError = (error: string) => ({
+  type: BUSINESS_ROLES + ERROR,
   payload: error,
 });
 
@@ -233,6 +253,25 @@ export const reducer = (
       return state.set('isLoading', false).set('error', payload.message);
 
     case ROLES + ERROR:
+      return state.set('isLoading', false).set(
+        'error',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case BUSINESS_ROLES + REQUESTED:
+      return state.set('isLoading', true);
+
+    case BUSINESS_ROLES + SUCCEDED:
+      return state
+        .set('isLoading', false)
+        .set('roles', fromJS(payload.roles))
+        .set('error', '');
+
+    case BUSINESS_ROLES + FAILED:
+      return state.set('isLoading', false).set('error', payload);
+
+    case BUSINESS_ROLES + ERROR:
       return state.set('isLoading', false).set(
         'error',
         `Something went wrong.
@@ -432,6 +471,24 @@ function* MemberRolesRequest({ payload }) {
   }
 }
 
+function* BusinessRolesRequest({ meta }) {
+  const token = yield select(getToken);
+  try {
+    const response = yield call(request, {
+      method: 'GET',
+      url: `${API_URL}/role/business/${meta.slug}`,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(rolesBusinessRequestSuccess(response.data.response));
+    } else {
+      yield put(rolesBusinessRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(rolesBusinessRequestError(error));
+  }
+}
+
 function* MemberProfileRequest({ payload }) {
   const header = yield select(getUserHeaders);
   try {
@@ -585,6 +642,7 @@ function* CheckConnectionRequest({ payload }) {
 export default function*(): Saga<void> {
   yield all([
     takeLatest(ROLES + REQUESTED, MemberRolesRequest),
+    takeLatest(BUSINESS_ROLES + REQUESTED, BusinessRolesRequest),
     takeLatest(MEMBER_PROFILE + REQUESTED, MemberProfileRequest),
     takeLatest(MEMBER_BADGES + REQUESTED, MemberBadgesRequest),
     takeLatest(FILES + REQUESTED, MemberFilesRequest),

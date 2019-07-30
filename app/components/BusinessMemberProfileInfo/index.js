@@ -295,13 +295,11 @@ class BusinessMemberProfileInfo extends Component<Props, State> {
             <Typography className={classes.username}>
               {business && business.get('name')}
             </Typography>
-            {business.getIn(['user', 'profile', 'location']) && (
-              <Typography className={classes.location}>
-                {business && business.get('category')}
-                &nbsp;&sdot;&nbsp;
-                {business.getIn(['user', 'profile', 'location'])}
-              </Typography>
-            )}
+            <Typography className={classes.location}>
+              {business && business.get('category')}
+              &nbsp;&sdot;&nbsp;
+              {business && business.get('location')}
+            </Typography>
           </Grid>
         </Grid>
       </div>

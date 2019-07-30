@@ -25,7 +25,6 @@ import injectSagas from 'utils/injectSagas';
 
 const styles = theme => ({
   root: {
-    maxWidth: '712px',
     paddingBottom: 35,
     [theme.breakpoints.down('xs')]: {
       margin: 0,
@@ -104,10 +103,6 @@ const styles = theme => ({
   },
   sectionBody: {
     backgroundColor: theme.palette.common.white,
-    [theme.breakpoints.down('xs')]: {
-      boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
-      borderRadius: 3,
-    },
   },
   addButtonContainer: {
     [theme.breakpoints.down('xs')]: {
