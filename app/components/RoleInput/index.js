@@ -150,11 +150,13 @@ type Props = {
   units: Array<string>,
   editable: boolean,
   classes: Object,
+  id: Number,
+  activeEditId: Number,
   onCancel: Function,
   addRole?: Function,
   updateRole?: Function,
   deleteRole?: Function,
-  onEdit: Function
+  onEdit: Function,
 };
 
 type State = {
@@ -219,7 +221,7 @@ class RoleInput extends Component<Props, State> {
     }
     this.props.onEdit(null);
   };
-  onEdit = (id) => {
+  onEdit = id => {
     const { editable } = this.props;
     if (editable) {
       document.getElementById('addButton').style.display = 'none';
@@ -327,7 +329,7 @@ class RoleInput extends Component<Props, State> {
   node: ?HTMLElement;
   render() {
     const { data, units, classes, editable, id, activeEditId } = this.props;
-    const { mode, model, rangeMode, filteredRoles } = this.state;
+    const { model, rangeMode, filteredRoles } = this.state;
     return (
       <div
         className={classes.root}

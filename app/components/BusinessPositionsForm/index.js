@@ -148,6 +148,7 @@ type State = {
   newRole: ?Object,
   isOpen: boolean,
   helpText: string,
+  activeEditId: any,
 };
 
 class BusinessPositionsForm extends Component<Props, State> {
@@ -155,6 +156,7 @@ class BusinessPositionsForm extends Component<Props, State> {
     newRole: null,
     isOpen: false,
     helpText: '',
+    activeEditId: null,
   };
   componentDidMount() {
     const { business } = this.props;
@@ -182,6 +184,9 @@ class BusinessPositionsForm extends Component<Props, State> {
       this.props.requestBusinessRoles(slug);
     }
   }
+  onEdit = activeEditId => {
+    this.setState({ activeEditId });
+  };
   onCancelEdit = () => {
     this.setState({ newRole: null });
   };
@@ -202,7 +207,7 @@ class BusinessPositionsForm extends Component<Props, State> {
   };
   render() {
     const { roles, classes, business } = this.props;
-    const { newRole, isOpen, helpText } = this.state;
+    const { newRole, isOpen, helpText, activeEditId } = this.state;
     const businessId = business && business.id;
     return (
       <div className={classes.root}>
@@ -231,12 +236,14 @@ class BusinessPositionsForm extends Component<Props, State> {
           </div>
           <div className={classes.sectionBody}>
             {roles &&
-              roles.map(role => (
+              roles.map((role, index) => (
                 <BusinessRoleInput
                   key={generate()}
-                  mode="read"
+                  id={index}
+                  activeEditId={activeEditId}
                   data={role.toJS()}
                   units={[]}
+                  onEdit={this.onEdit}
                   onCancel={this.onCancelEdit}
                   updateRole={this.props.updateRole}
                   deleteRole={this.props.deleteRole}
@@ -244,7 +251,6 @@ class BusinessPositionsForm extends Component<Props, State> {
               ))}
             {newRole && (
               <BusinessRoleInput
-                mode="edit"
                 data={newRole}
                 units={[]}
                 onCancel={this.onCancelEdit}

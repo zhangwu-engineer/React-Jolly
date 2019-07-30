@@ -153,18 +153,19 @@ const styles = theme => ({
 type Props = {
   data: Object,
   units: Array<string>,
-  mode: string, // eslint-disable-line
   editable: boolean,
   classes: Object,
-  onCancel: Function,
   businessId?: string,
+  id: Number,
+  activeEditId: Number,
+  onCancel: Function,
   addRole?: Function,
   updateRole?: Function,
   deleteRole?: Function,
+  onEdit: Function,
 };
 
 type State = {
-  mode: string,
   model: ?Object,
   rangeMode: boolean,
   filteredRoles: Array<string>,
@@ -177,7 +178,6 @@ class BusinessRoleInput extends Component<Props, State> {
   static getDerivedStateFromProps(nextProps: Props, prevState: State) {
     if (!prevState.model) {
       return {
-        mode: nextProps.mode,
         model: {
           name: nextProps.data.name,
           years: nextProps.data.years,
@@ -191,7 +191,6 @@ class BusinessRoleInput extends Component<Props, State> {
     return null;
   }
   state = {
-    mode: '',
     model: null,
     rangeMode: false,
     filteredRoles: [],
@@ -226,15 +225,14 @@ class BusinessRoleInput extends Component<Props, State> {
       this.props.onCancel();
       document.getElementById('addButton').style.display = 'flex';
     }
+    this.props.onEdit(null);
   };
-  onEdit = () => {
+  onEdit = id => {
     const { editable } = this.props;
     if (editable) {
-      this.setState({
-        mode: 'edit',
-      });
       document.getElementById('addButton').style.display = 'none';
     }
+    this.props.onEdit(id);
   };
   onDelete = () => {
     const { data, deleteRole } = this.props;
@@ -330,8 +328,8 @@ class BusinessRoleInput extends Component<Props, State> {
   };
   node: ?HTMLElement;
   render() {
-    const { data, units, classes, editable } = this.props;
-    const { mode, model, rangeMode, filteredRoles } = this.state;
+    const { data, units, classes, editable, id, activeEditId } = this.props;
+    const { model, rangeMode, filteredRoles } = this.state;
     return (
       <div
         className={classes.root}
@@ -339,7 +337,7 @@ class BusinessRoleInput extends Component<Props, State> {
           this.node = node;
         }}
       >
-        {mode === 'read' && (
+        {id !== activeEditId && (
           <div className={classes.readView}>
             <Divider />
             <Grid container alignItems="center">
@@ -360,7 +358,7 @@ class BusinessRoleInput extends Component<Props, State> {
                 {editable && (
                   <IconButton
                     className={cx(classes.iconButton, classes.doneButton)}
-                    onClick={this.onEdit}
+                    onClick={() => this.onEdit(id)}
                   >
                     <EditIcon />
                   </IconButton>
@@ -369,7 +367,7 @@ class BusinessRoleInput extends Component<Props, State> {
             </Grid>
           </div>
         )}
-        {mode === 'edit' && (
+        {id === activeEditId && (
           <div className={classes.editView}>
             <Divider />
             <Grid container className={classes.editViewContent}>
