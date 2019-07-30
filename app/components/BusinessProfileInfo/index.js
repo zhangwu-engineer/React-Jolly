@@ -286,13 +286,11 @@ class BusinessProfileInfo extends PureComponent<Props> {
             <Typography className={classes.username}>
               {business && business.name}
             </Typography>
-            {user.getIn(['profile', 'location']) && (
-              <Typography className={classes.location}>
-                {business && business.category}
-                &nbsp;&sdot;&nbsp;
-                {user.getIn(['profile', 'location'])}
-              </Typography>
-            )}
+            <Typography className={classes.location}>
+              {business && business.category}
+              &nbsp;&sdot;&nbsp;
+              {business && business.location}
+            </Typography>
           </Grid>
         </Grid>
       </div>
