@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { withRouter, matchPath } from 'react-router';
 import cx from 'classnames';
 import 'react-image-lightbox/style.css';
+import { generate } from 'shortid';
 
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -13,6 +14,8 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 
 import Notification from 'components/Notification';
+import Link from 'components/Link';
+import BusinessRoleCard from 'components/BusinessRoleCard';
 import BusinessProfileInfo from 'components/BusinessProfileInfo';
 import BusinessMemberProfileInfo from 'components/BusinessMemberProfileInfo';
 import BusinessProfileOtherInfo from 'components/BusinessProfileOtherInfo';
@@ -24,6 +27,7 @@ import saga, {
   reducer,
   requestCreateConnection,
   requestCheckConnection,
+  requestBusinessRoles,
 } from 'containers/Member/sagas';
 import { requestBusinessProfile } from 'containers/App/sagas';
 
@@ -258,6 +262,19 @@ const styles = theme => ({
     fontWeight: 'bold',
     textDecoration: 'none',
     textTransform: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+  },
+  editPositionMobile: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    textDecoration: 'none',
+    textTransform: 'none',
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+    },
   },
 });
 
@@ -266,10 +283,12 @@ type Props = {
   business: Object,
   classes: Object,
   match: Object,
+  roles: Object,
   connectionInformation: Object,
   requestCreateConnection: Function,
   requestCheckConnection: Function,
   requestBusinessProfile: Function,
+  requestBusinessRoles: Function,
 };
 
 type State = {
@@ -346,6 +365,7 @@ class BusinessMember extends Component<Props, State> {
     if (isPrivate) window.localStorage.setItem('isBusinessActive', 'yes');
     this.props.requestCheckConnection(this.state.connection);
     this.props.requestBusinessProfile(slug);
+    this.props.requestBusinessRoles(slug);
   }
   toggleViewMode = () => {
     const { currentUser } = this.props;
@@ -378,6 +398,7 @@ class BusinessMember extends Component<Props, State> {
       classes,
       connectionInformation,
       match: { url },
+      roles,
     } = this.props;
     const {
       fixedTopBanner,
@@ -479,7 +500,53 @@ class BusinessMember extends Component<Props, State> {
                   isPrivate={isPrivate}
                 />
               </div>
-              <div className={classes.rightPanel} />
+              <div className={classes.rightPanel}>
+                <div className={classes.section}>
+                  <div className={classes.sectionHeader}>
+                    <Grid
+                      container
+                      justify="space-between"
+                      alignItems="center"
+                      className={classes.header}
+                    >
+                      <Grid item>
+                        <Typography className={classes.title}>
+                          Positions Hiring
+                        </Typography>
+                      </Grid>
+                      <Grid item>
+                        {isPrivate && (
+                          <React.Fragment>
+                            <Link
+                              className={classes.editPosition}
+                              to="/b/settings#positions"
+                            >
+                              Edit Positions
+                            </Link>
+                            <Link
+                              className={classes.editPositionMobile}
+                              to="/b/settings/positions"
+                            >
+                              Edit Positions
+                            </Link>
+                          </React.Fragment>
+                        )}
+                      </Grid>
+                    </Grid>
+                  </div>
+                  <div className={classes.sectionBody}>
+                    {roles && roles.size ? (
+                      roles.map(role => (
+                        <div key={generate()} id={role.get('id')}>
+                          <BusinessRoleCard role={role.toJS()} />
+                        </div>
+                      ))
+                    ) : (
+                      <BusinessRoleCard isPrivate={isPrivate} />
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -490,6 +557,7 @@ class BusinessMember extends Component<Props, State> {
 
 const mapStateToProps = state => ({
   currentUser: state.getIn(['app', 'user']),
+  roles: state.getIn(['member', 'roles']),
   business: state.getIn(['app', 'businessData']),
   error: state.getIn(['business', 'businessError']),
   connectionInformation: state.getIn(['member', 'connectionInformation']),
@@ -502,6 +570,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(requestCreateConnection(payload)),
   requestCheckConnection: payload => dispatch(requestCheckConnection(payload)),
   requestBusinessProfile: slug => dispatch(requestBusinessProfile(slug)),
+  requestBusinessRoles: slug => dispatch(requestBusinessRoles(slug)),
 });
 
 export default compose(
