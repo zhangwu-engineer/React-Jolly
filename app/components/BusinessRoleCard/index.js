@@ -5,14 +5,10 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import CheckCircle from '@material-ui/icons/CheckCircleOutline';
 import Grid from '@material-ui/core/Grid';
-import Icon from 'components/Icon';
 import Link from 'components/Link';
-import EndorsementIcon from 'images/sprite/endorsement.svg';
 
 const styles = theme => ({
   root: {
@@ -164,18 +160,6 @@ class BusinessRoleCard extends Component<Props> {
               </Typography>
             )}
         </CardContent>
-        <CardActions className={classes.actionBar}>
-          <Button>
-            <CheckCircle className={classes.icon} />
-            &nbsp;&nbsp;
-            {role.verifiedJobs}
-          </Button>
-          <Button>
-            <Icon glyph={EndorsementIcon} />
-            &nbsp;&nbsp;
-            {role.endorsements}
-          </Button>
-        </CardActions>
       </Card>
     );
   }
