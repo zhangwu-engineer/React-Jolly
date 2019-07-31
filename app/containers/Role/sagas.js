@@ -60,11 +60,16 @@ const rolesBusinessRequestError = (error: string) => ({
   payload: error,
 });
 
-export const requestUpdateRole = (id: string, payload: Object) => ({
+export const requestUpdateRole = (
+  id: string,
+  payload: Object,
+  isBusinessRole: Boolean
+) => ({
   type: UPDATE_ROLE + REQUESTED,
   payload,
   meta: {
     id,
+    isBusinessRole,
   },
 });
 const roleUpdateRequestSuccess = (payload: Object) => ({
@@ -442,7 +447,9 @@ function* UpdateRoleRequest({ payload, meta }) {
       if (response.data.response.role.maxRate) {
         properties.rate_high = response.data.response.role.maxRate;
       }
-      analytics.track('Role Updated', properties);
+      let updateMessage = 'Role Updated';
+      if (meta.isBusinessRole) updateMessage = 'Business Position Updated';
+      analytics.track(updateMessage, properties);
       yield put(roleUpdateRequestSuccess(response.data.response));
     } else {
       yield put(roleUpdateRequestFailed(response.data.error));

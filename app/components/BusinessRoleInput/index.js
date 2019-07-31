@@ -221,7 +221,7 @@ class BusinessRoleInput extends Component<Props, State> {
           if (model && model.rate) {
             model.rate = parseFloat(model.rate);
           }
-          updateRole(data.id, model);
+          updateRole(data.id, model, true);
         }
       } else if (addRole) {
         this.props.onCancel();

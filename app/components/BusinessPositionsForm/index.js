@@ -279,7 +279,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   requestBusinessRoles: slug => dispatch(requestBusinessRoles(slug)),
-  updateRole: (id, payload) => dispatch(requestUpdateRole(id, payload)),
+  updateRole: (id, payload, isBusinessRole) =>
+    dispatch(requestUpdateRole(id, payload, isBusinessRole)),
   addRole: (payload, businessId) =>
     dispatch(requestCreateRole(payload, businessId)),
   deleteRole: payload => dispatch(requestDeleteRole(payload)),

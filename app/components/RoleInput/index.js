@@ -205,7 +205,7 @@ class RoleInput extends Component<Props, State> {
           if (model && model.rate) {
             model.rate = parseFloat(model.rate);
           }
-          updateRole(data.id, model);
+          updateRole(data.id, model, false);
         }
       } else if (addRole) {
         this.props.onCancel();

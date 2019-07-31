@@ -162,7 +162,7 @@ type State = {
   newRole: ?Object,
   isOpen: boolean,
   helpText: string,
-  activeEditId: any
+  activeEditId: any,
 };
 
 class RolesPage extends Component<Props, State> {
@@ -170,7 +170,7 @@ class RolesPage extends Component<Props, State> {
     newRole: null,
     isOpen: false,
     helpText: '',
-    activeEditId: null
+    activeEditId: null,
   };
   componentDidMount() {
     this.props.requestRoles();
@@ -194,8 +194,8 @@ class RolesPage extends Component<Props, State> {
       this.props.requestRoles();
     }
   }
-  onEdit = (activeEditId) => {
-    this.setState({activeEditId});
+  onEdit = activeEditId => {
+    this.setState({ activeEditId });
   };
   onCancelEdit = () => {
     this.setState({ newRole: null });
@@ -247,7 +247,7 @@ class RolesPage extends Component<Props, State> {
           </div>
           <div className={classes.sectionBody}>
             {roles &&
-              roles.map( (role,index) => (
+              roles.map((role, index) => (
                 <RoleInput
                   key={generate()}
                   id={index}
@@ -305,7 +305,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   requestRoles: () => dispatch(requestRoles()),
-  updateRole: (id, payload) => dispatch(requestUpdateRole(id, payload)),
+  updateRole: (id, payload, isBusinessRole) =>
+    dispatch(requestUpdateRole(id, payload, isBusinessRole)),
   addRole: payload => dispatch(requestCreateRole(payload)),
   deleteRole: payload => dispatch(requestDeleteRole(payload)),
 });
