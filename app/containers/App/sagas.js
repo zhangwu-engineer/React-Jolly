@@ -635,6 +635,17 @@ export const reducer = (
         full_name: `${payload.user.firstName} ${payload.user.lastName}`,
         email: payload.user.email,
       });
+      if (payload.user.businesses) {
+        const { businesses } = payload.user;
+        const [newBusiness] = businesses;
+        analytics.track('Business Signed Up', {
+          user_id: payload.user.id,
+          business_id: newBusiness.id,
+          full_name: `${payload.user.firstName} ${payload.user.lastName}`,
+          email: payload.user.email,
+          signup_method: 'email',
+        });
+      }
       analytics.track('Signed Up', {
         user_id: payload.user.id,
         full_name: `${payload.user.firstName} ${payload.user.lastName}`,
