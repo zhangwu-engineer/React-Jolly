@@ -12,6 +12,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import PenIcon from '@material-ui/icons/CreateOutlined';
 
 import Notification from 'components/Notification';
 import Link from 'components/Link';
@@ -527,7 +528,7 @@ class BusinessMember extends Component<Props, State> {
                               className={classes.editPositionMobile}
                               to="/b/settings/positions"
                             >
-                              Edit Positions
+                              <PenIcon fontSize="small" />
                             </Link>
                           </React.Fragment>
                         )}
