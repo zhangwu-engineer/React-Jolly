@@ -479,7 +479,11 @@ function* CreateRoleRequest({ payload, meta }) {
         if (role.maxRate) {
           properties.rate_high = role.maxRate;
         }
-        analytics.track('Role Added', properties);
+        if (matchMedia.businessId) {
+          analytics.track('Business Position Added', properties);
+        } else {
+          analytics.track('Role Added', properties);
+        }
       });
       yield put(roleCreateRequestSuccess(response.data.response));
     } else {
