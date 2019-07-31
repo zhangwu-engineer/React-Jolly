@@ -479,7 +479,7 @@ function* CreateRoleRequest({ payload, meta }) {
         if (role.maxRate) {
           properties.rate_high = role.maxRate;
         }
-        if (matchMedia.businessId) {
+        if (meta.businessId) {
           analytics.track('Business Position Added', properties);
         } else {
           analytics.track('Role Added', properties);
