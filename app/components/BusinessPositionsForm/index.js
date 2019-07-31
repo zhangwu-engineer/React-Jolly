@@ -26,15 +26,11 @@ import injectSagas from 'utils/injectSagas';
 const styles = theme => ({
   root: {
     paddingBottom: 35,
-    [theme.breakpoints.down('xs')]: {
-      margin: 0,
-      padding: 10,
-    },
   },
   title: {
-    fontSize: 24,
-    textAlign: 'center',
-    marginBottom: 30,
+    fontSize: 18,
+    fontWeight: 600,
+    color: '#404040',
   },
   menuItem: {
     color: '#5a5d64',
@@ -85,10 +81,7 @@ const styles = theme => ({
     },
   },
   sectionHeader: {
-    paddingBottom: 20,
-    [theme.breakpoints.down('sm')]: {
-      padding: '10px 15px',
-    },
+    padding: 20,
   },
   sectionTitle: {
     fontSize: 24,
@@ -111,7 +104,6 @@ const styles = theme => ({
   },
   addButton: {
     color: theme.palette.primary.main,
-    backgroundColor: theme.palette.common.white,
     fontSize: 14,
     fontWeight: 600,
     textTransform: 'none',
@@ -215,7 +207,7 @@ class BusinessPositionsForm extends Component<Props, State> {
           <div className={classes.sectionHeader}>
             <Grid container justify="space-between" alignItems="center">
               <Grid item>
-                <Typography variant="h6" className={classes.sectionTitle}>
+                <Typography variant="h1" className={classes.title}>
                   Positions
                 </Typography>
               </Grid>

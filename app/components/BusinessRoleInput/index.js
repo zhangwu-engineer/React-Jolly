@@ -29,6 +29,12 @@ import ROLES from 'enum/roles';
 const styles = theme => ({
   headingSection: {
     paddingTop: 20,
+    paddingLeft: 20,
+  },
+  cardItem: {
+    [theme.breakpoints.down('sm')]: {
+      paddingRight: 20,
+    },
   },
   readView: {
     position: 'relative',
@@ -37,8 +43,7 @@ const styles = theme => ({
     position: 'relative',
   },
   editViewContent: {
-    paddingTop: 20,
-    paddingBottom: 20,
+    padding: 20,
   },
   nameFieldWrapper: {
     position: 'relative',
@@ -93,9 +98,6 @@ const styles = theme => ({
     color: '#a0a0a0',
     marginBottom: 20,
     textTransform: 'capitalize',
-    [theme.breakpoints.down('xs')]: {
-      marginBottom: 10,
-    },
   },
   editModeButtons: {
     display: 'flex',
@@ -147,6 +149,14 @@ const styles = theme => ({
     display: 'block',
     paddingLeft: 20,
     cursor: 'pointer',
+  },
+  dividerItem: {
+    marginLeft: 20,
+    marginRight: 20,
+    maxWidth: '100%',
+    [theme.breakpoints.down('xs')]: {
+      margin: 0,
+    },
   },
 });
 
@@ -339,8 +349,8 @@ class BusinessRoleInput extends Component<Props, State> {
       >
         {id !== activeEditId && (
           <div className={classes.readView}>
-            <Divider />
-            <Grid container alignItems="center">
+            <Divider className={classes.dividerItem} />
+            <Grid container alignItems="center" className={classes.cardItem}>
               <Grid item xs={11} lg={11} className={classes.headingSection}>
                 <Typography variant="h6" className={classes.name}>
                   {data.name}
@@ -369,7 +379,7 @@ class BusinessRoleInput extends Component<Props, State> {
         )}
         {id === activeEditId && (
           <div className={classes.editView}>
-            <Divider />
+            <Divider className={classes.dividerItem} />
             <Grid container className={classes.editViewContent}>
               <Grid item xs={12} lg={12}>
                 <Grid container className={classes.bottomMargin}>

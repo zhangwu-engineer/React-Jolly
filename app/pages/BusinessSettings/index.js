@@ -123,6 +123,15 @@ const styles = theme => ({
       marginBottom: 0,
     },
   },
+  sectionPositions: {
+    backgroundColor: theme.palette.common.white,
+    padding: 10,
+    marginBottom: 20,
+    [theme.breakpoints.down('xs')]: {
+      padding: 0,
+      marginBottom: 0,
+    },
+  },
   title: {
     fontSize: 24,
     fontWeight: 600,
@@ -250,7 +259,7 @@ class SettingsPage extends Component<Props> {
               updateBusiness={this.props.updateBusiness}
             />
           </div>
-          <div className={classes.section} ref={this.positionsForm}>
+          <div className={classes.sectionPositions} ref={this.positionsForm}>
             <BusinessPositionsForm business={currentBusiness} />
           </div>
         </div>
