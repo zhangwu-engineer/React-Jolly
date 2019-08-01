@@ -89,8 +89,10 @@ function generateAboutUs(business) {
   const name = business.get('name');
   const category = business.get('category');
   const location = business.get('location');
-  const theArticle = isVowel(category.substring(0, 1)) ? 'an' : 'a';
-  return `${name} is ${theArticle} ${category} business based in ${location}`;
+  const theArticle = isVowel(category ? category.substring(0, 1) : '')
+    ? 'an'
+    : 'a';
+  return `${name} is ${theArticle} ${category} business based in ${location}.`;
 }
 
 class BusinessProfileOtherInfo extends Component<Props> {
