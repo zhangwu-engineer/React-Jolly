@@ -718,7 +718,7 @@ class Header extends Component<Props, State> {
         <Link
           className={classes.logoContainer}
           onClick={() => {
-            if (!pathname.includes('/ob')) {
+            if (!pathname.includes('/ob') && !pathname.includes('/b/')) {
               history.push('/');
             }
           }}
