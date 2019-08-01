@@ -746,10 +746,7 @@ class Header extends Component<Props, State> {
                 history.replace('/email-sign-in');
               } else if (pathname.includes('/privacy-policy')) {
                 history.replace('/');
-              } else if (
-                pathname.includes('/b/settings') ||
-                pathname.includes('/b/settings')
-              ) {
+              } else if (pathname.includes('/b/settings')) {
                 history.goBack();
               } else if (
                 pathname.includes('/settings/general') ||
