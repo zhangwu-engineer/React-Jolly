@@ -2,6 +2,7 @@
 
 import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import { lowerCase } from 'lodash-es';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
@@ -88,11 +89,11 @@ function isVowel(x) {
 function generateAboutUs(business) {
   const name = business.get('name');
   const category = business.get('category');
-  const location = business.get('location');
+  const location = business.get('location') ? ` based in ${location}` : ``;
   const theArticle = isVowel(category ? category.substring(0, 1) : '')
     ? 'an'
     : 'a';
-  return `${name} is ${theArticle} ${category} business based in ${location}.`;
+  return `${name} is ${theArticle} ${lowerCase(category)} business${location}.`;
 }
 
 class BusinessProfileOtherInfo extends Component<Props> {
