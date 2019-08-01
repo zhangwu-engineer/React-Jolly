@@ -747,10 +747,10 @@ class Header extends Component<Props, State> {
               } else if (pathname.includes('/privacy-policy')) {
                 history.replace('/');
               } else if (
-                pathname.includes('/b/settings/profile') ||
-                pathname.includes('/b/settings/positions')
+                pathname.includes('/b/settings') ||
+                pathname.includes('/b/settings')
               ) {
-                history.push('/b/settings');
+                history.goBack();
               } else if (
                 pathname.includes('/settings/general') ||
                 pathname.includes('/settings/profile')
