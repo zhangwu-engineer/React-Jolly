@@ -645,6 +645,8 @@ class Header extends Component<Props, State> {
     let isPrivateBusinessPage = false;
     let isBusinessNetworkPage = false;
     let isBusinessPendingsPage = false;
+    let isBusinessSettingsPage = false;
+
     let currentBusiness = null;
     let isFreelancer = user && true;
     if (matchBusiness) {
@@ -667,6 +669,7 @@ class Header extends Component<Props, State> {
 
       isBusinessNetworkPage = isBusinessUser && slug === 'network';
       isBusinessPendingsPage = isBusinessUser && slug === 'pending';
+      isBusinessSettingsPage = isBusinessUser && slug === 'settings';
 
       if (isBusinessNetworkPage || isBusinessPendingsPage) {
         currentBusiness = businesses[0];
@@ -682,7 +685,7 @@ class Header extends Component<Props, State> {
       pathname.includes('/edit') ||
       (pathname.includes('/network') && !isBusinessNetworkPage) ||
       pathname.includes('/feed') ||
-      pathname.includes('/settings');
+      (pathname.includes('/settings') && !isBusinessSettingsPage);
     const hideTopRightButtons =
       pathname.includes('/types-of-work') ||
       (pathname.includes('/e/') && pathname.includes('work'));
@@ -731,6 +734,7 @@ class Header extends Component<Props, State> {
                 pathname.includes('/forgot-password') ||
                 pathname.includes('/reset-password') ||
                 pathname.includes('/privacy-policy') ||
+                pathname.includes('/b/settings') ||
                 hideTopRightButtons,
             })}
             onClick={() => {
@@ -742,6 +746,11 @@ class Header extends Component<Props, State> {
                 history.replace('/email-sign-in');
               } else if (pathname.includes('/privacy-policy')) {
                 history.replace('/');
+              } else if (
+                pathname.includes('/b/settings/profile') ||
+                pathname.includes('/b/settings/positions')
+              ) {
+                history.push('/b/settings');
               } else if (
                 pathname.includes('/settings/general') ||
                 pathname.includes('/settings/profile')
