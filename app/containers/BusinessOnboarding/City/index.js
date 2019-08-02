@@ -27,7 +27,7 @@ import { requestUserDataUpdate } from 'containers/App/sagas';
 const styles = theme => ({
   root: {
     maxWidth: 660,
-    margin: '50px auto 0px auto',
+    margin: '50px auto 100px auto',
     [theme.breakpoints.down('xs')]: {
       padding: 10,
       height: 800,
@@ -221,8 +221,8 @@ class OnboardingCityPage extends Component<Props, State> {
           Welcome!
         </Typography>
         <Typography align="center" className={classes.text}>
-          Jolly is a convenient and helpful platform to network with event
-          freelancers and connect with gigs.
+          Jolly is an online professional network for events businesses and
+          event freelancers.
         </Typography>
         <FormControl classes={{ root: classes.formControl }} fullWidth>
           <Input
@@ -318,7 +318,7 @@ class OnboardingCityPage extends Component<Props, State> {
                   <Input
                     className={classes.textInput}
                     {...getInputProps({
-                      placeholder: 'What city do you work in most often?',
+                      placeholder: 'Where is your company headquartered?',
                     })}
                     inputRef={this.addressInput}
                     startAdornment={
