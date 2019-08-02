@@ -689,6 +689,13 @@ class Header extends Component<Props, State> {
     const hideTopRightButtons =
       pathname.includes('/types-of-work') ||
       (pathname.includes('/e/') && pathname.includes('work'));
+
+    const isHeaderHidden = pathname.includes('-signup');
+
+    if (isHeaderHidden) {
+      return <div />;
+    }
+
     return (
       <Grid
         className={classes.root}
