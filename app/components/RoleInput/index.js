@@ -154,7 +154,10 @@ type Props = {
   addRole?: Function,
   updateRole?: Function,
   deleteRole?: Function,
-  onEdit: Function
+  onEdit: Function,
+  roles: Object,
+  id: Integer,
+  activeEditId: Integer,
 };
 
 type State = {
@@ -187,12 +190,6 @@ class RoleInput extends Component<Props, State> {
     rangeMode: false,
     filteredRoles: [],
   };
-  // componentDidMount() {
-  //   document.addEventListener('mousedown', this.handleClick, false);
-  // }
-  // componentWillUnmount() {
-  //   document.addEventListener('mousedown', this.handleClick, false);
-  // }
   onConfirm = (e: Object) => {
     e.stopPropagation();
     const { data, addRole, updateRole } = this.props;
@@ -219,7 +216,7 @@ class RoleInput extends Component<Props, State> {
     }
     this.props.onEdit(null);
   };
-  onEdit = (id) => {
+  onEdit = id => {
     const { editable } = this.props;
     if (editable) {
       document.getElementById('addButton').style.display = 'none';
@@ -259,12 +256,14 @@ class RoleInput extends Component<Props, State> {
     return false;
   };
   debouncedSearch = debounce((id, value) => {
+    const { roles } = this.props;
+    const usedRoles = roles.map(r => r.get('name'));
     switch (id) {
       case 'name': {
         if (value) {
           const filteredRoles = ROLES.filter(
-            r => r.toLowerCase().indexOf(value.toLowerCase()) !== -1
-          );
+            r => !usedRoles.includes(r)
+          ).filter(r => r.toLowerCase().indexOf(value.toLowerCase()) !== -1);
           this.setState({ filteredRoles });
         } else {
           this.setState({ filteredRoles: ROLES });
@@ -318,16 +317,10 @@ class RoleInput extends Component<Props, State> {
       },
     }));
   };
-  // handleClick = (e: Object) => {
-  //   if (this.node && !this.node.contains(e.target)) {
-  //     this.setState({ mode: 'read' });
-  //     this.props.onCancel();
-  //   }
-  // };
   node: ?HTMLElement;
   render() {
     const { data, units, classes, editable, id, activeEditId } = this.props;
-    const { mode, model, rangeMode, filteredRoles } = this.state;
+    const { model, rangeMode, filteredRoles } = this.state;
     return (
       <div
         className={classes.root}
