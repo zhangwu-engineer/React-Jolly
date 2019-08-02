@@ -645,7 +645,6 @@ class Header extends Component<Props, State> {
     let isPrivateBusinessPage = false;
     let isBusinessNetworkPage = false;
     let isBusinessPendingsPage = false;
-    let isBusinessSettingsPage = false;
 
     let currentBusiness = null;
     let isFreelancer = user && true;
@@ -669,7 +668,6 @@ class Header extends Component<Props, State> {
 
       isBusinessNetworkPage = isBusinessUser && slug === 'network';
       isBusinessPendingsPage = isBusinessUser && slug === 'pending';
-      isBusinessSettingsPage = isBusinessUser && slug === 'settings';
 
       if (isBusinessNetworkPage || isBusinessPendingsPage) {
         currentBusiness = businesses[0];
@@ -684,8 +682,7 @@ class Header extends Component<Props, State> {
       isWorkDetailPage ||
       pathname.includes('/edit') ||
       (pathname.includes('/network') && !isBusinessNetworkPage) ||
-      pathname.includes('/feed') ||
-      (pathname.includes('/settings') && !isBusinessSettingsPage);
+      pathname.includes('/feed');
     const hideTopRightButtons =
       pathname.includes('/types-of-work') ||
       (pathname.includes('/e/') && pathname.includes('work'));
@@ -742,6 +739,7 @@ class Header extends Component<Props, State> {
                 pathname.includes('/reset-password') ||
                 pathname.includes('/privacy-policy') ||
                 pathname.includes('/b/settings') ||
+                pathname.includes('/settings') ||
                 hideTopRightButtons,
             })}
             onClick={() => {
@@ -755,11 +753,8 @@ class Header extends Component<Props, State> {
                 history.replace('/');
               } else if (pathname.includes('/b/settings')) {
                 history.goBack();
-              } else if (
-                pathname.includes('/settings/general') ||
-                pathname.includes('/settings/profile')
-              ) {
-                history.push('/settings');
+              } else if (pathname.includes('/settings')) {
+                history.goBack();
               } else if (pathname.includes('/e/') && work) {
                 if (user && user.get('slug') === work.getIn(['user', 'slug'])) {
                   history.push('/edit');
