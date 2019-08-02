@@ -16,8 +16,10 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import ExpandMore from '@material-ui/icons/ExpandMore';
 
 import { history } from 'components/ConnectedRouter';
+import { BUSINESS_CATEGORY_OPTIONS } from 'enum/constants';
 import Link from 'components/Link';
 
 const styles = theme => ({
@@ -53,6 +55,25 @@ const styles = theme => ({
     '& input': {
       paddingTop: 10,
       paddingBottom: 11,
+    },
+  },
+  selectInput: {
+    paddingTop: 5,
+    paddingLeft: 18,
+    paddingRight: 18,
+    marginTop: '16px !important',
+    '&:before': {
+      borderBottom: '2px solid #f1f1f1',
+    },
+    '& input': {
+      paddingTop: 10,
+      paddingBottom: 11,
+    },
+    '& #select-category': {
+      background: 'transparent !important',
+    },
+    '& svg': {
+      marginTop: -4,
     },
   },
   disabledTextInput: {
@@ -260,7 +281,8 @@ class EditableFormInput extends Component<Props> {
         </PlacesAutocomplete>
       );
     }
-    if (id === 'distance') {
+
+    if (id === 'category') {
       return (
         <Select
           value={value}
@@ -270,28 +292,16 @@ class EditableFormInput extends Component<Props> {
           }}
           onChange={this.props.onChange}
           onBlur={this.props.onBlur}
-          className={cx(classes.textInput, {
+          IconComponent={ExpandMore}
+          className={cx(classes.selectInput, {
             [classes.disabledTextInput]: disabled,
           })}
-          disabled={disabled}
         >
-          <MenuItem value="">Don&apos;t Indicate</MenuItem>
-          <MenuItem value="less than 5">&lt; 5</MenuItem>
-          <MenuItem value="5">5</MenuItem>
-          <MenuItem value="10">10</MenuItem>
-          <MenuItem value="15">15</MenuItem>
-          <MenuItem value="20">20</MenuItem>
-          <MenuItem value="25">25</MenuItem>
-          <MenuItem value="30">30</MenuItem>
-          <MenuItem value="35">35</MenuItem>
-          <MenuItem value="40">40</MenuItem>
-          <MenuItem value="45">45</MenuItem>
-          <MenuItem value="50">50</MenuItem>
-          <MenuItem value="60">60</MenuItem>
-          <MenuItem value="70">70</MenuItem>
-          <MenuItem value="80">80</MenuItem>
-          <MenuItem value="90">90</MenuItem>
-          <MenuItem value="more than 100">100 +</MenuItem>
+          {BUSINESS_CATEGORY_OPTIONS.map(option => (
+            <MenuItem value={option.value} key="menu">
+              {option.label}
+            </MenuItem>
+          ))}
         </Select>
       );
     }
