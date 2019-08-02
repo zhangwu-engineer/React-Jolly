@@ -472,10 +472,12 @@ function* MemberRolesRequest({ payload }) {
 }
 
 function* BusinessRolesRequest({ meta }) {
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/role/business/${meta.slug}`,
+      headers: header,
     });
     if (response.status === 200) {
       yield put(rolesBusinessRequestSuccess(response.data.response));
