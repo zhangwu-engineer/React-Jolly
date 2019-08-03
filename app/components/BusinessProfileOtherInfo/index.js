@@ -89,7 +89,9 @@ function isVowel(x) {
 function generateAboutUs(business) {
   const name = business.get('name');
   const category = business.get('category');
-  const location = business.get('location') ? ` based in ${location}` : ``;
+  const location = business.get('location')
+    ? ` based in ${business.get('location')}`
+    : ``;
   const theArticle = isVowel(category ? category.substring(0, 1) : '')
     ? 'an'
     : 'a';
