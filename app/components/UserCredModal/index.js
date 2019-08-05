@@ -40,6 +40,8 @@ const styles = theme => ({
   content: {
     position: 'relative',
     padding: 30,
+    maxHeight: '100vh',
+    overflow: 'scroll',
     [theme.breakpoints.down('xs')]: {
       padding: '30px 20px 20px',
     },
