@@ -218,6 +218,11 @@ const initialState = fromJS({
   unitDeleteError: '',
 });
 
+const filteredArray = list =>
+  Array.from(new Set(list.map(a => a.name))).map(name =>
+    list.find(a => a.name === name)
+  );
+
 export const reducer = (
   state: State = initialState,
   { type, payload }: Action
@@ -248,7 +253,7 @@ export const reducer = (
     case BUSINESS_ROLES + SUCCEDED:
       return state
         .set('isLoading', false)
-        .set('roles', fromJS(payload.roles))
+        .set('roles', fromJS(filteredArray(payload.roles)), 'name')
         .set('error', '');
 
     case BUSINESS_ROLES + FAILED:
