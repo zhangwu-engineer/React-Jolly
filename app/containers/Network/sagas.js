@@ -8,7 +8,7 @@ import request from 'utils/request';
 import { API_URL, REQUESTED, SUCCEDED, FAILED, ERROR } from 'enum/constants';
 import type { Action, State } from 'types/common';
 import type { Saga } from 'redux-saga';
-import { getToken } from 'containers/App/selectors';
+import { getUserHeaders } from 'containers/App/selectors';
 import { getConnection } from 'containers/Member/selectors';
 
 // ------------------------------------
@@ -314,13 +314,13 @@ export const reducer = (
 // Sagas
 // ------------------------------------
 function* CreateConnectionRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/connection`,
       data: payload,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(connectionCreateRequestSuccess(response.data.response));
@@ -335,12 +335,12 @@ function* CreateConnectionRequest({ payload }) {
 }
 
 function* IgnoreConnectionRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/connection/${payload}/ignore`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(connectionIgnoreRequestSuccess(response.data.response));
@@ -353,12 +353,12 @@ function* IgnoreConnectionRequest({ payload }) {
 }
 
 function* AcceptConnectionRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'PUT',
       url: `${API_URL}/connection/${payload}/accept`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(connectionAcceptRequestSuccess(response.data.response));
@@ -371,12 +371,12 @@ function* AcceptConnectionRequest({ payload }) {
 }
 
 function* ConnectionsRequest() {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/connection`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(connectionsRequestSuccess(response.data.response));
@@ -389,12 +389,12 @@ function* ConnectionsRequest() {
 }
 
 function* BusinessConnectionsRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/connection/business`,
-      headers: { 'x-access-token': token },
+      headers: header,
       params: {
         businessId: payload,
       },
@@ -410,12 +410,12 @@ function* BusinessConnectionsRequest({ payload }) {
 }
 
 function* ConnectedConnectionsRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/connection/connected`,
-      headers: { 'x-access-token': token },
+      headers: header,
       params: payload,
     });
     if (response.status === 200) {
@@ -429,7 +429,7 @@ function* ConnectedConnectionsRequest({ payload }) {
 }
 
 function* CheckConnectionRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
@@ -438,7 +438,7 @@ function* CheckConnectionRequest({ payload }) {
         from: payload.from,
         type: payload.type,
       },
-      headers: { 'x-access-token': token },
+      headers: header,
     });
 
     if (response.status === 200) {

@@ -8,7 +8,7 @@ import request from 'utils/request';
 import { API_URL, REQUESTED, SUCCEDED, FAILED, ERROR } from 'enum/constants';
 import type { Action, State } from 'types/common';
 import type { Saga } from 'redux-saga';
-import { getToken } from 'containers/App/selectors';
+import { getUserHeaders } from 'containers/App/selectors';
 
 // ------------------------------------
 // Constants
@@ -339,12 +339,12 @@ export const reducer = (
 // Sagas
 // ------------------------------------
 function* RolesRequest() {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/role`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(rolesRequestSuccess(response.data.response));
@@ -357,13 +357,13 @@ function* RolesRequest() {
 }
 
 function* UpdateRoleRequest({ payload, meta }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'PUT',
       url: `${API_URL}/role/${meta.id}`,
       data: payload,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       const properties = {
@@ -390,7 +390,7 @@ function* UpdateRoleRequest({ payload, meta }) {
 }
 
 function* CreateRoleRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
@@ -398,7 +398,7 @@ function* CreateRoleRequest({ payload }) {
       data: {
         roles: payload,
       },
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       response.data.response.roles.forEach(role => {
@@ -427,12 +427,12 @@ function* CreateRoleRequest({ payload }) {
 }
 
 function* DeleteRoleRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'DELETE',
       url: `${API_URL}/role/${payload.id}`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(roleDeleteRequestSuccess(response.data.response));
@@ -445,12 +445,12 @@ function* DeleteRoleRequest({ payload }) {
 }
 
 function* UnitsRequest() {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'GET',
       url: `${API_URL}/unit`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(unitsRequestSuccess(response.data.response));
@@ -463,13 +463,13 @@ function* UnitsRequest() {
 }
 
 function* UpdateUnitRequest({ payload, meta }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'PUT',
       url: `${API_URL}/unit/${meta.id}`,
       data: payload,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(unitUpdateRequestSuccess(response.data.response));
@@ -482,13 +482,13 @@ function* UpdateUnitRequest({ payload, meta }) {
 }
 
 function* CreateUnitRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/unit`,
       data: payload,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(unitCreateRequestSuccess(response.data.response));
@@ -501,12 +501,12 @@ function* CreateUnitRequest({ payload }) {
 }
 
 function* DeleteUnitRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'DELETE',
       url: `${API_URL}/unit/${payload.id}`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(unitDeleteRequestSuccess(response.data.response));

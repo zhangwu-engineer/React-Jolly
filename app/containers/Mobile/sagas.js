@@ -8,7 +8,7 @@ import request from 'utils/request';
 import { API_URL, REQUESTED, SUCCEDED, FAILED, ERROR } from 'enum/constants';
 import type { Action, State } from 'types/common';
 import type { Saga } from 'redux-saga';
-import { getToken } from 'containers/App/selectors';
+import { getUserHeaders } from 'containers/App/selectors';
 
 // ------------------------------------
 // Constants
@@ -129,13 +129,13 @@ export const reducer = (
 // Sagas
 // ------------------------------------
 function* PhoneVerificationRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/user/verify-phone`,
       data: payload,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(phoneVerificationRequestSuccess(response.data.response));
@@ -148,13 +148,13 @@ function* PhoneVerificationRequest({ payload }) {
 }
 
 function* TokenVerificationRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/user/verify-phone-token`,
       data: payload,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(tokenVerificationRequestSuccess(response.data.response));

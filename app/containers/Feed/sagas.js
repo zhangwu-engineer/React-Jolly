@@ -8,7 +8,7 @@ import request from 'utils/request';
 import { API_URL, REQUESTED, SUCCEDED, FAILED, ERROR } from 'enum/constants';
 import type { Action, State } from 'types/common';
 import type { Saga } from 'redux-saga';
-import { getToken } from 'containers/App/selectors';
+import { getUserHeaders } from 'containers/App/selectors';
 
 // ------------------------------------
 // Constants
@@ -309,13 +309,13 @@ export const reducer = (
 // Sagas
 // ------------------------------------
 function* CreatePostRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/post`,
       data: payload,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(postCreateRequestSuccess(response.data.response));
@@ -328,13 +328,13 @@ function* CreatePostRequest({ payload }) {
 }
 
 function* UpdatePostRequest({ payload, meta }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'PUT',
       url: `${API_URL}/post/${meta}`,
       data: payload,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(postUpdateRequestSuccess(response.data.response));
@@ -347,12 +347,12 @@ function* UpdatePostRequest({ payload, meta }) {
 }
 
 function* RemovePostRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'DELETE',
       url: `${API_URL}/post/${payload}`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(postRemoveRequestSuccess(response.data.response));
@@ -365,12 +365,12 @@ function* RemovePostRequest({ payload }) {
 }
 
 function* PostsRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/post/search`,
-      headers: { 'x-access-token': token },
+      headers: header,
       data: {
         query: payload,
       },
@@ -386,12 +386,12 @@ function* PostsRequest({ payload }) {
 }
 
 function* PostVoteRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/post/${payload}/vote`,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(postVoteRequestSuccess(response.data.response));
@@ -404,13 +404,13 @@ function* PostVoteRequest({ payload }) {
 }
 
 function* CreateCommentRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
       method: 'POST',
       url: `${API_URL}/comment`,
       data: payload,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(commentCreateRequestSuccess(response.data.response));
