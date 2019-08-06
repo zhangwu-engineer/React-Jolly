@@ -68,6 +68,7 @@ class BusinessProfileForm extends Component<Props> {
     const businessData = {
       name: business.name,
       location: business.location,
+      category: business.category,
       otherLocations: '',
       aboutUs: business.aboutUs,
       website: business.website,
@@ -93,6 +94,13 @@ class BusinessProfileForm extends Component<Props> {
               value={values.name}
               onChange={handleChange}
               onBlur={handleBlur}
+            />
+            <EditableFormInput
+              label="Business Type"
+              id="category"
+              name="category"
+              value={values.category}
+              onChange={handleChange}
             />
             <EditableFormInput
               label="Headquaters City"
@@ -145,7 +153,6 @@ class BusinessProfileForm extends Component<Props> {
               onChange={handleChange}
               onBlur={handleBlur}
               limit={400}
-              assistiveText="i.e. Cash on site, Net 30, etc."
             />
             <EditableFormInput
               label="Website"
@@ -160,6 +167,7 @@ class BusinessProfileForm extends Component<Props> {
               value={values.freelancerPaymentTerms}
               onChange={handleChange}
               onBlur={handleBlur}
+              assistiveText="i.e. Cash on site, Net 30, etc."
               limit={100}
             />
             <Grid container justify="flex-end">

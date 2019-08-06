@@ -3,6 +3,7 @@
 import React, { PureComponent } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 
+import { history } from 'components/ConnectedRouter';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
@@ -263,8 +264,18 @@ class BusinessProfileInfo extends PureComponent<Props> {
             className={classes.editButtonContainer}
           >
             <Grid item className={classes.editButtonBox}>
-              <Button className={classes.editButton}>Edit</Button>
-              <Button className={classes.smallEditButton}>Edit</Button>
+              <Button
+                className={classes.editButton}
+                onClick={() => history.push('/b/settings')}
+              >
+                Edit
+              </Button>
+              <Button
+                className={classes.smallEditButton}
+                onClick={() => history.push('/b/settings')}
+              >
+                Edit
+              </Button>
             </Grid>
             <Grid item>
               <IconButton className={classes.shareButton}>
@@ -286,13 +297,11 @@ class BusinessProfileInfo extends PureComponent<Props> {
             <Typography className={classes.username}>
               {business && business.name}
             </Typography>
-            {user.getIn(['profile', 'location']) && (
-              <Typography className={classes.location}>
-                {business && business.category}
-                &nbsp;&sdot;&nbsp;
-                {user.getIn(['profile', 'location'])}
-              </Typography>
-            )}
+            <Typography className={classes.location}>
+              {business && business.category}
+              &nbsp;&sdot;&nbsp;
+              {business && business.location}
+            </Typography>
           </Grid>
         </Grid>
       </div>

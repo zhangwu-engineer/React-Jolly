@@ -27,15 +27,23 @@ import ClearIcon from '@material-ui/icons/Clear';
 import ROLES from 'enum/roles';
 
 const styles = theme => ({
-  root: {
-    marginBottom: 15,
+  headingSection: {
+    paddingTop: 20,
+    paddingLeft: 20,
+  },
+  cardItem: {
+    [theme.breakpoints.down('sm')]: {
+      paddingRight: 20,
+    },
   },
   readView: {
     position: 'relative',
   },
   editView: {
     position: 'relative',
-    marginBottom: 20,
+  },
+  editViewContent: {
+    padding: 20,
   },
   nameFieldWrapper: {
     position: 'relative',
@@ -90,11 +98,10 @@ const styles = theme => ({
     color: '#a0a0a0',
     marginBottom: 20,
     textTransform: 'capitalize',
-    [theme.breakpoints.down('xs')]: {
-      marginBottom: 10,
-    },
   },
   editModeButtons: {
+    display: 'flex',
+    justifyContent: 'flex-end',
     [theme.breakpoints.down('xs')]: {
       textAlign: 'right',
     },
@@ -143,6 +150,14 @@ const styles = theme => ({
     paddingLeft: 20,
     cursor: 'pointer',
   },
+  dividerItem: {
+    marginLeft: 20,
+    marginRight: 20,
+    maxWidth: '100%',
+    [theme.breakpoints.down('xs')]: {
+      margin: 0,
+    },
+  },
 });
 
 type Props = {
@@ -150,6 +165,7 @@ type Props = {
   units: Array<string>,
   editable: boolean,
   classes: Object,
+  businessId?: string,
   id: Number,
   activeEditId: Number,
   onCancel: Function,
@@ -157,9 +173,6 @@ type Props = {
   updateRole?: Function,
   deleteRole?: Function,
   onEdit: Function,
-  roles: Object,
-  id: Integer,
-  activeEditId: Integer,
 };
 
 type State = {
@@ -168,7 +181,7 @@ type State = {
   filteredRoles: Array<string>,
 };
 
-class RoleInput extends Component<Props, State> {
+class BusinessRoleInput extends Component<Props, State> {
   static defaultProps = {
     editable: true,
   };
@@ -192,9 +205,15 @@ class RoleInput extends Component<Props, State> {
     rangeMode: false,
     filteredRoles: [],
   };
+  // componentDidMount() {
+  //   document.addEventListener('mousedown', this.handleClick, false);
+  // }
+  // componentWillUnmount() {
+  //   document.addEventListener('mousedown', this.handleClick, false);
+  // }
   onConfirm = (e: Object) => {
     e.stopPropagation();
-    const { data, addRole, updateRole } = this.props;
+    const { data, addRole, updateRole, businessId } = this.props;
     const { model } = this.state;
     if (!this.isEmpty() && this.isUpdated()) {
       if (data.id) {
@@ -202,14 +221,14 @@ class RoleInput extends Component<Props, State> {
           if (model && model.rate) {
             model.rate = parseFloat(model.rate);
           }
-          updateRole(data.id, model, false);
+          updateRole(data.id, model, true);
         }
       } else if (addRole) {
         this.props.onCancel();
         if (model && model.rate) {
           model.rate = parseFloat(model.rate);
         }
-        addRole([model], null);
+        addRole([model], businessId);
       }
       document.getElementById('addButton').style.display = 'flex';
     } else if (data.id) {
@@ -258,14 +277,12 @@ class RoleInput extends Component<Props, State> {
     return false;
   };
   debouncedSearch = debounce((id, value) => {
-    const { roles } = this.props;
-    const usedRoles = roles.map(r => r.get('name'));
     switch (id) {
       case 'name': {
         if (value) {
           const filteredRoles = ROLES.filter(
-            r => !usedRoles.includes(r)
-          ).filter(r => r.toLowerCase().indexOf(value.toLowerCase()) !== -1);
+            r => r.toLowerCase().indexOf(value.toLowerCase()) !== -1
+          );
           this.setState({ filteredRoles });
         } else {
           this.setState({ filteredRoles: ROLES });
@@ -332,8 +349,9 @@ class RoleInput extends Component<Props, State> {
       >
         {id !== activeEditId && (
           <div className={classes.readView}>
-            <Grid container>
-              <Grid item xs={11} lg={11}>
+            <Divider className={classes.dividerItem} />
+            <Grid container alignItems="center" className={classes.cardItem}>
+              <Grid item xs={11} lg={11} className={classes.headingSection}>
                 <Typography variant="h6" className={classes.name}>
                   {data.name}
                 </Typography>
@@ -357,20 +375,15 @@ class RoleInput extends Component<Props, State> {
                 )}
               </Grid>
             </Grid>
-            <Divider />
           </div>
         )}
         {id === activeEditId && (
           <div className={classes.editView}>
-            <Grid container>
-              <Grid item xs={9} lg={10}>
+            <Divider className={classes.dividerItem} />
+            <Grid container className={classes.editViewContent}>
+              <Grid item xs={12} lg={12}>
                 <Grid container className={classes.bottomMargin}>
-                  <Grid
-                    item
-                    xs={12}
-                    lg={8}
-                    className={classes.nameFieldWrapper}
-                  >
+                  <Grid item xs={9} lg={9} className={classes.nameFieldWrapper}>
                     <TextField
                       autoComplete="off"
                       id="name"
@@ -418,45 +431,36 @@ class RoleInput extends Component<Props, State> {
                       </div>
                     ) : null}
                   </Grid>
-                  <Grid item xs={12} lg={4}>
-                    <FormControl fullWidth>
-                      <InputLabel htmlFor="years">Years Experience</InputLabel>
-                      <Select
-                        value={model && model.years}
-                        onChange={this.handleSelectChange}
-                        name="years"
-                        inputProps={{
-                          id: 'years',
-                        }}
-                        className={classes.selectInput}
+                  <Grid item xs={3} lg={3} className={classes.editModeButtons}>
+                    <IconButton
+                      className={cx(classes.iconButton, classes.doneButton)}
+                      onClick={this.onConfirm}
+                    >
+                      <DoneIcon />
+                    </IconButton>
+                    {data.id ? (
+                      <IconButton
+                        className={cx(classes.iconButton, classes.deleteButton)}
+                        onClick={this.onDelete}
                       >
-                        <MenuItem value={0}>{'< 1'}</MenuItem>
-                        <MenuItem value={1}>1</MenuItem>
-                        <MenuItem value={2}>2</MenuItem>
-                        <MenuItem value={3}>3</MenuItem>
-                        <MenuItem value={4}>4</MenuItem>
-                        <MenuItem value={5}>5</MenuItem>
-                        <MenuItem value={6}>6</MenuItem>
-                        <MenuItem value={7}>7</MenuItem>
-                        <MenuItem value={8}>8</MenuItem>
-                        <MenuItem value={9}>9</MenuItem>
-                        <MenuItem value={10}>10</MenuItem>
-                        <MenuItem value={11}>11</MenuItem>
-                        <MenuItem value={12}>12</MenuItem>
-                        <MenuItem value={13}>13</MenuItem>
-                        <MenuItem value={14}>14</MenuItem>
-                        <MenuItem value={15}>15</MenuItem>
-                        <MenuItem value={16}>16</MenuItem>
-                        <MenuItem value={17}>17</MenuItem>
-                        <MenuItem value={18}>18</MenuItem>
-                        <MenuItem value={19}>19</MenuItem>
-                        <MenuItem value={20}>20 +</MenuItem>
-                      </Select>
-                    </FormControl>
+                        <DeleteIcon />
+                      </IconButton>
+                    ) : (
+                      <IconButton
+                        className={cx(classes.iconButton, classes.deleteButton)}
+                        onClick={() => {
+                          document.getElementById('addButton').style.display =
+                            'flex';
+                          this.props.onCancel();
+                        }}
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    )}
                   </Grid>
                 </Grid>
                 <Grid container>
-                  <Grid item xs={3} lg={3} className={classes.rateFieldWrapper}>
+                  <Grid item xs={4} lg={4} className={classes.rateFieldWrapper}>
                     <FormControl className={classes.textInput}>
                       <InputLabel htmlFor="minRate">Rate</InputLabel>
                       <Input
@@ -484,12 +488,12 @@ class RoleInput extends Component<Props, State> {
                   {rangeMode && (
                     <Grid
                       item
-                      xs={3}
-                      lg={3}
+                      xs={4}
+                      lg={4}
                       className={classes.rateFieldWrapper}
                     >
                       <FormControl className={classes.textInput}>
-                        <InputLabel htmlFor="maxRate" />
+                        <InputLabel htmlFor="maxRate">To</InputLabel>
                         <Input
                           className={classes.textInput}
                           id="maxRate"
@@ -513,9 +517,9 @@ class RoleInput extends Component<Props, State> {
                       </FormControl>
                     </Grid>
                   )}
-                  <Grid item xs={6} lg={3} className={classes.unitFieldWrapper}>
+                  <Grid item xs={4} lg={4} className={classes.unitFieldWrapper}>
                     <FormControl fullWidth>
-                      <InputLabel htmlFor="unit">Unit</InputLabel>
+                      <InputLabel htmlFor="unit">Per</InputLabel>
                       <Select
                         value={model && model.unit}
                         onChange={this.handleSelectChange}
@@ -547,33 +551,6 @@ class RoleInput extends Component<Props, State> {
                   {rangeMode ? 'Remove Range' : 'Add Rate Range'}
                 </Button>
               </Grid>
-              <Grid item xs={3} lg={2} className={classes.editModeButtons}>
-                <IconButton
-                  className={cx(classes.iconButton, classes.doneButton)}
-                  onClick={this.onConfirm}
-                >
-                  <DoneIcon />
-                </IconButton>
-                {data.id ? (
-                  <IconButton
-                    className={cx(classes.iconButton, classes.deleteButton)}
-                    onClick={this.onDelete}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                ) : (
-                  <IconButton
-                    className={cx(classes.iconButton, classes.deleteButton)}
-                    onClick={() => {
-                      document.getElementById('addButton').style.display =
-                        'flex';
-                      this.props.onCancel();
-                    }}
-                  >
-                    <ClearIcon />
-                  </IconButton>
-                )}
-              </Grid>
             </Grid>
           </div>
         )}
@@ -582,4 +559,4 @@ class RoleInput extends Component<Props, State> {
   }
 }
 
-export default withStyles(styles)(RoleInput);
+export default withStyles(styles)(BusinessRoleInput);

@@ -27,7 +27,7 @@ import saga, {
   reducer,
   requestCreateRole,
   requestDeleteRole,
-  requestRoles,
+  requestBusinessRoles,
 } from 'containers/Role/sagas';
 import injectSagas from 'utils/injectSagas';
 
@@ -227,7 +227,7 @@ type Props = {
   classes: Object,
   requestCreateRole: Function,
   requestDeleteRole: Function,
-  requestRoles: Function,
+  requestBusinessRoles: Function,
 };
 
 type State = {
@@ -249,15 +249,19 @@ class OnboardingPositionPage extends Component<Props, State> {
     isSkipOpen: false,
   };
   componentDidMount() {
-    this.props.requestRoles();
+    const { user } = this.props;
+    const businesses =
+      user && user.get('businesses') && user.get('businesses').toJSON();
+    const bSlug = businesses && businesses[0].slug;
+    this.props.requestBusinessRoles(bSlug);
   }
   componentDidUpdate(prevProps: Props) {
     const { user, isSaving, saveError, isDeleting, deleteError } = this.props;
+    const isBusiness = user && user.get('isBusiness');
+    const businesses =
+      isBusiness && user.get('businesses') && user.get('businesses').toJSON();
+    const bSlug = businesses && businesses[0].slug;
     if (prevProps.isSaving && !isSaving && !saveError) {
-      const isBusiness = user && user.get('isBusiness');
-      const businesses =
-        isBusiness && user.get('businesses') && user.get('businesses').toJSON();
-      const bSlug = businesses && businesses[0].slug;
       let path;
       if (isBusiness && bSlug) {
         path = `/b/${bSlug}`;
@@ -267,7 +271,7 @@ class OnboardingPositionPage extends Component<Props, State> {
       history.push(path);
     }
     if (prevProps.isDeleting && !isDeleting && !deleteError) {
-      this.props.requestRoles();
+      this.props.requestBusinessRoles(bSlug);
     }
   }
   openSkipModal = () => {
@@ -335,6 +339,10 @@ class OnboardingPositionPage extends Component<Props, State> {
   };
   handleNext = () => {
     const { selectedPositions } = this.state;
+    const { user } = this.props;
+    const businesses =
+      user && user.get('businesses') && user.get('businesses').toJSON();
+    const businessId = businesses && businesses[0].id;
     if (selectedPositions.length) {
       const positions = selectedPositions.map(position => ({
         name: position,
@@ -343,7 +351,7 @@ class OnboardingPositionPage extends Component<Props, State> {
         maxRate: '',
         unit: 'hour',
       }));
-      this.props.requestCreateRole(positions);
+      this.props.requestCreateRole(positions, businessId);
     } else {
       this.setState({ isSkipOpen: true });
     }
@@ -551,8 +559,9 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  requestRoles: () => dispatch(requestRoles()),
-  requestCreateRole: payload => dispatch(requestCreateRole(payload)),
+  requestBusinessRoles: slug => dispatch(requestBusinessRoles(slug)),
+  requestCreateRole: (payload, businessId) =>
+    dispatch(requestCreateRole(payload, businessId)),
   requestDeleteRole: payload => dispatch(requestDeleteRole(payload)),
 });
 

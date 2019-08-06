@@ -48,6 +48,8 @@ const styles = theme => ({
   content: {
     position: 'relative',
     padding: 30,
+    maxHeight: '100vh',
+    overflow: 'scroll',
     [theme.breakpoints.down('xs')]: {
       padding: '30px 20px 20px',
     },
@@ -216,14 +218,21 @@ class FeedFilterModal extends Component<Props, State> {
                   />
                 }
                 label={
-                  <label>
-                    <Typography style={{display: 'inline-block'}}>
+                  <div>
+                    <Typography style={{ display: 'inline-block' }}>
                       Within 50 mi. of
-                    </Typography>&nbsp;
-                    <Typography style={{display: 'inline-block', fontWeight: 600}}>
-                      {user.getIn(['profile', 'location']).split(',').slice(0, 2).join()}
                     </Typography>
-                  </label>
+                    &nbsp;
+                    <Typography
+                      style={{ display: 'inline-block', fontWeight: 600 }}
+                    >
+                      {user
+                        .getIn(['profile', 'location'])
+                        .split(',')
+                        .slice(0, 2)
+                        .join()}
+                    </Typography>
+                  </div>
                 }
                 classes={{
                   label: classes.optionLabel,

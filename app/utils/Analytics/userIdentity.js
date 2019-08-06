@@ -18,6 +18,17 @@ class UserIdentity {
       created_at: user.get('date_created'),
       isHirer: user.getIn(['profile', 'isHirer']),
     };
+    if (user.get('isBusiness')) {
+      const businesses =
+        user.get('businesses') && user.get('businesses').toJSON();
+      const [activeBusiness] = [businesses[0]];
+      if (activeBusiness) {
+        const { name, category, location } = activeBusiness;
+        params.Business_name_1 = name;
+        params.Business_type_1 = category;
+        params.Business_headquarters_1 = location;
+      }
+    }
     if (window.localStorage.getItem('testUser') === 'true') params.test = true;
     analytics.identify(user.get('id'), params);
   }

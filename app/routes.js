@@ -28,6 +28,9 @@ const BusinessSettings = load(() => import('pages/BusinessSettings'));
 const BusinessSettingsProfile = load(() =>
   import('pages/BusinessSettings/BusinessSettingsProfile')
 );
+const BusinessSettingsPositions = load(() =>
+  import('pages/BusinessSettings/BusinessSettingsPositions')
+);
 const Mobile = load(() => import('pages/Mobile'));
 const Roles = load(() => import('pages/Roles'));
 const ObPage1 = load(() => import('pages/Ob/Page1'));
@@ -112,6 +115,11 @@ class Routes extends Component<{}> {
           exact
           path="/b/settings/profile"
           render={props => <BusinessSettingsProfile {...props} />}
+        />
+        <PrivateRoute
+          exact
+          path="/b/settings/positions"
+          render={props => <BusinessSettingsPositions {...props} />}
         />
         <Route path="/b/:slug" render={props => <Business {...props} />} />
         <Route path="/f/:slug" render={props => <User {...props} />} />

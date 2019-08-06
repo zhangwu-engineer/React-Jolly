@@ -30,6 +30,7 @@ import NetworkNav from 'components/NetworkNav';
 import CustomSelect from 'components/CustomSelect';
 
 import ROLES from 'enum/roles';
+import BLOCK_IDS from 'enum/BlockIds';
 import ConnectionTabs from 'enum/ConnectionTabs';
 
 import { requestCityBusinesses } from 'containers/App/sagas';
@@ -537,6 +538,20 @@ class NetworkBusinessesPage extends Component<Props, State> {
       () => this.debouncedSearch()
     );
   };
+  blockTestBusinesses(cityBusinesses) {
+    return cityBusinesses
+      ? cityBusinesses.filter(
+          business =>
+            !BLOCK_IDS.includes(business.get('user')) &&
+            (business.getIn(['userData', 'email'])
+              ? !business.getIn(['userData', 'email']).includes('@srvbl.com')
+              : true) &&
+            (business.getIn(['userData', 'email'])
+              ? !business.getIn(['userData', 'email']).includes('@jollyhq.com')
+              : true)
+        )
+      : cityBusinesses;
+  }
   render() {
     const {
       connections,
@@ -563,6 +578,7 @@ class NetworkBusinessesPage extends Component<Props, State> {
       connections &&
       connections.filter(connection => connection.get('status') === 'PENDING');
     const loadMore = total > page * perPage;
+    const filteredBusinesses = this.blockTestBusinesses(cityBusinesses);
     return (
       <React.Fragment>
         <NetworkNav />
@@ -759,26 +775,24 @@ class NetworkBusinessesPage extends Component<Props, State> {
                   <Preloader />
                 </Grid>
               )}
-            {!isUnderConstruction && (
-              <Grid container spacing={8}>
-                {cityBusinesses &&
-                  cityBusinesses.map(cityBusiness => (
-                    <Grid item key={generate()} xs={12} lg={6}>
-                      <BusinessCard
-                        business={cityBusiness}
-                        onSelect={this.openFormModal}
-                        selected={invitedBusinessIds.includes(
-                          cityBusiness.get('id')
-                        )}
-                      />
-                    </Grid>
-                  ))}
-              </Grid>
-            )}
             <Grid container spacing={8}>
               {!isUnderConstruction &&
-                cityBusinesses &&
-                cityBusinesses.size === 0 && (
+                filteredBusinesses &&
+                filteredBusinesses.size > 0 &&
+                filteredBusinesses.map(cityBusiness => (
+                  <Grid item key={generate()} xs={12} lg={6}>
+                    <BusinessCard
+                      business={cityBusiness}
+                      onSelect={this.openFormModal}
+                      selected={invitedBusinessIds.includes(
+                        cityBusiness.get('id')
+                      )}
+                    />
+                  </Grid>
+                ))}
+              {!isUnderConstruction &&
+                filteredBusinesses &&
+                filteredBusinesses.size === 0 && (
                   <Grid container spacing={8}>
                     <Grid item xs={12} lg={12}>
                       <div className={classes.emptyPanel}>
@@ -792,20 +806,6 @@ class NetworkBusinessesPage extends Component<Props, State> {
                     </Grid>
                   </Grid>
                 )}
-              {!isUnderConstruction &&
-                cityBusinesses &&
-                cityBusinesses.size > 0 &&
-                cityBusinesses.map(cityBusiness => (
-                  <Grid item key={generate()} xs={12} lg={6}>
-                    <BusinessCard
-                      business={cityBusiness}
-                      onSelect={this.openFormModal}
-                      selected={invitedBusinessIds.includes(
-                        cityBusiness.get('id')
-                      )}
-                    />
-                  </Grid>
-                ))}
             </Grid>
             {!isUnderConstruction &&
               loadMore && (

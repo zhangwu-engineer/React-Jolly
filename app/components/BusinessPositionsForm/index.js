@@ -11,12 +11,12 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import AddIcon from '@material-ui/icons/Add';
 
-import RoleInput from 'components/RoleInput';
+import BusinessRoleInput from 'components/BusinessRoleInput';
 import BaseModal from 'components/BaseModal';
 
 import saga, {
   reducer,
-  requestRoles,
+  requestBusinessRoles,
   requestUpdateRole,
   requestCreateRole,
   requestDeleteRole,
@@ -25,17 +25,12 @@ import injectSagas from 'utils/injectSagas';
 
 const styles = theme => ({
   root: {
-    maxWidth: '712px',
-    margin: '50px auto 300px auto',
-    [theme.breakpoints.down('xs')]: {
-      margin: 0,
-      padding: 10,
-    },
+    paddingBottom: 35,
   },
   title: {
-    fontSize: 24,
-    textAlign: 'center',
-    marginBottom: 30,
+    fontSize: 18,
+    fontWeight: 600,
+    color: '#404040',
   },
   menuItem: {
     color: '#5a5d64',
@@ -79,7 +74,6 @@ const styles = theme => ({
     marginBottom: 20,
   },
   section: {
-    boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
     marginBottom: 20,
     [theme.breakpoints.down('xs')]: {
       boxShadow: 'none',
@@ -87,16 +81,11 @@ const styles = theme => ({
     },
   },
   sectionHeader: {
-    paddingLeft: 30,
-    paddingTop: 20,
-    paddingBottom: 20,
-    paddingRight: 30,
-    backgroundColor: '#edeeee',
-    [theme.breakpoints.down('sm')]: {
-      padding: '10px 15px',
-    },
+    padding: 20,
   },
   sectionTitle: {
+    fontSize: 24,
+    fontWeight: 600,
     [theme.breakpoints.down('xs')]: {
       fontSize: 18,
     },
@@ -107,12 +96,6 @@ const styles = theme => ({
   },
   sectionBody: {
     backgroundColor: theme.palette.common.white,
-    padding: 30,
-    [theme.breakpoints.down('xs')]: {
-      boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.08)',
-      borderRadius: 3,
-      padding: '10px 15px',
-    },
   },
   addButtonContainer: {
     [theme.breakpoints.down('xs')]: {
@@ -121,12 +104,9 @@ const styles = theme => ({
   },
   addButton: {
     color: theme.palette.primary.main,
-    border: '1px solid #e5e5e5',
-    backgroundColor: theme.palette.common.white,
-    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.08)',
-    borderRadius: 3,
-    width: 339,
-    fontSize: 15,
+    fontSize: 14,
+    fontWeight: 600,
+    textTransform: 'none',
     '&:hover': {
       backgroundColor: theme.palette.common.white,
     },
@@ -140,10 +120,8 @@ const styles = theme => ({
   },
 });
 
-const rolesHelp =
-  'Enter the different types of work you do at events and, optionally, the rate you charge for those services.';
-
 type Props = {
+  business: Object,
   roles: Object,
   isSaving: boolean,
   saveError: string,
@@ -152,7 +130,7 @@ type Props = {
   isDeleting: boolean,
   deleteError: string,
   classes: Object,
-  requestRoles: Function,
+  requestBusinessRoles: Function,
   updateRole: Function,
   addRole: Function,
   deleteRole: Function,
@@ -165,7 +143,7 @@ type State = {
   activeEditId: any,
 };
 
-class RolesPage extends Component<Props, State> {
+class BusinessPositionsForm extends Component<Props, State> {
   state = {
     newRole: null,
     isOpen: false,
@@ -173,7 +151,9 @@ class RolesPage extends Component<Props, State> {
     activeEditId: null,
   };
   componentDidMount() {
-    this.props.requestRoles();
+    const { business } = this.props;
+    const slug = business && business.slug;
+    this.props.requestBusinessRoles(slug);
   }
   componentDidUpdate(prevProps: Props) {
     const {
@@ -183,15 +163,17 @@ class RolesPage extends Component<Props, State> {
       createError,
       isDeleting,
       deleteError,
+      business,
     } = this.props;
+    const slug = business && business.slug;
     if (prevProps.isSaving && !isSaving && !saveError) {
-      this.props.requestRoles();
+      this.props.requestBusinessRoles(slug);
     }
     if (prevProps.isDeleting && !isDeleting && !deleteError) {
-      this.props.requestRoles();
+      this.props.requestBusinessRoles(slug);
     }
     if (prevProps.isCreating && !isCreating && !createError) {
-      this.props.requestRoles();
+      this.props.requestBusinessRoles(slug);
     }
   }
   onEdit = activeEditId => {
@@ -216,39 +198,38 @@ class RolesPage extends Component<Props, State> {
     document.getElementById('addButton').style.display = 'none';
   };
   render() {
-    const { roles, classes } = this.props;
+    const { roles, classes, business } = this.props;
     const { newRole, isOpen, helpText, activeEditId } = this.state;
+    const businessId = business && business.id;
     return (
       <div className={classes.root}>
         <div className={classes.section}>
           <div className={classes.sectionHeader}>
             <Grid container justify="space-between" alignItems="center">
               <Grid item>
-                <Typography variant="h6" className={classes.sectionTitle}>
-                  Positions &amp; Rates
+                <Typography variant="h1" className={classes.title}>
+                  Positions
                 </Typography>
               </Grid>
               <Grid item>
-                <Button
-                  className={classes.helpButton}
-                  variant="text"
-                  color="primary"
-                  onClick={() =>
-                    this.setState({
-                      isOpen: true,
-                      helpText: rolesHelp,
-                    })
-                  }
-                >
-                  Help?
-                </Button>
+                <Grid container justify="center" id="addButton">
+                  <Grid item className={classes.addButtonContainer}>
+                    <Button
+                      className={classes.addButton}
+                      onClick={this.addNewRole}
+                    >
+                      <AddIcon />
+                      &nbsp;Add new position
+                    </Button>
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
           </div>
           <div className={classes.sectionBody}>
             {roles &&
               roles.map((role, index) => (
-                <RoleInput
+                <BusinessRoleInput
                   key={generate()}
                   id={index}
                   activeEditId={activeEditId}
@@ -258,26 +239,17 @@ class RolesPage extends Component<Props, State> {
                   onCancel={this.onCancelEdit}
                   updateRole={this.props.updateRole}
                   deleteRole={this.props.deleteRole}
-                  roles={roles}
                 />
               ))}
             {newRole && (
-              <RoleInput
+              <BusinessRoleInput
                 data={newRole}
                 units={[]}
                 onCancel={this.onCancelEdit}
+                businessId={businessId}
                 addRole={this.props.addRole}
-                roles={roles}
               />
             )}
-            <Grid container justify="center" id="addButton">
-              <Grid item className={classes.addButtonContainer}>
-                <Button className={classes.addButton} onClick={this.addNewRole}>
-                  <AddIcon />
-                  &nbsp;Add New
-                </Button>
-              </Grid>
-            </Grid>
           </div>
         </div>
         <BaseModal
@@ -306,10 +278,11 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  requestRoles: () => dispatch(requestRoles()),
+  requestBusinessRoles: slug => dispatch(requestBusinessRoles(slug)),
   updateRole: (id, payload, isBusinessRole) =>
     dispatch(requestUpdateRole(id, payload, isBusinessRole)),
-  addRole: payload => dispatch(requestCreateRole(payload)),
+  addRole: (payload, businessId) =>
+    dispatch(requestCreateRole(payload, businessId)),
   deleteRole: payload => dispatch(requestDeleteRole(payload)),
 });
 
@@ -320,4 +293,4 @@ export default compose(
     mapDispatchToProps
   ),
   withStyles(styles)
-)(RolesPage);
+)(BusinessPositionsForm);

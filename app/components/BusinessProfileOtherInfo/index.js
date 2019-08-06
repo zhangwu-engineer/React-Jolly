@@ -2,6 +2,7 @@
 
 import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import { lowerCase } from 'lodash-es';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
@@ -81,6 +82,22 @@ type Props = {
   classes: Object,
 };
 
+function isVowel(x) {
+  return /[aeiouAEIOU]/.test(x);
+}
+
+function generateAboutUs(business) {
+  const name = business.get('name');
+  const category = business.get('category');
+  const location = business.get('location')
+    ? ` based in ${business.get('location')}`
+    : ``;
+  const theArticle = isVowel(category ? category.substring(0, 1) : '')
+    ? 'an'
+    : 'a';
+  return `${name} is ${theArticle} ${lowerCase(category)} business${location}.`;
+}
+
 class BusinessProfileOtherInfo extends Component<Props> {
   static defaultProps = {
     isPrivate: true,
@@ -97,88 +114,102 @@ class BusinessProfileOtherInfo extends Component<Props> {
   };
   render() {
     const { business, isPrivate, classes } = this.props;
+    const aboutUs = business.get('aboutUs')
+      ? business.get('aboutUs')
+      : generateAboutUs(business);
+    const freelancerPaymentTerms = business.get('freelancerPaymentTerms')
+      ? business.get('freelancerPaymentTerms')
+      : 'Payment terms not disclosed';
     return (
       <div className={classes.root}>
-        {business.get('aboutUs') && (
-          <div className={classes.position}>
-            <Grid
-              container
-              alignItems="center"
-              className={classes.positionHeader}
-            >
-              <Grid item>
-                <Typography className={classes.title}>About Us</Typography>
-              </Grid>
-              {isPrivate && (
-                <Grid item>
-                  <IconButton
-                    classes={{ root: classes.editButton }}
-                    onClick={this.gotoSettingsProfile}
-                  >
-                    <PenIcon fontSize="small" className={classes.icon} />
-                  </IconButton>
-                </Grid>
-              )}
-            </Grid>
-            <Grid className={classes.contentWrapper}>
-              {business.get('aboutUs')}
-            </Grid>
-          </div>
-        )}
-        {business.get('website') && (
+        <div className={classes.position}>
           <Grid
             container
             alignItems="center"
-            className={classes.websiteWrapper}
+            className={classes.positionHeader}
           >
             <Grid item>
-              <IconButton
-                classes={{ root: classes.openButton }}
-                onClick={this.openWebsite}
-              >
-                <OpenIcon fontSize="small" />
-              </IconButton>
+              <Typography className={classes.title}>About Us</Typography>
             </Grid>
-            <Grid item>
-              <Fragment>
+            {isPrivate && (
+              <Grid item>
+                <IconButton
+                  classes={{ root: classes.editButton }}
+                  onClick={this.gotoSettingsProfile}
+                >
+                  <PenIcon fontSize="small" className={classes.icon} />
+                </IconButton>
+              </Grid>
+            )}
+          </Grid>
+          <Grid className={classes.contentWrapper}>{aboutUs}</Grid>
+        </div>
+        <Grid container alignItems="center" className={classes.websiteWrapper}>
+          <Grid item>
+            <IconButton
+              classes={{ root: classes.openButton }}
+              onClick={this.openWebsite}
+            >
+              <OpenIcon fontSize="small" />
+            </IconButton>
+          </Grid>
+          <Grid item>
+            <Fragment>
+              {business.get('website') && (
                 <Typography
                   onClick={this.openWebsite}
                   className={classes.websiteTitleWrapper}
                 >
                   Website
                 </Typography>
-              </Fragment>
-            </Grid>
-          </Grid>
-        )}
-        {business.get('freelancerPaymentTerms') && (
-          <div className={classes.position2}>
-            <Grid
-              container
-              alignItems="center"
-              className={classes.positionHeader}
-            >
-              <Grid item>
-                <Typography className={classes.title}>
-                  Freelancer Payment Terms
-                </Typography>
-              </Grid>
-              {isPrivate && (
-                <Grid item>
-                  <IconButton
-                    classes={{ root: classes.editButton }}
-                    onClick={this.gotoSettingsProfile}
-                  >
-                    <PenIcon fontSize="small" />
-                  </IconButton>
-                </Grid>
               )}
+              {!business.get('website') && (
+                <Typography
+                  onClick={this.gotoSettingsProfile}
+                  className={classes.websiteTitleWrapper}
+                >
+                  Add website
+                </Typography>
+              )}
+            </Fragment>
+          </Grid>
+          {isPrivate && (
+            <Grid item>
+              <IconButton
+                classes={{ root: classes.editButton }}
+                onClick={this.gotoSettingsProfile}
+              >
+                <PenIcon fontSize="small" />
+              </IconButton>
             </Grid>
-            <Grid className={classes.contentWrapper}>
-              {business.get('freelancerPaymentTerms')}
+          )}
+        </Grid>
+        <div className={classes.position2}>
+          <Grid
+            container
+            alignItems="center"
+            className={classes.positionHeader}
+          >
+            <Grid item>
+              <Typography className={classes.title}>
+                Freelancer Payment Terms
+              </Typography>
             </Grid>
-          </div>
-        )}
+            {isPrivate && (
+              <Grid item>
+                <IconButton
+                  classes={{ root: classes.editButton }}
+                  onClick={this.gotoSettingsProfile}
+                >
+                  <PenIcon fontSize="small" />
+                </IconButton>
+              </Grid>
+            )}
+          </Grid>
+          <Grid className={classes.contentWrapper}>
+            {freelancerPaymentTerms}
+          </Grid>
+        </div>
       </div>
     );
   }

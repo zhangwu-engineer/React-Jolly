@@ -28,6 +28,7 @@ import CustomSelect from 'components/CustomSelect';
 import EditableInput from 'components/EditableInput';
 
 import ROLES from 'enum/roles';
+import BLOCK_IDS from 'enum/BlockIds';
 import ConnectionTabs from 'enum/ConnectionTabs';
 
 import saga, {
@@ -498,7 +499,20 @@ class ConnectedBusinessesPage extends Component<Props, State> {
       () => this.debouncedSearch()
     );
   };
-
+  blockTestBusinesses(cityBusinesses) {
+    return cityBusinesses
+      ? cityBusinesses.filter(
+          business =>
+            !BLOCK_IDS.includes(business.get('user')) &&
+            (business.getIn(['userData', 'email'])
+              ? !business.getIn(['userData', 'email']).includes('@srvbl.com')
+              : true) &&
+            (business.getIn(['userData', 'email'])
+              ? !business.getIn(['userData', 'email']).includes('@jollyhq.com')
+              : true)
+        )
+      : cityBusinesses;
+  }
   render() {
     const { connections, connectedConnections, classes } = this.props;
     const {
@@ -514,6 +528,7 @@ class ConnectedBusinessesPage extends Component<Props, State> {
     const pendingConnections =
       connections &&
       connections.filter(connection => connection.get('status') === 'PENDING');
+    const filteredBusinesses = this.blockTestBusinesses(connectedConnections);
     return (
       <React.Fragment>
         <NetworkNav />
@@ -701,7 +716,8 @@ class ConnectedBusinessesPage extends Component<Props, State> {
               selectedTab === 1 && (
                 <Grid container spacing={8}>
                   {connectedConnections &&
-                    connectedConnections.map(connection => (
+                    filteredBusinesses.size > 0 &&
+                    filteredBusinesses.map(connection => (
                       <Grid item key={generate()} xs={12} lg={6}>
                         <BusinessConnectedCard business={connection} />
                       </Grid>
@@ -709,8 +725,8 @@ class ConnectedBusinessesPage extends Component<Props, State> {
                 </Grid>
               )}
             {!isUnderConstruction &&
-              connectedConnections &&
-              connectedConnections.size === 0 && (
+              filteredBusinesses &&
+              filteredBusinesses.size === 0 && (
                 <Grid container spacing={8}>
                   <Grid item xs={12} lg={12}>
                     <div className={classes.emptyPanel}>

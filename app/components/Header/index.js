@@ -645,6 +645,7 @@ class Header extends Component<Props, State> {
     let isPrivateBusinessPage = false;
     let isBusinessNetworkPage = false;
     let isBusinessPendingsPage = false;
+
     let currentBusiness = null;
     let isFreelancer = user && true;
     if (matchBusiness) {
@@ -681,11 +682,17 @@ class Header extends Component<Props, State> {
       isWorkDetailPage ||
       pathname.includes('/edit') ||
       (pathname.includes('/network') && !isBusinessNetworkPage) ||
-      pathname.includes('/feed') ||
-      pathname.includes('/settings');
+      pathname.includes('/feed');
     const hideTopRightButtons =
       pathname.includes('/types-of-work') ||
       (pathname.includes('/e/') && pathname.includes('work'));
+
+    const isHeaderHidden = pathname.includes('-signup');
+
+    if (isHeaderHidden) {
+      return <div />;
+    }
+
     return (
       <Grid
         className={classes.root}
@@ -715,7 +722,7 @@ class Header extends Component<Props, State> {
         <Link
           className={classes.logoContainer}
           onClick={() => {
-            if (!pathname.includes('/ob')) {
+            if (!pathname.includes('/ob') && !pathname.includes('/b/')) {
               history.push('/');
             }
           }}
@@ -731,6 +738,8 @@ class Header extends Component<Props, State> {
                 pathname.includes('/forgot-password') ||
                 pathname.includes('/reset-password') ||
                 pathname.includes('/privacy-policy') ||
+                pathname.includes('/b/settings') ||
+                pathname.includes('/settings') ||
                 hideTopRightButtons,
             })}
             onClick={() => {
@@ -742,11 +751,10 @@ class Header extends Component<Props, State> {
                 history.replace('/email-sign-in');
               } else if (pathname.includes('/privacy-policy')) {
                 history.replace('/');
-              } else if (
-                pathname.includes('/settings/general') ||
-                pathname.includes('/settings/profile')
-              ) {
-                history.push('/settings');
+              } else if (pathname.includes('/b/settings')) {
+                history.goBack();
+              } else if (pathname.includes('/settings')) {
+                history.goBack();
               } else if (pathname.includes('/e/') && work) {
                 if (user && user.get('slug') === work.getIn(['user', 'slug'])) {
                   history.push('/edit');

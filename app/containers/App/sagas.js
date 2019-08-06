@@ -635,6 +635,17 @@ export const reducer = (
         full_name: `${payload.user.firstName} ${payload.user.lastName}`,
         email: payload.user.email,
       });
+      if (payload.user.businesses) {
+        const { businesses } = payload.user;
+        const [newBusiness] = businesses;
+        analytics.track('Business Signed Up', {
+          user_id: payload.user.id,
+          business_id: newBusiness.id,
+          full_name: `${payload.user.firstName} ${payload.user.lastName}`,
+          email: payload.user.email,
+          signup_method: 'email',
+        });
+      }
       analytics.track('Signed Up', {
         user_id: payload.user.id,
         full_name: `${payload.user.firstName} ${payload.user.lastName}`,
@@ -1638,14 +1649,14 @@ function* BusinessProfileRequest({ payload, meta }) {
 }
 
 function* UpdateBusinessDataRequest({ payload }) {
-  const token = yield select(getToken);
+  const header = yield select(getUserHeaders);
   const businessId = payload.id;
   try {
     const response = yield call(request, {
       method: 'PUT',
       url: `${API_URL}/business/${businessId}`,
       data: payload,
-      headers: { 'x-access-token': token },
+      headers: header,
     });
     if (response.status === 200) {
       yield put(businessDataUpdateSuccess(response.data.response));
