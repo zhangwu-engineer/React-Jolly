@@ -15,7 +15,7 @@ import { CONNECTION_REQUEST_MSG } from 'enum/connection';
 
 import saga, {
   reducer,
-  requestRemoveConnection,
+  requestIgnoreConnection,
   requestAcceptConnection,
   requestBusinessConnections,
 } from 'containers/Network/sagas';
@@ -249,7 +249,7 @@ type Props = {
   isAccepting: boolean,
   acceptError: string,
   classes: Object,
-  requestRemoveConnection: Function,
+  requestIgnoreConnection: Function,
   requestAcceptConnection: Function,
   requestBusinessConnections: Function,
 };
@@ -349,7 +349,7 @@ class PendingConnections extends Component<Props, State> {
                         {connection.get('connectionType') === 'f2b' && (
                           <ConnectionCard
                             connection={connection}
-                            ignore={this.props.requestRemoveConnection}
+                            ignore={this.props.requestIgnoreConnection}
                             accept={this.props.requestAcceptConnection}
                           />
                         )}
@@ -375,8 +375,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  requestRemoveConnection: connectionId =>
-    dispatch(requestRemoveConnection(connectionId)),
+  requestIgnoreConnection: connectionId =>
+    dispatch(requestIgnoreConnection(connectionId)),
   requestAcceptConnection: connectionId =>
     dispatch(requestAcceptConnection(connectionId)),
   requestBusinessConnections: businessId =>

@@ -36,7 +36,7 @@ import { requestCityUsers } from 'containers/App/sagas';
 import saga, {
   reducer,
   requestCreateConnection,
-  requestRemoveConnection,
+  requestIgnoreConnection,
   requestAcceptConnection,
   requestConnections,
 } from 'containers/Network/sagas';
@@ -268,7 +268,7 @@ type Props = {
   classes: Object,
   requestCityUsers: Function,
   requestCreateConnection: Function,
-  requestRemoveConnection: Function,
+  requestIgnoreConnection: Function,
   requestAcceptConnection: Function,
   requestConnections: Function,
   currentUser: Object,
@@ -567,14 +567,14 @@ class NetworkPage extends Component<Props, State> {
                         {connection.get('connectionType') === 'f2f' && (
                           <ConnectionCard
                             connection={connection}
-                            ignore={this.props.requestRemoveConnection}
+                            ignore={this.props.requestIgnoreConnection}
                             accept={this.props.requestAcceptConnection}
                           />
                         )}
                         {connection.get('connectionType') === 'b2f' && (
                           <ConnectionFromBusinessCard
                             connection={connection}
-                            ignore={this.props.requestRemoveConnection}
+                            ignore={this.props.requestIgnoreConnection}
                             accept={this.props.requestAcceptConnection}
                           />
                         )}
@@ -727,8 +727,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   requestCreateConnection: payload =>
     dispatch(requestCreateConnection(payload)),
-  requestRemoveConnection: connectionId =>
-    dispatch(requestRemoveConnection(connectionId)),
+  requestIgnoreConnection: connectionId =>
+    dispatch(requestIgnoreConnection(connectionId)),
   requestAcceptConnection: connectionId =>
     dispatch(requestAcceptConnection(connectionId)),
   requestConnections: () => dispatch(requestConnections()),

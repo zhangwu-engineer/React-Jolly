@@ -35,7 +35,7 @@ import saga, {
   requestCreateConnection,
   requestConnectedConnections,
   requestConnections,
-  requestRemoveConnection,
+  requestIgnoreConnection,
   requestAcceptConnection,
 } from 'containers/Network/sagas';
 import injectSagas from 'utils/injectSagas';
@@ -277,7 +277,7 @@ type Props = {
   requestConnectedConnections: Function,
   requestCreateConnection: Function,
   requestConnections: Function,
-  requestRemoveConnection: Function,
+  requestIgnoreConnection: Function,
   requestAcceptConnection: Function,
 };
 
@@ -547,14 +547,14 @@ class ConnectedBusinessesPage extends Component<Props, State> {
                         {connection.get('connectionType') === 'f2f' && (
                           <ConnectionCard
                             connection={connection}
-                            ignore={this.props.requestRemoveConnection}
+                            ignore={this.props.requestIgnoreConnection}
                             accept={this.props.requestAcceptConnection}
                           />
                         )}
                         {connection.get('connectionType') === 'b2f' && (
                           <ConnectionFromBusinessCard
                             connection={connection}
-                            ignore={this.props.requestRemoveConnection}
+                            ignore={this.props.requestIgnoreConnection}
                             accept={this.props.requestAcceptConnection}
                           />
                         )}
@@ -737,8 +737,8 @@ const mapDispatchToProps = dispatch => ({
       requestConnectedConnections(city, query, role, connection, connectionType)
     ),
   requestConnections: () => dispatch(requestConnections()),
-  requestRemoveConnection: connectionId =>
-    dispatch(requestRemoveConnection(connectionId)),
+  requestIgnoreConnection: connectionId =>
+    dispatch(requestIgnoreConnection(connectionId)),
   requestAcceptConnection: connectionId =>
     dispatch(requestAcceptConnection(connectionId)),
 });
