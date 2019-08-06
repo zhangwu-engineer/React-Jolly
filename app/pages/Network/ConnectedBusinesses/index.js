@@ -237,10 +237,33 @@ const styles = theme => ({
       height: 300,
     },
   },
+  emptyPanel: {
+    backgroundColor: theme.palette.common.white,
+    height: 356,
+    display: 'flex',
+    alignItems: 'center',
+    marginTop: 5,
+    justifyContent: 'center',
+    [theme.breakpoints.down('xs')]: {
+      height: 300,
+    },
+  },
   underConstruction: {
     textAlign: 'center',
   },
   setUpInterviewButton: {
+    fontSize: 14,
+    fontWeight: 600,
+    textTransform: 'none',
+    padding: '11px 35px',
+    marginTop: 40,
+    borderRadius: 0,
+    boxShadow: 'none',
+  },
+  emptyContainer: {
+    textAlign: 'center',
+  },
+  panelButton: {
     fontSize: 14,
     fontWeight: 600,
     textTransform: 'none',
@@ -337,7 +360,7 @@ class ConnectedBusinessesPage extends Component<Props, State> {
       connection: '',
     },
     connectionType: 'b2f',
-    isUnderConstruction: true,
+    isUnderConstruction: false,
   };
   componentDidMount() {
     const { query, filter, connectionType } = this.state;
@@ -690,15 +713,12 @@ class ConnectedBusinessesPage extends Component<Props, State> {
               connectedConnections.size === 0 && (
                 <Grid container spacing={8}>
                   <Grid item xs={12} lg={12}>
-                    <div className={classes.emptyCoworkersPanel}>
-                      <div className={classes.emptyCoworkers}>
-                        <Typography className={classes.descText}>
-                          Build your network to <br />
-                          find your next gig &amp; stay in the know!
+                    <div className={classes.emptyPanel}>
+                      <div className={classes.emptyContainer}>
+                        <Typography>
+                          No businesses match your selection. <br />
+                          Please modify the filters or your search.
                         </Typography>
-                        <Link to="/network" className={classes.coworkersTitle}>
-                          Find Connections
-                        </Link>
                       </div>
                     </div>
                   </Grid>

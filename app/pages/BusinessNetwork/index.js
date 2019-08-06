@@ -329,6 +329,19 @@ class BusinessNetworkPage extends Component<Props, State> {
         isInviting: false,
       };
     }
+    const { user } = nextProps;
+    const { filter } = prevState;
+    const businesses =
+      user && user.get('businesses') && user.get('businesses').toJSON();
+    const currentBusiness = businesses && businesses[0];
+    if (filter.location === null) {
+      return {
+        filter: {
+          ...filter,
+          location: currentBusiness.location,
+        },
+      };
+    }
     return null;
   }
   state = {
@@ -340,7 +353,7 @@ class BusinessNetworkPage extends Component<Props, State> {
     selectedTab: 0,
     query: '',
     filter: {
-      location: '',
+      location: null,
       selectedRole: '',
       activeStatus: '',
     },

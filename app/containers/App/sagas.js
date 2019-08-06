@@ -47,6 +47,7 @@ const ADMIN_LOGOUT = 'Jolly/App/ADMIN_LOGOUT';
 const BUSINESS_PROFILE = 'Jolly/Business/BUSINESS_PROFILE';
 const SET_META_JSON = 'Jolly/App/SET_META_JSON';
 const SET_BUSINESS_ACTIVE_STATUS = 'Jolly/App/SET_BUSINESS_ACTIVE_STATUS';
+const BUSINESS_DATA_UPDATE = 'Jolly/App/UPDATE_BUSINESS_DATA';
 
 declare var analytics;
 // ------------------------------------
@@ -530,6 +531,25 @@ export const setBusinessActiveStatus = (isActive: Boolean) => ({
   payload: isActive,
 });
 
+export const requestBusinessDataUpdate = (payload: Object) => ({
+  type: BUSINESS_DATA_UPDATE + REQUESTED,
+  payload,
+});
+
+const businessDataUpdateSuccess = (payload: Object) => ({
+  type: BUSINESS_DATA_UPDATE + SUCCEDED,
+  payload,
+});
+
+const businessDataUpdateFailed = error => ({
+  type: BUSINESS_DATA_UPDATE + FAILED,
+  payload: error,
+});
+const businessDataUpdateError = error => ({
+  type: BUSINESS_DATA_UPDATE + ERROR,
+  payload: error,
+});
+
 // ------------------------------------
 // Reducer
 // ------------------------------------
@@ -597,6 +617,8 @@ const initialState = fromJS({
   businessError: '',
   businessData: fromJS({}),
   isBusinessActive: false,
+  isBusinessUpdating: false,
+  businessUpdateError: '',
 });
 
 export const reducer = (
@@ -1111,6 +1133,24 @@ export const reducer = (
         Please try again later or contact support and provide the following error information: ${payload}`
       );
 
+    case BUSINESS_DATA_UPDATE + REQUESTED:
+      return state.set('isBusinessUpdating', true);
+
+    case BUSINESS_DATA_UPDATE + FAILED:
+      return state
+        .set('isBusinessUpdating', false)
+        .set('businessUpdateError', payload.message);
+
+    case BUSINESS_DATA_UPDATE + ERROR:
+      return state.set('isBusinessUpdating', false).set(
+        'businessUpdateError',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case BUSINESS_DATA_UPDATE + SUCCEDED:
+      return state.set('isBusinessLoading', false).set('businessError', '');
+
     default:
       return state;
   }
@@ -1597,6 +1637,29 @@ function* BusinessProfileRequest({ payload, meta }) {
   }
 }
 
+function* UpdateBusinessDataRequest({ payload }) {
+  const token = yield select(getToken);
+  const businessId = payload.id;
+  try {
+    const response = yield call(request, {
+      method: 'PUT',
+      url: `${API_URL}/business/${businessId}`,
+      data: payload,
+      headers: { 'x-access-token': token },
+    });
+    if (response.status === 200) {
+      yield put(businessDataUpdateSuccess(response.data.response));
+      yield put(requestUser());
+    } else if (response.status === 403 || response.status === 401) {
+      yield put(logout());
+    } else {
+      yield put(businessDataUpdateFailed(response.data.error.message));
+    }
+  } catch (error) {
+    yield put(businessDataUpdateError(error));
+  }
+}
+
 export default function*(): Saga<void> {
   yield all([
     takeLatest(REGISTER + REQUESTED, RegisterRequest),
@@ -1621,5 +1684,6 @@ export default function*(): Saga<void> {
     takeLatest(ADMIN_LOGIN + REQUESTED, AdminLoginRequest),
     takeLatest(ADMIN_USER + REQUESTED, AdminUserRequest),
     takeLatest(BUSINESS_PROFILE + REQUESTED, BusinessProfileRequest),
+    takeLatest(BUSINESS_DATA_UPDATE + REQUESTED, UpdateBusinessDataRequest),
   ]);
 }

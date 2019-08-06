@@ -132,6 +132,12 @@ class BusinessSidebar extends PureComponent<Props, State> {
     }
     history.push(`/b/${slug}`);
   };
+  goToSettingsPage = () => {
+    if (this.props.isFromHeader) {
+      this.props.onClose();
+    }
+    history.push(`/b/settings`);
+  };
   goToPendingsPage = () => {
     if (this.props.isFromHeader) {
       this.props.onClose();
@@ -231,6 +237,7 @@ class BusinessSidebar extends PureComponent<Props, State> {
             <ListItemText
               classes={{ primary: classes.menuItemText }}
               primary="Business settings"
+              onClick={this.goToSettingsPage}
             />
           </MenuItem>
         </MenuList>
