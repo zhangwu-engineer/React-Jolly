@@ -376,7 +376,7 @@ class OnboardingCoworkerPage extends Component<Props, State> {
       showConnectionNotification: false, // eslint-disable-line
     });
   };
-  handleConnectionInvite = user => {
+  handleConnectionInvite = (user, isCoworker) => {
     this.setState(
       update(this.state, {
         invitedUserIds: { $push: [user.get('id')] },
@@ -384,7 +384,10 @@ class OnboardingCoworkerPage extends Component<Props, State> {
         isFormOpen: { $set: false },
       }),
       () => {
-        this.props.requestCreateConnection({ toUserId: user.get('id') });
+        this.props.requestCreateConnection({
+          toUserId: user.get('id'),
+          isCoworker,
+        });
       }
     );
   };

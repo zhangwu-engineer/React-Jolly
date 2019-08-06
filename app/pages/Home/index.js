@@ -386,8 +386,8 @@ class HomePage extends Component<Props, State> {
       <React.Fragment>
         <div className={classes.header}>
           <Typography className={classes.headerText}>
-            Thursday, June 27 · New in Jolly: Connect with anyone, not just past
-            coworkers · Hirers can now sign up to recruit freelancers
+            Friday, Aug. 2: See posts + job opps within 50 mi. of your city ·
+            Hirers can search by “active” vs “inactive” freelancers
           </Typography>
         </div>
         <div className={classes.panelBox}>

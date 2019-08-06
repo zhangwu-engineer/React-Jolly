@@ -15,7 +15,7 @@ import { getConnection } from 'containers/Member/selectors';
 // Constants
 // ------------------------------------
 const CREATE_CONNECTION = 'Jolly/Network/CREATE_CONNECTION';
-const REMOVE_CONNECTION = 'Jolly/Network/REMOVE_CONNECTION';
+const IGNORE_CONNECTION = 'Jolly/Network/IGNORE_CONNECTION';
 const ACCEPT_CONNECTION = 'Jolly/Network/ACCEPT_CONNECTION';
 const CHECK_CONNECTION = 'Jolly/Network/CHECK_CONNECTION';
 const ALL_CONNECTIONS = 'Jolly/Network/ALL_CONNECTIONS';
@@ -42,20 +42,20 @@ const connectionCreateRequestError = (error: string) => ({
   payload: error,
 });
 
-export const requestRemoveConnection = (id: string) => ({
-  type: REMOVE_CONNECTION + REQUESTED,
+export const requestIgnoreConnection = (id: string) => ({
+  type: IGNORE_CONNECTION + REQUESTED,
   payload: id,
 });
-const connectionRemoveRequestSuccess = (payload: Object) => ({
-  type: REMOVE_CONNECTION + SUCCEDED,
+const connectionIgnoreRequestSuccess = (payload: Object) => ({
+  type: IGNORE_CONNECTION + SUCCEDED,
   payload,
 });
-const connectionRemoveRequestFailed = (error: string) => ({
-  type: REMOVE_CONNECTION + FAILED,
+const connectionIgnoreRequestFailed = (error: string) => ({
+  type: IGNORE_CONNECTION + FAILED,
   payload: error,
 });
-const connectionRemoveRequestError = (error: string) => ({
-  type: REMOVE_CONNECTION + ERROR,
+const connectionIgnoreRequestError = (error: string) => ({
+  type: IGNORE_CONNECTION + ERROR,
   payload: error,
 });
 
@@ -192,16 +192,16 @@ export const reducer = (
         Please try again later or contact support and provide the following error information: ${payload}`
       );
 
-    case REMOVE_CONNECTION + REQUESTED:
+    case IGNORE_CONNECTION + REQUESTED:
       return state.set('isRemoving', true);
 
-    case REMOVE_CONNECTION + SUCCEDED:
+    case IGNORE_CONNECTION + SUCCEDED:
       return state.set('isRemoving', false).set('removeError', '');
 
-    case REMOVE_CONNECTION + FAILED:
+    case IGNORE_CONNECTION + FAILED:
       return state.set('isRemoving', false).set('removeError', payload.message);
 
-    case REMOVE_CONNECTION + ERROR:
+    case IGNORE_CONNECTION + ERROR:
       return state.set('isRemoving', false).set(
         'removeError',
         `Something went wrong.
@@ -334,21 +334,21 @@ function* CreateConnectionRequest({ payload }) {
   }
 }
 
-function* RemoveConnectionRequest({ payload }) {
+function* IgnoreConnectionRequest({ payload }) {
   const header = yield select(getUserHeaders);
   try {
     const response = yield call(request, {
-      method: 'DELETE',
-      url: `${API_URL}/connection/${payload}`,
+      method: 'POST',
+      url: `${API_URL}/connection/${payload}/ignore`,
       headers: header,
     });
     if (response.status === 200) {
-      yield put(connectionRemoveRequestSuccess(response.data.response));
+      yield put(connectionIgnoreRequestSuccess(response.data.response));
     } else {
-      yield put(connectionRemoveRequestFailed(response.data.error));
+      yield put(connectionIgnoreRequestFailed(response.data.error));
     }
   } catch (error) {
-    yield put(connectionRemoveRequestError(error));
+    yield put(connectionIgnoreRequestError(error));
   }
 }
 
@@ -454,7 +454,7 @@ function* CheckConnectionRequest({ payload }) {
 export default function*(): Saga<void> {
   yield all([
     takeLatest(CREATE_CONNECTION + REQUESTED, CreateConnectionRequest),
-    takeLatest(REMOVE_CONNECTION + REQUESTED, RemoveConnectionRequest),
+    takeLatest(IGNORE_CONNECTION + REQUESTED, IgnoreConnectionRequest),
     takeLatest(ACCEPT_CONNECTION + REQUESTED, AcceptConnectionRequest),
     takeLatest(ALL_CONNECTIONS + REQUESTED, ConnectionsRequest),
     takeLatest(BUSINESS_CONNECTIONS + REQUESTED, BusinessConnectionsRequest),
