@@ -16,7 +16,7 @@ export const getClientId = () => {
 export const getUserHeaders = state => {
   const params = {
     'x-access-token': getToken(state),
-    clientID: getClientId(),
+    'client-id': getClientId(),
   };
   return JSON.parse(JSON.stringify(params));
 };
