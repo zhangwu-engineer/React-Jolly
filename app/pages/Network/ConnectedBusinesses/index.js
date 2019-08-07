@@ -361,7 +361,7 @@ class ConnectedBusinessesPage extends Component<Props, State> {
       connection: '',
     },
     connectionType: 'b2f',
-    isUnderConstruction: false,
+    isUnderConstruction: true,
   };
   componentDidMount() {
     const { query, filter, connectionType } = this.state;
@@ -715,7 +715,7 @@ class ConnectedBusinessesPage extends Component<Props, State> {
             {!isUnderConstruction &&
               selectedTab === 1 && (
                 <Grid container spacing={8}>
-                  {connectedConnections &&
+                  {filteredBusinesses &&
                     filteredBusinesses.size > 0 &&
                     filteredBusinesses.map(connection => (
                       <Grid item key={generate()} xs={12} lg={6}>

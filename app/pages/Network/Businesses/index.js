@@ -288,15 +288,6 @@ const styles = theme => ({
   emptyContainer: {
     textAlign: 'center',
   },
-  panelButton: {
-    fontSize: 14,
-    fontWeight: 600,
-    textTransform: 'none',
-    padding: '11px 35px',
-    marginTop: 40,
-    borderRadius: 0,
-    boxShadow: 'none',
-  },
   alertHeading: {
     marginBottom: 12,
   },
@@ -394,7 +385,7 @@ class NetworkBusinessesPage extends Component<Props, State> {
       selectedRole: '',
     },
     page: 1,
-    isUnderConstruction: false,
+    isUnderConstruction: true,
   };
   componentDidMount() {
     const { user } = this.props;
