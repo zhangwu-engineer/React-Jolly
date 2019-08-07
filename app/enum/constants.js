@@ -70,6 +70,15 @@ export const BUSINESS_CATEGORY_OPTIONS = [
   },
 ];
 
+export const BUSINESS_CATEGORY_PRESENTATIONS = {
+  'Event organizer': 'an event organier',
+  'Event venue': 'an event venue',
+  'Event services': 'an event services business',
+  Brand: 'a brand',
+  'Event staffing': 'an event staffing business',
+  Other: 'a business',
+};
+
 export const ACTIVE_OPTIONS = [
   {
     label: 'Active & Inactive',
