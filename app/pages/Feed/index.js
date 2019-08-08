@@ -24,6 +24,7 @@ import CredIcon from 'images/sprite/cred_white.svg';
 import saga, {
   reducer,
   requestPosts,
+  requestTopUsers,
   requestCreatePost,
   requestUpdatePost,
   requestRemovePost,
@@ -132,6 +133,7 @@ const styles = theme => ({
 type Props = {
   user: Object,
   posts: List<Map>,
+  topUsers: List<Map>,
   isCreating: boolean,
   createError: string,
   isUpdating: boolean,
@@ -144,6 +146,7 @@ type Props = {
   requestCreatePost: Function,
   requestUpdatePost: Function,
   requestPosts: Function,
+  requestTopUsers: Function,
   requestVotePost: Function,
   requestRemovePost: Function,
   requestUser: Function,
@@ -168,6 +171,9 @@ class FeedPage extends Component<Props, State> {
           location: nextProps.user.getIn(['profile', 'location']),
           categories: CATEGORY_OPTIONS.map(option => option.value),
         },
+        topQuery: {
+          location: nextProps.user.getIn(['profile', 'location']),
+        },
       };
     }
     return null;
@@ -177,11 +183,13 @@ class FeedPage extends Component<Props, State> {
     isFilterOpen: false,
     isCredOpen: false,
     query: undefined,
+    topQuery: undefined,
     editingPost: null,
   };
   componentDidMount() {
-    const { query } = this.state;
+    const { query, topQuery } = this.state;
     this.props.requestPosts(query);
+    this.props.requestTopUsers(topQuery.location);
   }
   componentDidUpdate(prevProps: Props) {
     const {
@@ -247,7 +255,7 @@ class FeedPage extends Component<Props, State> {
     });
   };
   render() {
-    const { user, posts, classes } = this.props;
+    const { user, posts, topUsers, classes } = this.props;
     const { isOpen, isFilterOpen, isCredOpen, query, editingPost } = this.state;
     return (
       <React.Fragment>
@@ -348,7 +356,11 @@ class FeedPage extends Component<Props, State> {
               ))}
           </div>
           <div className={classes.rightPanel}>
-            <UserCredStats user={user} onClick={this.openModal} />
+            <UserCredStats
+              user={user}
+              topUsers={topUsers}
+              onClick={this.openModal}
+            />
           </div>
         </div>
         <PostFormModal
@@ -369,6 +381,7 @@ class FeedPage extends Component<Props, State> {
         <UserCredModal
           isOpen={isCredOpen}
           user={user}
+          topUsers={topUsers}
           onCloseModal={this.closeCredModal}
           openPostModal={this.openModal}
         />
@@ -380,6 +393,7 @@ class FeedPage extends Component<Props, State> {
 const mapStateToProps = state => ({
   user: state.getIn(['app', 'user']),
   posts: state.getIn(['feed', 'posts']),
+  topUsers: state.getIn(['feed', 'topUsers']),
   isCreating: state.getIn(['feed', 'isCreating']),
   createError: state.getIn(['feed', 'createError']),
   isUpdating: state.getIn(['feed', 'isUpdating']),
@@ -394,6 +408,7 @@ const mapDispatchToProps = dispatch => ({
   requestCreatePost: payload => dispatch(requestCreatePost(payload)),
   requestUpdatePost: (id, payload) => dispatch(requestUpdatePost(id, payload)),
   requestPosts: payload => dispatch(requestPosts(payload)),
+  requestTopUsers: payload => dispatch(requestTopUsers(payload)),
   requestRemovePost: postId => dispatch(requestRemovePost(postId)),
   requestVotePost: postId => dispatch(requestVotePost(postId)),
   requestUser: () => dispatch(requestUser()),

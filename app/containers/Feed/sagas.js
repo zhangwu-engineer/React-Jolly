@@ -18,6 +18,7 @@ const UPDATE = 'Jolly/Feed/UPDATE_POST';
 const REMOVE = 'Jolly/Feed/REMOVE_POST';
 const POST = 'Jolly/Feed/POST';
 const VOTE = 'Jolly/Feed/VOTE_POST';
+const TOP_VOTED_USERS = 'Jolly/Feed/TOP_VOTED_USERS';
 const CREATE_COMMENT = 'Jolly/Feed/CREATE_COMMENT';
 const TOGGLE_COMMENT_SECTION = 'Jolly/Feed/TOGGLE_COMMENT_SECTION';
 const SHOW_NEXT_COMMENT = 'Jolly/Feed/SHOW_NEXT_COMMENT';
@@ -93,6 +94,23 @@ const postsRequestError = (error: string) => ({
   payload: error,
 });
 
+export const requestTopUsers = (city: string) => ({
+  type: TOP_VOTED_USERS + REQUESTED,
+  payload: city,
+});
+const topUsersRequestSuccess = (payload: Object) => ({
+  type: TOP_VOTED_USERS + SUCCEDED,
+  payload,
+});
+const topUsersRequestFailed = (error: string) => ({
+  type: TOP_VOTED_USERS + FAILED,
+  payload: error,
+});
+const topUsersRequestError = (error: string) => ({
+  type: TOP_VOTED_USERS + ERROR,
+  payload: error,
+});
+
 export const requestVotePost = (postId: string) => ({
   type: VOTE + REQUESTED,
   payload: postId,
@@ -142,7 +160,9 @@ export const showNextComment = (postId: string) => ({
 // ------------------------------------
 const initialState = fromJS({
   posts: null,
+  topUsers: null,
   isLoading: false,
+  isTopLoading: false,
   error: '',
   isCreating: false,
   createError: '',
@@ -223,6 +243,25 @@ export const reducer = (
 
     case POST + ERROR:
       return state.set('isLoading', false).set(
+        'error',
+        `Something went wrong.
+        Please try again later or contact support and provide the following error information: ${payload}`
+      );
+
+    case TOP_VOTED_USERS + REQUESTED:
+      return state.set('isTopLoading', true);
+
+    case TOP_VOTED_USERS + SUCCEDED:
+      return state
+        .set('isTopLoading', false)
+        .set('topUsers', fromJS(payload.users))
+        .set('error', '');
+
+    case TOP_VOTED_USERS + FAILED:
+      return state.set('isTopLoading', false).set('error', payload.message);
+
+    case TOP_VOTED_USERS + ERROR:
+      return state.set('isTopLoading', false).set(
         'error',
         `Something went wrong.
         Please try again later or contact support and provide the following error information: ${payload}`
@@ -385,6 +424,27 @@ function* PostsRequest({ payload }) {
   }
 }
 
+function* TopUsersRequest({ payload }) {
+  const header = yield select(getUserHeaders);
+  try {
+    const response = yield call(request, {
+      method: 'POST',
+      url: `${API_URL}/user/top-voted`,
+      headers: header,
+      data: {
+        city: payload,
+      },
+    });
+    if (response.status === 200) {
+      yield put(topUsersRequestSuccess(response.data.response));
+    } else {
+      yield put(topUsersRequestFailed(response.data.error));
+    }
+  } catch (error) {
+    yield put(topUsersRequestError(error));
+  }
+}
+
 function* PostVoteRequest({ payload }) {
   const header = yield select(getUserHeaders);
   try {
@@ -428,6 +488,7 @@ export default function*(): Saga<void> {
     takeLatest(UPDATE + REQUESTED, UpdatePostRequest),
     takeLatest(REMOVE + REQUESTED, RemovePostRequest),
     takeLatest(POST + REQUESTED, PostsRequest),
+    takeLatest(TOP_VOTED_USERS + REQUESTED, TopUsersRequest),
     takeLatest(VOTE + REQUESTED, PostVoteRequest),
     takeLatest(CREATE_COMMENT + REQUESTED, CreateCommentRequest),
   ]);
