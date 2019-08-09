@@ -325,7 +325,7 @@ export const reducer = (
 function* CreateConnectionRequest({ payload }) {
   const header = yield select(getUserHeaders);
   try {
-    const response = axios({
+    const response = yield axios({
       method: 'POST',
       url: `${API_URL}/connection`,
       data: payload,
