@@ -3,8 +3,17 @@
 // Rules on how to organize this file: https://github.com/erikras/ducks-modular-redux
 
 import { fromJS } from 'immutable';
-import { call, put, select, takeLatest, all } from 'redux-saga/effects';
+import {
+  call,
+  put,
+  select,
+  fork,
+  take,
+  takeLatest,
+  all,
+} from 'redux-saga/effects';
 import request from 'utils/request';
+import axios from 'axios';
 import { API_URL, REQUESTED, SUCCEDED, FAILED, ERROR } from 'enum/constants';
 import type { Action, State } from 'types/common';
 import type { Saga } from 'redux-saga';
@@ -316,7 +325,7 @@ export const reducer = (
 function* CreateConnectionRequest({ payload }) {
   const header = yield select(getUserHeaders);
   try {
-    const response = yield call(request, {
+    const response = axios({
       method: 'POST',
       url: `${API_URL}/connection`,
       data: payload,
@@ -451,9 +460,19 @@ function* CheckConnectionRequest({ payload }) {
   }
 }
 
+function* takeOneAndBlock(pattern, worker, ...args) {
+  const task = yield fork(function* createGenerator() {
+    while (true) {
+      const action = yield take(pattern);
+      yield call(worker, ...args, action);
+    }
+  });
+  return task;
+}
+
 export default function*(): Saga<void> {
   yield all([
-    takeLatest(CREATE_CONNECTION + REQUESTED, CreateConnectionRequest),
+    takeOneAndBlock(CREATE_CONNECTION + REQUESTED, CreateConnectionRequest),
     takeLatest(IGNORE_CONNECTION + REQUESTED, IgnoreConnectionRequest),
     takeLatest(ACCEPT_CONNECTION + REQUESTED, AcceptConnectionRequest),
     takeLatest(ALL_CONNECTIONS + REQUESTED, ConnectionsRequest),
