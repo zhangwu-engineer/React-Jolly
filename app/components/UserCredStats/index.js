@@ -72,6 +72,7 @@ const styles = theme => ({
     fontSize: 14,
     fontWeight: 600,
     color: '#1e1e24',
+    cursor: 'pointer',
   },
   headingTitle: {
     fontSize: 14,
@@ -129,6 +130,9 @@ class UserCredStats extends Component<Props, State> {
   onViewMore = () => {
     const { isMoreOpen } = this.state;
     this.setState({ isMoreOpen: !isMoreOpen });
+  };
+  gotoProfile = slug => {
+    window.open(`/f/${slug}`, '_blank');
   };
   render() {
     const { user, topUsers, classes } = this.props;
@@ -204,7 +208,10 @@ class UserCredStats extends Component<Props, State> {
                       />
                     </Grid>
                     <Grid item className={classes.nameWrapper}>
-                      <Typography className={classes.name}>
+                      <Typography
+                        className={classes.name}
+                        onClick={() => this.gotoProfile(topUser.user.slug)}
+                      >
                         {`${capitalize(topUser.user.firstName)}
                         ${capitalize(topUser.user.lastName.charAt(0))}.`}
                       </Typography>
